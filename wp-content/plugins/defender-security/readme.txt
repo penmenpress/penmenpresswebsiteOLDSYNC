@@ -58,9 +58,13 @@ Keep your site safe with Defender’s simple IP manager. Manually block specific
 ★★★★★ <br>
 “Defender Recently blocked over 3000 attacks in one week without any noticeable impact on the website. WPMUDEV knocking it out of the park on this one.” - <a href="https://premium.wpmudev.org/profile/davidoswald/">David Oswald</a>
 
-= Log-in Protection =
+= Login Protection =
 
 Brute force attacks are no match for Defender. Limit login attempts to stop users trying to guess passwords. Permanently ban IPs or trigger a timed lockout after a set number of failed login attempts.
+
+= Login Screen Masking =
+
+Defender makes it easy to move your login screen to a custom URL. Not only does login screen masking improve security, it lets you whitelable your login user experience and improves branding. 
 
 = 404 Limiter =
 Defender detects when bots are being used to scan your site for vulnerabilities and shuts them down. The 404 limiter lets you stop the scan by detecting when a user keeps visiting pages that do not exist.
@@ -73,6 +77,7 @@ Defender runs surveillance and sends notifications with information that matters
 * Google 2-Step Verification
 * One-click site hardening and security tweaking
 * WordPress core file scanning and repair
+* Login Screen Masking
 * IP Blacklist manager and logging
 * Unlimited file scans
 * Timed Lockout brute force attack shield for login protection 
