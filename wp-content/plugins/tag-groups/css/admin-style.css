@@ -1,0 +1,111 @@
+/*
+Part of the WordPress plugin Tag Groups
+Plugin URI: https://chattymango.com/tag-groups/
+Author: Christoph Amthor
+License: GNU GENERAL PUBLIC LICENSE, Version 3
+*/
+
+.tg_sort_tr {
+  cursor: grab;
+  transition: box-shadow .25s;
+  height: 50px;
+}
+
+.tg_sort_tr:hover {
+  box-shadow: 2px 2px 5px 0 rgba(0,0,0,0.16);
+}
+
+.ui-sortable-helper {
+  cursor: grabbing;
+}
+
+.tg_pointer {
+  cursor: pointer;
+}
+
+.tg_right {
+  float:right;
+}
+
+.tg_left {
+  float:left;
+}
+
+.tg_text {
+  cursor: text;
+}
+
+.tg_groups_table {
+  border-spacing: 0 2px !important;
+}
+
+.tg_groups_table > tbody > :nth-child(4n+1) {
+  background-color: #f9f9f9;
+}
+
+.tg_groups_table td {
+  vertical-align: middle;
+}
+
+.tg_ask_delete {
+  background-color: #D65;
+}
+
+.tg_pager_button, .tg_reload_button {
+  height: 30px;
+  padding: 5px 10px;
+}
+
+.tg_pager_button span, .tg_reload_button span {
+  line-height: inherit;
+}
+
+#tg_pager_container {
+  height: 50px;
+  margin: 5px;
+}
+
+#tg_pager_container_adjuster {
+  position: relative;
+  overflow: hidden;
+}
+
+.tg_admin_accordion .ui-accordion-content {
+  background-color: #FFF;
+}
+
+.ui-icon {
+  text-indent: 0px !important;
+}
+
+.tg_faded {
+  color: #999;
+}
+
+.tg_mouseover {
+  color: transparent;
+}
+
+.tg_mouseover:hover {
+  color: #000;
+}
+
+.tg_term_amounts {
+  min-width: 50px;
+  display: inline-block;
+}
+
+
+.SumoSelect label {
+  margin: 0 !important;
+  line-height: 1.1em !important;
+}
+
+.SumoSelect .select-all {
+  line-height: 12px;
+}
+
+/* SumoSelect menu should not cover "Add new tag" button */
+.SumoUnder {
+  height: 1em !important;
+}

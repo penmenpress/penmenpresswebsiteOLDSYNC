@@ -1,0 +1,319 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Project-Id-Version: Easy Widget Columns\n"
+"POT-Creation-Date: 2017-08-11 12:27-0700\n"
+"PO-Revision-Date: 2017-08-11 12:27-0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.3\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: easy-widget-columns.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: admin/class-easy-widget-columns-admin.php:62
+msgid "Easy Widget Columns Settings"
+msgstr ""
+
+#: admin/class-easy-widget-columns-admin.php:62
+msgid "Widget Columns"
+msgstr ""
+
+#: admin/class-easy-widget-columns-admin.php:86
+msgid "Settings"
+msgstr ""
+
+#: admin/class-easy-widget-columns-control.php:152
+#: admin/class-easy-widget-columns-control.php:181
+msgid "none"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:20
+msgid "Genesis Framework Column Classes"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:22
+#, php-format
+msgid ""
+"This plugin uses the %1$s to display your widgets in rows of columns. By "
+"default it loads the CSS in a %2$s in the %3$s of your website.%4$s If your "
+"theme already incorporates the Genesis Framework Column Classes or you want "
+"to add/edit the CSS manually, see the options below."
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:40
+msgid "CSS Assets"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:43
+msgid "Options to load CSS assets"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:48
+#, php-format
+msgid "Load the CSS stylesheet in a %1$s in the %2$s"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:55
+#, php-format
+msgid ""
+"Do NOT load the CSS in the %s. My theme is already using the Genesis "
+"Framework Column Classes, or I want to add it manually."
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:63
+msgid "Column Classes"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:66
+msgid "To add/edit the CSS manually, copy the code below into your stylesheet"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:69
+msgid "To add/edit the CSS manually, copy the code below into your stylesheet:"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-admin-display.php:83
+msgid "Save Changes"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:15
+msgid "Column width:"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:17
+#: widgets/class-widget-row-divider.php:415
+msgid "None"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:18
+msgid "1/1"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:19
+msgid "1/2"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:20
+msgid "1/3"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:21
+msgid "2/3"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:22
+msgid "1/4"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:23
+msgid "3/4"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:24
+msgid "1/6"
+msgstr ""
+
+#: admin/partials/easy-widget-columns-widget-form.php:25
+msgid "5/6"
+msgstr ""
+
+#: widgets/class-easy-widget-columns-widgets.php:107
+msgid "Choose or Upload Image"
+msgstr ""
+
+#: widgets/class-easy-widget-columns-widgets.php:108
+msgid "Insert Image"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:27
+#: widgets/class-widget-row-divider.php:336
+msgid "Use this widget to start or close a new row of widget columns."
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:57
+msgid "Widget Row"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:341
+msgid "Advanced options"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:348
+msgid "Row background"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:353
+msgid "Color:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:357
+msgid "Image:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:358
+msgid "Enter URL or select image"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:359
+msgid "Select Image"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:364
+msgid "Repeat:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:367
+msgid "Tile"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:368
+msgid "Horizontal"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:369
+msgid "Vertical"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:370
+msgid "No Repeat"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:379
+msgid "Attachment:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:382
+msgid "Scroll"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:383
+msgid "Fixed"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:392
+msgid "Position:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:395
+msgid "Left Top"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:396
+msgid "Left Center"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:397
+msgid "Left Bottom"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:398
+msgid "Right Top"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:399
+msgid "Right Center"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:400
+msgid "Right Bottom"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:401
+msgid "Center Top"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:402
+msgid "Center"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:403
+msgid "Center Bottom"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:412
+msgid "Scale:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:416
+msgid "Cover"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:417
+msgid "Contain"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:436
+msgid "Row margin"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:442
+#: widgets/class-widget-row-divider.php:480
+msgid "top:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:447
+#: widgets/class-widget-row-divider.php:485
+msgid "right:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:454
+#: widgets/class-widget-row-divider.php:492
+msgid "btm:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:459
+#: widgets/class-widget-row-divider.php:497
+msgid "left:"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:474
+msgid "Row padding"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:512
+msgid "CSS classes"
+msgstr ""
+
+#: widgets/class-widget-row-divider.php:515
+msgid "Enter custom classes"
+msgstr ""
+
+#: widgets/class-widget-subrow-divider.php:28
+#: widgets/class-widget-subrow-divider.php:72
+msgid "Use this widget to start a new sub-row of widget columns."
+msgstr ""
+
+#: widgets/class-widget-subrow-divider.php:36
+msgid "sub-row"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Easy Widget Columns"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.alexisvillegas.com/plugins/easy-widget-columns"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Easily display widgets in rows of columns."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Alexis J. Villegas"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.alexisvillegas.com"
+msgstr ""

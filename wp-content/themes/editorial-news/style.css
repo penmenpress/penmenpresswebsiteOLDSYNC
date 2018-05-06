@@ -1,0 +1,387 @@
+/*
+ Theme Name:   Editorial News
+ Theme URI:    https://mysterythemes.com/wp-themes/editorial-news/
+ Description:  Editorial News is a child theme of Editorial Magazine WordPress theme. Editorial News is free Magazine WordPress Theme suitable for magazines, news&media, personal blogs, or photography websites which gives clean and modern layouts. Get free support at https://mysterythemes.com/support/forum/themes/child-themes/ and check the demo at http://demo.mysterythemes.com/editorial-news/
+ Author:       Mystery Themes
+ Author URI:   https://mysterythemes.com/
+ Template:     editorial
+ Version:      1.0.2
+ License:      GNU General Public License v3 or later
+ License URI:  http://www.gnu.org/licenses/gpl-3.0.html
+ Tags:         news, grid-layout, custom-colors, one-column, two-columns, three-columns, left-sidebar, right-sidebar, footer-widgets, full-width-template, theme-options, translation-ready, rtl-language-support
+ Text Domain:  editorial-news
+*/
+
+
+/*--------------------------------------------------------------
+Header CSS
+--------------------------------------------------------------*/
+
+body,
+button,
+input,
+select,
+textarea,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+   font-family: 'Roboto', sans-serif;
+}
+
+
+#page {
+   background: #fff;
+}
+
+.bottom-header-wrapper {
+   background: none;
+}
+
+.bottom-header-wrapper .mt-container,
+.is-sticky .bottom-header-wrapper {
+   background: #212121;
+}
+
+#site-navigation ul li,
+.header-search-wrapper .search-form-main::before {
+   border: none;
+}
+
+#site-navigation ul li a {
+   padding: 5px 15px;
+   color: #fff;
+   font-weight: 500;
+   font-size: 14px;
+}
+
+.home-icon {
+   padding: 5px 16px;
+   line-height: 40px;
+}
+
+.search-main {
+   padding: 5px 20px;
+}
+
+#site-navigation li.menu-item-has-children>a::after,
+#site-navigation li.page_item_has_children>a::after {
+   top: 50%;
+   -webkit-transform: translateY(-50%);
+   -ms-transform: translateY(-50%);
+   -o-transform: translateY(-50%);
+   transform: translateY(-50%);
+}
+
+#site-navigation ul.sub-menu,
+#site-navigation ul.children {
+   background: #212121 none repeat scroll 0 0;
+}
+
+.top-header-section {
+   background: none;
+   border-bottom: 1px solid #e1e1e1;
+}
+
+.top-header-section .date-section::before {
+   display: none;
+}
+
+.top-menu ul ul {
+   display: none;
+}
+
+/*--------------------------------------------------------------
+Ticker CSS
+--------------------------------------------------------------*/
+
+.ticker-caption::after {
+   display: none;
+}
+
+.ticker-caption {
+   background: #FF7D0E none repeat scroll 0 0;
+}
+
+.ticker-content-wrapper {
+   border: none;
+}
+
+
+
+/*--------------------------------------------------------------
+Editorial News Widget CSS
+--------------------------------------------------------------*/
+
+.block-header .block-title,
+.widget .widget-title,
+.related-articles-wrapper .related-title,
+.block-header,
+.widget .widget-title-wrapper,
+.related-articles-wrapper .widget-title-wrapper,
+.archive .page-header .page-title,
+.archive .page-header {
+   background: none;
+   padding: 0;
+}
+
+.block-header,
+.widget .widget-title-wrapper,
+.related-articles-wrapper .widget-title-wrapper,
+.archive .page-header {
+   border-bottom: 3px solid #FF7D0E;
+   border-left: none !important;
+   padding-bottom: 6px;
+}
+
+.editorial_block_layout .grid-posts-block,
+.editorial_block_layout .list-posts-block .single-post-wrapper,
+.editorial_block_column .primary-post,
+.editorial_block_column .secondary-post,
+.editorial_posts_list .single-post-wrapper,
+.editorial_block_list .single-post-wrapper {
+   border: 1px solid #e1e1e1;
+   padding: 15px;
+}
+
+.widget figure,
+.widget .post-thumb {
+   overflow: hidden;
+}
+
+.widget figure img,
+.widget .post-thumb img {
+   -webkit-transform: scale(1);
+   -moz-transform: scale(1);
+   -ms-transform: scale(1);
+   -o-transform: scale(1);
+   transform: scale(1);
+   -webkit-transition: all 0.3s ease;
+   -moz-transition: all 0.3s ease;
+   -ms-transition: all 0.3s ease;
+   -o-transition: all 0.3s ease;
+   transition: all 0.3s ease;
+}
+
+.widget figure:hover img,
+.widget .post-thumb:hover img {
+   -webkit-transform: scale(1.05);
+   -moz-transform: scale(1.05);
+   -ms-transform: scale(1.05);
+   -o-transform: scale(1.05);
+   transform: scale(1.08);
+}
+
+.column-posts-block .secondary-post .post-content-wrapper {
+   margin-top: 0;
+}
+
+.list-posts-block .single-post-wrapper .post-content-wrapper .post-title a,
+.column-posts-block .single-post-wrapper.secondary-post .post-content-wrapper .post-title a {
+   font-size: 14px;
+}
+
+.post-meta-wrapper span:last-child,
+.post-meta-wrapper span:last-child a {
+   margin-right: 0;
+}
+
+.primary-post .post-meta-wrapper {
+   margin-bottom: 15px;
+}
+
+.grid-posts-block .post-title a,
+.column-posts-block .post-title a {
+   font-size: 16px;
+}
+
+
+.home .widget {
+   margin-bottom: 30px;
+   margin-top: 0;
+}
+
+.home #colophon .widget {
+   margin-bottom: 0;
+}
+
+.grid-posts-block .post-title,
+.column-posts-block .post-title {
+   line-height: 25px;
+}
+
+.grid-posts-block .post-content-wrapper>p,
+.column-posts-block .post-content-wrapper>p {
+   margin-bottom: 6px;
+}
+
+.editorial_block_column .block-posts-wrapper.column-posts-block {
+   margin-bottom: -14px;
+}
+
+/*--------------------------------------------------------------
+Footer CSS
+--------------------------------------------------------------*/
+
+#top-footer {
+   background: #212121;
+   color: #ccc;
+   padding: 60px 0 50px;
+}
+
+#colophon .widget_archive a,
+#colophon .widget_categories a,
+#colophon .widget_recent_entries a,
+#colophon .widget_meta a,
+#colophon .widget_recent_comments li,
+#colophon .widget_rss li,
+#colophon .widget_pages li a,
+#colophon .widget_nav_menu li a,
+#colophon .widget_tag_cloud .tagcloud a {
+   color: #ccc;
+}
+
+#colophon .widget_archive a:hover,
+#colophon .widget_categories a:hover,
+#colophon .widget_recent_entries a:hover,
+#colophon .widget_meta a:hover,
+#colophon .widget_recent_comments li,
+#colophon .widget_rss li,
+#colophon .widget_pages li a:hover,
+#colophon .widget_nav_menu li a:hover,
+#colophon .widget .widget-title {
+   color: #FF7D0E;
+}
+
+#colophon .widget_archive li,
+#colophon .widget_categories li,
+#colophon .widget_recent_entries li,
+#colophon .widget_meta li,
+#colophon .widget_recent_comments li,
+#colophon .widget_rss li,
+#colophon .widget_pages li,
+#colophon .widget_nav_menu li,
+#colophon .widget_tag_cloud .tagcloud a {
+   border-color: #5c5c5c;
+}
+
+#colophon .widget_tag_cloud .tagcloud a:hover {
+   border-color: #FF7D0E;
+   color: #fff;
+}
+
+#bottom-footer {
+   background: #181818;
+   color: #ccc;
+}
+
+#footer-navigation ul li a {
+   color: #ccc;
+}
+
+/*--------------------------------------------------------------
+Editorial News Slider CSS
+--------------------------------------------------------------*/
+
+.editorial_news_featured_slider .mt-featured-slider-wrapper {
+   float: left;
+   margin-right: 0;
+   width: 50%;
+}
+
+.editorial_news_featured_slider .featured-post-wrapper .single-featured-wrap {
+   float: left;
+   margin-bottom: 8px;
+   margin-left: 10px;
+   width: 48.2%;
+}
+
+.editorial_news_featured_slider .featured-post-wrapper {
+   float: right;
+   width: 50%;
+}
+
+.editorial_news_featured_slider .post-meta-wrapper>span,
+.editorial_news_featured_slider .post-meta-wrapper a {
+   color: #dfdcdc;
+}
+
+.featured-post-wrapper .featured-title a {
+   font-size: 14px;
+}
+
+.mt-slider-section .slide-title a {
+   font-size: 18px;
+}
+
+.featured-slider-section {
+   margin-bottom: 10px;
+}
+
+.home.blog .archive-desc-wrapper {
+   margin: 20px 0 0;
+}
+
+.home.blog .archive-desc-wrapper .entry-title a {
+   color: #333;
+   margin: 10px 0 -10px;
+   display: block;
+}
+
+.home.blog .archive-desc-wrapper .entry-title a:hover{
+    color: #FF7D0E;
+}
+
+.entry-meta span a, .entry-meta span {
+   font-style: normal;
+}
+/*--------------------------------------------------------------
+Responsive CSS
+--------------------------------------------------------------*/
+
+@media (max-width: 1200px) {
+   .editorial_news_featured_slider .featured-post-wrapper .single-featured-wrap {
+      margin-left: 9px;
+      width: 48%;
+   }
+}
+
+@media (max-width: 980px) {
+   .editorial_news_featured_slider .mt-featured-slider-wrapper,
+   .editorial_news_featured_slider .featured-post-wrapper {
+      float: none;
+      margin: 0;
+      width: 100%;
+   }
+   .editorial_news_featured_slider .featured-post-wrapper img {
+      width: 100%;
+   }
+   .editorial_news_featured_slider .featured-post-wrapper {
+      margin-left: -2%;
+      width: 102%;
+      margin-top: 2%;
+   }
+   .editorial_news_featured_slider .featured-post-wrapper .single-featured-wrap {
+      margin: 0;
+      margin-left: 2%;
+      margin-bottom: 2%;
+   }
+}
+
+@media (max-width: 768px) {
+   .menu-toggle {
+      color: #fff;
+      line-height: 46px;
+   }
+   #site-navigation {
+      background: #212121;
+   }
+}
+
+@media (max-width: 480px) {
+   .editorial_news_featured_slider .featured-post-wrapper .single-featured-wrap {
+      width: 98%;
+   }
+}

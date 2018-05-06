@@ -1,0 +1,420 @@
+# Copyright (C) 2015 the WordPress team
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Elanza\n"
+"POT-Creation-Date: 2014-07-07 19:09-0800\n"
+"PO-Revision-Date: 2015-10-05 17:59+0530\n"
+"Last-Translator: \n"
+"Language-Team: LANGUAGE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.1\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../404.php:12
+msgid "Not Found"
+msgstr ""
+
+#: ../404.php:17
+msgid "It looks like nothing was found at this location. Maybe try a search?"
+msgstr ""
+
+#: ../archive.php:18
+msgid "<h1>Daily Archives</h1>"
+msgstr ""
+
+#: ../archive.php:20
+msgid "<h1>Monthly Archives</h1>"
+msgstr ""
+
+#: ../archive.php:22
+msgid "<h1>Yearly Archives</h1>"
+msgstr ""
+
+#: ../archive.php:24
+msgid "<h1>Archives</h1>"
+msgstr ""
+
+#: ../category.php:18
+msgid "Archive"
+msgstr ""
+
+#: ../comments.php:13
+msgid "This post is password protected. Enter the password to view comments."
+msgstr ""
+
+#: ../comments.php:20
+msgid "No Responses"
+msgstr ""
+
+#: ../comments.php:20
+msgid "One Response"
+msgstr ""
+
+#: ../comments.php:20
+msgid "Responses"
+msgstr ""
+
+#: ../comments.php:38
+msgid "Comments are closed."
+msgstr ""
+
+#: ../comments.php:52
+msgid "Leave a Reply"
+msgstr ""
+
+#: ../comments.php:53
+msgid "Cancel Reply"
+msgstr ""
+
+#: ../comments.php:54
+msgid "Post Comment"
+msgstr ""
+
+#: ../content.php:57
+msgid "Pages"
+msgstr ""
+
+#: ../content.php:70 ../functions.php:168
+msgid "Edit"
+msgstr ""
+
+#: ../content-audio.php:25 ../content-gallery.php:26 ../content-quote.php:25
+#: ../content-video.php:25 ../content-grid.php:45
+msgid "Continue Reading..."
+msgstr ""
+
+#: ../content-none.php:11
+msgid "Nothing Found"
+msgstr ""
+
+#: content-none.php:16
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: ../content-none.php:20
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr ""
+
+#: ../content-none.php:25
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr ""
+
+#: ../search-form.php:3
+msgid "Search and hit enter..."
+msgstr ""
+
+#: ../search.php:13
+msgid "Search results for"
+msgstr ""
+
+#: ../tag.php:13 ../category.php:17
+msgid "%s"
+msgstr ""
+
+#: ../tag.php:14
+msgid "Tag Archive"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:301
+msgid "Install Required Plugins"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:302
+msgid "Install Plugins"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:303
+msgid "Installing Plugin: %s"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:213
+msgid "Something went wrong with the plugin API."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:365
+msgid "Return to Required Plugins Installer"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:366
+#: ../class-tgm-plugin-activation.php:796
+msgid "Return to the Dashboard"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:367
+#: ../class-tgm-plugin-activation.php:2957
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:368
+msgid "The following plugin was activated successfully:"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:371
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:372
+msgid "Dismiss this notice"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2375
+msgid "No plugins to install or activate. <a href=\"%1$s\" title=\"Return to the Dashboard\">Return to the Dashboard</a>"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2139
+msgid "WordPress Repository"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2142
+msgid "External Source"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2145
+msgid "Pre-Packaged"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2162
+msgid "Not Installed"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2120
+msgid "Required"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2123
+msgid "Recommended"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2166
+msgid "Installed But Not Activated"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2565
+msgid "Activate"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2389
+msgid "Plugin"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2390
+msgid "Source"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2391
+msgid "Type"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2396
+msgid "Status"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2556
+msgid "Install"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2562
+msgid "Update"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2596
+msgid "No plugins were selected to be installed. No action taken."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2598
+msgid "No plugins were selected to be updated. No action taken."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2634
+msgid "No plugins are available to be installed at this time."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2636
+msgid "No plugins are available to be updated at this time."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:2956
+msgid "Plugin activation failed."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3286
+msgid "Updating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3288
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3289
+msgid "The installation of %1$s failed."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3289
+msgid "The installation and activation process is starting. This process may take a while on some hosts, so please be patient."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3294
+msgid "%1$s installed and activated successfully."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3295
+msgid "All installations and activations have been completed."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3296
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3299
+msgid "The installation process is starting. This process may take a while on some hosts, so please be patient."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3301
+msgid "All installations have been completed."
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3302
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3294
+#: ../class-tgm-plugin-activation.php:3300
+msgid "Show Details"
+msgstr ""
+
+#: ../class-tgm-plugin-activation.php:3294
+#: ../class-tgm-plugin-activation.php:3300
+msgid "Hide Details"
+msgstr ""
+
+#: ../inc/category-image.php:289
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: ../inc/customizer.php:277
+msgid "Meta Info to Hide"
+msgstr ""
+
+#: ../inc/customizer.php:280 ../inc/customizer.php:346
+msgid "Hide Category"
+msgstr ""
+
+#: ../inc/customizer.php:347
+msgid "Hide Tag"
+msgstr ""
+
+#: ../inc/customizer.php:281 ../inc/customizer.php:348
+msgid "Hide Date"
+msgstr ""
+
+#: ../inc/customizer.php:282
+msgid "Hide Comment"
+msgstr ""
+
+#: ../inc/customizer.php:343
+msgid "Single Post Meta Hide/Show"
+msgstr ""
+
+#: ../inc/customizer.php:349
+msgid "Hide Author"
+msgstr ""
+
+#: ../inc/instagram-widget.php:14
+msgid "Displays your latest Instagram photos"
+msgstr ""
+
+#: ../inc/instagram-widget.php:15 ../inc/instagram-widget.php:75
+msgid "Instagram"
+msgstr ""
+
+#: ../inc/instagram-widget.php:75
+msgid "Follow Us"
+msgstr ""
+
+#: ../inc/instagram-widget.php:82
+msgid "Title"
+msgstr ""
+
+#: ../inc/instagram-widget.php:83
+msgid "Username"
+msgstr ""
+
+#: ../inc/instagram-widget.php:84
+msgid "Number of photos"
+msgstr ""
+
+#: ../inc/instagram-widget.php:85
+msgid "Open links in"
+msgstr ""
+
+#: ../inc/instagram-widget.php:87
+msgid "Current window (_self)"
+msgstr ""
+
+#: ../inc/instagram-widget.php:88
+msgid "New window (_blank)"
+msgstr ""
+
+#: ../inc/instagram-widget.php:91
+msgid "Link text"
+msgstr ""
+
+#: ../inc/instagram-widget.php:116
+msgid "Unable to communicate with Instagram."
+msgstr ""
+
+#: ../inc/instagram-widget.php:119
+msgid "Instagram did not return a 200."
+msgstr ""
+
+#: ../inc/instagram-widget.php:126 ../inc/instagram-widget.php:137
+#: ../inc/instagram-widget.php:141
+msgid "Instagram has returned invalid data."
+msgstr ""
+
+#: ../inc/instagram-widget.php:182
+msgid "Instagram Image"
+msgstr ""
+
+#: ../inc/instagram-widget.php:208
+msgid "Instagram did not return any images."
+msgstr ""
+
+#: ../inc/static-function.php:80
+msgid "Primary Menu"
+msgstr ""
+
+#: ../inc/static-function.php:156
+msgid "Post navigation"
+msgstr ""
+
+#: ../inc/static-function.php:160
+msgid "<span class=\"meta-nav\">Published In</span>"
+msgstr ""
+
+#: ../inc/static-function.php:162
+msgid "<span class=\"meta-nav\">%title</span>"
+msgstr ""
+
+#: ../inc/static-function.php:528
+msgid "No Comment"
+msgstr ""
+
+#: ../inc/static-function.php:528
+msgid "1 Comment"
+msgstr ""
+
+#: ../inc/static-function.php:528
+msgid "% Comments"
+msgstr ""
+
+#: ../inc/static-function.php:532
+msgid "Share"
+msgstr ""
