@@ -55,35 +55,42 @@
   <li><?php _e('4. Repeat step 3 for each sub folder.', 'maxgalleria-media-library' ); ?></li>
 </ul>
 
-<h4><?php _e('Folders and images added to the site by FTP are not showing up in Media Library Folders', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('Folders and images added to the site by FTP are not showing up in Media Library Folders', 'maxgalleria-media-library' ); ?></h4>
 
-<p><?php _e('Media Library Folders does not work like the file manager on you computer. It only display images and folders that have been added to the Media Library database. To display new folders that have not been added through the Media Library Folders you can click the Check for new folders option in the  Media Library Folders submenu in the Wordpress Dashboard. If you allow Wordpress to store images by year and month folders, then you should click the option once each month to add these auto-generated folders.', 'maxgalleria-media-library' ); ?></p`>
+                <p><?php _e('Media Library Folders does not work like the file manager on you computer. It only display images and folders that have been added to the Media Library database. To display new folders that have not been added through the Media Library Folders you can click the Check for new folders option in the  Media Library Folders submenu in the Wordpress Dashboard. If you allow Wordpress to store images by year and month folders, then you should click the option once each month to add these auto-generated folders.', 'maxgalleria-media-library' ); ?></p`>
 
-<p><?php _e('To add images that were upload to the site via the cPanel or by FTP, navigate to the folder containing the images in  Media Library Folders and click the Sync button. This will scan the folder looking images not currently found in the Media Library for that folder. The Sync function only scans the current folder. If there are subfolders, you will need to individually sync them.', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('To add images that were upload to the site via the cPanel or by FTP, navigate to the folder containing the images in  Media Library Folders and click the Sync button. This will scan the folder looking images not currently found in the Media Library for that folder. The Sync function only scans the current folder. If there are subfolders, you will need to individually sync them.', 'maxgalleria-media-library' ); ?></p>
 
-<h4><?php _e('Folders Loads Indefinitely', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('Folders Loads Indefinitely', 'maxgalleria-media-library' ); ?></h4>
 
-<p><?php _e('This happens when a parent folder is missing from the folder data. To fix this you will need to perform a reset of the Media Library Folders database. To do this, deactivate Media Library Folders and activate Media Library Folders Reset and select the Reset Database option. Once the reset has completed, reactivate Media Library Folders and it will do a fresh scan of the Media Library data.', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('This happens when a parent folder is missing from the folder data. To fix this you will need to perform a reset of the Media Library Folders database. To do this, deactivate Media Library Folders and activate Media Library Folders Reset and select the Reset Database option. Once the reset has completed, reactivate Media Library Folders and it will do a fresh scan of the Media Library data.', 'maxgalleria-media-library' ); ?></p>
 
-<h4><?php _e('Unable to Insert files from Media Library Folders into Posts or Pages', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('Unable to Insert files from Media Library Folders into Posts or Pages', 'maxgalleria-media-library' ); ?></h4>
 
-<p><?php _e('For inserting images and files into posts and pages you will have to use the existing Media Library. The ability to insert items from the Media Library Folders user interface is only available in', 'maxgalleria-media-library' ); ?> <a href='http://www.maxgalleria.com/downloads/media-library-plus-pro/?utm_source=wordpress&utm_medium=mlfp&utm_content=mlpp&utm_campaign=repo'>Media Library Folders Pro</a>. <?php _e('This does not mean you cannot insert files added to Media Library Folders into any Wordpress posts or pages. Media Library Folders adds a folder user interface and file operations to the existing media library and it does not add a second media library. Since all the images are in the same media library there is no obstacle to inserting them anywhere Wordpress allows media files to be inserted. There is just no folder tree available in the media library insert window for locating images in a particular folder. We chose to include the folder tree for inserting images in posts and page in the Pro version along with other features in order to fund the cost of providing free technical support and continued development of the plugin.', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('For inserting images and files into posts and pages you will have to use the existing Media Library. The ability to insert items from the Media Library Folders user interface is only available in', 'maxgalleria-media-library' ); ?> <a href='http://www.maxgalleria.com/downloads/media-library-plus-pro/?utm_source=wordpress&utm_medium=mlfp&utm_content=mlpp&utm_campaign=repo'>Media Library Folders Pro</a>. <?php _e('This does not mean you cannot insert files added to Media Library Folders into any Wordpress posts or pages. Media Library Folders adds a folder user interface and file operations to the existing media library and it does not add a second media library. Since all the images are in the same media library there is no obstacle to inserting them anywhere Wordpress allows media files to be inserted. There is just no folder tree available in the media library insert window for locating images in a particular folder. We chose to include the folder tree for inserting images in posts and page in the Pro version along with other features in order to fund the cost of providing free technical support and continued development of the plugin.', 'maxgalleria-media-library' ); ?></p>
 
-<h4><?php _e('Unable to Update Media Library Folders Reset', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('Unable to Update Media Library Folders Reset', 'maxgalleria-media-library' ); ?></h4>
 
-<p><?php _e('Media Library Folders Reset is maintenance and diagnostic plugin that is included with Media Library Folders. It automatically updates when Media Library Folders is updated. There is no need to updated it  separately. Users should leave the reset plugin deactivated until it is needed in order to avoid accidentally deleting your site\'s folder data.', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('Media Library Folders Reset is maintenance and diagnostic plugin that is included with Media Library Folders. It automatically updates when Media Library Folders is updated. There is no need to updated it  separately. Users should leave the reset plugin deactivated until it is needed in order to avoid accidentally deleting your site\'s folder data.', 'maxgalleria-media-library' ); ?></p>
 
-<h4><?php _e('Images Not Found After Changing the Location of Uploads Folder', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('Images Not Found After Changing the Location of Uploads Folder', 'maxgalleria-media-library' ); ?></h4>
 
-<p><?php _e('If you change the location of the uploads folder, your existing files and images will not be moved to the new location. You will need to delete them from media library and upload them again. Also you will need to perform a reset of the Media Library Folders database. To do this, deactivate Media Library Folders and activate Media Library Folders Reset and select the Reset Database option. Once the reset has completed, reactivate Media Library Folders and it will do a fresh scan of the Media Library data.', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('If you change the location of the uploads folder, your existing files and images will not be moved to the new location. You will need to delete them from media library and upload them again. Also you will need to perform a reset of the Media Library Folders database. To do this, deactivate Media Library Folders and activate Media Library Folders Reset and select the Reset Database option. Once the reset has completed, reactivate Media Library Folders and it will do a fresh scan of the Media Library data.', 'maxgalleria-media-library' ); ?></p>
 
-<h4><?php _e('Difficulties Uploading or Dragging and Dropping a Large Number of Files', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('Difficulties Uploading or Dragging and Dropping a Large Number of Files', 'maxgalleria-media-library' ); ?></h4>
 
-<p><?php _e('Limitations on web server processing time may cause dragging and dropping a large number of files to fail. An error is generated when it takes to longer then 30 seconds to move, copy or upload files. This time limitation can be increased by changing the max_execution_time setting in your site\'s php.ini file.', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('Limitations on web server processing time may cause dragging and dropping a large number of files to fail. An error is generated when it takes to longer then 30 seconds to move, copy or upload files. This time limitation can be increased by changing the max_execution_time setting in your site\'s php.ini file.', 'maxgalleria-media-library' ); ?></p>
 
-<h4><?php _e('How to Delete a Folder?', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('How to Delete a Folder?', 'maxgalleria-media-library' ); ?></h4>
 
-<p><?php _e('To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup menu will appear with the options, \'Delete this folder?\' and \'Hide this folder?\'. Click the delete option.', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup menu will appear with the options, \'Delete this folder?\' and \'Hide this folder?\'. Click the delete option.', 'maxgalleria-media-library' ); ?></p>
+
+                <h4><?php _e('Fatal error: Maximum execution time exceeded ', 'maxgalleria-media-library' ); ?></h4>
+                
+                <p><?php _e('The Maximum execution time error takes place when moving, syncing or uploading too many files at one time. The web site’s server has a setting for how long it can be busy with a task. Depending on your server, size of files and the transmission speed of your internet, you may need to reduce the number of files you upload or move at one time.', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('It is possible to change the maximum execution time either with a plugin such as <a href=“http://wordpress.org/plugins/wp-maximum-execution-time-exceeded/” target=“_blank”>WP Maximum Execution Time Exceeded</a> or by editing your site’s .htaccess file and adding this line:', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('php_value max_execution_time 300', 'maxgalleria-media-library' ); ?></p>
+                <p><?php _e('Which will raise the maximum execution time to five minutes.', 'maxgalleria-media-library' ); ?></p>
 
                 
               </div>

@@ -84,9 +84,9 @@ div#wp-media-grid.wrap div.media-plus-toolbar,
   width: 96%;  /*100%;*/
 }
 
-.media-toolbar-secondary {
+/*.media-toolbar-secondary {
   width: 100%;
-}
+}*/
 
 .media-plus-settings {
   background: #fff none repeat scroll 0 0;
@@ -1284,7 +1284,27 @@ div.sticky-panel {
 }	
 .locale-da-dk .onoffswitch-inner:after {
 	content: "Kopiëren";
+}
+.locale-it-it .onoffswitch-inner:after {
+	content: "Copia";
 }	
+.locale-it-it .onoffswitch-inner:before {
+	content: "Sposta";
+}
+.locale-nl-be .onoffswitch-inner:after {
+	content: "Kopieer";
+}	
+.locale-nl-be .onoffswitch-inner:before {
+	content: "Verplaats";
+}
+.locale-nl-nl .onoffswitch-inner:after {
+	content: "Kopieer";
+}	
+.locale-nl-nl .onoffswitch-inner:before {
+	content: "Verplaats";
+}
+
+
 
 .onoffswitch-switch {
 	display: block; width: 10px; margin: 6px;

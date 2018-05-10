@@ -477,13 +477,10 @@ jQuery(document).ready(function(){
     }, function() {
        jQuery('#folder-message').html('');
     });
-		
-		
+    
+    
     jQuery("#sync-media").click(function(){      
-      //var parent_folder = jQuery('#current-folder-id').val();
-			
-			jQuery("#folder-message").html('');			
-			
+      
 			if(jQuery("#current-folder-id").val() === undefined) 
 				var parent_folder = sessionStorage.getItem('folder_id');
 			else
@@ -492,31 +489,17 @@ jQuery(document).ready(function(){
 			var mlp_title_text = jQuery('#mlp_title_text').val();
 			
 			var mlp_alt_text = jQuery('#mlp_alt_text').val();      
-       
+      						
+			//jQuery("#folder-message").html('Scanning for new files and folders...please wait.');						
+			
       jQuery("#ajaxloader").show();
       
-      jQuery.ajax({
-        type: "POST",
-        async: true,
-        data: { action: "max_sync_contents", parent_folder: parent_folder, title_text: mlp_title_text, alt_text: mlp_alt_text, nonce: mgmlp_ajax.nonce },
-        url : mgmlp_ajax.ajaxurl,
-        dataType: "html",
-        success: function (data) {
-          jQuery("#ajaxloader").hide();    
-					if(data !== '0') {
-            jQuery("#folder-message").html('Sync completed, ' + data + ' files and/or folders have been added');
-            window.location.reload(true);          
-					}	
-					else {
-            jQuery("#folder-message").html('Sync completed, no new files were found.');						
-					}
-        },
-        error: function (err)
-          { alert(err.responseText);}
-      });
-       
+		  run_sync_process('1', parent_folder, mlp_title_text, mlp_alt_text);
+                 			
+      jQuery("#ajaxloader").hide();
+			
     });
-		
+    				
     jQuery("#seo-images").click(function(){			
 			jQuery("#folder-message").text("");
     });    
@@ -974,5 +957,38 @@ function mlf_refresh_folders(folder_id) {
 			alert(err.responseText)
 		}
 	});
+	
+}
+
+function run_sync_process(phase, parent_folder, mlp_title_text, mlp_alt_text) {
+	
+  console.log("initial phase " + phase);
+  jQuery("#ajaxloader").hide();
+  
+	jQuery.ajax({
+		type: "POST",
+		async: true,
+		data: { action: "mlfp_run_sync_process", phase: phase, parent_folder: parent_folder, mlp_title_text: mlp_title_text, mlp_alt_text: mlp_alt_text, nonce: mgmlp_ajax.nonce },
+		url: mgmlp_ajax.ajaxurl,
+		dataType: "json",
+		success: function (data) { 
+			console.log('data '+ data);
+      console.log('current phase '  + data.phase);
+			if(data != null && data.phase != null) {
+			  jQuery("#folder-message").html(data.message);
+        run_sync_process(data.phase, parent_folder, mlp_title_text, mlp_alt_text);
+      } else {        
+			  jQuery("#folder-message").html(data.message);        
+				mlf_refresh_folders(parent_folder);
+		    jQuery("#ajaxloader").hide();
+				return false;
+      }
+      
+		},
+		error: function (err){ 
+		  jQuery("#ajaxloader").hide();
+			alert(err.responseText)
+		}    
+	});																											
 	
 }

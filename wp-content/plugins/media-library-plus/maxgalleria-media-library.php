@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: WordPress Media Library Folders
+Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.1.6
+Version: 4.1.9
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -67,6 +67,10 @@ class MaxGalleriaMediaLib {
 		define("MLF_TS_URL", "https://wordpress.org/plugins/media-library-plus/faq/");
 		define("MAXGALLERIA_MLP_DISPLAY_INFO", "mlf_display_info");
 		define("MAXGALLERIA_MLP_DISABLE_FT", "mlf_disable_ft");		
+		define("MAXG_SYNC_FOLDER_PATH", "mlfp_sync_folder_path");		
+		define("MAXG_SYNC_FOLDER_PATH_ID", "mlfp_sync_folder_path_id");		
+		define("MAXG_SYNC_FILES", "mlfp_sync_files");		
+    define("MAXG_SYNC_FOLDERS", "mlfp_sync_folders");
 		
 		
 		// Bring in all the actions and filters
@@ -290,14 +294,14 @@ class MaxGalleriaMediaLib {
     add_action('wp_ajax_nopriv_mgmlp_move_copy', array($this, 'mgmlp_move_copy'));
     add_action('wp_ajax_mgmlp_move_copy', array($this, 'mgmlp_move_copy'));		
         
-    add_action( 'new_folder_check', array($this,'admin_check_for_new_folders'));
+    //add_action( 'new_folder_check', array($this,'admin_check_for_new_folders'));
     
     add_action( 'add_attachment', array($this,'add_attachment_to_folder'));
     
     add_action( 'delete_attachment', array($this,'delete_folder_attachment'));
 		
-    add_action('wp_ajax_nopriv_max_sync_contents', array($this, 'max_sync_contents'));
-    add_action('wp_ajax_max_sync_contents', array($this, 'max_sync_contents'));		
+    //add_action('wp_ajax_nopriv_max_sync_contents', array($this, 'max_sync_contents'));
+    //add_action('wp_ajax_max_sync_contents', array($this, 'max_sync_contents'));		
 		
     add_action('wp_ajax_nopriv_mlp_tb_load_folder', array($this, 'mlp_tb_load_folder'));
     add_action('wp_ajax_mlp_tb_load_folder', array($this, 'mlp_tb_load_folder'));		
@@ -358,7 +362,10 @@ class MaxGalleriaMediaLib {
 				
     add_action('wp_ajax_nopriv_set_floating_filetree', array($this, 'set_floating_filetree'));
     add_action('wp_ajax_set_floating_filetree', array($this, 'set_floating_filetree'));						
-											
+    
+    add_action('wp_ajax_nopriv_mlfp_run_sync_process', array($this, 'mlfp_run_sync_process'));
+    add_action('wp_ajax_mlfp_run_sync_process', array($this, 'mlfp_run_sync_process'));
+    											
   }
 		
 	function mlf_body_classes( $classes ) {
@@ -689,8 +696,8 @@ ORDER by ID";
         } //foreach         
         
       } //rows  
-			if ( ! wp_next_scheduled( 'new_folder_check' ) )
-				wp_schedule_event( time(), 'daily', 'new_folder_check' );
+			//if ( ! wp_next_scheduled( 'new_folder_check' ) )
+			//	wp_schedule_event( time(), 'daily', 'new_folder_check' );
             
     }
 		
@@ -1668,7 +1675,31 @@ order by folder_id";
 			return $folders;
 		
 	}
-	
+  
+  public function new_folder_check() {
+    
+    $currnet_date_time = date('Y-m-d H:i:s');
+    
+    $currnet_date_time_seconds = strtotime($currnet_date_time);
+    
+    $folder_check = get_option('mlf-folder-check', $currnet_date_time);
+    if($currnet_date_time == $folder_check) {
+			update_option('mlf-folder-check', $currnet_date_time, true);
+      return;
+    }  
+    
+    $folder_check_seconds = strtotime($folder_check . ' +1 hour');
+    
+    //error_log("Last check: " . $folder_check_seconds . " : " . "Current time: " .  $currnet_date_time_seconds);
+    
+    if($folder_check_seconds < $currnet_date_time_seconds) {
+      //error_log("checking folders $currnet_date_time");
+      $this->admin_check_for_new_folders(true);
+			update_option('mlf-folder-check', $currnet_date_time, true);
+    }		
+    
+  }
+  	
 	public function display_folder_nav($current_folder_id, $folder_table ) {
 	
     global $wpdb;
@@ -1681,11 +1712,13 @@ order by folder_id";
 //and folder_id = $current_folder_id 
 //order by $order_by";		
 //            $rows = $wpdb->get_results($sql);
-		
-						$folder_parents = $this->get_parents($current_folder_id);
-            $folder_table = $wpdb->prefix . MAXGALLERIA_MEDIA_LIBRARY_FOLDER_TABLE;
+    
+    $this->new_folder_check();
+    
+    $folder_parents = $this->get_parents($current_folder_id);
+    $folder_table = $wpdb->prefix . MAXGALLERIA_MEDIA_LIBRARY_FOLDER_TABLE;
 						
-			$sql = "select ID, post_title, $folder_table.folder_id
+    $sql = "select ID, post_title, $folder_table.folder_id
 from {$wpdb->prefix}posts
 LEFT JOIN $folder_table ON({$wpdb->prefix}posts.ID = $folder_table.post_id)
 where post_type = '" . MAXGALLERIA_MEDIA_LIBRARY_POST_TYPE ."' 
@@ -3424,57 +3457,32 @@ and pm.meta_key = '_wp_attached_file'";
 //		} else
 			return $location;
 	}
-	
-	public function max_sync_contents() {
-
+  
+	public function max_sync_contents($parent_folder) {
+    
     global $wpdb;
+		global $blog_id;
+		$skip_path = "";
+		$last_new_folder_id = 0;
 		
     $files_added = 0;
-    
-    if ( !wp_verify_nonce( $_POST['nonce'], MAXGALLERIA_MEDIA_LIBRARY_NONCE)) {
-      exit(__('missing nonce!','maxgalleria-media-library'));
-    } 
-    
-    if ((isset($_POST['parent_folder'])) && (strlen(trim($_POST['parent_folder'])) > 0))
-      $parent_folder = trim(stripslashes(strip_tags($_POST['parent_folder'])));
-    else
-      $parent_folder = "";
-
-		$image_seo = get_option(MAXGALLERIA_MEDIA_LIBRARY_IMAGE_SEO, 'off');
-		
-		if($image_seo === 'on') {
-		
-			if ((isset($_POST['alt_text'])) && (strlen(trim($_POST['alt_text'])) > 0))
-				$alt_text = trim(stripslashes(strip_tags($_POST['alt_text'])));
-			else
-				$alt_text = "";
-
-			if ((isset($_POST['title_text'])) && (strlen(trim($_POST['title_text'])) > 0))
-				$default_title = trim(stripslashes(strip_tags($_POST['title_text'])));
-			else
-				$default_title = "";
-																		
-		} else {
-			$default_alt = "";
-		}
-				    
+		$alt_text = "";
+		$default_title = "";
+		$default_alt = "";
+		$folders_found = false;
+    $existing_folders = false;
+				    				    
     if(!is_numeric($parent_folder))
       die();
-		
-		// get the contents of the current folder from the database
-		
-		$folder_table = $wpdb->prefix . MAXGALLERIA_MEDIA_LIBRARY_FOLDER_TABLE;    
-      
-    $sql = "select ID, pm.meta_value as attached_file, post_title, $folder_table.folder_id 
-from $wpdb->prefix" . "posts 
-LEFT JOIN $folder_table ON($wpdb->prefix" . "posts.ID = $folder_table.post_id)
-LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (pm.post_id = {$wpdb->prefix}posts.ID) 
-where post_type = 'attachment' 
-and folder_id = '$parent_folder' 
-and pm.meta_key = '_wp_attached_file'	
-order by post_title";
     
-    $attachments = $wpdb->get_results($sql);
+    error_log("max sync contents $parent_folder");
+				      
+		$uploads_folder = get_option(MAXGALLERIA_MEDIA_LIBRARY_UPLOAD_FOLDER_NAME, "uploads");      
+		$uploads_length = strlen($uploads_folder);		
+		$uploads_url = $this->upload_dir['baseurl'];
+		$upload_path = $this->upload_dir['basedir'];
+
+		$folders_to_hide = explode("\n", file_get_contents( MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR .'/folders_to_hide.txt'));
 		
     $sql = "select meta_value as attached_file
 from {$wpdb->prefix}postmeta
@@ -3482,83 +3490,146 @@ where post_id = $parent_folder
 and meta_key = '_wp_attached_file'";	
 
     $current_row = $wpdb->get_row($sql);
-		
-    //$image_location = $this->upload_dir['baseurl'] . '/' . $current_row->attached_file;
-		$baseurl = $this->upload_dir['baseurl'];
-		$baseurl = rtrim($baseurl, '/') . '/';
-		$image_location = $baseurl . ltrim($current_row->attached_file, '/');
-		
-    $folder_path = $this->get_absolute_path($image_location);
-		
-		//error_log("scandir: $folder_path");
 
-    $folder_contents = array_diff(scandir($folder_path), array('..', '.'));
+		$baseurl = rtrim($uploads_url, '/') . '/';
 		
-    foreach ($folder_contents as $file_path) {
-			
-			if($file_path !== '.DS_Store' && $file_path !== '.htaccess') {
-				$new_attachment = $folder_path . DIRECTORY_SEPARATOR . $file_path;
-				if(!strpos($new_attachment, '-uai-')) {  // skip thumbnails created by the Uncode theme
-					if(!strpos($new_attachment, '-pdf.jpg')) {  // skip pdf previews
-						//error_log("new_attachment $new_attachment");
-						if(!is_dir($new_attachment)) {
-							if($this->is_base_file($file_path, $folder_contents)) {				
-								//error_log("file_path $file_path");
-								if(!$this->search_folder_attachments($file_path, $attachments)) {
+		if(!is_multisite()) {
+			//error_log("baseurl $baseurl");
+			$image_location = $baseurl . ltrim($current_row->attached_file, '/');
+		  //error_log("image_location $image_location");
+      $folder_path = $this->get_absolute_path($image_location);
+		} else {
+      $folder_path = $this->get_absolute_path($baseurl);		
+		}	
+		
+		//not sure if this is still needed
+		//$this->mlp_remove_slashes();
+		
+		$folders_array = array();
+		$folders_array[] = $parent_folder;
 
-									$new_file_title = preg_replace( '/\.[^.]+$/', '', basename( $new_attachment ) );								
+    $file_names = array_diff(scandir($folder_path), array('..', '.'));
+    
+    error_log(print_r($file_names, true));
+				    						
+    // check for new folders		
+    foreach ($file_names as $file_name) {
+			$name = $folder_path . DIRECTORY_SEPARATOR . $file_name;      
+			if(is_dir($name)) {
+        error_log($name);
+				$dir_name = pathinfo($name, PATHINFO_BASENAME);
+				if ($dir_name[0] !== '.' && strpos($dir_name, "'") === false ) { 
+					if( empty($skip_path) || (strpos($name, $skip_path) === false)) {
 
-									$old_attachment_name = $new_attachment;
-									$new_attachment = pathinfo($new_attachment, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . sanitize_file_name(pathinfo($new_attachment, PATHINFO_FILENAME) . "." . strtolower(pathinfo($new_attachment, PATHINFO_EXTENSION)));
+						// no match, set it back to empty
+						$skip_path = "";
 
-									if(rename($old_attachment_name, $new_attachment)) {														
-										if($this->add_new_attachment($new_attachment, $parent_folder, $new_file_title, $alt_text, $default_title)) 
-											$files_added++;
+						if(!is_multisite()) {
+
+							$upload_pos = strpos($name, $uploads_folder);
+							$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
+
+							// fix slashes if running windows
+							if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+								$url = str_replace('\\', '/', $url);      
+							}
+
+							$existing_folder_id = $this->folder_exist($url);
+							if($existing_folder_id === false) {
+								if(!in_array($dir_name, $folders_to_hide)) {
+									if(!file_exists($name . DIRECTORY_SEPARATOR . 'mlpp-hidden' )){
+									$folders_found = true;
+									$parent_id = $this->find_parent_id($url);
+									$last_new_folder_id = $this->add_media_folder($dir_name, $parent_id, $url);
+									//$last_new_folder_id++;
+									//error_log("folder added: $name");
+									$files_added++;								
 									} else {
-										if($this->add_new_attachment($old_attachment_name, $parent_folder, $new_file_title, $alt_text, $default_title)) 
-											$files_added++;								
+										$skip_path = $name;
 									}
-								}	
+								} else {
+									$skip_path = $name;			
+								}
+							} else {
+                $existing_folders = true;
 							}
 						} else {
-							// folder found	
-							//find the uploads folder
-							$uploads_path = wp_upload_dir();
+							if($blog_id === '1') {
+								if(strpos($name,"uploads/sites") !== false)
+									continue;
 
-							if(!$uploads_path['error']) {
-
-								$uploads_folder = get_option(MAXGALLERIA_MEDIA_LIBRARY_UPLOAD_FOLDER_NAME, "uploads");      
-								$uploads_folder_id = get_option(MAXGALLERIA_MEDIA_LIBRARY_UPLOAD_FOLDER_ID );
-								$uploads_length = strlen($uploads_folder);
-
-								$uploads_url = $uploads_path['baseurl'];
-
-								$upload_pos = strpos($new_attachment, $uploads_folder);
-								$url = $uploads_url . substr($new_attachment, ($upload_pos+$uploads_length));
+								$upload_pos = strpos($name, $uploads_folder);
+								$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 								// fix slashes if running windows
 								if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 									$url = str_replace('\\', '/', $url);      
 								}
 
-								if($this->folder_exist($url) === false) {							
-									$abs_folder_path = $this->get_absolute_path($url);
-									if(!file_exists($abs_folder_path . DIRECTORY_SEPARATOR . 'mlpp-hidden' )){
-										if($this->add_media_folder($file_path, $parent_folder, $url))
-											$files_added++;
+							  $existing_folder_id = $this->folder_exist($url);
+								if($existing_folder_id === false) {
+									//error_log("folder id: $existing_folder_id");
+									if(!in_array($dir_name, $folders_to_hide)) {
+										if(!file_exists($name . DIRECTORY_SEPARATOR . 'mlpp-hidden' )){
+											$folders_found = true;
+											$parent_id = $this->find_parent_id($url);
+											$last_new_folder_id = $this->add_media_folder($dir_name, $parent_id, $url);
+											//error_log("folder added: $name");
+											$files_added++;								
+										} else {
+											$skip_path = $name;
+										}
+									} else {
+										$skip_path = $name;									
 									}
+								}	else {
+                  $existing_folders = true;
+								}					
+							} else {
+								if(strpos($name,"uploads/sites/$blog_id") !== false) {
+									
+									//error_log("");
+									//error_log("name $name");
+									
+									$upload_pos = strpos($name, $uploads_folder);
+									//error_log("$uploads_folder, upload_pos $upload_pos");
+																		
+									$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
+									//error_log("uploads_url $uploads_url");
+
+									// fix slashes if running windows
+									if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+										$url = str_replace('\\', '/', $url);      
+									}
+									$existing_folder_id = $this->folder_exist($url);
+									//error_log("folder id: $existing_folder_id");
+									if($existing_folder_id === false) {
+										$folders_found = true;
+										$parent_id = $this->find_parent_id($url);
+										$last_new_folder_id = $this->add_media_folder($dir_name, $parent_id, $url);              
+										$files_added++;								
+									} else {
+                    $existing_folders = true;
+									}																
 								}
 							}
 						}
-					}
-			  }
-			}		
-		}
-		echo $files_added;
-		
-    die();		
+					}  
+				}				
+			}
+		} // end foreach		
+    
+		$user_id = get_current_user_id();
+  	update_user_meta($user_id, MAXG_SYNC_FOLDERS, $folders_array);
+				
+    if($folders_found || $existing_folders) {
+      return true;
+    } else {
+      return false;
+    }  
+    
 	}
-	
+  	
 	private function get_base_file($file_path) {
 		
 		$dot_position = strrpos($file_path, '.' );		
@@ -4701,7 +4772,205 @@ where folder_id = $folder_id";
 		echo filetree_status;
 		die();
 	}
-	
+  
+  public function max_discover_files($parent_folder) {
+    
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $files_to_add = array();
+    $files_count = 0;
+            
+		$folder_table = $wpdb->prefix . MAXGALLERIA_MEDIA_LIBRARY_FOLDER_TABLE;    
+      
+    $sql = "select ID, pm.meta_value as attached_file, post_title, $folder_table.folder_id 
+from $wpdb->prefix" . "posts 
+LEFT JOIN $folder_table ON($wpdb->prefix" . "posts.ID = $folder_table.post_id)
+LEFT JOIN {$wpdb->prefix}postmeta AS pm ON (pm.post_id = {$wpdb->prefix}posts.ID) 
+where post_type = 'attachment' 
+and folder_id = '$parent_folder' 
+and pm.meta_key = '_wp_attached_file'	
+order by post_title";
+    
+    $attachments = $wpdb->get_results($sql);
+		
+    $sql = "select meta_value as attached_file
+from {$wpdb->prefix}postmeta
+where post_id = $parent_folder    
+and meta_key = '_wp_attached_file'";	
+
+    $current_row = $wpdb->get_row($sql);
+		
+    //$image_location = $this->upload_dir['baseurl'] . '/' . $current_row->attached_file;
+		$baseurl = $this->upload_dir['baseurl'];
+		$baseurl = rtrim($baseurl, '/') . '/';
+		$image_location = $baseurl . ltrim($current_row->attached_file, '/');
+		
+    $folder_path = $this->get_absolute_path($image_location);
+    
+    update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH_ID, $parent_folder);
+    update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH, $folder_path);
+    //error_log("folder_path $folder_path");
+    $folder_contents = array_diff(scandir($folder_path), array('..', '.'));
+						
+    foreach ($folder_contents as $file_path) {
+      			
+			if($file_path !== '.DS_Store' && $file_path !== '.htaccess') {
+				$new_attachment = $folder_path . DIRECTORY_SEPARATOR . $file_path;
+				if(!strpos($new_attachment, '-uai-')) {  // skip thumbnails created by the Uncode theme
+          if(!strpos($new_attachment, '-pdf.jpg')) {  // skip pdf thumbnails
+            if(!is_dir($new_attachment)) {
+              if($this->is_base_file($file_path, $folder_contents)) {				
+                if(!$this->search_folder_attachments($file_path, $attachments)) {
+
+                  $old_attachment_name = $new_attachment;
+                  //$new_attachment = pathinfo($new_attachment, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . pathinfo($new_attachment, PATHINFO_FILENAME) . "." . strtolower(pathinfo($new_attachment, PATHINFO_EXTENSION));
+                  $new_attachment = pathinfo($new_attachment, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR . sanitize_file_name(pathinfo($new_attachment, PATHINFO_FILENAME) . "." . strtolower(pathinfo($new_attachment, PATHINFO_EXTENSION)));
+
+                  if(rename($old_attachment_name, $new_attachment)) {	
+                    $files_to_add[] = basename($new_attachment);
+                    $files_count++;
+                  } else {
+                    $files_to_add[] = basename($old_attachment_name);
+                    $files_count++;
+                  }
+                }	
+              }
+            } 
+          }
+				}
+			}		
+      //error_log("files_count $files_count");
+		}
+    
+    if(is_array($files_to_add)) {
+      //error_log(print_r($files_to_add, true));
+      update_user_meta($user_id, MAXG_SYNC_FILES, $files_to_add);
+    }
+    if($files_count > 0)
+      return '3'; // add the files
+    else
+      return '2'; // check next folder
+   		
+  }
+  
+  public function mlfp_run_sync_process() {
+    
+    global $wpdb;
+		$user_id = get_current_user_id();
+    $message = "";
+    $folders_array = array();
+    
+    if ( !wp_verify_nonce( $_POST['nonce'], MAXGALLERIA_MEDIA_LIBRARY_NONCE)) {
+      exit(__('missing nonce!','maxgalleria-media-library'));
+    }
+        
+		if ((isset($_POST['phase'])) && (strlen(trim($_POST['phase'])) > 0))
+      $phase = trim(stripslashes(strip_tags($_POST['phase'])));
+    else
+      $phase = "";
+    
+		if ((isset($_POST['parent_folder'])) && (strlen(trim($_POST['parent_folder'])) > 0))
+      $parent_folder = trim(stripslashes(strip_tags($_POST['parent_folder'])));
+    else
+      $parent_folder = "";
+
+		if ((isset($_POST['mlp_title_text'])) && (strlen(trim($_POST['mlp_title_text'])) > 0))
+      $mlp_title_text = trim(stripslashes(strip_tags($_POST['mlp_title_text'])));
+    else
+      $mlp_title_text = "";
+
+		if ((isset($_POST['mlp_alt_text'])) && (strlen(trim($_POST['mlp_alt_text'])) > 0))
+      $mlp_alt_text = trim(stripslashes(strip_tags($_POST['mlp_alt_text'])));
+    else
+      $mlp_alt_text = "";
+    
+    $next_phase = '1';
+    
+    switch($phase) {
+      // find folders
+      case '1':
+        $next_phase = '2';
+        $this->max_sync_contents($parent_folder);
+        break;
+      
+      // for each folder. get the folder ids
+      case '2':
+        
+		    $folders_array = get_user_meta($user_id, MAXG_SYNC_FOLDERS, true);
+                
+        if(is_array($folders_array)) {
+          $next_folder = array_pop($folders_array);				
+        } else {
+          $next_folder = $folders_array;
+        }  
+        //error_log("next_folder $next_folder");
+        
+        if($next_folder != "") {
+          $message = __("Scanning for new files and folders...please wait.",'maxgalleria-media-library');        
+          $this->max_discover_files($next_folder);
+          update_user_meta($user_id, MAXG_SYNC_FOLDERS, $folders_array);
+          $next_phase = '3';          
+        } else {
+          $message = __("Syncing finished.",'maxgalleria-media-library');        
+          delete_user_meta($user_id, MAXG_SYNC_FOLDERS);
+          delete_user_meta($user_id, MAXG_SYNC_FILES);          
+          delete_user_meta($user_id, MAXG_SYNC_FOLDER_PATH_ID);          
+          delete_user_meta($user_id, MAXG_SYNC_FOLDER_PATH);          
+          $next_phase = null;          
+        }                
+        break;
+                      
+      // add each file
+      case '3':
+        $files_to_add = get_user_meta($user_id, MAXG_SYNC_FILES, true);        
+        
+        if(is_array($files_to_add)) {
+          $next_file = array_pop($files_to_add);
+        } else {
+          $next_file = $files_to_add;
+        }
+        
+        if($next_file != "") {
+          $next_phase = '3';          
+          $message = __("Adding ",'maxgalleria-media-library') . $next_file;
+          //error_log($message);
+          $this->mlfp_process_sync_file($next_file, $mlp_title_text, $mlp_alt_text);
+          update_user_meta($user_id, MAXG_SYNC_FILES, $files_to_add);
+        } else {
+          $next_phase = '2';          
+          delete_user_meta($user_id, MAXG_SYNC_FILES);          
+        }        
+        break;
+    }  
+    $phase = $next_phase;
+    
+	  $data = array('phase' => $phase, 'message' => $message);								
+		echo json_encode($data);						
+    die();
+  }
+  
+  public function mlfp_process_sync_file($next_file, $mlp_title_text, $mlp_alt_text) {
+    
+    global $wpdb;
+		$user_id = get_current_user_id();
+      
+		if($next_file != "") {
+  
+      $parent_folder = get_user_meta($user_id, MAXG_SYNC_FOLDER_PATH_ID, true);
+
+      $folder_path = get_user_meta($user_id, MAXG_SYNC_FOLDER_PATH, true);
+
+      $new_attachment = $folder_path . DIRECTORY_SEPARATOR . $next_file;
+      
+      //error_log("new_attachment $new_attachment");
+      
+			$new_file_title = preg_replace( '/\.[^.]+$/', '', $next_file);								      
+
+      $attach_id = $this->add_new_attachment($new_attachment, $parent_folder, $new_file_title, $mlp_alt_text, $mlp_title_text);
+      
+    }       
+  }
+    	
 }
 
 $maxgalleria_media_library = new MaxGalleriaMediaLib();

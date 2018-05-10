@@ -1,9 +1,9 @@
-=== Media Library Folders for WordPress ===
+=== WordPress Media Library Folders ===
 Contributors: maxfoundry, AlanP57
 Tags: WordPress media library folders, media library folders, organize media library
 Requires at least: 4.0
-Tested up to: 4.9.4
-Stable tag: 4.1.6
+Tested up to: 4.9.5
+Stable tag: 4.1.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -168,6 +168,10 @@ To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup menu
 
 
 == Changelog ==
+= 4.1.9 =
+* Modified the sync function add files without triggering a server timeout error
+* Replaced timer function for regularly checking for new folders  
+
 = 4.1.6 =
 * Fixed issue with sync adding .htaccess to the media library
 * Added troubleshooting tips to support page

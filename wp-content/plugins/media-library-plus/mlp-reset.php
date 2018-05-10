@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: WordPress Media Library Folders Reset
+Plugin Name: Media Library Folders for WordPress Reset
 Plugin URI: http://maxgalleria.com
 Description: Plugin for reseting WordPress Media Library Folders
 Author: Max Foundry
 Author URI: http://maxfoundry.com
-Version: 4.1.6
+Version: 4.1.9
 Copyright 2015 Max Foundry, LLC (http://maxfoundry.com)
 
 */
@@ -70,7 +70,11 @@ function clean_database() {
 
 function mlpr_show_attachments () {
   global $wpdb;
-	
+  
+  $sql = "select count(*) from {$wpdb->prefix}posts where post_type = 'attachment' ";
+  
+  $count = $wpdb->get_var($sql);  
+		
   $uploads_path = wp_upload_dir();
   //$sql = "select ID, guid from $wpdb->prefix" . "posts where post_type = 'attachment' order by ID";
 	
@@ -86,6 +90,7 @@ ORDER by folder_id";
 	
 	echo "<h2>Attachment URLs</h2>";
 
+  echo "<p>Number of attachments: $count</p>";
 
   $rows = $wpdb->get_results($sql);
 	?>
@@ -116,6 +121,10 @@ ORDER by folder_id";
 function mlpr_show_folders() {
   global $wpdb;
 	
+  $sql = "select count(*) from {$wpdb->prefix}posts where post_type = 'mgmlp_media_folder' ";
+  
+  $count = $wpdb->get_var($sql);    
+	
 	echo "<h2>Folder URLs</h2>";
   
   $upload_dir = wp_upload_dir();  
@@ -124,7 +133,9 @@ function mlpr_show_folders() {
   
   echo "Uploads folder: " . $upload_dir1 . "<br>";
         
-  echo "Uploads URL " . $upload_dir['baseurl'] . "<br><br>";
+  echo "Uploads URL " . $upload_dir['baseurl'] . "<br>";
+  
+  echo "Number of folders: $count<br><br>";
 
   $folder_table = $wpdb->prefix . MAXGALLERIA_MEDIA_LIBRARY_FOLDER_TABLE;
             	

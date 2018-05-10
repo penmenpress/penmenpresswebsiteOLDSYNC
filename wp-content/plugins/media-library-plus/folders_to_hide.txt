@@ -5,12 +5,14 @@ backupbuddy_temp
 bb-plugin
 bb-theme
 beaver-builder-plugin
+elementor
 events-manager
 galleries
 gppro
 gravity_forms
 h5p
 html_to_wp
+iw-backup
 js_composer
 magictoolbox_cache
 maxbuttons
