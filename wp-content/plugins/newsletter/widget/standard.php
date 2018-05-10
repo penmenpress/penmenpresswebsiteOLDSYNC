@@ -18,7 +18,7 @@ class NewsletterWidget extends WP_Widget {
 
         $instance = array_merge(array('lists_layout' => '',
             'lists_empty_label' => '',
-            'lists_label' => ''), $instance);
+            'lists_field_label' => ''), $instance);
         
         $options_profile = get_option('newsletter_profile');
         //$form = NewsletterSubscription::instance()->get_form_javascript();
@@ -127,7 +127,9 @@ class NewsletterWidget extends WP_Widget {
     }
 
     function widget($args, $instance) {
-        global $newsletter;
+        
+        $newsletter = Newsletter::instance();
+
         extract($args);
 
         if (empty($instance))

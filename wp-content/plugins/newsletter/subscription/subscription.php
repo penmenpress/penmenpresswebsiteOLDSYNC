@@ -1443,7 +1443,7 @@ global $wpdb;
         }
 
         if (!empty($lists)) {
-            $buffer .= '<div class="tnp-lists">';
+            $buffer .= '<div class="tnp-field tnp-field-lists">';
             if (!empty($attrs['lists_field_label'])) {
                 $buffer .= '<label>' . $attrs['lists_field_label'] . '</label>';
             }
