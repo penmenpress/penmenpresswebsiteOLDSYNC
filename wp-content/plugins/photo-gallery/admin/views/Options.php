@@ -27,7 +27,7 @@ class OptionsView_bwg extends AdminView_bwg {
 
   public function body($params) {
     $row = $params['row'];
-	  $instagram_return_url = $params['instagram_return_url'];
+	$instagram_return_url = $params['instagram_return_url'];
     $instagram_reset_href = $params['instagram_reset_href'];
     if (!$row) {
       echo WDWLibrary::message_id(2);
@@ -64,6 +64,7 @@ class OptionsView_bwg extends AdminView_bwg {
         'title_class' => 'wd-header',
       )
     );
+
     ?>
     <div class="bwg_tabs">
       <ul class="bwg-tabs">
@@ -100,7 +101,7 @@ class OptionsView_bwg extends AdminView_bwg {
                   <p class="description"><?php _e('Provide the path of an existing folder inside the WordPress directory of your website to store uploaded images.<br />The content of the previous directory will be moved to the new one.', BWG()->prefix); ?></p>
                 </div>
               </div>
-              <div class="wd-box-content wd-width-100">
+                <div class="wd-box-content wd-width-100">
                 <div class="wd-group">
                   <label class="wd-label" for="upload_img_width"><?php _e('Image dimensions', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
@@ -128,6 +129,16 @@ class OptionsView_bwg extends AdminView_bwg {
                     <input type="number" name="image_quality" id="image_quality" value="<?php echo $row->image_quality; ?>" min="0" max="100" /><span>%</span>
                   </div>
                   <p class="description"><?php _e('Set the quality of gallery images. Provide a value from 0 to 100%.', BWG()->prefix); ?></p>
+                </div>
+              </div>
+              <div class="wd-box-content wd-width-100">
+                <div class="wd-group">
+                  <label class="wd-label"><?php _e('Resizable thumbnails', BWG()->prefix); ?></label>
+                  <div class="bwg-flex">
+                    <input type="radio" name="resizable_thumbnails" id="resizable_thumbnails_1" value="1" <?php if ($row->resizable_thumbnails) echo 'checked="checked"'; ?> /><label for="resizable_thumbnails_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                    <input type="radio" name="resizable_thumbnails" id="resizable_thumbnails_0" value="0" <?php if (!$row->resizable_thumbnails) echo 'checked="checked"'; ?> /><label for="resizable_thumbnails_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                  </div>
+                  <p class="description"><?php _e('Enable this option to allow resizing gallery thumbnails on smaller screens.', BWG()->prefix); ?></p>
                 </div>
               </div>
               <div class="wd-box-content wd-width-100">
@@ -2523,6 +2534,7 @@ class OptionsView_bwg extends AdminView_bwg {
                     <input type="number" name="popup_effect_duration" id="popup_effect_duration" value="<?php echo $row->popup_effect_duration; ?>" min="0" step="0.1" /><span>sec.</span>
                   </div>
                   <p class="description"><?php _e('Set the duration of lightbox animation effect.', BWG()->prefix) ?></p>
+                  <p class="description"><?php _e('Note, that the value of Effect Duration can not be greater than 1/4 of Time Interval.', BWG()->prefix) ?></p>
                 </div>
               </div>
               <div class="wd-box-content wd-width-100" id="tr_popup_autoplay">
@@ -2892,14 +2904,18 @@ class OptionsView_bwg extends AdminView_bwg {
                     <div class="wd-box-content wd-width-100">
                       <div class="wd-group" id="login_with_instagram">
                         <input id="instagram_access_token" name="instagram_access_token" type="hidden" size="30" value="<?php echo $row->instagram_access_token; ?>" readonly />
-                        <?php if ( empty($row->instagram_access_token) ) { ?>
+						<?php if ( empty($row->instagram_access_token) ) {
+							$instagram_description = __('Press this button to sign in to your Instagram account. In this case, access token will be added automatically.', BWG()->prefix);
+						?>
                           <a <?php echo BWG()->is_pro ? 'href="' . $instagram_return_url . '"' : 'disabled="disabled"'; ?>>
                             <img src="<?php echo BWG()->plugin_url . '/images/logos/instagram.png'; ?>">
                             <span class="bwg-instagram-sign-in"><?php _e('Sign in with Instagram', BWG()->prefix) ?></span>
                           </a>
                           <p class="bwg-clear description"><?php _e('Press this button to sign in to your Instagram account. This lets you incorporate Instagram API to your website.', BWG()->prefix) ?></p>
                         <?php }
-                        else { ?>
+                        else {
+							$instagram_description = __('Press this button to sign out from your Instagram account. The access token will reset.', BWG()->prefix);
+						?>
                           <a <?php echo BWG()->is_pro ? 'href="' . $instagram_reset_href . '" onClick="if(confirm(\'' . addslashes(__('Are you sure you want to reset access token, after resetting it you will need to log in with Instagram again for using plugin', BWG()->prefix)) . '\')){ return true; } else { return false; }"' : 'disabled="disabled"'; ?>>
                             <img src="<?php echo BWG()->plugin_url . '/images/logos/instagram.png'; ?>">
                             <span class="bwg-instagram-sign-out"><?php _e('Sign out from Instagram', BWG()->prefix) ?></span>
@@ -3318,9 +3334,11 @@ class OptionsView_bwg extends AdminView_bwg {
     <script>
       function bwg_add_built_in_watermark_image(files) {
         document.getElementById("built_in_watermark_url").value = '<?php echo site_url() . '/' . BWG()->upload_dir; ?>' + files[0]['url'];
+        preview_built_in_watermark();
       }
       function bwg_add_watermark_image(files) {
         document.getElementById("watermark_url").value = '<?php echo site_url() . '/' . BWG()->upload_dir; ?>' + files[0]['url'];
+        preview_watermark();
       }
       jQuery(document).ready(function() {		
         bwg_inputs();

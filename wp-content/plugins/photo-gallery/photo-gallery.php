@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://web-dorado.com/products/wordpress-photo-gallery-plugin.html
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: Photo Gallery Team
  * Author URI: https://web-dorado.com/wordpress-plugins-bundle.html
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -71,9 +71,6 @@ final class BWG {
     $this->define_constants();
     require_once($this->plugin_dir . '/framework/WDWLibrary.php');
     $this->add_actions();
-    if (session_id() == '' || (function_exists('session_status') && (session_status() == PHP_SESSION_NONE))) {
-      @session_start();
-    }
   }
 
   /**
@@ -83,8 +80,8 @@ final class BWG {
     $this->plugin_dir = WP_PLUGIN_DIR . "/" . plugin_basename(dirname(__FILE__));
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.4.5';
-    $this->db_version = '1.4.5';
+    $this->plugin_version = '1.4.6';
+    $this->db_version = '1.4.6';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
 
@@ -518,9 +515,15 @@ final class BWG {
    * @param $params
    */
   public function front_end($params) {
-    require_once(BWG()->plugin_dir . '/frontend/controllers/BWGController' . ucfirst($params['gallery_type']) . '.php');
-    $controller_class = 'BWGController' . ucfirst($params['gallery_type']) . '';
-    $controller = new $controller_class();
+    if ($params['gallery_type'] == 'thumbnails') {
+      require_once(BWG()->plugin_dir . '/frontend/controllers/controller.php');
+      $controller = new BWGControllerSite( ucfirst( $params[ 'gallery_type' ] ) );
+    }
+    else {
+      require_once(BWG()->plugin_dir . '/frontend/controllers/BWGController' . ucfirst($params['gallery_type']) . '.php');
+      $controller_class = 'BWGController' . ucfirst($params['gallery_type']) . '';
+      $controller = new $controller_class();
+    }
     global $bwg;
     $controller->execute($params, 1, $bwg);
     $bwg++;
@@ -558,7 +561,7 @@ final class BWG {
       }
       $l = rand($cap_length_min, $cap_length_max);
       $code = code_generic($l, $cap_digital, $cap_latin_char);
-      @session_start();
+      WDWLibrary::bwg_session_start();
       $_SESSION['bwg_captcha_code'] = $code;
       $canvas = imagecreatetruecolor($cap_width, $cap_height);
       $c = imagecolorallocate($canvas, rand(150, 255), rand(150, 255), rand(150, 255));
@@ -1036,9 +1039,17 @@ final class BWG {
       'bwg_mail_validation' => __('This is not a valid email address.', $this->prefix),
       'bwg_search_result' => __('There are no images matching your search.', $this->prefix),
     ));
-    wp_localize_script('bwg_sumoselect', 'bwg_objectsL10n', array(
+    wp_localize_script('bwg_frontend', 'bwg_objectsL10n', array(
       'bwg_select_tag'  => __('Select Tag', $this->prefix),
       'bwg_search' => __('Search', $this->prefix),
+      'bwg_show_ecommerce' =>  __('Show Ecommerce', $this->prefix),
+      'bwg_hide_ecommerce' =>  __('Hide Ecommerce', $this->prefix),
+      'bwg_show_comments' =>  __('Show Comments', $this->prefix),
+      'bwg_hide_comments' =>  __('Hide Comments', $this->prefix),
+      'bwg_how_comments' =>  __('how Comments', $this->prefix),
+      'bwg_restore' =>  __('Restore', $this->prefix),
+      'bwg_maximize' =>  __('Maximize', $this->prefix),
+      'bwg_fullscreen' =>  __('Fullscreen', $this->prefix),
     ));
 
     // Google fonts.

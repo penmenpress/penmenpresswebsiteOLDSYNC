@@ -249,24 +249,24 @@ class OptionsController_bwg {
       $image = wp_get_image_editor( $file_path );
       if ( ! is_wp_error( $image ) ) {
         $image_size = $image->get_size();
-        $img_width = $image_size['width'];
-        $img_height = $image_size['height'];
-      }
-      if (!$img_width || !$img_height) {
-        continue;
-      }
-      $max_width = BWG()->options->upload_thumb_width;
-      $max_height = BWG()->options->upload_thumb_height;
-      $scale = min(
+        $img_width = $image_size[ 'width' ];
+        $img_height = $image_size[ 'height' ];
+        if ( !$img_width || !$img_height ) {
+          continue;
+        }
+        $max_width = BWG()->options->upload_thumb_width;
+        $max_height = BWG()->options->upload_thumb_height;
+        $scale = min(
           $max_width / $img_width,
           $max_height / $img_height
-      );
-      $new_width = $img_width * $scale;
-      $new_height = $img_height * $scale;
+        );
+        $new_width = $img_width * $scale;
+        $new_height = $img_height * $scale;
 
-      $image->set_quality(BWG()->options->image_quality);
-      $image->resize($new_width, $new_height, false);
-      $image->save($new_file_path);
+        $image->set_quality( BWG()->options->image_quality );
+        $image->resize( $new_width, $new_height, false );
+        $image->save( $new_file_path );
+      }
     }
   }
 }

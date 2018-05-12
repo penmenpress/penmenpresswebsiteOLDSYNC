@@ -876,14 +876,14 @@ class GalleriesModel_bwg {
     $gallery_id = (int) WDWLibrary::get('current_id', 0);
     $image_width = (int) WDWLibrary::get('image_width', 1600);
     $image_height = (int) WDWLibrary::get('image_height', 1200);
-	  $where = ( ($gallery_id) ? ' WHERE gallery_id=' . $gallery_id . ( $image_id ? ' AND id=' . $image_id : '' ) : '' );
+    $where = ( ($gallery_id) ? ' gallery_id=' . $gallery_id . ( $image_id ? ' AND id=' . $image_id : '' ) : '' );
     $images = $wpdb->get_results('SELECT * FROM `' . $wpdb->prefix . 'bwg_image` ' . $where );
     if ( !empty($images) ) {
       foreach ( $images as $image ) {
         $this->scaled_image(ABSPATH . BWG()->upload_dir . $image->image_url, $image_width, $image_height);
       }
     }
-    WDWLibrary::update_image_modifie_date( $where );
+    WDWLibrary::update_image_modified_date( $where );
 
     return 24;
   }

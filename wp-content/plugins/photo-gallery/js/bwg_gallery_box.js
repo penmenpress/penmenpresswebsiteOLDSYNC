@@ -127,8 +127,6 @@ function get_ajax_pricelist(){
 		url:  jQuery('#bwg_ecommerce_form').attr('action'),
 		data: post_data,
 		success: function (data) {
-			var pge_tabs = jQuery(data).find('.pge_tabs').html();
-			jQuery('.pge_tabs').html(pge_tabs);
 			jQuery(".pge_tabs li a").on("click", function(){
 				jQuery(".pge_tabs_container > div").hide();
 				jQuery(".pge_tabs li").removeClass("pge_active");

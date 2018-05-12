@@ -5,6 +5,7 @@ class WD_BWG_Options {
 
   // General
   public $images_directory = null;
+  public $resizable_thumbnails = 1;
   public $upload_img_width = 1200;
   public $upload_img_height = 1200;
   public $upload_thumb_width = 500;
@@ -309,12 +310,14 @@ class WD_BWG_Options {
       $old_images_directory = $options->images_directory;
       if (!$reset) {
         if (isset($options)) {
+          $this->resizable_thumbnails = 0;
           foreach ($options as $name => $value) {
             $this->$name = $value;
           }
         }
       }
     }
+
     if ($this->images_directory === null) {
       $upload_dir = wp_upload_dir();
       if (!isset($this->old_images_directory) && !is_dir($upload_dir['basedir'] . '/photo-gallery') && !$reset) {

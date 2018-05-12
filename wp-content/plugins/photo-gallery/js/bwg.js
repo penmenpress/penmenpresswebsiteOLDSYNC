@@ -1,4 +1,10 @@
 jQuery(document).ready(function () {
+  // press ESC hide loading.
+  jQuery(document).keyup(function(e) {
+     if ( e.keyCode == 27 ) {
+        jQuery('#loading_div').hide();
+    }
+  });
   // Galleries form.
   if ( jQuery("form").hasClass("bwg_galleries") ) {
     wd_showhide_weights();
@@ -1272,29 +1278,29 @@ function bwg_change_fonts(cont, google_fonts) {
  * @param multiple
  */
 function spider_media_uploader(e, multiple) {
-  if (typeof multiple == "undefined") {
+  if ( typeof multiple == "undefined" ) {
     var multiple = false;
   }
   var custom_uploader;
   e.preventDefault();
   // If the uploader object has already been created, reopen the dialog.
-  if (custom_uploader) {
+  if ( custom_uploader ) {
     custom_uploader.open();
   }
 
-  custom_uploader = wp.media.frames.file_frame = wp.media({
+  custom_uploader = wp.media.frames.file_frame = wp.media( {
     title: bwg_objectL10B.choose_images,
-    library: { type : 'image' },
+    library: { type: 'image' },
     button: { text: bwg_objectL10B.insert },
     multiple: multiple
   });
   // When a file is selected, grab the URL and set it as the text field's value
-  custom_uploader.on('select', function() {
-    if (multiple == false) {
-      attachment = custom_uploader.state().get('selection').first().toJSON();
+  custom_uploader.on( 'select', function() {
+    if ( multiple == false ) {
+      attachment = custom_uploader.state().get( 'selection' ).first().toJSON();
     }
     else {
-      attachment = custom_uploader.state().get('selection').toJSON();
+      attachment = custom_uploader.state().get( 'selection' ).toJSON();
     }
 
     var filesSelectedML = [];
@@ -1303,34 +1309,60 @@ function spider_media_uploader(e, multiple) {
       image_url = image_url.replace(bwg_objectL10B.wp_upload_dir.baseurl + '/', '');
       filesSelectedML.push(image_url);
     }
-    fileNamesML = filesSelectedML.join("**@**");
-	jQuery.ajax({
-		url: bwg_objectL10B.ajax_url,
-		type: "POST",
-		dataType: "json",
-		data: {
-			action : "bwg_UploadHandler",
-			file_namesML : fileNamesML,
-			import : 1
-		},
-		success: function (result) {
-			for (var i in result) {
-				result[i].alt = attachment[i].alt ? attachment[i].alt : attachment[i].title;
-				result[i].description = attachment[i].description;
-			}
-			bwg_add_image(result);
-		},
-		beforeSend: function() {
-			jQuery('#loading_div').show();
-		},
-		error: function(xhr) {
-			alert(bwg_objectL10B.import_failed);
-		},
-		complete:function() {
-			jQuery('#loading_div').hide();
-		}
-	});
-  });
+    jQuery( '#loading_div' ).show();
+
+    postImageUrls(filesSelectedML, function (success, result) {
+      jQuery( '#loading_div' ).hide();
+
+      if (success) {
+        for ( var i in result ) {
+          result[i].alt = attachment[i].alt ? attachment[i].alt : attachment[i].title;
+          result[i].description = attachment[i].description;
+        }
+        bwg_add_image( result );
+      }
+      else {
+        alert( bwg_objectL10B.import_failed );
+      }
+    });
+
+    function postImageUrls(imageUrls, callback, index, results) {
+      var imagesChunkLength = 50;
+
+      if (!index) {
+        index = 0;
+      }
+      if (!results) {
+        results = [];
+      }
+
+      var imageUrlsChunk = imageUrls.slice(index, index + imagesChunkLength);
+      index += imagesChunkLength;
+      jQuery.ajax( {
+        url: bwg_objectL10B.ajax_url,
+        type: "POST",
+        dataType: "json",
+        data: {
+          action: "bwg_UploadHandler",
+          file_namesML: JSON.stringify(imageUrlsChunk),
+          import: 1
+        },
+        success: function ( result ) {
+          results = results.concat(result);
+
+          if (index < imageUrls.length) {
+            postImageUrls(imageUrls, callback, index, results);
+          }
+          else {
+            callback(true, results);
+          }
+        },
+        error: function ( xhr ) {
+          callback(false);
+        }
+      } );
+    }
+  } );
 
   // Open the uploader dialog.
   custom_uploader.open();
@@ -1468,6 +1500,7 @@ function bwg_change_theme_tab_item() {
 		var id = jQuery(this).attr('data-id');
 		jQuery('.spider_type_fieldset').hide();
 		jQuery('#'+ id ).show();
+		jQuery('#active_tab').val(jQuery(this).attr('data-id'));
 	});
 }
 
