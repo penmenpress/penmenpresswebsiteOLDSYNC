@@ -366,7 +366,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       }
 
-      if ( $groups_post_id ) {
+      if ( $groups_post_id > 0 ) {
 
         /*
         *  get all tags of this post
@@ -525,7 +525,6 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         */
         if ( $show_tabs == '1' ) {
 
-          $html_tabs[0] = '<ul' . $ul_class_output . '>';
 
           for ( $i = $start_group; $i <= $group->get_max_position(); $i++ ) {
 
@@ -545,7 +544,6 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
             }
           }
 
-          $html_tabs[] .= '</ul>';
         }
 
         /*
@@ -709,9 +707,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         /*
         * assemble tabs
         */
-        foreach ( $html_tabs as $html_tab ) {
-          $html .= $html_tab;
-        }
+        $html .= '<ul' . $ul_class_output . '>' . implode( "\n", $html_tabs ) . '</ul>';
 
         /*
         * assemble tags
@@ -1024,7 +1020,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         $groups_post_id = get_the_ID();
       }
 
-      if ( $groups_post_id ) {
+      if ( $groups_post_id > 0 ) {
 
         /*
         *  get all tags of this post
@@ -1325,7 +1321,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
           $options[] = 'event: "mouseover"';
 
         }
-        
+
       } else {
 
         if ( get_option( 'tag_group_mouseover', '' ) ) {
