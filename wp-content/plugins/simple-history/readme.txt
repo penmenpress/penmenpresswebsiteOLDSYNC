@@ -5,7 +5,7 @@ Tags: history, log, changes, changelog, audit, trail, pages, attachments, users,
 Requires at least: 4.5.1
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 2.20
+Stable tag: 2.21
 
 View changes made by users within WordPress. See who created a page, uploaded an attachment or approved an comment, and more.
 
@@ -159,10 +159,27 @@ initiated by a specific user.
 7. A chart with some quick statistics is available, so you can see the number of events that has been logged each day.
 A simple way to see any uncommon activity, for example an increased number of logins or similar.
 
-==
- ==
+== Changelog ==
 
 ## Changelog
+
+= 2.21 (May 2018) =
+
+- Added support for Advanced Custom Fields (ACF): when a ACF Field or ACF Field Group is created or modified or deleted you will now get more details in the activity feed.
+- Changes to taxonomies/categories/tags now include a link to the modified term and to the category that the term belongs to.
+- The post types in the `skip_posttypes` filter are now also applied to trashed and untrashed posts (not only post edits, as before).
+- Don't log Jetpack sitemap updates. (Don't log updates to posttypes `jp_sitemap`, `jp_sitemap_master` and `jp_img_sitemap`, i.e. the post types used by Jetpack's Sitemap function.) Should fix https://wordpress.org/support/topic/jetpack-sitemap-logging/.
+- Don't log the taxonomies `post_translations` or `term_translations`, that are used by Polylang to store translation mappings. That contained md5-hashed strings and was not of any benefit (a separate logger for Polylang will come soon anyway).
+- Fix notice in theme logger because did not check if `$_POST['sidebar']` was set. Fixes https://github.com/bonny/WordPress-Simple-History/issues/136.
+- Fix thumbnail title missing notice in post logger.
+- Fix PHP warning when a plugin was checked by WordPress for an update, but your WordPress install did not have the plugin folder for that plugin.
+- Fix unexpected single-quotations included in file name in Internet Explorer 11 (and possibly other versions) when exporting CSV/JSON file.
+- Fix filter/search log by specific users not working. Fixes https://wordpress.org/support/topic/show-activity-from-other-authors-only/.
+- Fix a notice in SimpleOptionsLogger.
+- Better CSS styling on dashboard.
+- Add filter `simple_history/post_logger/post_updated/context` that can be used to modify the context added by SimplePostLogger.
+- Add filter `simple_history/post_logger/post_updated/ok_to_log` that can be used to skip logging a post update.
+- Add filter `simple_history/categories_logger/skip_taxonomies` that can be used to modify what taxonomies to skip when logging updates to taxonomy terms.
 
 = 2.20 (November 2017) =
 
@@ -172,7 +189,7 @@ A simple way to see any uncommon activity, for example an increased number of lo
 - Update Select2 to latest version. Fixes https://wordpress.org/support/topic/select2-js-is-outdated/.
 - Show a message if user is running to old WordPress version, and don't continue running the code of this plugin.
   Should fix stuff like https://wordpress.org/support/topic/simple-history-i-cannot-login/.
- - Fix an error with PHP 7.1.
+- Fix an error with PHP 7.1.
 
 = 2.19 (November 2017) =
 
