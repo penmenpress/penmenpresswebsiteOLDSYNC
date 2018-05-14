@@ -540,7 +540,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
               }
 
-              $html_tabs[] .= '<li><a href="#tabs-1' . $i . '" >' . $group_name . '</a></li>';
+              $html_tabs[] .= '<li><a href="#tabs-1' . $i . '" >' . htmlentities( $group_name, ENT_QUOTES, "UTF-8" ) . '</a></li>';
             }
           }
 
@@ -662,7 +662,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                   if ( !empty( $custom_title ) ) {
 
-                    $description = !empty( $tag->description ) ? esc_html( $tag->description ) : '';
+                    $description = ! empty( $tag->description ) ? esc_html( $tag->description ) : '';
 
                     $title = preg_replace("/(\{description\})/", $description, $custom_title);
 
@@ -670,14 +670,14 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                   } else {
                     // description and number
-                    $description = !empty( $tag->description ) ? esc_html( $tag->description ) . ' ' : '';
+                    $description = ! empty( $tag->description ) ? esc_html( $tag->description ) . ' ' : '';
 
                     $tag_count = $show_tag_count ? '(' . $tag_count . ')' : '';
 
                     $title = $description . $tag_count;
                   }
 
-                  $link_target_html = !empty( $link_target ) ? 'target="' . $link_target . '"' : '';
+                  $link_target_html = ! empty( $link_target ) ? 'target="' . $link_target . '"' : '';
 
                   $html_tags[ $i ] .= '<a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . $other_tag_classes . '">'
                   . '<span style="font-size:' . $font_size . 'px">' . esc_html( $prepend ) . $tag->name . esc_html( $append )
@@ -1105,7 +1105,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
             }
 
             $html_header .= '<h3' . $header_class_output . '>'
-            . $group_name
+            . htmlentities( $group_name, ENT_QUOTES, "UTF-8" )
             . '</h3>';
           }
 

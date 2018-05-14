@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
 Tested up to: 4.9.5
-Stable tag: 0.37.1
+Stable tag: 0.37.2
 Requires PHP: 5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -104,12 +104,18 @@ No, unfortunately it isn't. But, nevertheless, I'm glad you asked! You are warml
 
 == Changelog ==
 
+= 0.37.2  =
+
+BUG FIXES
+
+* Fixed wrong entity encoding in menus on some servers.
+
 = 0.37.1  =
 
 BUG FIXES
 
-* Fixing broken HTML in tabbed tag cloud if "not assigned" included.
-* Fixing "include" not working in tabbed tag cloud with "tags_post_id."
+* Fixed broken HTML in tabbed tag cloud if "not assigned" included.
+* Fixed "include" not working in tabbed tag cloud with "tags_post_id."
 
 = 0.37.0  =
 

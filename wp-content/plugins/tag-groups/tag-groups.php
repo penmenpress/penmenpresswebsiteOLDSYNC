@@ -5,7 +5,7 @@ Plugin URI: https://chattymango.com/tag-groups/
 Description: Assign tags to groups and display them in a tabbed tag cloud
 Author: Chatty Mango
 Author URI: https://chattymango.com/about/
-Version: 0.37.1
+Version: 0.37.2
 License: GNU GENERAL PUBLIC LICENSE, Version 3
 Text Domain: tag-groups
 Domain Path: /languages

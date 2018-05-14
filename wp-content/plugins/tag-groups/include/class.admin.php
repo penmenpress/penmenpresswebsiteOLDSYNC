@@ -258,7 +258,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
               if ( $term->is_in_group( $term_group[ 'term_group' ] ) ) {
                 echo 'selected';
               }
-              ?> ><?php echo htmlentities( $term_group[ 'label' ] ); ?></option>
+              ?> ><?php echo htmlentities( $term_group[ 'label' ], ENT_QUOTES, "UTF-8" ); ?></option>
 
             <?php endforeach; ?>
 
@@ -322,7 +322,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
           foreach ( $data as $term_group ) :
             ?>
-            <option value="<?php echo $term_group['term_group']; ?>"><?php echo htmlentities( $term_group['label'] ); ?></option>
+            <option value="<?php echo $term_group['term_group']; ?>"><?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" ); ?></option>
           <?php endforeach; ?>
         </select>
         <script>
@@ -791,7 +791,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
             foreach ( $data as $term_group ) :
               ?>
 
-              <option value="<?php echo $term_group['term_group']; ?>" ><?php echo htmlentities( $term_group['label'] ); ?></option>
+              <option value="<?php echo $term_group['term_group']; ?>" ><?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" ); ?></option>
 
             <?php endforeach; ?>
           </select>
@@ -1010,9 +1010,9 @@ if ( ! class_exists('TagGroups_Admin') ) {
         var sel_top = jQuery("<select name='term-group-top'>").insertAfter("select[name='action']");
         var sel_bottom = jQuery("<select name='term-group-bottom'>").insertAfter("select[name='action2']");
         <?php foreach ( $data as $term_group ) : ?>
-        sel_top.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo $term_group['label']
+        sel_top.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )
         ?>"));
-        sel_bottom.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo $term_group['label']
+        sel_bottom.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )
         ?>"));
         <?php endforeach; ?>
 
@@ -1063,7 +1063,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
           _e( 'Filter off', 'tag-groups' )
           ?>"));
           <?php foreach ( $data as $term_group ) : ?>
-          sel_filter.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo $term_group['label'] ?>"));
+          sel_filter.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )?>"));
           <?php endforeach; ?>
           jQuery("#tag_filter option[value=<?php echo $tag_filter ?>]").prop('selected', true);
         });</script>
@@ -1107,7 +1107,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
           $current_term_group = isset( $_GET['tg_filter_posts_value'] ) ? sanitize_text_field( $_GET['tg_filter_posts_value'] ) : '';
 
           foreach ( $data as $term_group => $label ) {
-            printf( '<option value="%s"%s>%s</option>', $term_group, ( '' != $current_term_group && $term_group == $current_term_group ) ? ' selected="selected"' : '', htmlentities( $label ) );
+            printf( '<option value="%s"%s>%s</option>', $term_group, ( '' != $current_term_group && $term_group == $current_term_group ) ? ' selected="selected"' : '', htmlentities( $label, ENT_QUOTES, "UTF-8" ) );
           }
           ?>
         </select>
