@@ -74,6 +74,8 @@ if ( ! class_exists('TagGroups_Options') ) {
         $option_names['tag_group_display_groups_under_posts_home'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
         $option_names['tag_group_display_groups_under_posts_archive'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
         $option_names['tag_group_remove_the_post_terms'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_display_groups_under_posts_title'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_display_groups_under_posts_priority'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
 
         // should be last:
         $option_names['tag_group_reset_when_uninstall'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );

@@ -399,6 +399,11 @@ if ( ! class_exists('TagGroups_Group') ) {
         }
       }
 
+      /**
+      * Remove invalid taxonomies
+      */
+      $taxonomy = TagGroups_Taxonomy::remove_invalid( $taxonomy );
+
       $args = array(
         'taxonomy'    => $taxonomy,
         'hide_empty'  => $hide_empty,
@@ -829,11 +834,7 @@ if ( ! class_exists('TagGroups_Group') ) {
       * 1. are among $tag_group_taxonomies
       * 2. actually exist
       */
-      $tag_group_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
-
-      $all_taxonomies = get_taxonomies( array( 'public' => true ), 'names' );
-
-      $search_taxonomies = array_intersect( $tag_group_taxonomies, $all_taxonomies, $taxonomies );
+      $search_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies( $taxonomies );
 
       if ( class_exists('TagGroups_Premium_Group') ) {
 

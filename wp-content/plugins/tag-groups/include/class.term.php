@@ -6,7 +6,6 @@
 * @author      Christoph Amthor
 * @copyright   2018 Christoph Amthor (@ Chatty Mango, chattymango.com)
 * @license     GPL-3.0+
-* @since      1.8.0
 *
 */
 
@@ -199,7 +198,7 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
 
       }
 
-      do_action( 'term_affiliation_saved', $this->term_id );
+      do_action( 'term_groups_saved', $this->term_id );
 
       return $this;
 

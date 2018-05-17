@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
 Tested up to: 4.9.5
-Stable tag: 0.37.2
+Stable tag: 0.38.1
 Requires PHP: 5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,6 +12,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 == Description ==
 
 Organize your tags in groups. Use a highly customizable tag cloud (tabs or accordion).
+
+Most websites mix up tags that should actually be separated by topics: places, people, brands, features, activities and more. It's like mixing apples and oranges.
+
+Your tags, however, will become much more useful if you organize them in groups. Imagine a tag cloud where all town names appear under a "Towns" heading or where you keep "Actors" separate from "Directors". The Tag Groups plugin lets you do exactly that.
 
 Tag Groups works also great with other (flat) taxonomies, like product tags. Filters and bulk actions make your work with tags much easier, and you can even filter the list of posts in your backend by the groups that their tags belong to.
 
@@ -102,7 +106,33 @@ No, unfortunately it isn't. But, nevertheless, I'm glad you asked! You are warml
 5. Tag cloud ("Blitzer" theme)
 6. Accordion ("Blitzer" theme)
 
+== Privacy ==
+
+This plugin does not collect or process any personal user data.
+
 == Changelog ==
+
+= 0.38.1 =
+
+BUG FIXES
+
+* Fixed error "Call to undefined function register_block_type"
+
+= 0.38.0 =
+
+FEATURES
+
+* You can now use the placeholder {count} for the "prepend" and "append" parameters (shortcodes tag_groups_cloud and tag_groups_accordion). It will be replaced by the post count for each tag.
+* Gutenberg blocks for Tabbed and Accordion Tag Cloud. Use them with the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/) or the upcoming WordPress version 5.0. Shortcodes won't be affected. Read more [here](https://chattymango.com/?p=4792&pk_campaign=tg&pk_kwd=readme).
+
+OTHER
+
+* Default value of "heightstyle" changed to "content".
+* New REST API endpoint for enabled taxonomies.
+* Added support for exporting latest Tag Groups Premium settings.
+* Tested shortcodes with the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/). No issues found.
+* New [documentation pages](https://documentation.chattymango.com/start?pk_campaign=tg&pk_kwd=readme) with the possibility to link from plugin backend directly to a help topic. (work in progress)
+* The HTML structure around tags was slightly changed. Please check if you customized anything.
 
 = 0.37.2  =
 
@@ -114,8 +144,8 @@ BUG FIXES
 
 BUG FIXES
 
-* Fixed broken HTML in tabbed tag cloud if "not assigned" included.
-* Fixed "include" not working in tabbed tag cloud with "tags_post_id."
+* Fixing broken HTML in tabbed tag cloud if "not assigned" included.
+* Fixing "include" not working in tabbed tag cloud with "tags_post_id."
 
 = 0.37.0  =
 
@@ -131,30 +161,6 @@ OTHER
 
 * If you use a custom theme, make sure your theme's selector (CSS Scope on jQuery UI) is ".tag-groups-cloud", not ".tag-groups-cloud-tabs". Or add ".tag-groups-cloud-tabs" to div_class.
 
-= 0.36.1 =
-
-OTHER
-
-* new version of SumoSelect (modified to allow for placeholders in single selects)
-* better cleanup during deinstallation
-* added action hooks
-* performance improvements for tag clouds
-
-= 0.36.0 =
-
-FEATURES
-
-* new parameter/value info=label for shortcode tag_groups_info
-
-BUG FIXES
-
-* permission settings to edit groups affected also editing tags
-
-OTHER
-
-* after using and while deactivating the premium plugin, permissions to edit tag groups are reset to defaults
-* performance improvements
-* rebuild relevant post meta after taxonomy change (premium)
 
 
 = Older Versions =

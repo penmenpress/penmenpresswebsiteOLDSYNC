@@ -21,7 +21,23 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       add_shortcode( 'tag_groups_cloud', array( 'TagGroups_Shortcode', 'tag_groups_cloud') );
 
+      if ( function_exists( 'register_block_type ') ) {
+
+        register_block_type( 'chatty-mango/tag-groups-cloud-tabs', array(
+          'render_callback' => 'tag_groups_cloud',
+        ) );
+
+      }
+      
       add_shortcode( 'tag_groups_accordion', array( 'TagGroups_Shortcode', 'tag_groups_accordion') );
+
+      if ( function_exists( 'register_block_type ') ) {
+
+        register_block_type( 'chatty-mango/tag-groups-cloud-accordion', array(
+          'render_callback' => 'tag_groups_accordion',
+        ) );
+
+      }
 
       add_shortcode( 'tag_groups_info', array( 'TagGroups_Shortcode', 'tag_groups_info') );
 
@@ -84,7 +100,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       $assigned_terms = array();
 
-      $tag_group_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
+      // $tag_group_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
 
       $group = new TagGroups_Group();
 
@@ -94,7 +110,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       extract( shortcode_atts( array(
         'active' => null,
-        'adjust_separator_size' => false,
+        'adjust_separator_size' => true,
         'add_premium_filter' => 1,
         'amount' => 0,
         'append' => '',
@@ -158,7 +174,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       }
 
-      if ( !empty( $show_not_assigned ) ) {
+      if ( ! empty( $show_not_assigned ) ) {
 
         $start_group = 0;
 
@@ -195,9 +211,8 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
       * 2. actually exist
       * 3. are among $taxonomy_array, if isset
       */
-      $all_taxonomies = get_taxonomies( array( 'public' => true ), 'names' );
 
-      $taxonomies = array_intersect( $tag_group_taxonomies, $all_taxonomies );
+      $taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
 
       if ( ! empty( $taxonomy_array ) ) {
 
@@ -281,10 +296,6 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         */
         foreach ( $taxonomies as $taxonomy_item ) {
 
-          // if ( isset( $taxonomy ) && !in_array( $taxonomy_item, $taxonomy_array ) ) {
-          //   continue;
-          // }
-
           $terms = get_the_terms( (int) $tags_post_id, $taxonomy_item );
 
           /*
@@ -297,7 +308,6 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
           }
 
         }
-        // }
 
         if ( $post_id_terms ) {
 
@@ -318,14 +328,14 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
               }
             }
 
-            if ( !empty( $assigned_class ) ) {
+            if ( ! empty( $assigned_class ) ) {
 
               /*
               *  Keep all terms but mark for different styling
               */
               if ( $found ) {
 
-                $assigned_terms[$tag->term_id] = true;
+                $assigned_terms[ $tag->term_id ] = true;
 
               }
 
@@ -334,9 +344,9 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
               /*
               *  Remove unused terms.
               */
-              if ( !$found ) {
+              if ( ! $found ) {
 
-                unset( $posttags[$key] );
+                unset( $posttags[ $key ] );
 
               }
             }
@@ -349,7 +359,6 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
         }
       }
-
 
       /*
       *  applying parameter groups_post_id
@@ -375,12 +384,13 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
           $terms = get_the_terms( (int) $groups_post_id, $taxonomy_item );
 
-          if ( !empty( $terms ) && is_array( $terms ) ) {
+          if ( ! empty( $terms ) && is_array( $terms ) ) {
 
             $post_id_terms = array_merge( $post_id_terms, $terms );
 
           }
         }
+
 
         /*
         *  get all involved groups, append them to $include
@@ -396,8 +406,11 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
               $include_array = array_merge( $include_array, $term_o->get_groups() );
 
             }
+
           }
+
         }
+
       }
 
       // apply sorting that cannot be done on database level
@@ -449,7 +462,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
             foreach ( $posttags as $tag ) {
 
-              if ( !empty( $amount ) && $count_amount >= $amount ) {
+              if ( ! empty( $amount ) && $count_amount >= $amount ) {
 
                 break;
 
@@ -480,23 +493,23 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                 if ( ! $hide_empty || $tag_count > 0 ) {
 
-                  $output[ $i ]['tags'][$count_amount]['term_id'] = $tag->term_id;
+                  $output[ $i ]['tags'][ $count_amount ]['term_id'] = $tag->term_id;
 
-                  $output[ $i ]['tags'][$count_amount]['link'] = get_term_link( $tag );
+                  $output[ $i ]['tags'][ $count_amount ]['link'] = get_term_link( $tag );
 
-                  $output[ $i ]['tags'][$count_amount]['description'] = $tag->description;
+                  $output[ $i ]['tags'][ $count_amount ]['description'] = $tag->description;
 
-                  $output[ $i ]['tags'][$count_amount]['count'] = $tag_count;
+                  $output[ $i ]['tags'][ $count_amount ]['count'] = $tag_count;
 
-                  $output[ $i ]['tags'][$count_amount]['slug'] = $tag->slug;
+                  $output[ $i ]['tags'][ $count_amount ]['slug'] = $tag->slug;
 
-                  $output[ $i ]['tags'][$count_amount]['name'] = $tag->name;
+                  $output[ $i ]['tags'][ $count_amount ]['name'] = $tag->name;
 
-                  $output[ $i ]['tags'][$count_amount]['tg_font_size'] = self::font_size( $tag_count, $min_max[ $data[ $i ]['term_group'] ]['min'], $min_max[ $data[ $i ]['term_group'] ]['max'], $smallest, $largest );
+                  $output[ $i ]['tags'][ $count_amount ]['tg_font_size'] = self::font_size( $tag_count, $min_max[ $data[ $i ]['term_group'] ]['min'], $min_max[ $data[ $i ]['term_group'] ]['max'], $smallest, $largest );
 
-                  if ( !empty( $assigned_class ) ) {
+                  if ( ! empty( $assigned_class ) ) {
 
-                    $output[ $i ]['tags'][$count_amount]['assigned'] = $assigned_terms[$tag->term_id];
+                    $output[ $i ]['tags'][ $count_amount ]['assigned'] = $assigned_terms[ $tag->term_id ];
                   }
 
                   $count_amount++;
@@ -514,7 +527,6 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         return $output;
 
       } else {
-
         /*
         *  return as html (in the shape of a tabbed cloud)
         */
@@ -523,8 +535,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         /*
         *  render the tabs
         */
-        if ( $show_tabs == '1' ) {
-
+        if ( $show_tabs ) {
 
           for ( $i = $start_group; $i <= $group->get_max_position(); $i++ ) {
 
@@ -540,7 +551,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
               }
 
-              $html_tabs[] .= '<li><a href="#tabs-1' . $i . '" >' . htmlentities( $group_name, ENT_QUOTES, "UTF-8" ) . '</a></li>';
+              $html_tabs[ $i ] = '<li><a href="#tabs-1' . $i . '" >' . htmlentities( $group_name, ENT_QUOTES, "UTF-8" ) . '</a></li>';
             }
           }
 
@@ -640,7 +651,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                   $font_size_separator = $adjust_separator_size ? $font_size : $separator_size;
 
-                  if ( $count_amount > 0 && !empty( $separator ) ) {
+                  if ( $count_amount > 0 && ! empty( $separator ) ) {
 
                     $html_tags[ $i ] .= '<span style="font-size:' . $font_size_separator . 'px">' . $separator . '</span> ';
 
@@ -660,7 +671,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                   }
 
-                  if ( !empty( $custom_title ) ) {
+                  if ( ! empty( $custom_title ) ) {
 
                     $description = ! empty( $tag->description ) ? esc_html( $tag->description ) : '';
 
@@ -672,17 +683,45 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
                     // description and number
                     $description = ! empty( $tag->description ) ? esc_html( $tag->description ) . ' ' : '';
 
-                    $tag_count = $show_tag_count ? '(' . $tag_count . ')' : '';
+                    $tag_count_brackets = $show_tag_count ? '(' . $tag_count . ')' : '';
 
-                    $title = $description . $tag_count;
+                    $title = $description . $tag_count_brackets;
                   }
 
+                  // replace placeholders in prepend and append
+                  if ( ! empty( $prepend ) ) {
+
+                    $prepend_output = preg_replace("/(\{count\})/", $tag_count, $prepend );
+
+                  }
+
+                  if ( ! empty( $append ) ) {
+
+                    $append_output = preg_replace("/(\{count\})/", $tag_count, $append );
+
+                  }
+
+                  // adding link target
                   $link_target_html = ! empty( $link_target ) ? 'target="' . $link_target . '"' : '';
 
-                  $html_tags[ $i ] .= '<a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . $other_tag_classes . '">'
-                  . '<span style="font-size:' . $font_size . 'px">' . esc_html( $prepend ) . $tag->name . esc_html( $append )
-                  . '</span>'
-                  . '</a> ';
+                  // assembling a tag
+                  $html_tags[ $i ] .= '<span class="tag-groups-tag' . $other_tag_classes . '"><a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . '">';
+
+                  if ( ! empty( $prepend_output ) ) {
+
+                    $html_tags[ $i ] .= '<span class="tag-groups-prepend" style="font-size:' . $font_size . 'px">' . htmlentities( $prepend_output, ENT_QUOTES, "UTF-8" ) . '</span>';
+
+                  }
+
+                  $html_tags[ $i ] .= '<span style="font-size:' . $font_size . 'px">' . $tag->name . '</span>';
+
+                  if ( ! empty( $append_output ) ) {
+
+                    $html_tags[ $i ] .= '<span class="tag-groups-append" style="font-size:' . $font_size . 'px">' . htmlentities( $append_output, ENT_QUOTES, "UTF-8" ) . '</span>';
+
+                  }
+
+                  $html_tags[ $i ] .= '</a></span> ';
 
                   $count_amount++;
                 }
@@ -696,13 +735,12 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
             unset( $html_tags[ $i ] );
 
-          } elseif ( !empty( $html_tags[ $i ] ) ) {
+          } elseif ( isset( $html_tags[ $i ] ) ) {
 
             $html_tags[ $i ] = '<div id="tabs-1' . $i . '">' .  $html_tags[ $i ] . '</div>';
 
           }
         }
-        // }
 
         /*
         * assemble tabs
@@ -712,9 +750,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         /*
         * assemble tags
         */
-        foreach ( $html_tags as $html_tag ) {
-          $html .= $html_tag;
-        }
+        $html .= implode( "\n", $html_tags );
 
         $html .= '</div>'; // entire wrapper
 
@@ -740,6 +776,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       // create key that depends on settings
       $key_array = $atts;
+
       if ( isset( $key_array['div_id'] ) ) {
 
         unset( $key_array['div_id'] );
@@ -763,7 +800,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       $assigned_terms = array();
 
-      $tag_group_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
+      // $tag_group_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
 
       $group = new TagGroups_Group();
 
@@ -773,7 +810,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       extract( shortcode_atts( array(
         'active' => null,
-        'adjust_separator_size' => false,
+        'adjust_separator_size' => true,
         'add_premium_filter' => 1,
         'amount' => 0,
         'append' => '',
@@ -785,7 +822,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         'exclude_terms' => '',
         'groups_post_id' => -1,
         'header_class' => '',
-        'heightstyle' => '',
+        'heightstyle' => 'content',
         'hide_empty_content' => false,
         'hide_empty' => true,
         'include' => '',
@@ -845,7 +882,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       }
 
-      if ( !empty( $show_not_assigned ) ) {
+      if ( ! empty( $show_not_assigned ) ) {
 
         $start_group = 0;
 
@@ -876,9 +913,11 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
       * 2. actually exist
       * 3. are among $taxonomy_array, if isset
       */
-      $all_taxonomies = get_taxonomies( array( 'public' => true ), 'names' );
+      // $all_taxonomies = get_taxonomies( array( 'public' => true ), 'names' );
+      //
+      // $taxonomies = array_intersect( $tag_group_taxonomies, $all_taxonomies );
 
-      $taxonomies = array_intersect( $tag_group_taxonomies, $all_taxonomies );
+      $taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
 
       if ( ! empty( $taxonomy_array ) ) {
 
@@ -925,27 +964,37 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
       $inner_div_class_output = $inner_div_class ? ' class="' . sanitize_html_class( $inner_div_class ) . '"' : '';
 
       if ( $include !== '' ) {
+
         $include_array = explode( ',', str_replace( ' ', '', $include ) );
+
       }
 
       if ( $separator_size < 1 ) {
+
         $separator_size = 12;
+
       } else {
+
         $separator_size = (int) $separator_size;
+
       }
 
       /*
       *  applying parameter tags_post_id
       */
       if ( $tags_post_id < -1 ) {
+
         $tags_post_id = -1;
+
       }
 
       if ( $tags_post_id == 0 ) {
+
         $tags_post_id = get_the_ID();
+
       }
 
-      if ( $tags_post_id ) {
+      if ( $tags_post_id > 0 ) {
 
         /*
         *  get all tags of this post
@@ -957,7 +1006,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
           /*
           *  merging the results of selected taxonomies
           */
-          if ( !empty( $terms ) && is_array( $terms ) ) {
+          if ( ! empty( $terms ) && is_array( $terms ) ) {
 
             $post_id_terms = array_merge( $post_id_terms, $terms );
 
@@ -983,7 +1032,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
               }
             }
 
-            if ( !empty( $assigned_class ) ) {
+            if ( ! empty( $assigned_class ) ) {
 
               /*
               *  Keep all terms but mark for different styling
@@ -1013,11 +1062,15 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
       *  applying parameter groups_post_id
       */
       if ( $groups_post_id < -1 ) {
+
         $groups_post_id = -1;
+
       }
 
       if ( $groups_post_id == 0 ) {
+
         $groups_post_id = get_the_ID();
+
       }
 
       if ( $groups_post_id > 0 ) {
@@ -1029,10 +1082,14 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
           $terms = get_the_terms( (int) $groups_post_id, $taxonomy_item );
 
-          if ( !empty( $terms ) && is_array( $terms ) ) {
+          if ( ! empty( $terms ) && is_array( $terms ) ) {
+
             $post_id_terms = array_merge( $post_id_terms, $terms );
+
           }
+
         }
+
 
         /*
         *  get all involved groups, append them to $include
@@ -1048,8 +1105,11 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
               $include_array = array_merge( $include_array, $term_o->get_groups() );
 
             }
+
           }
+
         }
+
       }
 
       // apply sorting that cannot be done on database level
@@ -1118,7 +1178,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
             $description = '';
 
-            if ( !empty( $amount ) && $count_amount >= $amount ) {
+            if ( ! empty( $amount ) && $count_amount >= $amount ) {
 
               break;
 
@@ -1191,9 +1251,9 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                 }
 
-                if ( !empty( $assigned_class ) ) {
+                if ( ! empty( $assigned_class ) ) {
 
-                  if ( $assigned_terms[$tag->term_id] ) {
+                  if ( ! empty( $assigned_terms[ $tag->term_id ] ) ) {
 
                     $other_tag_classes = ' ' . $assigned_class . '_1';
 
@@ -1204,9 +1264,9 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
                   }
                 }
 
-                if ( !empty( $custom_title ) ) {
+                if ( ! empty( $custom_title ) ) {
 
-                  $description = !empty( $tag->description ) ? esc_html( $tag->description ) : '';
+                  $description = ! empty( $tag->description ) ? esc_html( $tag->description ) : '';
 
                   $title = preg_replace("/(\{description\})/", $description, $custom_title);
 
@@ -1214,16 +1274,47 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                 } else {
                   // description and number
-                  $description = !empty( $tag->description ) ? esc_html( $tag->description ) . ' ' : '';
+                  $description = ! empty( $tag->description ) ? esc_html( $tag->description ) . ' ' : '';
 
-                  $tag_count = $show_tag_count ? '(' . $tag_count . ')' : '';
+                  $tag_count_brackets = $show_tag_count ? '(' . $tag_count . ')' : '';
 
-                  $title = $description . $tag_count;
+                  $title = $description . $tag_count_brackets;
                 }
 
-                $link_target_html = !empty( $link_target ) ? 'target="' . $link_target . '"' : '';
+                // replace placeholders in prepend and append
+                if ( ! empty( $prepend ) ) {
 
-                $html_tags .= '<a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . $other_tag_classes . '"><span style="font-size:' . $font_size . 'px">' . sanitize_text_field( $prepend ) . $tag->name . sanitize_text_field( $append ) . "</span></a> \n";
+                  $prepend_output = preg_replace("/(\{count\})/", $tag_count, $prepend );
+
+                }
+
+                if ( ! empty( $append ) ) {
+
+                  $append_output = preg_replace("/(\{count\})/", $tag_count, $append );
+
+                }
+
+                // adding link target
+                $link_target_html = ! empty( $link_target ) ? 'target="' . $link_target . '"' : '';
+
+                // assembling a tag
+                $html_tags .= '<span class="tag-groups-tag' . $other_tag_classes . '"><a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . '">';
+
+                if ( ! empty( $prepend_output ) ) {
+
+                  $html_tags .= '<span class="tag-groups-prepend" style="font-size:' . $font_size . 'px">' . htmlentities( $prepend_output, ENT_QUOTES, "UTF-8" ) . '</span>';
+
+                }
+
+                $html_tags .= '<span style="font-size:' . $font_size . 'px">' . $tag->name . '</span>';
+
+                if ( ! empty( $append_output ) ) {
+
+                  $html_tags .= '<span class="tag-groups-append" style="font-size:' . $font_size . 'px">' . htmlentities( $append_output, ENT_QUOTES, "UTF-8" ) . '</span>';
+
+                }
+
+                $html_tags .= '</a></span> ';
 
                 $count_amount++;
               }
@@ -1450,7 +1541,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       }
 
-      if ( !empty( $heightstyle ) ) {
+      if ( ! empty( $heightstyle ) ) {
 
         $options[] = 'heightStyle: "' . sanitize_title( $heightstyle ) . '"';
 
@@ -1565,6 +1656,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
             $term_groups = array_intersect( $term_o->get_groups(), $tag_group_ids );
 
             foreach ( $term_groups as $term_group ){
+
               if ( 0 == $amount || $count_amount[$term_group] < $amount ) {
 
                 if ( isset( $min_max[$term_group]['max'] ) && $tag_count > $min_max[ $term_group ]['max'] ) {

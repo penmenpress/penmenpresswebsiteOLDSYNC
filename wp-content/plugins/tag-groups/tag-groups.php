@@ -5,7 +5,7 @@ Plugin URI: https://chattymango.com/tag-groups/
 Description: Assign tags to groups and display them in a tabbed tag cloud
 Author: Chatty Mango
 Author URI: https://chattymango.com/about/
-Version: 0.37.2
+Version: 0.38.1
 License: GNU GENERAL PUBLIC LICENSE, Version 3
 Text Domain: tag-groups
 Domain Path: /languages
@@ -82,8 +82,14 @@ require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.group.php' );
 
 require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.term.php' );
 
+require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.taxonomy.php' );
+
 require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.rest_api.php' );
 
+/**
+ * add Gutenberg functionality
+ */
+require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/src/init.php' );
 
 /**
 * Do all initial stuff: register hooks, check dependencies

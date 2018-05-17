@@ -47,7 +47,9 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       add_action( 'edit_term', array( 'TagGroups_Admin', 'update_edit_term_group' ) );
 
-      add_action( 'delete_term', array( 'TagGroups_Admin', 'update_post_meta' ), 10 );
+      add_action( 'delete_term', array( 'TagGroups_Admin', 'update_post_meta' ) );
+
+      add_action( 'term_groups_saved', array( 'TagGroups_Admin', 'update_post_meta' ) );
 
       add_action( 'load-edit-tags.php', array( 'TagGroups_Admin', 'bulk_action' ) );
 
@@ -99,7 +101,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       }
 
-      $tag_group_post_types = self::post_types_from_taxonomies( $tag_group_taxonomies );
+      $tag_group_post_types = TagGroups_Taxonomy::post_types_from_taxonomies( $tag_group_taxonomies );
 
       foreach ( $tag_group_post_types as $post_type ) {
 
@@ -128,6 +130,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
     /**
     *   Retrieves post types from taxonomies
+    *   @DEPRECATED since 0.37; use TagGroups_Taxonomy::post_types_from_taxonomies()
     */
     static function post_types_from_taxonomies( $taxonomies = array() ) {
 
@@ -914,7 +917,8 @@ if ( ! class_exists('TagGroups_Admin') ) {
         /**
         * update the post meta, if required
         */
-        self::update_post_meta( $term_id, $term_group );
+        // TODO now done by hook
+        // self::update_post_meta( $term_id, $term_group );
 
       } else {
 
@@ -1184,6 +1188,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
           $args = array(
             'taxonomy' => $taxonomy_intersect
           );
+
           $terms = get_terms( $args );
 
           if ( $terms ) {
@@ -1195,10 +1200,12 @@ if ( ! class_exists('TagGroups_Admin') ) {
             * Add per taxonomy for future extensibility
             */
             foreach ( $terms as $term ) {
+
               if ( $term->term_group == $selected_term_group ) {
 
                 $filter_terms[$term->taxonomy][] = $term->term_id;
               }
+
             }
 
             foreach ( $taxonomy_intersect as $taxonomy ) {
@@ -1846,7 +1853,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         }
 
-        $taxonomies = get_taxonomies( array( 'public' => true ), 'names' );
+        $taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
 
         foreach ( $taxonomy as $taxonomy_item ) {
           $taxonomy_item = stripslashes( sanitize_text_field( $taxonomy_item ) );
@@ -2316,7 +2323,8 @@ if ( ! class_exists('TagGroups_Admin') ) {
         <?php
         if ( 'basics' == $active_tab ) {
 
-          $taxonomies = get_taxonomies( array( 'public' => true ), 'names' );
+          $taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
+
           $html = '<form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">' .
           wp_nonce_field( 'tag-groups-taxonomy', 'tag-groups-taxonomy-nonce', true, false ) .
           '<h3>' . __( 'Taxonomies', 'tag-groups' ) . '</h3>
@@ -2327,7 +2335,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
           foreach ( $taxonomies as $taxonomy ) {
 
-            $post_types = self::post_types_from_taxonomies( $taxonomy );
+            $post_types = TagGroups_Taxonomy::post_types_from_taxonomies( $taxonomy );
 
             $html .= '<li><input type="checkbox" name="taxonomies[]" id="' . $taxonomy . '" value="' . $taxonomy . '"';
 
@@ -2784,6 +2792,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
             <ul>
               <li><?php printf( __( 'These plugins use css and images by <a %s>jQuery UI</a>. (bundled with WordPress)', 'tag-groups' ), 'href="http://jqueryui.com/" target="_blank"') ?></li>
               <li><?php printf( __( 'jQuery plugin <a %1$s>SumoSelect</a>: <a %2$s>MIT License</a>. Copyright (c) 2016 Hemant Negi', 'tag-groups' ), 'href="https://github.com/HemantNegi/jquery.sumoselect"', 'href="http://www.opensource.org/licenses/mit-license.php" target="_blank"') ?>'</li>
+              <li><?php printf( __( 'React JS plugin <a %1$s>React-Select</a>: <a %2$s>MIT License</a>. Copyright (c) 2018 Jed Watson', 'tag-groups' ), 'https://github.com/JedWatson/react-select"', 'href="http://www.opensource.org/licenses/mit-license.php" target="_blank"') ?>'</li>
               <li>Spanish translation (es_ES) by <a href="http://www.webhostinghub.com/" target="_blank">Andrew Kurtis</a></li>
             </ul>
           </div>
@@ -3392,6 +3401,12 @@ if ( ! class_exists('TagGroups_Admin') ) {
           wp_register_style( 'tag-groups-css-backend', TAG_GROUPS_PLUGIN_URL .  '/css/admin-style.css', array(), TAG_GROUPS_VERSION );
 
           wp_enqueue_style( 'tag-groups-css-backend' );
+
+        } elseif ( strpos( $where, 'post-new.php' ) !== false || strpos( $where, 'post.php' ) !== false ) {
+
+          wp_register_style( 'react-select-css', TAG_GROUPS_PLUGIN_URL .  '/css/react-select.css', array(), TAG_GROUPS_VERSION );
+
+          wp_enqueue_style( 'react-select-css' );
 
         }
 
