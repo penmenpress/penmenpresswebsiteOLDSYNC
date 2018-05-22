@@ -1,1 +1,2 @@
 22-05-2018 03:31:46 - INFO  - m: 7.0 MB, u: 0 - Version changed from 2.0.5 to 2.1.4
+22-05-2018 04:10:25 - INFO  - m: 13.2 MB, u: 0 - New email address
