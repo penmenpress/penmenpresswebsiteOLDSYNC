@@ -1,6 +1,5 @@
 <?php
-if (!defined('ABSPATH'))
-    exit;
+defined('ABSPATH') || exit;
 
 @include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
@@ -18,32 +17,34 @@ if (!$controls->is_action()) {
 
         $controls->add_message_saved();
     }
+
     if ($controls->is_action('reset')) {
         $controls->data['template'] = file_get_contents(dirname(__FILE__) . '/email.html');
+        $module->save_options($controls->data, 'template');
         $controls->add_message_done();
     }
 
     if ($controls->is_action('test')) {
 
-        $users = NewsletterUsers::instance()->get_test_users();
+        $users = $module->get_test_users();
         if (count($users) == 0) {
             $controls->errors = __('No test subscribers found.', 'newsletter') . ' <a href="https://www.thenewsletterplugin.com/plugins/newsletter/subscribers-module#test" target="_blank"><i class="fa fa-info-circle"></i></a>';
         } else {
             $template = $controls->data['template'];
-            if (strpos($template, '{message}') === false) {
-                $template .= '{message}';
-            }
+
             $message = '<p>This is a generic example of message embedded inside the template.</p>';
-            $message .= '<p>Subscriber data can be referenced by messages with tags. See the <a href="https://www.thenewsletterplugin.com">plugin documentation</a>.</p>';
+            $message .= '<p>Subscriber data can be referenced using tags. See the <a href="https://www.thenewsletterplugin.com/documentation">plugin documentation</a>.</p>';
             $message .= '<p>First name: {name}</p>';
             $message .= '<p>Last name: {surname}</p>';
             $message .= '<p>Email: {email}</p>';
-
+            $message .= '<p>Here an image as well. Make them styled with the CSS rule "max-width: 100%"</p>';
+            $message .= '<p><img src="' . plugins_url('newsletter') . '/images/test.jpg" style="max-width: 100%"></p>';
+            
             $message = str_replace('{message}', $message, $template);
             $addresses = array();
-            foreach ($users as &$user) {
+            foreach ($users as $user) {
                 $addresses[] = $user->email;
-                Newsletter::instance()->mail($user->email, 'Newsletter Messages Template Test', $newsletter->replace($message, $user));
+                Newsletter::instance()->mail($user->email, 'Newsletter Messages Template Test', $module->replace($message, $user));
             }
             $controls->messages .= 'Test emails sent to ' . count($users) . ' test subscribers: ' .
                     implode(', ', $addresses) . '.' . ' <a href="https://www.thenewsletterplugin.com/plugins/newsletter/subscribers-module#test" target="_blank"><i class="fa fa-info-circle"></i></a>';
@@ -52,21 +53,21 @@ if (!$controls->is_action()) {
 }
 ?>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/codemirror.css" type="text/css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/addon/hint/show-hint.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/codemirror.css" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/addon/hint/show-hint.css">
 <style>    
-.CodeMirror {
-            height: 100%;
-        }
+    .CodeMirror {
+        height: 100%;
+    }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/codemirror.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/mode/xml/xml.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/mode/css/css.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/mode/javascript/javascript.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/mode/htmlmixed/htmlmixed.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/addon/hint/show-hint.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/addon/hint/xml-hint.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/addon/hint/html-hint.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/codemirror.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/mode/xml/xml.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/mode/css/css.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/mode/javascript/javascript.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/mode/htmlmixed/htmlmixed.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/addon/hint/show-hint.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/addon/hint/xml-hint.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/addon/hint/html-hint.js"></script>
 <script>
     jQuery(function () {
         templateEditor = CodeMirror.fromTextArea(document.getElementById("options-template"), {
@@ -97,29 +98,21 @@ if (!$controls->is_action()) {
             <?php $controls->init(); ?>
             <p>
                 <?php $controls->button_save(); ?>
+                <?php $controls->button_reset(); ?>
+                <?php $controls->button('test', 'Send a test'); ?>
             </p>
-            <table class="form-table">
-                <tr>
-                    <th>Enabled?</th>
-                    <td>
-                        <?php $controls->yesno('enabled'); ?>
-                        <p class="description">
-                            When not enabled, the old templating system is used (see the file
-                            wp-content/plugins/newsletter/subscription/email.php).
-                        </p>
-                    </td>
-                </tr>
-                </table>
-            
-                <h3><?php _e('Template', 'newsletter')?></h3>
-                
-                        <?php $controls->textarea_preview('template', '100%', '700px'); ?>
-                        <br><br>
-                        <?php $controls->button_reset(); ?>
-                        <?php $controls->button('test', 'Send a test'); ?>
-                
+
+
+            <h3><?php _e('Template', 'newsletter') ?></h3>
+
+            <?php $controls->textarea_preview('template', '100%', '700px'); ?>
+            <br><br>
+
+
             <p>
                 <?php $controls->button_save(); ?>
+                <?php $controls->button_reset(); ?>
+                <?php $controls->button('test', 'Send a test'); ?>
             </p>
         </form>
     </div>

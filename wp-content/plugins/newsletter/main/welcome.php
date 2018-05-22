@@ -72,9 +72,9 @@ if (!$page_exists) {
         // Insert the post into the database
         $page_id = wp_insert_post($page);
 
-        $subscription_options['page'] = $page_id;
-        NewsletterSubscription::instance()->save_options($subscription_options);
-        $subscription_options = NewsletterSubscription::instance()->get_options();
+        $main_options['page'] = $page_id;
+        Newsletter::instance()->save_options($main_options);
+        $main_options = Newsletter::instance()->get_options();
         $page_exists = true;
     }
 ?>

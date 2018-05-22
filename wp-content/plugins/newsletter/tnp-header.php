@@ -1,8 +1,7 @@
 <?php
-global $current_user, $wpdb, $newsletter;
+global $current_user, $wpdb;
 
-if (!defined('ABSPATH'))
-    exit;
+defined('ABSPATH') || exit;
 
 $dismissed = get_option('newsletter_dismissed', array());
 
@@ -16,7 +15,7 @@ function newsletter_print_entries($group) {
             echo $entry['url'];
             echo '">';
             echo $entry['label'];
-            if (isset($entry['description'])) {
+            if (!empty($entry['description'])) {
                 echo '<small>';
                 echo $entry['description'];
                 echo '</small>';
@@ -31,7 +30,6 @@ $status_options = Newsletter::instance()->get_options('status');
 $warning = false;
 
 $warning |= empty($status_options['mail']);
-
 ?>
 
 <div class="tnp-drowpdown" id="tnp-header">
@@ -41,6 +39,9 @@ $warning |= empty($status_options['mail']);
             <ul>
                 <li><a href="?page=newsletter_users_index"><i class="fa fa-search"></i> <?php _e('Search And Edit', 'newsletter') ?>
                         <small><?php _e('Add, edit, search', 'newsletter') ?></small></a></li>
+
+                <li><a href="?page=newsletter_profile_index"><i class="fa fa-user-circle-o"></i> <?php _e('Profile page', 'newsletter') ?>
+                        <small><?php _e('The subscriber personal profile editing panel', 'newsletter') ?></small></a></li>
                 <li><a href="?page=newsletter_users_import"><i class="fa fa-upload"></i> <?php _e('Import', 'newsletter') ?>
                         <small><?php _e('Import from external sources', 'newsletter') ?></small></a></li>
                 <li><a href="?page=newsletter_users_export"><i class="fa fa-download"></i> <?php _e('Export', 'newsletter') ?>
@@ -58,7 +59,7 @@ $warning |= empty($status_options['mail']);
             <ul>
                 <li><a href="?page=newsletter_subscription_options"><i class="fa fa-sign-in"></i> <?php _e('Subscription', 'newsletter') ?>
                         <small><?php _e('The subscription process in detail', 'newsletter') ?></small></a></li>
-                        
+
                 <li><a href="?page=newsletter_subscription_antibot"><i class="fa fa-lock"></i> <?php _e('Security', 'newsletter') ?>
                         <small><?php _e('Spam subscriptions control', 'newsletter') ?></small></a></li>
 
@@ -79,10 +80,7 @@ $warning |= empty($status_options['mail']);
                     <a href="?page=newsletter_subscription_forms"><i class="fa fa-pencil"></i> <?php _e('Custom Forms', 'newsletter') ?>
                         <small><?php _e('Hand coded form storage', 'newsletter') ?></small></a>
                 </li>
-                <li>
-                    <a href="?page=newsletter_subscription_template"><i class="fa fa-file-text-o"></i> <?php _e('Messages Template', 'newsletter') ?>
-                        <small><?php _e('Change the look of your service emails', 'newsletter') ?></small></a>
-                </li>
+
                 <?php
                 newsletter_print_entries('subscription');
                 ?>
@@ -105,13 +103,16 @@ $warning |= empty($status_options['mail']);
                         <small><?php _e('Delivery speed, sender details, ...', 'newsletter') ?></small></a></li>
                 <li><a href="?page=newsletter_main_info"><i class="fa fa-info"></i> <?php _e('Company Info', 'newsletter') ?>
                         <small><?php _e('Social, address, logo and general info', 'newsletter') ?></small></a></li>
-
-                <?php if (!class_exists('NewsletterSmtp')) { ?>
                 <li>
-                    <a href="?page=newsletter_main_smtp"><i class="fa fa-envelope-o"></i> <?php _e('SMTP', 'newsletter') ?>
-                        <small><?php _e('External mail server', 'newsletter') ?></small>
-                    </a>
+                    <a href="?page=newsletter_subscription_template"><i class="fa fa-file-text-o"></i> <?php _e('Messages Template', 'newsletter') ?>
+                        <small><?php _e('Change the look of your service emails', 'newsletter') ?></small></a>
                 </li>
+                <?php if (!class_exists('NewsletterSmtp')) { ?>
+                    <li>
+                        <a href="?page=newsletter_main_smtp"><i class="fa fa-envelope-o"></i> <?php _e('SMTP', 'newsletter') ?>
+                            <small><?php _e('External mail server', 'newsletter') ?></small>
+                        </a>
+                    </li>
                 <?php } ?>
 
                 <?php
@@ -122,9 +123,9 @@ $warning |= empty($status_options['mail']);
 
         <li>
             <a href="?page=newsletter_main_status"><i class="fa fa-thermometer"></i> <?php _e('Status', 'newsletter') ?>
-            <?php if ($warning) { ?>
-            <i class="fa fa-exclamation-triangle" style="color: red;"></i>
-            <?php } ?>
+                <?php if ($warning) { ?>
+                    <i class="fa fa-exclamation-triangle" style="color: red;"></i>
+                <?php } ?>
             </a>
         </li>
 
@@ -153,6 +154,13 @@ $warning |= empty($status_options['mail']);
     </ul>
 </div>
 
+<?php if (!empty(Newsletter::instance()->options['page']) && (!get_permalink(Newsletter::instance()->options['page']) || get_post_status(Newsletter::instance()->options['page']) != 'publish')) { ?>
+    <div class="tnp-error">
+        <?php _e('The Newsletter dedicated page is wrongly configured.', 'newsletter') ?>
+        <a href="admin.php?page=newsletter_main_main"><?php _e('Check it now', 'newsletter')?></a>.
+    </div>
+<?php } ?>
+
 
 <?php if (isset($_GET['debug']) || !isset($dismissed['rate']) && $user_count > 300) { ?>
     <div class="tnp-notice">
@@ -164,7 +172,7 @@ $warning |= empty($status_options['mail']);
     </div>
 <?php } ?>
 
-<?php if (isset($_GET['debug']) || !isset($dismissed['newsletter-page']) && empty(NewsletterSubscription::instance()->options['page'])) { ?>
+<?php if (isset($_GET['debug']) || !isset($dismissed['newsletter-page']) && empty(Newsletter::instance()->options['page'])) { ?>
     <div class="tnp-notice">
         <a href="<?php echo $_SERVER['REQUEST_URI'] . '&noheader=1&dismiss=newsletter-page' ?>" class="tnp-dismiss">&times;</a>
 

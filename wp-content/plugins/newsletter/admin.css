@@ -2029,3 +2029,35 @@ input:checked + .slider:before {
 .tnp-list-conditions p {
     margin: 0px 10px;
 }
+
+/* Lists panel */
+.tnp-lists .tnp-notes {
+    margin: 0;
+    font-size: .9em;
+}
+
+/* Codemirror editor with preview */
+iframe.tnp-editor-preview-mobile {
+    box-sizing: border-box; 
+    background-color: #fff;
+    border: 1px solid #bbb; 
+    box-shadow: 1px 1px 10px #777;
+    border-radius: 10px; 
+    padding: 5px; 
+    width: 320px; 
+    height: 500px; 
+    float: left;
+}
+
+iframe.tnp-editor-preview-desktop {
+     box-sizing: border-box; 
+     background-color: #fff; 
+     border: 1px solid #bbb; 
+     border-radius: 10px; 
+     box-shadow: 1px 1px 10px #777; 
+     padding: 15px; 
+     width: 650px; 
+     margin-right: 20px; 
+     height: 500px; 
+     float: left;
+}

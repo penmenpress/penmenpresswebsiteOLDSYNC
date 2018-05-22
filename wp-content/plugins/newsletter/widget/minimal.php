@@ -1,8 +1,9 @@
 <?php
-if (!defined('ABSPATH'))
-    exit;
-if (version_compare(phpversion(), '5.3', '<'))
+defined('ABSPATH') || exit;
+
+if (version_compare(phpversion(), '5.3', '<')) {
     return;
+}
 
 class NewsletterWidgetMinimal extends WP_Widget {
 
@@ -85,17 +86,15 @@ class NewsletterWidgetMinimal extends WP_Widget {
         <p>
             <?php _e('Automatically subscribe to', 'newsletter') ?>
             <br>
-            <?php
-            for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
-                if (empty($options_profile['list_' . $i]) || empty($options_profile['list_' . $i . '_status'])) {
-                    continue;
-                }
+             <?php
+            $lists = Newsletter::instance()->get_lists_public();
+            foreach ($lists as $list) {
                 ?>
-                <label for="nl<?php echo $i ?>">
-                    <input type="checkbox" value="<?php echo $i ?>" name="<?php echo $this->get_field_name('nl[]') ?>" <?php echo array_search($i, $instance['nl']) !== false ? 'checked' : '' ?>> <?php echo esc_html($options_profile['list_' . $i]) ?>
+                <label for="nl<?php echo $list->id ?>">
+                    <input type="checkbox" value="<?php echo $list->id ?>" name="<?php echo $this->get_field_name('nl[]') ?>" <?php echo array_search($list->id, $instance['nl']) !== false ? 'checked' : '' ?>> <?php echo esc_html($list->name) ?>
                 </label>
                 <br>
-        <?php } ?>
+            <?php } ?>
         </p>
 
         <?php

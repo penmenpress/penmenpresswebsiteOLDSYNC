@@ -27,7 +27,7 @@ $options['block_padding_bottom'] = '15px';
 <table width="100%" border="0" cellpadding="0" align="center" cellspacing="0">
     <tr>
         <td width="100%" valign="top" align="center">
-            <img src="<?php echo $options['giphy_url'] ?>" />
+            <img src="<?php echo $options['giphy_url'] ?>" style="max-width: 100%!important; height: auto!important;" />
         </td>
     </tr>
 </table>

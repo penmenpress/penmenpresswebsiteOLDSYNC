@@ -114,7 +114,8 @@ if ($controls->is_action()) {
                                     300 => '5 ' . __('minutes', 'newsletter'),
                                     600 => '10 ' . __('minutes', 'newsletter'),
                                     900 => '15 ' . __('minutes', 'newsletter'),
-                                    1800 => '30 ' . __('minutes', 'newsletter')
+                                    1800 => '30 ' . __('minutes', 'newsletter'),
+                                    360 => '60 ' . __('minutes', 'newsletter')
                                 ));
                                 ?>
                                 <?php $controls->help('https://www.thenewsletterplugin.com/documentation/antiflood') ?>

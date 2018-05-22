@@ -14,5 +14,8 @@ $options = array(
     'editor' => 0,
     'scheduler_max' => 100,
     'phpmailer'=>0,
-    'debug'=>0
+    'debug'=>0,
+    'track'=>1,
+    'css'=>'',
+    'css_disabled'=>0
 );

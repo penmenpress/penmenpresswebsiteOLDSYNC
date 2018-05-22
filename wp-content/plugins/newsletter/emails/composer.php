@@ -32,7 +32,7 @@ if (($controls->is_action('save') || $controls->is_action('preview')) && !isset(
     $email = array();
     $email['status'] = 'new';
     $email['subject'] = __('Here the email subject', 'newsletter');
-    $email['track'] = 1;
+    $email['track'] = Newsletter::instance()->options['track'];
     $email['token'] = $module->get_token();
 
     $email['message'] = $controls->data['body'];

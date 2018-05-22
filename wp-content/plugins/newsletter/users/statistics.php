@@ -103,13 +103,13 @@ $controls = new NewsletterControls();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) { ?>
-                            <?php if (empty($options_profile['list_' . $i])) continue; ?>
+                        <?php $lists = $module->get_lists(); ?>
+                        <?php foreach ($lists as $list) { ?>
                             <tr>
-                                <td><?php echo $i ?></td>
-                                <td><?php echo esc_html($options_profile['list_' . $i]) ?></td>
+                                <td><?php echo $list->id ?></td>
+                                <td><?php echo esc_html($list->name) ?></td>
                                 <td>
-                                    <?php echo $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where list_" . $i . "=1 and status='C'"); ?>
+                                    <?php echo $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where list_" . $list->id . "=1 and status='C'"); ?>
                                 </td>
                             </tr>
                         <?php } ?>

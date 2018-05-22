@@ -5,7 +5,7 @@ $controls = new NewsletterControls();
 $module = NewsletterEmails::instance();
 
 // Always required
-$email = Newsletter::instance()->get_email($_GET['id'], ARRAY_A);
+$email = $module->get_email($_GET['id'], ARRAY_A);
 if (empty($email['query'])) {
     $email['query'] = "select * from " . NEWSLETTER_USERS_TABLE . " where status='C'";
 }

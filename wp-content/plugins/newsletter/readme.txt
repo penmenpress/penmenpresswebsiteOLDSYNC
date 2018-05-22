@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated
 Requires at least: 3.4.0
 Tested up to: 4.9.5
-Stable tag: 5.4.2
+Stable tag: 5.4.3
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -14,11 +14,11 @@ send and track e-mails, headache-free. It just works out of box!
 
 = Main Features =
 
-* Subscription spam check with domain/ip black lists, Akismet, captcha
-* GDPR ready 
-* **Responsive email Drag & Drop composer**
 * **Unlimited subscribers** with statistics 
 * **Unlimited newsletter** with tracking
+* Subscription spam check with domain/ip black lists, Akismet, captcha
+* [GDPR ready](https://www.thenewsletterplugin.com/documentation/gdpr-compliancy) 
+* **Responsive email Drag & Drop composer**
 * Customizable **subscription widget**, **page** or **custom form**
 * Wordpress User Registration **seamless integration**
 * **Single** And **Double Opt-In** plus privacy checkbox for EU laws compliance
@@ -89,6 +89,36 @@ Thank you, The Newsletter Team
 3. The Reports extension
 
 == Changelog ==
+
+= 5.4.3 =
+
+* Improved the profile editing page and the email change check with activation id in double opt-in mode
+* New profile editing panel configuration
+* Privacy notice optionally even on profile panel
+* New list change logging with source
+* Removed old tabled-layout on profile editing page
+* Clean up procedure for statistics and logs tables
+* Removed old widget layout
+* New options on list management panel
+* Forced lists option removed from the subscription panel
+* Dedicated page moved to main settings panel
+* Tracking default value on main settings panel
+* Removed old translations
+* Added default option files
+* Service message template no more on PHP file, the configurable template must be used
+* Reactivation after cancellation feature
+* Revised and simplified all texts for easy translation by the community
+* The messages alternative page (/extensions/newsletter/subscription/page.php) is now deprecated and will be removed
+* New [cancellation documentation page published](/extensions/newsletter/subscription/page.php)
+* Integrated SMTP is now deprecated (soon will be replaced with a **free extension**) 
+* {home_url} tag is now deprecated, use {blog_url} instead
+* Introduced tags {company_name} and {company_address} replaced by info in the company info configuration
+* Default template for messages has been improved with company contacts
+* Repeated subscriptions management
+* Generally improved the performances with caching and code clean up
+* General CSS moved to the main settings panel
+* Option to disable the default CSS
+* Profile export fix
 
 = 5.4.2 =
 

@@ -54,7 +54,7 @@ CUSTOM CSS RULES.
 
 .tnp-subscription input[type=checkbox], 
 .tnp-widget input[type=radio] {
-    width: auto;
+    max-width: 20px;
     display: inline;
 }
 
@@ -118,7 +118,7 @@ CUSTOM CSS RULES.
 }
 
 .tnp-profile form input[type=checkbox], .tnp-profile input[type=radio] {
-    width: auto;
+    max-width: 20px;
     display: inline;
 }
 
@@ -134,7 +134,14 @@ CUSTOM CSS RULES.
 .tnp-profile form .tnp-field input[type=submit] {
     background-color: #444;
     color: #fff;
+    width: auto;
     height: auto;
+}
+
+@media all and (max-width: 480px) {
+    .tnp-profile input[type=submit] {
+        width: 100%;
+    }
 }
 
 
@@ -241,6 +248,7 @@ CUSTOM CSS RULES.
     height: auto;
 }
 
+/* The minimal form */
 
 .tnp-subscription-minimal {
     width: 100%;
@@ -267,6 +275,10 @@ CUSTOM CSS RULES.
     line-height: 20px;
     box-sizing: border-box;
     border-radius: 0px;
+}
+
+.tnp-subscription-minimal .tnp-privacy-field {
+    margin-top: 10px;
 }
 
 .tnp-subscription-minimal input.tnp-submit {
