@@ -24,7 +24,11 @@ if ( ! class_exists('TagGroups_Base') ) {
     */
     function __construct() {
 
-      define( 'TAG_GROUPS_VERSION', $this->get_version_from_plugin_data( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/tag-groups.php' ) );
+      if ( ! defined( 'TAG_GROUPS_VERSION') ){
+
+        define( 'TAG_GROUPS_VERSION', $this->get_version_from_plugin_data( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/tag-groups.php' ) );
+
+      }
 
       $this->check_preconditions();
 
@@ -225,7 +229,7 @@ if ( ! class_exists('TagGroups_Base') ) {
 
       if (
         get_option( 'tag_group_shortcode_enqueue_always', 1 ) || (
-          !is_a( $post, 'WP_Post' ) || (
+          ! is_a( $post, 'WP_Post' ) || (
             has_shortcode( $post->post_content, 'tag_groups_cloud' ) ||
             has_shortcode( $post->post_content, 'tag_groups_accordion' ) ||
             has_shortcode( $post->post_content, 'tag_groups_table' ) )
@@ -414,6 +418,20 @@ if ( ! class_exists('TagGroups_Base') ) {
           '</p></div><div clear="all" /></div>';
 
           echo $html;
+
+        }
+
+
+        /**
+        * Returns the first element of an array without changing the original array
+        *
+        * @param array $array
+        * @return array
+        */
+        public static function get_first_element( $array = array() )
+        {
+
+          return reset( $array );
 
         }
 

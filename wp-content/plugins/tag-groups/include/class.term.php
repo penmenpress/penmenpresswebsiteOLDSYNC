@@ -190,7 +190,7 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
       */
       if ( ! class_exists('TagGroups_Premium_Term') ) {
 
-        wp_update_term( $this->term_id, $this->taxonomy, array( 'term_group' => array_shift( $term_groups ) ) );
+        wp_update_term( $this->term_id, $this->taxonomy, array( 'term_group' => TagGroups_Base::get_first_element( $term_groups ) ) );
 
       } else {
 
@@ -198,7 +198,7 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
 
       }
 
-      do_action( 'term_groups_saved', $this->term_id );
+      do_action( 'term_groups_saved', $this->term_id, $term_groups );
 
       return $this;
 

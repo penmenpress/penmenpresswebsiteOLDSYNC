@@ -3,8 +3,8 @@ Contributors: camthor
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FD5ZU4EEBGSC8
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
-Tested up to: 4.9.5
-Stable tag: 0.38.1
+Tested up to: 4.9.6
+Stable tag: 0.38.3
 Requires PHP: 5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -101,16 +101,34 @@ No, unfortunately it isn't. But, nevertheless, I'm glad you asked! You are warml
 
 1. Group administration
 2. Assigning tags to groups
-3. Group administration
+3. Configuring a tag cloud in Gutenberg
 4. Settings
 5. Tag cloud ("Blitzer" theme)
 6. Accordion ("Blitzer" theme)
+7. Group administration
 
 == Privacy ==
 
 This plugin does not collect or process any personal user data.
 
 == Changelog ==
+
+= 0.38.3 =
+
+OTHER
+
+* Tag cloud with "tags_post_id": don't show all groups if post has no tags
+* Tag cloud with "tags_post_id": show only groups that are used in post (premium)
+
+= 0.38.2 =
+
+BUG FIXES
+
+* Fixed error in rendering Gutenberg blocks
+
+OTHER
+
+* Improved compatibility with premium plugin
 
 = 0.38.1 =
 
@@ -123,7 +141,7 @@ BUG FIXES
 FEATURES
 
 * You can now use the placeholder {count} for the "prepend" and "append" parameters (shortcodes tag_groups_cloud and tag_groups_accordion). It will be replaced by the post count for each tag.
-* Gutenberg blocks for Tabbed and Accordion Tag Cloud. Use them with the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/) or the upcoming WordPress version 5.0. Shortcodes won't be affected. Read more [here](https://chattymango.com/?p=4792&pk_campaign=tg&pk_kwd=readme).
+* Gutenberg blocks for Tabbed and Accordion Tag Cloud. Use them with the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/) or the upcoming WordPress version 5.0. Shortcodes won't be affected. Read more [here](https://chattymango.com/tag-groups-version-0-38-gutenberg-blocks/?pk_campaign=tg&pk_kwd=readme).
 
 OTHER
 

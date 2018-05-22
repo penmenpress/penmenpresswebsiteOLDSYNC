@@ -46,6 +46,8 @@ if ( ! class_exists('TagGroups_Options') ) {
         $option_names['tag_group_tags_filter'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
         $option_names['tag_group_onboarding'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => false );
         $option_names['tag_groups_per_page'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
+        $option_names['tag_group_base_version'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
+
 
         /**
         * Deprecated after 0.36
@@ -76,6 +78,7 @@ if ( ! class_exists('TagGroups_Options') ) {
         $option_names['tag_group_remove_the_post_terms'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
         $option_names['tag_group_display_groups_under_posts_title'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
         $option_names['tag_group_display_groups_under_posts_priority'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_premium_version'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
 
         // should be last:
         $option_names['tag_group_reset_when_uninstall'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );

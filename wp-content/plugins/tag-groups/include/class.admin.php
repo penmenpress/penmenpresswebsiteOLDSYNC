@@ -47,9 +47,9 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       add_action( 'edit_term', array( 'TagGroups_Admin', 'update_edit_term_group' ) );
 
-      add_action( 'delete_term', array( 'TagGroups_Admin', 'update_post_meta' ) );
+      add_action( 'delete_term', array( 'TagGroups_Admin', 'update_post_meta' ), 10, 2 );
 
-      add_action( 'term_groups_saved', array( 'TagGroups_Admin', 'update_post_meta' ) );
+      add_action( 'term_groups_saved', array( 'TagGroups_Admin', 'update_post_meta' ), 10, 2 );
 
       add_action( 'load-edit-tags.php', array( 'TagGroups_Admin', 'bulk_action' ) );
 
@@ -593,15 +593,11 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
             if ( 0 == $term_group ) {
 
-              $term->remove_all_groups();
-
-              $term->save();
+              $term->remove_all_groups()->save();
 
             } else {
 
-              $term->add_group( $term_group );
-
-              $term->save();
+              $term->add_group( $term_group )->save();
 
             }
 
@@ -819,7 +815,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
     * @param type var Description
     * @return return type
     */
-    public static function update_post_meta( $term_id, $term_group = -1 )
+    public static function update_post_meta( $term_id, $term_groups = array() )
     {
 
       /**
@@ -835,7 +831,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         }
 
-        $count = TagGroups_Premium_Post::update_post_meta_for_term( $term_id, $term_group );
+        $count = TagGroups_Premium_Post::update_post_meta_for_term( $term_id, $term_groups );
 
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 
@@ -914,26 +910,11 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         $term->save();
 
-        /**
-        * update the post meta, if required
-        */
-        // TODO now done by hook
-        // self::update_post_meta( $term_id, $term_group );
-
       } else {
 
         $term->set_group( 0 );
 
         $term->save();
-
-        /**
-        * update the post meta
-        */
-        if ( class_exists( 'TagGroups_Premium_Post' ) ) {
-
-          $count = TagGroups_Premium_Post::update_post_meta_for_term( $term_id, 0 );
-
-        }
 
       }
 
@@ -3255,7 +3236,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
       */
       static function terms_clauses( $pieces, $taxonomies, $args )
       {
-        $taxonomy = array_shift($taxonomies);
+        $taxonomy = TagGroups_Base::get_first_element( $taxonomies );
 
         if ( empty( $taxonomy ) || is_array( $taxonomy ) ) {
 

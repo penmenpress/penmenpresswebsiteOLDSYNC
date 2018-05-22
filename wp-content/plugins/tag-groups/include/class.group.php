@@ -366,14 +366,14 @@ if ( ! class_exists('TagGroups_Group') ) {
     * @param string $taxonomy See get_terms
     * @param string $hide_empty See get_terms
     * @param string $fields See get_terms
-    * @return array|boolean
+    * @return array
     */
     public function get_group_terms( $taxonomy = 'post_tag', $hide_empty = false, $fields = 'all', $post_id = 0, $orderby = 'name', $order = 'ASC' )
     {
 
       if ( ! isset( $this->term_group ) ) {
 
-        return false;
+        return array();
 
       }
 
@@ -519,31 +519,6 @@ if ( ! class_exists('TagGroups_Group') ) {
         $term_o->set_group( 0 );
 
         $term_o->save();
-
-        /**
-        * update the post meta
-        */
-        if ( function_exists( 'TagGroups_Premium_Post' ) ) {
-
-          if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-
-            error_log( 'Tag Groups Premium: Checking if posts need to be migrated.' );
-
-            $start_time = microtime( true );
-
-          }
-
-          $term_o = new TagGroups_Term( $term );
-
-          $count = TagGroups_Premium_Post::update_post_meta_for_term( $term->term_id, $old_groups, 0 );
-
-          if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-
-            error_log( sprintf( 'Tag Groups Premium: Meta of %d post(s) updated in %d milliseconds.', $count, round( ( microtime( true ) - $start_time ) * 1000 ) ) );
-
-          }
-
-        }
 
       }
 

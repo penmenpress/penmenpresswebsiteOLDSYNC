@@ -13,7 +13,7 @@ last change for version 0.31.2
 /**
 * Delete options only if requested
 */
-if( defined('WP_UNINSTALL_PLUGIN') ) {
+if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
   /**
   * Purge cache
@@ -32,7 +32,10 @@ if( defined('WP_UNINSTALL_PLUGIN') ) {
 
   $tag_group_reset_when_uninstall = get_option( 'tag_group_reset_when_uninstall', 0 );
 
-  if ( $tag_group_reset_when_uninstall ) {
+  $tag_group_premium_version = get_option( 'tag_group_premium_version', false );
+
+
+  if ( $tag_group_reset_when_uninstall && ! $tag_group_premium_version ) {
 
     require_once( dirname( __FILE__ ) . '/include/class.options.php' );
 
