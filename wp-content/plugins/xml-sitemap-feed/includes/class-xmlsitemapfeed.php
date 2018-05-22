@@ -609,12 +609,12 @@ class XMLSitemapFeed {
 	/**
 	 * Is home?
 	 *
-	 * @param $id
+	 * @param $post_id
 	 *
 	 * @return bool
 	 */
-	private function is_home( $id ) {
-		return in_array( $id, $this->get_blogpages() );
+	private function is_home( $post_id ) {
+		return in_array( $post_id, $this->get_blogpages() );
 	}
 
 	/**
@@ -1032,44 +1032,75 @@ class XMLSitemapFeed {
 	}
 
 	/**
+	 * Get site language
+	 *
+	 * @return string
+	 */
+	public function get_blog_language() {
+		if ( empty($this->blog_language) ) {
+			// get site language for default language
+			$blog_language = $this->parse_language_string( get_bloginfo('language') );
+
+			$this->blog_language = !empty($blog_language) ? $blog_language : 'en';
+		}
+
+		return $this->blog_language;
+	}
+
+	/**
+	 * Get site language
+	 *
+	 * @param string $lang unformatted language string
+	 *
+	 * @return string
+	 */
+	public function parse_language_string( $lang ) {
+		$lang = convert_chars( strtolower( strip_tags( $lang ) ) );
+
+		// no underscores
+		if ( strpos( $lang, '_' ) ) {
+			$expl = explode('_', $lang);
+			$lang = $expl[0];
+		}
+
+		// no hyphens except...
+		if ( strpos( $lang, '-' ) && !in_array( $lang, array('zh-cn','zh-tw') ) ) {
+			// explode on hyphen and use only first part
+			$expl = explode('-', $lang);
+			$lang = $expl[0];
+		}
+
+		return $lang;
+	}
+
+	/**
 	 * Get language
 	 *
-	 * @param $id
+	 * @param $post_id
 	 *
 	 * @return null|string
 	 */
-	public function get_language( $id ) {
-		$language = null;
+	public function get_language( $post_id ) {
+		$language = $this->get_blog_language();
 
-		if ( empty($this->blog_language) ) {
-			// get site language for default language
-			$blog_language = convert_chars(strip_tags(get_bloginfo('language')));
-			$allowed = array('zh-cn','zh-tw');
-			if ( !in_array($blog_language,$allowed) ) {
-				// bloginfo_rss('language') returns improper format so
-				// we explode on hyphen and use only first part.
-				$expl = explode('-', $blog_language);
-				$blog_language = $expl[0];
-			}
-
-			$this->blog_language = !empty($blog_language) ? $blog_language : 'en';
+		// Polylang
+		if ( function_exists('pll_get_post_language') ) {
+			$lang = pll_get_post_language( $post_id, 'slug' );
+			if ( !empty($lang) )
+				$language = $this->parse_language_string( $lang );
 		}
 
 		// WPML compat
 		global $sitepress;
 		if ( isset($sitepress) && is_object($sitepress) && method_exists($sitepress, 'get_language_for_element') ) {
-			$post_type = get_query_var( 'post_type', 'post' ); // is $post_type always an array here??
-			$language = $sitepress->get_language_for_element( $id, 'post_'.$post_type[0] );
-			//apply_filters( 'wpml_element_language_code', null, array( 'element_id' => $id, 'element_type' => $post_type ) );
+			$post_type = (array) get_query_var( 'post_type', 'post' );
+			$lang = $sitepress->get_language_for_element( $post_id, 'post_'.$post_type[0] );
+			//apply_filters( 'wpml_element_language_code', null, array( 'element_id' => $post_id, 'element_type' => $post_type ) );
+			if ( !empty($lang) )
+				$language = $this->parse_language_string( $lang );
 		}
 
-		// Polylang
-		if ( function_exists('pll_get_post_language') ) {
-			$lang = pll_get_post_language( $id, 'slug' );
-			$language = !empty($lang) ? $lang : $language;
-		}
-
-		return !empty($language) ? $language : $this->blog_language;
+		return apply_filters( 'xmlsf_post_language', $language, $post_id );
 	}
 
 
@@ -1214,21 +1245,29 @@ class XMLSitemapFeed {
 			if ( $request['feed'] == 'sitemap-news' ) {
 				$defaults = $this->defaults('news_tags');
 				$options = $this->get_option('news_tags');
-				$news_post_type = isset($options['post_type']) && !empty($options['post_type']) ? $options['post_type'] : $defaults['post_type'];
-				if (empty($news_post_type)) {
-					$news_post_type = 'post';
-				}
+				$news_post_types = isset($options['post_type']) && !empty($options['post_type']) ? (array)$options['post_type'] : $defaults['post_type'];
 
 				// disable caching
 				define('DONOTCACHEPAGE', true);
 				define('DONOTCACHEDB', true);
 
 				// set up query filters
-				add_filter('post_limits', array($this, 'filter_news_limits'));
-				add_filter('posts_where', array($this, 'filter_news_where'), 10, 1);
+				$live = false;
+				foreach ($news_post_types as $news_post_type) {
+					if ( get_lastpostdate('gmt', $news_post_type) > date('Y-m-d H:i:s', strtotime('-48 hours')) ) {
+						$live = true;
+						break;
+					}
+				}
+				if ( $live ) {
+					add_filter('post_limits', array($this, 'filter_news_limits'));
+					add_filter('posts_where', array($this, 'filter_news_where'), 10, 1);
+				} else {
+					add_filter('post_limits', array($this, 'filter_no_news_limits'));
+				}
 
 				// post type
-				$request['post_type'] = $news_post_type;
+				$request['post_type'] = $news_post_types;
 
 				// categories
 				if ( isset($options['categories']) && is_array($options['categories']) ) {
@@ -1320,6 +1359,7 @@ class XMLSitemapFeed {
 	function headers( $headers ) {
 		// set noindex
 		$headers['X-Robots-Tag'] = 'noindex, follow';
+		$headers['Content-Type'] = 'text/xml; charset=' . get_bloginfo('charset');
 	    return $headers;
 	}
 
