@@ -347,7 +347,6 @@ class GalleriesModel_bwg {
     }
 
     $data = array(
-      'id' => $id,
       'name' => $name,
       'slug' => $slug,
       'description' => WDWLibrary::get('description', '', FALSE),
@@ -363,12 +362,15 @@ class GalleriesModel_bwg {
       'update_flag' => WDWLibrary::get('update_flag', ''),
       'modified_date' => WDWLibrary::get('modified_date', time() )
     );
-	  $saved = $wpdb->replace($wpdb->prefix . 'bwg_gallery', $data);
+    if ( $id == 0 ) {
+      $saved = $wpdb->insert($wpdb->prefix . 'bwg_gallery', $data);
+      $id = $wpdb->insert_id;
+    }
+	  else {
+      $saved = $wpdb->update($wpdb->prefix . 'bwg_gallery', $data, array( 'id' => $id ));
+    }
 
     if ( $saved !== FALSE ) {
-      if ( $id == 0 ) {
-        $id = $wpdb->insert_id;
-      }
       // Create custom post (type is gallery).
       $custom_post_params = array(
         'id' => $id,

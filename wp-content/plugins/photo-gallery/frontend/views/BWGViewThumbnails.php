@@ -87,7 +87,7 @@ class BWGViewThumbnails extends BWGViewSite {
     $rgb_thumbs_bg_color = WDWLibrary::spider_hex2rgb($theme_row->thumbs_bg_color);
     ?>
     #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> .bwg-container-<?php echo $bwg; ?> {
-      width: <?php echo $params['image_column_number'] * $params['thumb_width']; ?>px;
+      width: <?php echo ($params['image_column_number'] * $params['thumb_width']) + ($theme_row->container_margin ? $theme_row->thumb_margin : 0); ?>px;
       justify-content: <?php echo $theme_row->thumb_align; ?>;
       background-color: rgba(<?php echo $rgb_thumbs_bg_color['red']; ?>, <?php echo $rgb_thumbs_bg_color['green']; ?>, <?php echo $rgb_thumbs_bg_color['blue']; ?>, <?php echo number_format($theme_row->thumb_bg_transparent / 100, 2, ".", ""); ?>);
       <?php

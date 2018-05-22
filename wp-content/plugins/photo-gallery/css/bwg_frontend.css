@@ -535,3 +535,6 @@ div[id^="bwg_container"] .bwg-border-box * {
   display: inline-block;
 }
 
+.bwg_container div[id^="bwg_container2_"] img {
+  height: initial;
+}
