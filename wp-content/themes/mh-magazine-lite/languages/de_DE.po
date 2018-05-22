@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MH Magazine lite v2.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-05 12:35+0000\n"
-"PO-Revision-Date: 2018-05-05 12:37+0000\n"
+"POT-Creation-Date: 2018-05-18 06:46+0000\n"
+"PO-Revision-Date: 2018-05-18 08:51+0200\n"
 "Last-Translator: Michael <info@mhthemes.com>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Loco https://localise.biz/\n"
+"X-Generator: Poedit 2.0.1\n"
 "X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
 "__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
 "_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
@@ -21,7 +21,7 @@ msgstr ""
 "X-Poedit-Basepath: ..\n"
 "X-Textdomain-Support: yes\n"
 "X-Loco-Target-Locale: de_DE\n"
-"X-Poedit-SearchPath-0: ."
+"X-Poedit-SearchPath-0: .\n"
 
 # @ mh-magazine-lite
 #: functions.php:53
@@ -142,14 +142,14 @@ msgstr[0] "%d Kommentar"
 msgstr[1] "%d Kommentare"
 
 # @ mh-magazine-lite
-#: comments.php:22 includes/mh-custom-functions.php:315
-#: includes/mh-custom-functions.php:328
+#: comments.php:22 includes/mh-custom-functions.php:317
+#: includes/mh-custom-functions.php:330
 msgid "&laquo;"
 msgstr "&laquo;"
 
 # @ mh-magazine-lite
-#: comments.php:22 includes/mh-custom-functions.php:316
-#: includes/mh-custom-functions.php:328
+#: comments.php:22 includes/mh-custom-functions.php:318
+#: includes/mh-custom-functions.php:330
 msgid "&raquo;"
 msgstr "&raquo;"
 
@@ -284,19 +284,26 @@ msgid "Edit"
 msgstr "Bearbeiten"
 
 # @ mh-magazine-lite
-#: includes/mh-custom-functions.php:290
+#: includes/mh-custom-functions.php:291
 msgid "Name "
 msgstr "Name"
 
 # @ mh-magazine-lite
-#: includes/mh-custom-functions.php:291
+#: includes/mh-custom-functions.php:292
 msgid "Email "
 msgstr "E-Mail"
 
 # @ mh-magazine-lite
-#: includes/mh-custom-functions.php:292
+#: includes/mh-custom-functions.php:293
 msgid "Website"
 msgstr "Webseite"
+
+#: includes/mh-custom-functions.php:294
+msgid ""
+"Save my name, email, and website in this browser for the next time I comment."
+msgstr ""
+"Meinen Namen, E-Mail und Website in diesem Browser speichern, bis ich wieder "
+"kommentiere."
 
 # @ mh-magazine-lite
 #: includes/mh-customizer.php:13 admin/admin.php:147

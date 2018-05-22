@@ -286,10 +286,12 @@ if (!function_exists('mh_magazine_lite_comment_fields')) {
 		$commenter = wp_get_current_commenter();
 		$req = get_option('require_name_email');
 		$aria_req = ($req ? " aria-required='true'" : '');
+		$consent = empty($commenter['comment_author_email']) ? '' : ' checked="checked"';
 		$fields =  array(
 			'author'	=>	'<p class="comment-form-author"><label for="author">' . esc_html__('Name ', 'mh-magazine-lite') . '</label>' . ($req ? '<span class="required">*</span>' : '') . '<br/><input id="author" name="author" type="text" value="' . esc_attr($commenter['comment_author']) . '" size="30"' . $aria_req . ' /></p>',
 			'email' 	=>	'<p class="comment-form-email"><label for="email">' . esc_html__('Email ', 'mh-magazine-lite') . '</label>' . ($req ? '<span class="required">*</span>' : '' ) . '<br/><input id="email" name="email" type="text" value="' . esc_attr($commenter['comment_author_email']) . '" size="30"' . $aria_req . ' /></p>',
-			'url' 		=>	'<p class="comment-form-url"><label for="url">' . esc_html__('Website', 'mh-magazine-lite') . '</label><br/><input id="url" name="url" type="text" value="' . esc_attr($commenter['comment_author_url']) . '" size="30" /></p>'
+			'url' 		=>	'<p class="comment-form-url"><label for="url">' . esc_html__('Website', 'mh-magazine-lite') . '</label><br/><input id="url" name="url" type="text" value="' . esc_attr($commenter['comment_author_url']) . '" size="30" /></p>',
+			'cookies' 	=>  '<p class="comment-form-cookies-consent"><input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes"' . $consent . ' />' . '<label for="wp-comment-cookies-consent">' . esc_html__('Save my name, email, and website in this browser for the next time I comment.', 'mh-magazine-lite') . '</label></p>'
 		);
 		return $fields;
 	}

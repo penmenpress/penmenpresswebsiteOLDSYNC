@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MH Magazine lite v2.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-05 12:35+0000\n"
-"PO-Revision-Date: 2018-05-05 12:37+0000\n"
+"POT-Creation-Date: 2018-05-18 06:46+0000\n"
+"PO-Revision-Date: 2018-05-18 06:48+0000\n"
 "Last-Translator: Michael <info@mhthemes.com>\n"
 "Language-Team: Indonesian\n"
 "Language: id_ID\n"
@@ -141,14 +141,14 @@ msgstr[0] "%d Komentar"
 msgstr[1] ""
 
 # @ mh-magazine-lite
-#: comments.php:22 includes/mh-custom-functions.php:315
-#: includes/mh-custom-functions.php:328
+#: comments.php:22 includes/mh-custom-functions.php:317
+#: includes/mh-custom-functions.php:330
 msgid "&laquo;"
 msgstr "&laquo;"
 
 # @ mh-magazine-lite
-#: comments.php:22 includes/mh-custom-functions.php:316
-#: includes/mh-custom-functions.php:328
+#: comments.php:22 includes/mh-custom-functions.php:318
+#: includes/mh-custom-functions.php:330
 msgid "&raquo;"
 msgstr "&raquo;"
 
@@ -281,19 +281,24 @@ msgid "Edit"
 msgstr ""
 
 # @ mh-magazine-lite
-#: includes/mh-custom-functions.php:290
+#: includes/mh-custom-functions.php:291
 msgid "Name "
 msgstr "Nama "
 
 # @ mh-magazine-lite
-#: includes/mh-custom-functions.php:291
+#: includes/mh-custom-functions.php:292
 msgid "Email "
 msgstr "Email "
 
 # @ mh-magazine-lite
-#: includes/mh-custom-functions.php:292
+#: includes/mh-custom-functions.php:293
 msgid "Website"
 msgstr "Situs"
+
+#: includes/mh-custom-functions.php:294
+msgid ""
+"Save my name, email, and website in this browser for the next time I comment."
+msgstr ""
 
 # @ mh-magazine-lite
 #: includes/mh-customizer.php:13 admin/admin.php:147
