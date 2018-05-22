@@ -1,36 +1,5 @@
 jQuery(document).ready(function(){
-	        			
-//    jQuery("#add-images-to-gallery").click(function(){      
-//      jQuery(".mgmlp-folder").removeAttr('checked');  
-//      jQuery(".mgmlp-folder").prop("checked", false);
-//      jQuery(".mgmlp-folder").prop('disabled', true);
-//    });
-//								
-//    jQuery("#add-new_attachment").click(function(){      
-//      jQuery(".mgmlp-folder").prop('disabled', false);
-//    });
-    
-//    jQuery("#add-new-folder").click(function(){      
-//      jQuery(".mgmlp-folder").prop('disabled', false);
-//    });
-    
-//    jQuery("#rename-file").click(function(){
-//      jQuery(".mgmlp-folder").prop("checked", false);
-//      jQuery(".mgmlp-folder").prop('disabled', false);
-//      jQuery(".mgmlp-folder").removeAttr('checked');  
-//      jQuery(".mgmlp-folder").attr("disabled", true);
-//    });
-//    
-//    jQuery("#copy-files").click(function(){      
-//      jQuery(".mgmlp-folder").prop("checked", false);
-//      jQuery(".mgmlp-folder").prop('disabled', true);
-//    });
-//    
-//    jQuery("#move-files").click(function(){      
-//      jQuery(".mgmlp-folder").prop("checked", false);
-//      jQuery(".mgmlp-folder").prop('disabled', true);
-//    });
-        
+	        			        
     jQuery("#mgmlp-create-new-folder").click(function(){
                 
 			jQuery("#folder-message").html('');			
@@ -585,8 +554,37 @@ jQuery(document).ready(function(){
           }
       });                
 			 			 
-		});		
-				
+		});
+    
+    jQuery(document).on("click", ".mgmlp-media", function (e) {
+      var current_element = jQuery(this);
+      var check_next = false;
+      var search_for_next_checked_item = false;
+      var shift_after = false;
+      var shiftHeld = e.shiftKey;    
+      if(shiftHeld) {
+        jQuery('input[type=checkbox].mgmlp-media').each(function() {          
+          if(!search_for_next_checked_item && !shift_after && jQuery(this).is(':checked') && current_element.is(this)) {
+            search_for_next_checked_item = true;
+            return; // continue the each loop
+          } else if(search_for_next_checked_item) {  
+              if(jQuery(this).is(':checked'))
+                return false;
+              jQuery(this).prop('checked', true);
+          } else {                    
+            if(!check_next && jQuery(this).is(':checked')) {
+              check_next = true;
+              shift_after = true;
+            } else if(current_element.is(this)) {
+              return false;
+            } else if(check_next) {
+              jQuery(this).prop('checked', true);
+            }
+          }
+        });
+      }
+    });   
+    				
   });    
 				
 		jQuery("#mgmlp-file-container").on("click", "#display_mlpp_images", function(){
@@ -659,7 +657,6 @@ jQuery(document).ready(function(){
   });  
 			       
 function slideonlyone(thechosenone) {
-	console.log(thechosenone);
   jQuery('.input-area').each(function(index) {
     if (jQuery(this).attr("id") == thechosenone) {
        jQuery(this).slideDown(200);
@@ -910,7 +907,6 @@ function mlf_refresh(folder_id) {
 	var image_link = '1';
   jQuery("#folder-message").html('Refreshing...');
 	
-	console.log('mlf_refresh');
 	jQuery.ajax({
 		type: "POST",
 		async: true,
@@ -962,8 +958,7 @@ function mlf_refresh_folders(folder_id) {
 
 function run_sync_process(phase, parent_folder, mlp_title_text, mlp_alt_text) {
 	
-  console.log("initial phase " + phase);
-  jQuery("#ajaxloader").hide();
+  jQuery("#ajaxloader").show();
   
 	jQuery.ajax({
 		type: "POST",
@@ -972,8 +967,6 @@ function run_sync_process(phase, parent_folder, mlp_title_text, mlp_alt_text) {
 		url: mgmlp_ajax.ajaxurl,
 		dataType: "json",
 		success: function (data) { 
-			console.log('data '+ data);
-      console.log('current phase '  + data.phase);
 			if(data != null && data.phase != null) {
 			  jQuery("#folder-message").html(data.message);
         run_sync_process(data.phase, parent_folder, mlp_title_text, mlp_alt_text);

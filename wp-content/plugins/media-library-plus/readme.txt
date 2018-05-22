@@ -2,8 +2,8 @@
 Contributors: maxfoundry, AlanP57
 Tags: WordPress media library folders, media library folders, organize media library
 Requires at least: 4.0
-Tested up to: 4.9.5
-Stable tag: 4.1.9
+Tested up to: 4.9.6
+Stable tag: 4.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -168,6 +168,11 @@ To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup menu
 
 
 == Changelog ==
+= 4.2.0 =
+* Added multi select by holding checking a second item while holding down the shift key.
+* Improved the copy and move function to avoid triggering a server timeout error
+* Added check for mime type when files are uploaded
+
 = 4.1.9 =
 * Modified the sync function add files without triggering a server timeout error
 * Replaced timer function for regularly checking for new folders  
