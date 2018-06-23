@@ -128,8 +128,8 @@ if ($controls->is_action('bounces')) {
             continue;
         }
 
-        $r = NewsletterUsers::instance()->set_user_status($email, 'B');
-        if ($r === 0) {
+        $r = $wpdb->query($wpdb->prepare('update ' . NEWSLETTER_USERS_TABLE . " set status='B' where email=%s limit 1", $email));
+        if ($r === 1) {
             $results .= '[BOUNCED] ' . $email . "\n";
             $marked++;
             continue;

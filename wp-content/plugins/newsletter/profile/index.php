@@ -29,16 +29,18 @@ if ($controls->is_action()) {
     <div id="tnp-heading">
 
         <h2><?php _e('The subscriber profile page', 'newsletter') ?></h2>
-
+        <?php $controls->page_help('https://www.thenewsletterplugin.com/documentation/profile-page')?>
     </div>
 
     <div id="tnp-body">
+        
 
         <form id="channel" method="post" action="">
             <?php $controls->init(); ?>
             <div id="tabs">
                 <ul>
                     <li><a href="#tabs-general"><?php _e('General', 'newsletter') ?></a></li>
+                    <li><a href="#tabs-export"><?php _e('Subscriber data export', 'newsletter') ?></a></li>
 
                 </ul>
 
@@ -68,7 +70,7 @@ if ($controls->is_action()) {
                     <h3><?php _e('Messages', 'newsletter')?></h3>
                     <table class="form-table">
                         <tr>
-                            <th>Profile saved</th>
+                            <th><?php _e('Profile saved', 'newsletter')?></th>
                             <td>
                                 <?php $controls->text('saved', 80); ?>
                             </td>
@@ -89,15 +91,12 @@ if ($controls->is_action()) {
                             <th><?php _e('General error', 'newsletter')?></th>
                             <td>
                                 <?php $controls->text('error', 80); ?>
-                                <p class="description">
-                                    Email not valid or already used.
-                                </p>
                             </td>
                         </tr>
 
                     </table>
 
-                    <h3>Labels</h3>
+                    <h3><?php _e('Labels', 'newsletter')?></h3>
                     <table class="form-table">
                         <tr>
                             <th><?php _e('"Save" label', 'newsletter')?></th>
@@ -116,6 +115,22 @@ if ($controls->is_action()) {
                             </td>
                         </tr>
                         
+                    </table>
+                </div>
+                
+                <div id="tabs-general">
+
+
+                    <table class="form-table">
+
+                        <tr>
+                            <th>
+                                <?php _e('Log of sent newsletters', 'newsletter') ?>
+                            </th>
+                            <td>
+                                <?php $controls->yesno('export_newsletters'); ?>
+                            </td>
+                        </tr>
                     </table>
                 </div>
 

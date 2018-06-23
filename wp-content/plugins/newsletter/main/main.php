@@ -1,6 +1,5 @@
 <?php
-if (!defined('ABSPATH'))
-    exit;
+defined('ABSPATH') || exit;
 
 @include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
@@ -14,24 +13,24 @@ if (!$controls->is_action()) {
         $errors = null;
 
         // Validation
-        $controls->data['sender_email'] = $newsletter->normalize_email($controls->data['sender_email']);
+        $controls->data['sender_email'] = $module->normalize_email($controls->data['sender_email']);
         if (!$newsletter->is_email($controls->data['sender_email'])) {
             $controls->errors .= __('The sender email address is not correct.', 'newsletter') . '<br>';
         } else {
-            $controls->data['sender_email'] = $newsletter->normalize_email($controls->data['sender_email']);
+            $controls->data['sender_email'] = $module->normalize_email($controls->data['sender_email']);
         }
 
         if (!$newsletter->is_email($controls->data['return_path'], true)) {
             $controls->errors .= __('Return path email is not correct.', 'newsletter') . '<br>';
         } else {
-            $controls->data['return_path'] = $newsletter->normalize_email($controls->data['return_path']);
+            $controls->data['return_path'] = $module->normalize_email($controls->data['return_path']);
         }
 
 
-        if (!$newsletter->is_email($controls->data['reply_to'], true)) {
+        if (!$module->is_email($controls->data['reply_to'], true)) {
             $controls->errors .= __('Reply to email is not correct.', 'newsletter') . '<br>';
         } else {
-            $controls->data['reply_to'] = $newsletter->normalize_email($controls->data['reply_to']);
+            $controls->data['reply_to'] = $module->normalize_email($controls->data['reply_to']);
         }
 
         if (!empty($controls->data['contract_key'])) {
@@ -109,23 +108,18 @@ if (!empty($return_path)) {
     }
 }
 
-if (empty($controls->data['page'])) {
-    $controls->messages .= '<p>You should set a dedicated page for Newsletter which used to interact with your subscribers.</p>';
-} else {
-    
-}
 ?>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/codemirror.css" type="text/css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/addon/hint/show-hint.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/codemirror.css" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/addon/hint/show-hint.css">
 <style>
     .CodeMirror {
         border: 1px solid #ddd;
     }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/codemirror.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/mode/css/css.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/addon/hint/show-hint.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.2/addon/hint/css-hint.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/codemirror.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/mode/css/css.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/addon/hint/show-hint.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.37.0/addon/hint/css-hint.js"></script>
 <script>
     jQuery(function () {
         var editor = CodeMirror.fromTextArea(document.getElementById("options-css"), {
@@ -279,6 +273,13 @@ if (empty($controls->data['page'])) {
                             </th>
                             <td>
                                 <?php $controls->log_level('log_level'); ?>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <th><?php _e('IP addresses', 'newsletter')?></th>
+                            <td>
+                                <?php $controls->select('ip', array(''=>__('Store', 'newsletter'), 'anonymize'=> __('Anonymize', 'newsletter'), 'skip'=>__('Do not store', 'newsletter'))); ?>
                             </td>
                         </tr>
 

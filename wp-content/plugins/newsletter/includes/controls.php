@@ -414,12 +414,12 @@ class NewsletterControls {
         if ($value == 0) {
             echo ' selected';
         }
-        echo '>No</option>';
+        echo '>', __('No', 'newsletter'), '</option>';
         echo '<option value="1"';
         if ($value == 1) {
             echo ' selected';
         }
-        echo '>Yes</option>';
+        echo '>', __('Yes', 'newsletter'), '</option>';
         echo '</select>&nbsp;&nbsp;&nbsp;';
     }
 
@@ -431,12 +431,12 @@ class NewsletterControls {
         if ($value == 0) {
             echo ' selected';
         }
-        echo '>Disabled</option>';
+        echo '>', __('Disabled', 'newsletter'), '</option>';
         echo '<option value="1"';
         if ($value == 1) {
             echo ' selected';
         }
-        echo '>Enabled</option>';
+        echo '>', __('Enabled', 'newsletter'), '</option>';
         echo '</select>';
     }
 
@@ -955,7 +955,7 @@ class NewsletterControls {
     function color($name) {
 
         $value = $this->get_value($name);
-        echo '<input id="options-', esc_attr($name), '" class="tnp-controls-color" name="options[' . $name . ']" type="text" size="' . $size . '" value="';
+        echo '<input id="options-', esc_attr($name), '" class="tnp-controls-color" name="options[' . $name . ']" type="text" value="';
         echo esc_attr($value);
         echo '">';
     }

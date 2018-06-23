@@ -154,13 +154,6 @@ $warning |= empty($status_options['mail']);
     </ul>
 </div>
 
-<?php if (!empty(Newsletter::instance()->options['page']) && (!get_permalink(Newsletter::instance()->options['page']) || get_post_status(Newsletter::instance()->options['page']) != 'publish')) { ?>
-    <div class="tnp-error">
-        <?php _e('The Newsletter dedicated page is wrongly configured.', 'newsletter') ?>
-        <a href="admin.php?page=newsletter_main_main"><?php _e('Check it now', 'newsletter')?></a>.
-    </div>
-<?php } ?>
-
 
 <?php if (isset($_GET['debug']) || !isset($dismissed['rate']) && $user_count > 300) { ?>
     <div class="tnp-notice">
@@ -197,7 +190,6 @@ $warning |= empty($status_options['mail']);
 <?php } ?>
 
 <div id="tnp-notification">
-    <?php Newsletter::instance()->warnings(); ?>
     <?php
     if (isset($controls)) {
         $controls->show();

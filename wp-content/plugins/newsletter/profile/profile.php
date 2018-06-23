@@ -44,8 +44,10 @@ class NewsletterProfile extends NewsletterModule {
                 if ($user == null) {
                     die('No subscriber found.');
                 }
+                $profile_url = $this->build_message_url($this->options['url'], 'profile', $user);
+                $profile_url = apply_filters('newsletter_profile_url', $profile_url, $user);
 
-                wp_redirect(Newsletter::instance()->get_newsletter_page_url('profile', $user));
+                wp_redirect($profile_url);
                 die();
 
                 break;
@@ -54,7 +56,7 @@ class NewsletterProfile extends NewsletterModule {
             case 'ps':
                 $user = $this->save_profile();
                 // $user->alert is a temporary field
-                wp_redirect(Newsletter::instance()->get_newsletter_page_url('profile', $user, null, $user->alert));
+                wp_redirect($this->build_message_url($this->options['url'], 'profile', $user, null, $user->alert));
                 die();
                 break;
 
@@ -71,7 +73,7 @@ class NewsletterProfile extends NewsletterModule {
      * @param stdClass $user
      */
     function get_profile_export_url($user) {
-        return $this->get_home_url() . '?na=profile_export&nk=' . $this->get_user_key($user);
+        return $this->build_action_url('profile_export', $user);
     }
 
     /**
@@ -79,14 +81,7 @@ class NewsletterProfile extends NewsletterModule {
      * @param stdClass $user
      */
     function get_profile_url($user) {
-        if (empty($this->options['url'])) {
-            $profile_url = $this->get_home_url() . '?na=profile&nk=' . $this->get_user_key($user);
-        } else {
-            $profile_url = self::add_qs($this->options['url'], 'nk=' . $this->get_user_key($user));
-        }
-
-        $profile_url = apply_filters('newsletter_profile_url', $profile_url, $user);
-        return $profile_url;
+        return $this->build_action_url('profile', $user);
     }
 
     function hook_newsletter_replace($text, $user, $email) {
@@ -94,16 +89,12 @@ class NewsletterProfile extends NewsletterModule {
             return $text;
         }
 
-        $profile_options = NewsletterSubscription::instance()->get_options('profile');
-
         // Profile edit page URL and link
         $url = $this->get_profile_url($user);
         $text = $this->replace_url($text, 'PROFILE_URL', $url);
-//        $text = str_replace('{profile_link}', '<a class="tnp-profile-link" href="' . $url . '">' . $this->options['edit_label'] . '</a>', $text);
         // Profile export URL and link
         $url = $this->get_profile_export_url($user);
         $text = $this->replace_url($text, 'PROFILE_EXPORT_URL', $url);
-//        $text = str_replace('{profile_export_link}', '<a class="tnp-profile-export-link" href="' . $url . '">' . $this->options['export_label'] . '</a>', $text);
 
         if (strpos($text, '{profile_form}') !== false) {
             $text = str_replace('{profile_form}', $this->get_profile_form($user), $text);
@@ -123,71 +114,71 @@ class NewsletterProfile extends NewsletterModule {
 
         if (empty($user)) {
             if (empty($content)) {
-                return __('Subscriber profile not found.', 'newsletter');
+                return __('Subscriber not found.', 'newsletter');
             } else {
                 return $content;
             }
         }
 
-        return NewsletterSubscription::instance()->get_profile_form($user);
+        return $this->get_profile_form($user);
     }
 
     function to_json($user) {
         global $wpdb;
 
-        $user = (array) $user;
-        $fields = array('id', 'name', 'surname', 'sex', 'created', 'ip');
-        $data = array();
-        $options_profile = get_option('newsletter_profile', array());
-        $lists = array();
-        $profiles = array();
-        foreach ($user as $key => $value) {
-            if (strpos($key, 'list_') === 0) {
-                if (empty($value))
-                    continue;
-                if ($options_profile[$key . '_status'] != 1 && $options_profile[$key . '_status'] != 2) {
-                    continue;
-                }
-                $lists[] = $options_profile[$key];
-            }
 
-            // Check if disabled
-            if (strpos($key, 'profile_') === 0) {
-                if (empty($value))
-                    continue;
-                if ($options_profile[$key . '_status'] == 0) {
-                    continue;
-                }
-                $profiles[$key] = array('name' => $options_profile[$key], 'value' => $value);
-            }
-
-
-            if (in_array($key, $fields))
-                $data[$key] = $value;
+        $fields = array('name', 'surname', 'sex', 'created', 'ip', 'email');
+        $data = array(
+            'email'=>$user->email,
+            'name'=>$user->name,
+            'last_name'=>$user->surname,
+            'gender'=>$user->sex,
+            'created'=>$user->created,
+            'ip'=>$user->ip,
+            );
+        
+        // Lists
+        $data['lists'] = array();
+        
+        $lists = $this->get_lists_public();
+        foreach ($lists as $list) {
+            $field = 'list_' . $list->id;
+            if ($user->$field == 1) {
+                $data['lists'][] = $list->name;
+            } 
         }
-
-        $data['lists'] = $lists;
-        $data['profiles'] = $profiles;
-
+        
+        // Profile
+        $options_profile = get_option('newsletter_profile', array());
+        $data['profiles'] = array();
+        for ($i=1; $i<NEWSLETTER_PROFILE_MAX; $i++) {
+            $field = 'profile_' . $i;
+            if ($options_profile[$field . '_status'] != 1 && $options_profile[$field . '_status'] != 2) {
+                continue;
+            }
+            $data['profiles'][] = array('name' => $options_profile[$field], 'value' => $user->$field);
+        }
 
         // Newsletters
-        $sent = $wpdb->get_results($wpdb->prepare("select * from {$wpdb->prefix}newsletter_sent where user_id=%d order by email_id asc", $user['id']));
-        $newsletters = array();
-        foreach ($sent as $item) {
-            $action = 'none';
-            if ($item->open == 1)
-                $action = 'read';
-            else if ($item->open == 2)
-                $action = 'click';
+        if ($this->options['export_newsletters']) {
+            $sent = $wpdb->get_results($wpdb->prepare("select * from {$wpdb->prefix}newsletter_sent where user_id=%d order by email_id asc", $user->id));
+            $newsletters = array();
+            foreach ($sent as $item) {
+                $action = 'none';
+                if ($item->open == 1)
+                    $action = 'read';
+                else if ($item->open == 2)
+                    $action = 'click';
 
-            $email = $this->get_email($item->email_id);
-            if (!$email)
-                continue;
-            // 'id'=>$item->email_id, 
-            $newsletters[] = array('subject' => $email->subject, 'action' => $action, 'sent' => date('Y-m-d h:i:s', $email->send_on));
+                $email = $this->get_email($item->email_id);
+                if (!$email)
+                    continue;
+                // 'id'=>$item->email_id, 
+                $newsletters[] = array('subject' => $email->subject, 'action' => $action, 'sent' => date('Y-m-d h:i:s', $email->send_on));
+            }
+
+            $data['newsletters'] = $newsletters;
         }
-
-        $data['newsletters'] = $newsletters;
 
         $extra = apply_filters('newsletter_profile_export_extra', array());
 
@@ -299,15 +290,16 @@ class NewsletterProfile extends NewsletterModule {
         }
 
         // Privacy
-        if (!empty($this->options['privacy_label'])) {
+        $privacy_url = NewsletterSubscription::instance()->get_privacy_url();
+        if (!empty($this->options['privacy_label']) && !empty($privacy_url)) {
             $buffer .= '<div class="tnp-field tnp-field-privacy">';
-            if (!empty($options['privacy_url'])) {
-                $buffer .= '<a href="' . $options['privacy_url'] . '" target="_blank">';
+            if ($privacy_url) {
+                $buffer .= '<a href="' . $privacy_url . '" target="_blank">';
             }
 
             $buffer .= $this->options['privacy_label'];
 
-            if (!empty($options['privacy_url'])) {
+            if ($privacy_url) {
                 $buffer .= '</a>';
             }
             $buffer .= "</div>\n";
@@ -356,7 +348,7 @@ class NewsletterProfile extends NewsletterModule {
             $tmp = $this->get_user($email);
             if ($tmp != null && $tmp->id != $user->id) {
                 // TODO: Move the label on profile setting panel
-                $user->alert = $subscription_module->options['profile_error'];
+                $user->alert = $this->options['error'];
                 return $user;
             }
             $data['status'] = Newsletter::STATUS_NOT_CONFIRMED;
@@ -400,6 +392,10 @@ class NewsletterProfile extends NewsletterModule {
         // Feed by Mail service is saved here
         $data = apply_filters('newsletter_profile_save', $data);
 
+        if ($user->status == TNP_User::STATUS_NOT_CONFIRMED) {
+            $data['status'] = TNP_User::STATUS_CONFIRMED;
+        }
+
         $user = $this->save_user($data);
         $this->add_user_log($user, 'profile');
 
@@ -408,14 +404,14 @@ class NewsletterProfile extends NewsletterModule {
         if ($email_changed && $subscription_module->is_double_optin()) {
             $subscription_module->send_activation_email($user);
             // TODO: Move this option on new profile configuration panel
-            $alert = $subscription_module->options['profile_email_changed'];
+            $alert = $this->options['profile_email_changed'];
         }
 
         if (isset($alert)) {
             $user->alert = $alert;
         } else {
             // TODO: Move this label on profile settings panel
-            $user->alert = $subscription_module->options['profile_saved'];
+            $user->alert = $this->options['saved'];
         }
         return $user;
     }
@@ -424,7 +420,7 @@ class NewsletterProfile extends NewsletterModule {
         global $wpdb, $charset_collate;
 
         parent::upgrade();
-        
+
         // Migration code
         if (empty($this->options) || empty($this->options['email_changed'])) {
             // Options of the subscription module (worng name, I know)
@@ -442,12 +438,9 @@ class NewsletterProfile extends NewsletterModule {
             $this->options['save_label'] = $options['save'];
             $this->save_options($this->options);
         }
-
-        
     }
 
     function admin_menu() {
-        //$this->add_menu_page('index', 'Subscribers');
         $this->add_admin_page('index', 'Profile');
     }
 

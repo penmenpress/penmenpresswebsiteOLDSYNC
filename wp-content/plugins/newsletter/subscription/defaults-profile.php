@@ -19,6 +19,7 @@ $options['privacy'] = __('By continuing, you accept the privacy policy', 'newsle
 $options['privacy_error'] = 'You must accept the privacy policy';
 $options['privacy_status'] = 0;
 $options['privacy_url'] = '';
+$options['privacy_use_wp_url'] = 0;
 
 $options['subscribe'] = __('Subscribe', 'newsletter');
 

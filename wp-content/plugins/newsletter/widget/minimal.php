@@ -105,4 +105,3 @@ class NewsletterWidgetMinimal extends WP_Widget {
 add_action('widgets_init', function() {
     return register_widget("NewsletterWidgetMinimal");
 });
-?>

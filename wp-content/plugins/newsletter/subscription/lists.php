@@ -6,13 +6,15 @@ $controls = new NewsletterControls();
 $module = NewsletterSubscription::instance();
 
 if (!$controls->is_action()) {
-    $controls->data = $module->get_options('profile');
+    $controls->data = $module->get_options('lists');
 } else {
     if ($controls->is_action('save')) {
-        $module->merge_options($controls->data, 'profile');
-        // In the near future
         $module->save_options($controls->data, 'lists');
         $controls->add_message_saved();
+    }
+    if ($controls->is_action('unlink')) {
+        $wpdb->query("update " . NEWSLETTER_USERS_TABLE . " set list_" . ((int)$controls->button_data) . "=0");
+        $controls->add_message_done();
     }
 }
 
@@ -61,6 +63,7 @@ $status = array(0 => 'Disabled/Private use', 1 => 'Only on profile page', 2 => '
                         <th><?php _e('Pre-checked', 'newsletter')?></th>
                         <th><?php _e('Pre-assigned', 'newsletter')?></th>
                         <th><?php _e('Subscribers', 'newsletter')?></th>
+                        <th>&nbsp;</th>
                         <th><?php _e('Notes', 'newsletter') ?></th>
                     </tr>
                 </thead>
@@ -72,6 +75,9 @@ $status = array(0 => 'Disabled/Private use', 1 => 'Only on profile page', 2 => '
                         <td><?php $controls->select('list_' . $i . '_checked', array(0 => 'No', 1 => 'Yes')); ?></td>
                         <td><?php $controls->select('list_' . $i . '_forced', array(0 => 'No', 1 => 'Yes')); ?></td>
                         <td><?php echo $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where list_" . $i . "=1 and status='C'"); ?></td>
+                        
+                        <td><?php $controls->button_confirm('unlink', __('Unlink everyone', 'newsletter'), '', $i); ?></td>
+                        
                         <td>
                             <?php $notes = apply_filters('newsletter_lists_notes', array(), $i); ?>
                             <?php

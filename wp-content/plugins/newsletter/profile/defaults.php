@@ -13,4 +13,5 @@ $options['error'] = __("Your email is not valid or already in use.", 'newsletter
 $options['save_label'] = __('Save', 'newsletter');
 $options['privacy_label'] = __('Read our privacy note', 'newsletter');
 $options['saved'] = __('Profile saved.', 'newsletter');
+$options['export_newsletters'] = 0;
 

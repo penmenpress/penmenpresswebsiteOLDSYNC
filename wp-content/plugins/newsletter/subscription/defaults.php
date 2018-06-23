@@ -21,6 +21,7 @@ $options['akismet'] = 0;
 $options['captcha'] = 0;
 $options['notify_email'] = get_option('admin_email');
 $options['multiple'] = 1;
+$options['notify'] = 0;
 
 $options['error_text'] = '<p>' . __('You cannot subscribe with the email address you entered, please contact the site administrator.', 'newsletter') . '</p>';
 

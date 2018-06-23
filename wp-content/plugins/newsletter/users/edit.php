@@ -278,6 +278,7 @@ function percentValue($value, $total) {
                             <tr>
                                 <th>Date</th>
                                 <th>Source</th>
+                                <th>IP</th>
                                 <th>Lists</th>
                             </tr>
                             
@@ -290,6 +291,7 @@ function percentValue($value, $total) {
                             <tr>
                                 <td><?php echo $controls->print_date($log->created)?></td>
                                 <td><?php echo esc_html($log->source)?></td>
+                                <td><?php echo esc_html($log->ip)?></td>
                                 <td>
                                     <?php
                                     if (is_array($data)) {

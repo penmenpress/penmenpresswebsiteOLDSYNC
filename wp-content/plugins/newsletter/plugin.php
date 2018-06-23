@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.4.3
+  Version: 5.5.2
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -14,11 +14,9 @@
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.4.3');
+define('NEWSLETTER_VERSION', '5.5.2');
 
-global $wpdb, $newsletter;
-
-//@include_once WP_CONTENT_DIR . '/extensions/newsletter/config.php';
+global $newsletter, $wpdb;
 
 if (!defined('NEWSLETTER_EMAILS_TABLE'))
     define('NEWSLETTER_EMAILS_TABLE', $wpdb->prefix . 'newsletter_emails');
@@ -35,8 +33,8 @@ if (!defined('NEWSLETTER_SENT_TABLE'))
 // Do not use basename(dirname()) since on activation the plugin is sandboxed inside a function
 define('NEWSLETTER_SLUG', 'newsletter');
 
-define('NEWSLETTER_DIR', WP_PLUGIN_DIR . '/' . NEWSLETTER_SLUG);
-define('NEWSLETTER_INCLUDES_DIR', WP_PLUGIN_DIR . '/' . NEWSLETTER_SLUG . '/includes');
+define('NEWSLETTER_DIR', __DIR__);
+define('NEWSLETTER_INCLUDES_DIR', __DIR__ . '/includes');
 
 // Almost obsolete but the first two must be kept for compatibility with modules
 define('NEWSLETTER_URL', WP_PLUGIN_URL . '/newsletter');
@@ -126,7 +124,7 @@ class Newsletter extends NewsletterModule {
 
         // Here because the upgrade is called by the parent constructor and uses the scheduler
         add_filter('cron_schedules', array($this, 'hook_cron_schedules'), 1000);
-        parent::__construct('main', '1.4.3', null, array('info', 'smtp'));
+        parent::__construct('main', '1.4.9', null, array('info', 'smtp'));
 
         $max = $this->options['scheduler_max'];
         if (!is_numeric($max)) {
@@ -160,7 +158,7 @@ class Newsletter extends NewsletterModule {
             add_action('admin_menu', array($this, 'add_extensions_menu'), 90);
         }
     }
-    
+
     function update_cron_stats() {
         if (defined('DOING_CRON') && DOING_CRON) {
             $calls = get_option('newsletter_diagnostic_cron_calls', array());
@@ -186,6 +184,8 @@ class Newsletter extends NewsletterModule {
                 }
                 $mean = $mean / count($calls) - 1;
                 update_option('newsletter_diagnostic_cron_data', array('mean' => $mean, 'max' => $max, 'min' => $min), false);
+            } else {
+                update_option('newsletter_diagnostic_cron_data', '', false);
             }
         }
     }
@@ -296,17 +296,24 @@ class Newsletter extends NewsletterModule {
         wp_schedule_event(time() + 30, 'daily', 'newsletter_extension_versions');
 
         $subscription_options = get_option('newsletter', array());
-        
+
         // Settings migration
         if (empty($this->options['page'])) {
             if (isset($subscription_options['page']))
                 $this->options['page'] = $subscription_options['page'];
             $this->save_options($this->options);
         }
-        
+
         if (empty($this->options['css']) && !empty($subscription_options['css'])) {
             $this->options['css'] = $subscription_options['css'];
             $this->save_options($this->options);
+        }
+
+        // Migration of "info" options
+        $info_options = $this->get_options('info');
+        if (!empty($this->options['header_logo']) && empty($info_options['header_logo'])) {
+            $info_options = $this->options;
+            $this->save_options($info_options, 'info');
         }
 
         return true;
@@ -337,38 +344,23 @@ class Newsletter extends NewsletterModule {
      * if there are no warnings.
      */
     function warnings() {
-        $warnings = '';
-        $x = wp_next_scheduled('newsletter');
-        if ($x === false) {
-            $warnings .= 'The delivery engine is off (it should never be off). Deactivate and reactivate the plugin. Thank you.<br>';
-        } else if (time() - $x > 900) {
-            $warnings .= 'The cron system seems not running correctly. See <a href="https://www.thenewsletterplugin.com/how-to-make-the-wordpress-cron-work" target="_blank">this page</a> for more information.<br>';
-        } else {
-            $cron_data = get_option('newsletter_diagnostic_cron_data');
-            if ($cron_data && $cron_data['mean'] > 400) {
-                $warnings .= 'The WordPress internal schedule is not triggered enough often. See <a href="https://www.thenewsletterplugin.com/how-to-make-the-wordpress-cron-work" target="_blank">this page</a> for more information.<br>';
-            }
-        }
-
-        if (!empty($warnings)) {
-            echo '<div class="tnp-error">';
-            echo $warnings;
-            echo '</div>';
-        }
+       
     }
-
+    
     function hook_init() {
         global $cache_stop, $hyper_cache_stop, $wpdb;
 
         if (isset($this->options['debug']) && $this->options['debug'] == 1) {
+            error_reporting(E_ALL | E_NOTICE);
             ini_set('log_errors', 1);
             ini_set('error_log', WP_CONTENT_DIR . '/logs/newsletter/php-' . date('Y-m') . '-' . get_option('newsletter_logger_secret') . '.txt');
         }
 
         add_shortcode('newsletter_replace', array($this, 'shortcode_newsletter_replace'));
-        //add_shortcode('newsletter_action', array($this, 'shortcode_newsletter_action'));
 
         if (is_admin()) {
+            add_action('admin_notices', array($this, 'hook_admin_notices'));
+
             if ($this->is_admin_page()) {
                 wp_enqueue_script('jquery-ui-tabs');
                 wp_enqueue_script('jquery-ui-tooltip');
@@ -400,8 +392,7 @@ class Newsletter extends NewsletterModule {
             add_action('wp_enqueue_scripts', array($this, 'hook_wp_enqueue_scripts'));
         }
 
-        $action = isset($_REQUEST['na']) ? $_REQUEST['na'] : '';
-        if (empty($action) || is_admin()) {
+        if (empty($this->action)) {
             return;
         }
 
@@ -409,12 +400,7 @@ class Newsletter extends NewsletterModule {
         $cache_stop = true;
         $hyper_cache_stop = true;
 
-        if ($action == 'of') {
-            echo $this->subscription_form('os');
-            die();
-        }
-
-        if ($action == 'fu') {
+        if ($this->action == 'fu') {
             $user = $this->check_user();
             if ($user == null) {
                 die('No user');
@@ -425,15 +411,42 @@ class Newsletter extends NewsletterModule {
             return;
         }
 
-        if ($action == 'test') {
+        if ($this->action == 'test') {
             echo 'ok';
             die();
         }
     }
 
+    function hook_admin_notices() {
+        // Check of Newsletter dedicated page
+        if ($this->options['page']) {
+            if (get_post_status($this->options['page']) !== 'publish') {
+                echo '<div class="notice notice-error"><p>The Newsletter dedicated page is not published. <a href="', site_url('/wp-admin/post.php') . '?post=', $this->options['page'], '&action=edit"><strong>Edit the page</strong></a> or <a href="admin.php?page=newsletter_main_main"><strong>review the main settings</strong></a>.</p></div>';
+            } else {
+                $content = get_post_field('post_content', $this->options['page']);
+                // With and without attributes
+                if (strpos($content, '[newsletter]') === false && strpos($content, '[newsletter ') === false) {
+                    echo '<div class="notice notice-error"><p>The Newsletter dedicated page does not contain the [newsletter] shortcode. <a href="', site_url('/wp-admin/post.php'), '?post=', $this->options['page'], '&action=edit"><strong>Edit the page</strong></a> or <a href="admin.php?page=newsletter_main_main"><strong>review the main settings</strong></a>.</p></div>';
+                }
+            }
+        }
+        
+        $x = wp_next_scheduled('newsletter');
+        if ($x === false) {
+            echo '<div class="notice notice-error"><p>The Newsletter delivery engine is off (it should never be off). Deactivate and reactivate the Newsletter plugin.</p></div>';
+        } else if (time() - $x > 900) {
+            echo '<div class="notice notice-error"><p>The WP scheduler doesn\'t seem to be running correctly for Newsletter. <a href="https://www.thenewsletterplugin.com/documentation/newsletter-delivery-engine#cron" target="_blank"><strong>Read this page to solve the problem</strong></a>.</p></div>';
+        } else {
+            $cron_data = get_option('newsletter_diagnostic_cron_data');
+            if ($cron_data && $cron_data['mean'] > 500) {
+                echo '<div class="notice notice-error"><p>The WP scheduler doesn\'t seem to be triggered enough often for Newsletter. <a href="https://www.thenewsletterplugin.com/documentation/newsletter-delivery-engine#cron" target="_blank"><strong>Read this page to solve the problem</strong></a>.</p></div>';
+            }
+        }
+    }
+
     function hook_wp_enqueue_scripts() {
         if (empty($this->options['css_disabled']) && apply_filters('newsletter_enqueue_style', true)) {
-            wp_enqueue_style('newsletter-subscription', plugins_url('newsletter') . '/style.css', array(), NEWSLETTER_VERSION);
+            wp_enqueue_style('newsletter', plugins_url('newsletter') . '/style.css', array(), NEWSLETTER_VERSION);
             if (!empty($this->options['css'])) {
                 wp_add_inline_style('newsletter', $this->options['css']);
             }
@@ -443,11 +456,6 @@ class Newsletter extends NewsletterModule {
     function shortcode_newsletter_replace($attrs, $content) {
         $content = do_shortcode($content);
         $content = $this->replace($content, $this->get_user_from_request(), $this->get_email_from_request());
-        return $content;
-    }
-
-    function shortcode_newsletter_action($attrs, $content) {
-        $content = apply_filters('newsletter_action_shortcode', '', $attrs, $content, $this->get_user_from_request(), $this->get_email_from_request());
         return $content;
     }
 
@@ -466,6 +474,12 @@ class Newsletter extends NewsletterModule {
         if (get_option('newsletter_show_welcome')) {
             delete_option('newsletter_show_welcome');
             wp_redirect(admin_url('admin.php?page=newsletter_main_welcome'));
+        }
+
+        // https://developer.wordpress.org/plugins/privacy/suggesting-text-for-the-site-privacy-policy/
+        // https://make.wordpress.org/core/2018/05/17/4-9-6-update-guide/
+        if (function_exists('wp_add_privacy_policy_content')) {
+            //wp_add_privacy_policy_content('Newsletter', wp_kses_post( wpautop( $content, false )));
         }
     }
 
@@ -1028,33 +1042,6 @@ class Newsletter extends NewsletterModule {
         return $file2;
     }
 
-    /**
-     * Return a user if there are request parameters or cookie with identification data otherwise null.
-     * 
-     * @return TNP_User The user identified or null
-     */
-    function check_user() {
-        global $wpdb, $current_user;
-
-        if (isset($_REQUEST['nk'])) {
-            list($id, $token) = @explode('-', $_REQUEST['nk'], 2);
-        } if (isset($_COOKIE['newsletter'])) {
-            list ($id, $token) = @explode('-', $_COOKIE['newsletter'], 2);
-        }
-
-        if (!empty($id) && !empty($token)) {
-            return $wpdb->get_row($wpdb->prepare("select * from " . NEWSLETTER_USERS_TABLE . " where id=%d and token=%s limit 1", $id, $token));
-        }
-
-        $wp_user_id = get_current_user_id();
-        if (empty($wp_user_id)) {
-            return null;
-        }
-
-        $user = $this->get_user_by_wp_user_id($wp_user_id);
-        return $user;
-    }
-
     function hook_shutdown() {
         if ($this->mailer != null)
             $this->mailer->SmtpClose();
@@ -1208,32 +1195,25 @@ class Newsletter extends NewsletterModule {
         return !empty($this->options['contract_key']);
     }
 
-    function get_newsletter_page_url($message_key, $user = false, $email = false, $alert = '') {
-        static $url = false;
+    /**
+     * Returns the Newsletter dedicated page URL or an alternative URL if that page if not
+     * configured or not available.
+     * 
+     * @staticvar string $url
+     * @return string
+     */
+    var $newsletter_page_url = false;
+    function get_newsletter_page_url() {
 
-        if (!$url) {
+        if (!$this->newsletter_page_url) {
             if (!empty($this->options['page'])) {
-                $url = get_permalink($this->options['page']);
-            } 
-            if (!$url) {
-                $url = self::get_home_url() . '?na=m';
+                $this->newsletter_page_url = get_permalink($this->options['page']);
+            }
+            if (!$this->newsletter_page_url) {
+                $this->newsletter_page_url = self::get_home_url() . '?na=m';
             }
         }
-        $params = 'nm=' . urlencode($message_key);
-
-        if ($user) {
-            $params .= '&nk=' . urlencode($this->get_user_key($user));
-        }
-
-        if ($email) {
-            $params .= '&nek=' . urlencode($email->id . '-' . $email->token);
-        }
-
-        if ($alert) {
-            $params .= '&alert=' . urlencode($alert);
-        }
-
-        return self::add_qs($url, $params, false);
+        return $this->newsletter_page_url;
     }
 
 }

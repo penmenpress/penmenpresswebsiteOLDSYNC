@@ -724,7 +724,7 @@ p.description {
     border-color: #28313C;
     border-width: 10px;
     border-style: solid;
-    overflow: auto;
+    /*overflow: auto;*/
 }
 
 .tnp-darkbg {
@@ -789,6 +789,12 @@ p.description {
 #tnp-heading p {
     margin: 0px;
     color: #ccc;
+}
+
+/* Style for WP global notices */
+#tnp-heading .notice p {
+    margin: 0.5em 0;
+    padding: 2px;
 }
 
 #tnp-heading .tnp-btn-h1 {

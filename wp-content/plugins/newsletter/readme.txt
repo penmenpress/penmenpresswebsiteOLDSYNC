@@ -1,8 +1,8 @@
 === Newsletter ===
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated
 Requires at least: 3.4.0
-Tested up to: 4.9.5
-Stable tag: 5.4.3
+Tested up to: 4.9.6
+Stable tag: 5.5.2
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -11,6 +11,18 @@ Add a real newsletter system to your blog. For free. With unlimited newsletters 
 
 Newsletter is a **real newsletter system** for your WordPress blog: perfect for list building, you can easily create,
 send and track e-mails, headache-free. It just works out of box!
+
+= GDPR =
+
+The Newsletter Plugin provides all the technical tools needed to achieve GDPR compliancy and 
+we're continuously working to improve them and to give support even for specific 
+use cases.
+
+The plugin does not collect users’ own subscribers data, nor it has any access to those data: 
+hence, we are not a data processor, so a data processing agreement is not needed.
+
+Anyway if you configure the plugin to use external services (usually an external mail
+delivery service) you should check with that service if some sort of agreement is required.
 
 = Main Features =
 
@@ -89,6 +101,59 @@ Thank you, The Newsletter Team
 3. The Reports extension
 
 == Changelog ==
+
+= 5.5.2 =
+
+* Fixed the multiple dedicated page creation on Welcome screen
+
+= 5.5.1 =
+
+* Fixed few debug notices
+* API unsubscription messages fix
+
+= 5.5.0 =
+
+* Added IP storage control
+* Fixed a warning and a debug notice
+* Aggregated warnings on admin side
+
+= 5.4.9 =
+
+* Lists management in APIs
+* Code cleanup
+* New subscribers data export controls
+* New global check and notice if the dedicated page is misconfigured
+* Fix privacy note display on profile page even without a privacy url set
+
+= 5.4.8 =
+
+* Fixed the (duplicated) style.css reference
+
+= 5.4.7 =
+
+* Fixed pre-assigned lists
+
+= 5.4.6 =
+
+* Fixed few debug notices
+* Added more translatable texts
+* Improved performances
+* Profile saving used as confirmation
+* Fixed the captcha layout and style
+* Fix initialization default messages template on first install
+
+= 5.4.5 =
+
+* Fixed tested up version value in readme.txt
+* Added support for the WP privacy url
+* Added initialization values for company info on first installation
+* Fixed few debug notices
+* Added button in lists panel to dissociate the list from every subscriber (list clean up)
+* Fix of messages on profile editing panel
+
+= 5.4.4 =
+
+* Fixed warning on default option init 
 
 = 5.4.3 =
 

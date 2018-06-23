@@ -17,7 +17,12 @@ if (!defined('ABSPATH')) exit;
 $module = NewsletterSubscription::instance();
 $user = $module->get_user_from_request(true);
 $message_key = $module->get_message_key_from_request();
-$message = $newsletter->replace($module->options[$message_key . '_text'], $user);
+$message = apply_filters('newsletter_page_text', '', $message_key);
+if (!$message) {
+    $message = $module->options[$message_key . '_text'];
+}
+$message = $module->replace($message, $user);
+
 if (isset($module->options[$message_key . '_tracking'])) {
     $message .= $module->options[$message_key . '_tracking'];
 }

@@ -438,6 +438,10 @@ class NewsletterEmails extends NewsletterModule {
         foreach ($main_options as $key => $value) {
             $theme_options['main_' . $key] = $value;
         }
+        $info_options = Newsletter::instance()->get_options('info');
+        foreach ($info_options as $key => $value) {
+            $theme_options['main_' . $key] = $value;
+        }
         return $theme_options;
     }
 

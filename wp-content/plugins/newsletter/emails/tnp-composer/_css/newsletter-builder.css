@@ -479,6 +479,13 @@
     margin-top: 10px;
 }
 
+.tnpc-preview .fake-browser-ui iframe {
+    width: 700px;
+}
+
+.tnpc-preview .fake-mobile-browser-ui iframe {
+    width: 320px;
+}
 
 .fake-browser-ui {
     padding: 30px 0 0;

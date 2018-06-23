@@ -92,6 +92,7 @@ class NewsletterStatistics extends NewsletterModule {
             $is_action = strpos($url, '?na=');
 
             $ip = $this->get_remote_ip();
+            $ip = $this->process_ip($ip);
 
             if (!$is_action) {
                 $this->add_click($url, $user_id, $email_id, $ip);
@@ -137,6 +138,7 @@ class NewsletterStatistics extends NewsletterModule {
             }
 
             $ip = $this->get_remote_ip();
+            $ip = $this->process_ip($ip); 
 
             $this->add_click('', $user_id, $email_id, $ip);
             $this->update_open_value(self::SENT_READ, $user_id, $email_id, $ip);
@@ -312,6 +314,9 @@ class NewsletterStatistics extends NewsletterModule {
         if (is_null($ip)) {
             $ip = $this->get_remote_ip();
         }
+        
+        $ip = $this->process_ip($ip);
+        
         $this->insert(NEWSLETTER_STATS_TABLE, array(
             'email_id' => $email_id,
             'user_id' => $user_id,
@@ -326,6 +331,7 @@ class NewsletterStatistics extends NewsletterModule {
         if (is_null($ip)) {
             $ip = $this->get_remote_ip();
         }
+        $ip = $this->process_ip($ip);
         $this->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=%d, ip=%s where email_id=%d and user_id=%d and open<%d limit 1", $value, $ip, $email_id, $user_id, $value));
     }
 

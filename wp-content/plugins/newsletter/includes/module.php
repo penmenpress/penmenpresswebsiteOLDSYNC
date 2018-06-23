@@ -11,10 +11,10 @@ defined('ABSPATH') || exit;
  * */
 abstract class TNP_List {
 
-    const STAUTS_PRIVATE = 0;
-    const STAUTS_PUBLIC = 1;
-    const STAUTS_PROFILE_ONLY = 2;
-    const STAUTS_HIDDEN = 3; // Public but never show (can be set with a hidden form field)
+    const STATUS_PRIVATE = 0;
+    const STATUS_PUBLIC = 2;
+    const STATUS_PROFILE_ONLY = 1;
+    const STATUS_HIDDEN = 3; // Public but never show (can be set with a hidden form field)
 
 }
 
@@ -27,10 +27,11 @@ abstract class TNP_List {
  * */
 abstract class TNP_User {
 
-    const STAUTS_CONFIRMED = 'C';
-    const STAUTS_NOT_CONFIRMED = 'S';
-    const STAUTS_UNSUBSCRIBED = 'U';
-    const STAUTS_BOUNCED = 'B'; 
+    const STATUS_CONFIRMED = 'C';
+    const STATUS_NOT_CONFIRMED = 'S';
+    const STATUS_UNSUBSCRIBED = 'U';
+    const STATUS_BOUNCED = 'B';
+
 }
 
 /**
@@ -41,7 +42,7 @@ abstract class TNP_User {
  * @property array $options The subscriber status
  * */
 abstract class TNP_Email {
-
+    
 }
 
 class NewsletterModule {
@@ -149,7 +150,7 @@ class NewsletterModule {
     function insert($table, $data) {
         global $wpdb;
         $this->logger->debug("inserting into table $table");
-        $wpdb->insert($table, $data);
+        $r = $wpdb->insert($table, $data);
         if ($r === false) {
             $this->logger->fatal($wpdb->last_error);
         }
@@ -230,7 +231,10 @@ class NewsletterModule {
         if (!empty($sub)) {
             $sub = '-' . $sub;
         }
-        include NEWSLETTER_DIR . '/' . $this->module . '/defaults' . $sub . '.php';
+        $file = NEWSLETTER_DIR . '/' . $this->module . '/defaults' . $sub . '.php';
+        if (file_exists($file)) {
+            @include $file;
+        }
 
         if (!isset($options) || !is_array($options)) {
             return array();
@@ -812,30 +816,41 @@ class NewsletterModule {
         return '-';
     }
 
+    /**
+     * Returns the email unique key
+     * @param TNP_User $user
+     * @return string
+     */
+    function get_email_key($email) {
+        return $email->id . '-' . $email->token;
+    }
+
     /** Searches for a user using the nk parameter or the ni and nt parameters. Tries even with the newsletter cookie.
      * If found, the user object is returned or null.
      * The user is returned without regards to his status that should be checked by caller.
      *
-     * @return null
+     * @return TNP_User
      */
     function check_user() {
         global $wpdb;
 
+        $user = null;
+
         if (isset($_REQUEST['nk'])) {
             list($id, $token) = @explode('-', $_REQUEST['nk'], 2);
-        } else if (isset($_REQUEST['ni'])) {
-            $id = (int) $_REQUEST['ni'];
-            $token = $_REQUEST['nt'];
         } else if (isset($_COOKIE['newsletter'])) {
             list ($id, $token) = @explode('-', $_COOKIE['newsletter'], 2);
         }
 
-        $user = $this->get_user($id);
-        if ($user == null || $token != $user->token) {
-            $user = null;
-            if (is_user_logged_in()) {
-                $user = $this->get_user_by_wp_user_id(get_current_user_id());
+        if (isset($id)) {
+            $user = $this->get_user($id);
+            if ($token != $user->token) {
+                $user = null;
             }
+        }
+
+        if ($user == null && is_user_logged_in()) {
+            $user = $this->get_user_by_wp_user_id(get_current_user_id());
         }
         return $user;
     }
@@ -850,6 +865,9 @@ class NewsletterModule {
      */
     function get_user($id_or_email, $format = OBJECT) {
         global $wpdb;
+
+        if (empty($id_or_email))
+            return null;
 
         // To simplify the reaload of a user passing the user it self.
         if (is_object($id_or_email)) {
@@ -868,7 +886,7 @@ class NewsletterModule {
 
         if ($wpdb->last_error) {
             $this->logger->error($wpdb->last_error);
-            return false;
+            return null;
         }
         return $r;
     }
@@ -899,7 +917,7 @@ class NewsletterModule {
 
         if ($user == null || $token != $user->token) {
             if ($die_on_fail) {
-                die('No subscriber found.');
+                die(__('No subscriber found.', 'newsletter'));
             } else {
                 return null;
             }
@@ -913,8 +931,9 @@ class NewsletterModule {
      */
     function get_lists() {
         static $lists = null;
-        if (is_array($lists))
+        if (is_array($lists)) {
             return $lists;
+        }
 
         $lists = array();
         $data = NewsletterSubscription::instance()->options_lists;
@@ -946,7 +965,7 @@ class NewsletterModule {
         $lists = array();
         $all = $this->get_lists();
         foreach ($all as $list) {
-            if ($list->status == 0) {
+            if ($list->status == TNP_List::STATUS_PRIVATE) {
                 continue;
             }
             $lists[] = $list;
@@ -955,6 +974,7 @@ class NewsletterModule {
     }
 
     /**
+     * Lists to be shown on subscription form.
      * 
      * @return TNP_List[]
      */
@@ -967,15 +987,16 @@ class NewsletterModule {
         $lists = array();
         $all = $this->get_lists();
         foreach ($all as $list) {
-            if ($list->status != 2 || $list->forced) {
+            if ($list->status != TNP_List::STATUS_PUBLIC || $list->forced) {
                 continue;
             }
             $lists[] = $list;
         }
         return $lists;
     }
-    
+
     /**
+     * Returns the lists to be shown in the profile page.
      * 
      * @return TNP_List[]
      */
@@ -988,22 +1009,21 @@ class NewsletterModule {
         $lists = array();
         $all = $this->get_lists();
         foreach ($all as $list) {
-            if ($list->status == 0 || $list->status == 3) {
+            if ($list->status == TNP_List::STATUS_PRIVATE || $list->status == TNP_List::STATUS_HIDDEN) {
                 continue;
             }
             $lists[] = $list;
         }
         return $lists;
-    }    
+    }
 
     /**
+     * Returns a list as an object (with the same signature of TNP_List)
      * 
-     * @global wpdb $wpdb
      * @param int $id
      * @return TNP_List
      */
     function get_list($id) {
-        global $wpdb;
         $id = (int) $id;
         if (!$id) {
             return null;
@@ -1024,7 +1044,8 @@ class NewsletterModule {
      * Saves a new user on the database. Return false if the email (that must be unique) is already
      * there. For a new users set the token and creation time if not passed.
      *
-     * @param TNP_User $user
+     * @param array $user
+     * @return TNP_User|array|boolean Returns the subscriber reloaded from DB in the specified format. Flase on failure (duplicate email).
      */
     function save_user($user, $return_format = OBJECT) {
         if (is_object($user)) {
@@ -1038,19 +1059,30 @@ class NewsletterModule {
             if (empty($user['token'])) {
                 $user['token'] = NewsletterModule::get_token();
             }
-            //if (empty($user['created'])) $user['created'] = time();
-            // Database default
-            //if (empty($user['status'])) $user['status'] = 'S';
         }
         // Due to the unique index on email field, this can fail.
         return $this->store->save(NEWSLETTER_USERS_TABLE, $user, $return_format);
     }
 
+    /**
+     * Updates the user last activity timestamp.
+     * 
+     * @global wpdb $wpdb
+     * @param TNP_User $user
+     */
     function update_user_last_activity($user) {
         global $wpdb;
         $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set last_activity=%d where id=%d limit 1", time(), $user->id));
     }
 
+    /**
+     * Finds single style blocks and adds a style attribute to every HTML tag with a class exactly matching the rules in the style
+     * block. HTML tags can use the attribute "inline-class" to exact match a style rules if they need a composite class definition.
+     * 
+     * @param string $content
+     * @param boolean $strip_style_blocks
+     * @return string
+     */
     function inline_css($content, $strip_style_blocks = false) {
         // CSS
         $matches = array();
@@ -1085,6 +1117,12 @@ class NewsletterModule {
         return $this->store->get_all(NEWSLETTER_USERS_TABLE, "where test=1");
     }
 
+    /**
+     * Deletes a subscriber and cleans up all the stats table with his correlated data.
+     * 
+     * @global wpdb $wpdb
+     * @param int $id
+     */
     function delete_user($id) {
         global $wpdb;
         $user = $this->get_user($id);
@@ -1095,8 +1133,55 @@ class NewsletterModule {
         // Anyway try a table clean up, nothing bad happens
         $wpdb->delete(NEWSLETTER_STATS_TABLE, array('user_id' => $id));
         $wpdb->delete(NEWSLETTER_SENT_TABLE, array('user_id' => $id));
-        
-        
+    }
+
+    /**
+     * Add to a destination url the parameters to identify the user, the email and to show
+     * an alert message, if required. The parameters and them managed by the [newsletter] shortcode.
+     * 
+     * @param string $url If empty the standard newsletter page URL is used
+     * @param string $message_key
+     * @param TNP_User|int $user
+     * @param TNP_Email|int $email
+     * @param string $alert
+     * @return string The final url
+     */
+    function build_message_url($url = '', $message_key = '', $user = null, $email = null, $alert = '') {
+        $params = 'nm=' . urlencode($message_key);
+
+        if ($user) {
+            if (!is_object($user))
+                $user = $this->get_user($user);
+            $params .= '&nk=' . urlencode($this->get_user_key($user));
+        }
+
+        if ($email) {
+            if (!is_object($email)) {
+                $email = $this->get_email($email);
+            }
+            $params .= '&nek=' . urlencode($this->get_email_key($email));
+        }
+
+        if ($alert) {
+            $params .= '&alert=' . urlencode($alert);
+        }
+
+        if (empty($url)) {
+            $url = Newsletter::instance()->get_newsletter_page_url();
+        }
+
+        return self::add_qs($url, $params, false);
+    }
+
+    function build_action_url($action, $user = null, $email = null) {
+        $url = $this->get_home_url() . '?na=' . urlencode($action);
+        if ($user) {
+            $url .= '&nk=' . urlencode($this->get_user_key($user));
+        }
+        if ($email) {
+            $url .= '&nek=' . urlencode($this->get_email_key($email));
+        }
+        return $url;
     }
 
     function clean_stats_table() {
@@ -1129,7 +1214,16 @@ class NewsletterModule {
         }
         $parts = explode('.', $ip);
         array_pop($parts);
-        return implode('.', $parts);
+        return implode('.', $parts) . '.0';
+    }
+
+    function process_ip($ip) {
+        $option = Newsletter::instance()->options['ip'];
+        if (empty($option))
+            return $ip;
+        if ($option == 'anonymize')
+            return $this->anonymize_ip($ip);
+        return '';
     }
 
     function anonymize_user($id) {
@@ -1148,7 +1242,7 @@ class NewsletterModule {
         }
 
         // [TODO] Status?
-        $user->status = 'U';
+        $user->status = TNP_User::STATUS_UNSUBSCRIBED;
         $user->email = $user->id . '@anonymi.zed';
 
         $user = $this->save_user($user);
@@ -1159,31 +1253,18 @@ class NewsletterModule {
     /**
      * Changes a user status. Accept a user object, user id or user email.
      * 
-     * @param int|string $id_or_email
+     * @param TNP_User $user
      * @param string $status
-     * @return boolean
+     * @return TNP_User
      */
     function set_user_status($user, $status) {
         global $wpdb;
-        $status = (string) $status;
-        $this->logger->debug('Status change to ' . $status . ' of subscriber ' . $id_or_email . ' from ' . $_SERVER['REQUEST_URI']);
 
-        if (is_object($user)) {
-            $r = $wpdb->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set status=%s where id=%d limit 1", $status, $user->id));
-        } else {
-            $id_or_email = strtolower(trim($id_or_email));
-            if (is_numeric($id_or_email)) {
-                $r = $wpdb->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set status=%s where id=%d limit 1", $status, $id_or_email));
-            } else {
-                $r = $wpdb->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set status=%s where email=%s limit 1", $status, $id_or_email));
-            }
-        }
+        $this->logger->debug('Status change to ' . $status . ' of subscriber ' . $user->id . ' from ' . $_SERVER['REQUEST_URI']);
 
-        if ($wpdb->last_error) {
-            $this->logger->error($wpdb->last_error);
-            return false;
-        }
-        return $r;
+        $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set status=%s where id=%d limit 1", $status, $user->id));
+
+        return $this->get_user($user);
     }
 
     /**
@@ -1196,20 +1277,16 @@ class NewsletterModule {
      */
     function add_user_log($user, $source = '') {
         global $wpdb;
-        if (!is_object($user)) {
-            return;
-        }
 
-        $options_profile = get_option('newsletter_profile', array());
-        for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
-            if ($options_profile['list_' . $i . '_status'] == 0) {
-                continue;
-            }
-            $field_name = 'list_' . $i;
+        $lists = $this->get_lists_public();
+        foreach ($lists as $list) {
+            $field_name = 'list_' . $list->id;
             $data[$field_name] = $user->$field_name;
         }
         $data['status'] = $user->status;
-        $this->store->save($wpdb->prefix . 'newsletter_user_logs', array('user_id' => $user->id, 'source' => $source, 'created' => time(), 'data' => json_encode($data)));
+        $ip = $this->get_remote_ip();
+        $ip = $this->process_ip($ip);
+        $this->store->save($wpdb->prefix . 'newsletter_user_logs', array('ip' => $ip, 'user_id' => $user->id, 'source' => $source, 'created' => time(), 'data' => json_encode($data)));
     }
 
     /**
@@ -1408,7 +1485,7 @@ class NewsletterModule {
                 }
             }
         }
-        
+
         // Company info
         // TODO: Move to another module
         $options = Newsletter::instance()->options;
@@ -1491,7 +1568,7 @@ class NewsletterModule {
         echo "<!DOCTYPE html>\n";
         echo '<html><head>'
         . '<style type="text/css">'
-        . 'form {margin: 200px auto 0 auto !important; width: 350px !important; padding: 10px !important; font-family: "Open Sans", sans-serif; background: #ECF0F1; border-radius: 5px; padding: 50px !important; border: none !important;}'
+        . '.tnp-captcha {text-align: center; margin: 200px auto 0 auto !important; max-width: 300px !important; padding: 10px !important; font-family: "Open Sans", sans-serif; background: #ECF0F1; border-radius: 5px; padding: 50px !important; border: none !important;}'
         . 'p {text-align: center; padding: 10px; color: #7F8C8D;}'
         . 'input[type=text] {width: 50px; padding: 10px 10px; border: none; border-radius: 2px; margin: 0px 5px;}'
         . 'input[type=submit] {text-align: center; border: none; padding: 10px 15px; font-family: "Open Sans", sans-serif; background-color: #27AE60; color: white; cursor: pointer;}'
@@ -1511,12 +1588,7 @@ class NewsletterModule {
                     echo '">';
                 }
             } else {
-
-                echo '<input type="hidden" name="';
-                echo esc_attr($name);
-                echo '" value="';
-                echo esc_attr(stripslashes($value));
-                echo '">';
+                echo '<input type="hidden" name="', esc_attr($name), '" value="', esc_attr(stripslashes($value)), '">';
             }
         }
         if (isset($_SERVER['HTTP_REFERER'])) {
@@ -1524,14 +1596,18 @@ class NewsletterModule {
         }
         echo '<input type="hidden" name="ts" value="' . time() . '">';
         echo '</div>';
+
         if ($captcha) {
-            echo '<p>Math question</p>';
-            echo '<input type="text" name="n1" value="' . rand(1, 9) . '" readonly style="width: 50px">';
+            echo '<div class="tnp-captcha">';
+            echo '<p>', __('Math question', 'newsletter'), '</p>';
+            echo '<input type="text" name="n1" value="', rand(1, 9), '" readonly style="width: 50px">';
             echo '+';
-            echo '<input type="text" name="n2" value="' . rand(1, 9) . '" readonly style="width: 50px">';
+            echo '<input type="text" name="n2" value="', rand(1, 9), '" readonly style="width: 50px">';
             echo '=';
             echo '<input type="text" name="n3" value="?" style="width: 50px">';
-            echo '&nbsp;<input type="submit" value="', esc_attr($submit_label), '">';
+            echo '<br><br>';
+            echo '<input type="submit" value="', esc_attr($submit_label), '">';
+            echo '</div>';
         }
         echo '<noscript><input type="submit" value="';
         echo esc_attr($submit_label);
