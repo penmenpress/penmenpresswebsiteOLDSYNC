@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: maxgalleria-media-library\n"
-"POT-Creation-Date: 2018-03-28 14:43-0400\n"
-"PO-Revision-Date: 2018-03-28 14:43-0400\n"
+"POT-Creation-Date: 2018-05-31 07:55-0400\n"
+"PO-Revision-Date: 2018-05-31 07:55-0400\n"
 "Last-Translator: Alan Pasho <apasho@gmail.com>\n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -16,42 +16,42 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../includes/mlf_support.php:14 ../maxgalleria-media-library.php:790
+#: ../includes/mlf_support.php:14 ../maxgalleria-media-library.php:808
 msgid "Support"
 msgstr ""
 
-#: ../includes/mlf_support.php:19 ../maxgalleria-media-library.php:916
-#: ../maxgalleria-media-library.php:3981 ../maxgalleria-media-library.php:4252
+#: ../includes/mlf_support.php:19 ../maxgalleria-media-library.php:934
+#: ../maxgalleria-media-library.php:3807 ../maxgalleria-media-library.php:4078
 msgid "Makers of"
 msgstr ""
 
-#: ../includes/mlf_support.php:19 ../maxgalleria-media-library.php:916
-#: ../maxgalleria-media-library.php:3981 ../maxgalleria-media-library.php:4252
+#: ../includes/mlf_support.php:19 ../maxgalleria-media-library.php:934
+#: ../maxgalleria-media-library.php:3807 ../maxgalleria-media-library.php:4078
 msgid "and"
 msgstr ""
 
-#: ../includes/mlf_support.php:20 ../maxgalleria-media-library.php:917
-#: ../maxgalleria-media-library.php:3982 ../maxgalleria-media-library.php:4253
+#: ../includes/mlf_support.php:20 ../maxgalleria-media-library.php:935
+#: ../maxgalleria-media-library.php:3808 ../maxgalleria-media-library.php:4079
 msgid "Click here to"
 msgstr ""
 
-#: ../includes/mlf_support.php:20 ../maxgalleria-media-library.php:917
-#: ../maxgalleria-media-library.php:3982 ../maxgalleria-media-library.php:4253
+#: ../includes/mlf_support.php:20 ../maxgalleria-media-library.php:935
+#: ../maxgalleria-media-library.php:3808 ../maxgalleria-media-library.php:4079
 msgid "Fix Common Problems"
 msgstr ""
 
-#: ../includes/mlf_support.php:21 ../maxgalleria-media-library.php:918
-#: ../maxgalleria-media-library.php:3983 ../maxgalleria-media-library.php:4254
+#: ../includes/mlf_support.php:21 ../maxgalleria-media-library.php:936
+#: ../maxgalleria-media-library.php:3809 ../maxgalleria-media-library.php:4080
 msgid "Need help? Click here for"
 msgstr ""
 
-#: ../includes/mlf_support.php:21 ../maxgalleria-media-library.php:918
-#: ../maxgalleria-media-library.php:3983 ../maxgalleria-media-library.php:4254
+#: ../includes/mlf_support.php:21 ../maxgalleria-media-library.php:936
+#: ../maxgalleria-media-library.php:3809 ../maxgalleria-media-library.php:4080
 msgid "Awesome Support!"
 msgstr ""
 
-#: ../includes/mlf_support.php:22 ../maxgalleria-media-library.php:919
-#: ../maxgalleria-media-library.php:3984 ../maxgalleria-media-library.php:4255
+#: ../includes/mlf_support.php:22 ../maxgalleria-media-library.php:937
+#: ../maxgalleria-media-library.php:3810 ../maxgalleria-media-library.php:4081
 msgid "Or Email Us at"
 msgstr ""
 
@@ -126,13 +126,26 @@ msgstr ""
 msgid "4. Repeat step 3 for each sub folder."
 msgstr ""
 
-#: ../includes/mlf_support.php:58
+#: ../includes/mlf_support.php:58 ../includes/mlf_support.php:88
+msgid "How to Delete a Folder?"
+msgstr ""
+
+#: ../includes/mlf_support.php:60
+msgid ""
+"To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup "
+"menu will appear with the options, ‘Delete this folder?’ and ‘Hide this "
+"folder?’. Click the delete option. The folder has to be empty in order to "
+"delete it. If you receive a message that the folder is not empty, use the "
+"sync function to display files that are still present in the folder."
+msgstr ""
+
+#: ../includes/mlf_support.php:62
 msgid ""
 "Folders and images added to the site by FTP are not showing up in Media "
 "Library Folders"
 msgstr ""
 
-#: ../includes/mlf_support.php:60
+#: ../includes/mlf_support.php:64
 msgid ""
 "Media Library Folders does not work like the file manager on you computer. "
 "It only display images and folders that have been added to the Media Library "
@@ -143,7 +156,7 @@ msgid ""
 "once each month to add these auto-generated folders."
 msgstr ""
 
-#: ../includes/mlf_support.php:62
+#: ../includes/mlf_support.php:66
 msgid ""
 "To add images that were upload to the site via the cPanel or by FTP, "
 "navigate to the folder containing the images in  Media Library Folders and "
@@ -153,11 +166,11 @@ msgid ""
 "individually sync them."
 msgstr ""
 
-#: ../includes/mlf_support.php:64
+#: ../includes/mlf_support.php:68
 msgid "Folders Loads Indefinitely"
 msgstr ""
 
-#: ../includes/mlf_support.php:66
+#: ../includes/mlf_support.php:70
 msgid ""
 "This happens when a parent folder is missing from the folder data. To fix "
 "this you will need to perform a reset of the Media Library Folders database. "
@@ -167,18 +180,18 @@ msgid ""
 "the Media Library data."
 msgstr ""
 
-#: ../includes/mlf_support.php:68
+#: ../includes/mlf_support.php:72
 msgid "Unable to Insert files from Media Library Folders into Posts or Pages"
 msgstr ""
 
-#: ../includes/mlf_support.php:70
+#: ../includes/mlf_support.php:74
 msgid ""
 "For inserting images and files into posts and pages you will have to use the "
 "existing Media Library. The ability to insert items from the Media Library "
 "Folders user interface is only available in"
 msgstr ""
 
-#: ../includes/mlf_support.php:70
+#: ../includes/mlf_support.php:74
 msgid ""
 "This does not mean you cannot insert files added to Media Library Folders "
 "into any Wordpress posts or pages. Media Library Folders adds a folder user "
@@ -192,11 +205,11 @@ msgid ""
 "providing free technical support and continued development of the plugin."
 msgstr ""
 
-#: ../includes/mlf_support.php:72
+#: ../includes/mlf_support.php:76
 msgid "Unable to Update Media Library Folders Reset"
 msgstr ""
 
-#: ../includes/mlf_support.php:74
+#: ../includes/mlf_support.php:78
 msgid ""
 "Media Library Folders Reset is maintenance and diagnostic plugin that is "
 "included with Media Library Folders. It automatically updates when Media "
@@ -205,11 +218,11 @@ msgid ""
 "to avoid accidentally deleting your site's folder data."
 msgstr ""
 
-#: ../includes/mlf_support.php:76
+#: ../includes/mlf_support.php:80
 msgid "Images Not Found After Changing the Location of Uploads Folder"
 msgstr ""
 
-#: ../includes/mlf_support.php:78
+#: ../includes/mlf_support.php:82
 msgid ""
 "If you change the location of the uploads folder, your existing files and "
 "images will not be moved to the new location. You will need to delete them "
@@ -220,11 +233,11 @@ msgid ""
 "Library Folders and it will do a fresh scan of the Media Library data."
 msgstr ""
 
-#: ../includes/mlf_support.php:80
+#: ../includes/mlf_support.php:84
 msgid "Difficulties Uploading or Dragging and Dropping a Large Number of Files"
 msgstr ""
 
-#: ../includes/mlf_support.php:82
+#: ../includes/mlf_support.php:86
 msgid ""
 "Limitations on web server processing time may cause dragging and dropping a "
 "large number of files to fail. An error is generated when it takes to longer "
@@ -233,131 +246,160 @@ msgid ""
 "file."
 msgstr ""
 
-#: ../includes/mlf_support.php:84
-msgid "How to Delete a Folder?"
-msgstr ""
-
-#: ../includes/mlf_support.php:86
+#: ../includes/mlf_support.php:90
 msgid ""
 "To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup "
 "menu will appear with the options, 'Delete this folder?' and 'Hide this "
 "folder?'. Click the delete option."
 msgstr ""
 
-#: ../includes/mlf_support.php:105
+#: ../includes/mlf_support.php:92
+msgid "Fatal error: Maximum execution time exceeded "
+msgstr ""
+
+#: ../includes/mlf_support.php:94
+msgid ""
+"The Maximum execution time error takes place when moving, syncing or "
+"uploading too many files at one time. The web site’s server has a setting "
+"for how long it can be busy with a task. Depending on your server, size of "
+"files and the transmission speed of your internet, you may need to reduce "
+"the number of files you upload or move at one time."
+msgstr ""
+
+#: ../includes/mlf_support.php:95
+msgid ""
+"It is possible to change the maximum execution time either with a plugin "
+"such as <a href=“http://wordpress.org/plugins/wp-maximum-execution-time-"
+"exceeded/” target=“_blank”>WP Maximum Execution Time Exceeded</a> or by "
+"editing your site’s .htaccess file and adding this line:"
+msgstr ""
+
+#: ../includes/mlf_support.php:96
+msgid "php_value max_execution_time 300"
+msgstr ""
+
+#: ../includes/mlf_support.php:97
+msgid "Which will raise the maximum execution time to five minutes."
+msgstr ""
+
+#: ../includes/mlf_support.php:115
 msgid ""
 "You may be asked to provide the information below to help troubleshoot your "
 "issue."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:416
+#: ../maxgalleria-media-library.php:428
 msgid "This folder was not found: "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:459 ../maxgalleria-media-library.php:1443
-#: ../maxgalleria-media-library.php:1498 ../maxgalleria-media-library.php:1527
-#: ../maxgalleria-media-library.php:1546 ../maxgalleria-media-library.php:2197
-#: ../maxgalleria-media-library.php:2371 ../maxgalleria-media-library.php:2484
-#: ../maxgalleria-media-library.php:2733 ../maxgalleria-media-library.php:2817
-#: ../maxgalleria-media-library.php:2988 ../maxgalleria-media-library.php:3118
-#: ../maxgalleria-media-library.php:3146 ../maxgalleria-media-library.php:3435
-#: ../maxgalleria-media-library.php:3619 ../maxgalleria-media-library.php:3847
-#: ../maxgalleria-media-library.php:3910 ../maxgalleria-media-library.php:4322
-#: ../maxgalleria-media-library.php:4481 ../maxgalleria-media-library.php:4671
-#: ../maxgalleria-media-library.php:4683
+#: ../maxgalleria-media-library.php:471 ../maxgalleria-media-library.php:1460
+#: ../maxgalleria-media-library.php:1514 ../maxgalleria-media-library.php:1543
+#: ../maxgalleria-media-library.php:1562 ../maxgalleria-media-library.php:2222
+#: ../maxgalleria-media-library.php:2397 ../maxgalleria-media-library.php:2522
+#: ../maxgalleria-media-library.php:2606 ../maxgalleria-media-library.php:2777
+#: ../maxgalleria-media-library.php:2907 ../maxgalleria-media-library.php:2935
+#: ../maxgalleria-media-library.php:3445 ../maxgalleria-media-library.php:3673
+#: ../maxgalleria-media-library.php:3736 ../maxgalleria-media-library.php:4148
+#: ../maxgalleria-media-library.php:4307 ../maxgalleria-media-library.php:4497
+#: ../maxgalleria-media-library.php:4509 ../maxgalleria-media-library.php:4623
+#: ../maxgalleria-media-library.php:4755
 msgid "missing nonce!"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:781 ../maxgalleria-media-library.php:910
+#: ../maxgalleria-media-library.php:504
+msgid " file's type is invalid."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:799 ../maxgalleria-media-library.php:928
 msgid "Media Library Folders"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:782 ../maxgalleria-media-library.php:784
+#: ../maxgalleria-media-library.php:800 ../maxgalleria-media-library.php:802
 msgid "Check For New Folders"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:783
+#: ../maxgalleria-media-library.php:801
 msgid "Search Library"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:787
+#: ../maxgalleria-media-library.php:805
 msgid "Upgrade to Pro"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:788 ../maxgalleria-media-library.php:1031
-#: ../maxgalleria-media-library.php:3976
+#: ../maxgalleria-media-library.php:806 ../maxgalleria-media-library.php:1048
+#: ../maxgalleria-media-library.php:3802
 msgid "Regenerate Thumbnails"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:789 ../maxgalleria-media-library.php:4247
+#: ../maxgalleria-media-library.php:807 ../maxgalleria-media-library.php:4073
 msgid "Image SEO"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:791 ../maxgalleria-media-library.php:4283
+#: ../maxgalleria-media-library.php:809 ../maxgalleria-media-library.php:4109
 msgid "Settings"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:924
+#: ../maxgalleria-media-library.php:942
 msgid "Click here to learn about the Media Library Folders Pro"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:936
+#: ../maxgalleria-media-library.php:954
 msgid "Current PHP version, "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:936
+#: ../maxgalleria-media-library.php:954
 msgid ", is outdated. Please upgrade to version 5.6."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:956 ../maxgalleria-media-library.php:1400
+#: ../maxgalleria-media-library.php:973 ../maxgalleria-media-library.php:1417
 msgid "Location:"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:970
+#: ../maxgalleria-media-library.php:987
 msgid "Upload new files."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:970
+#: ../maxgalleria-media-library.php:987
 msgid "Add File"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:972
+#: ../maxgalleria-media-library.php:989
 msgid ""
 "Create a new folder. Type in a folder name (do not use spaces, single or "
 "double quote marks) and click Create Folder."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:972
+#: ../maxgalleria-media-library.php:989
 msgid "Add Folder"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:985
+#: ../maxgalleria-media-library.php:1002
 msgid ""
 "When moving/copying to a new folder place your pointer, not the image, on "
 "the folder where you want the file(s) to go."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:986
+#: ../maxgalleria-media-library.php:1003
 msgid ""
 "To drag multiple images, check the box under the files you want to move and "
 "then drag one of the images to the desired folder."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:987
+#: ../maxgalleria-media-library.php:1004
 msgid ""
 "To move/copy to a folder nested under the top level folder click the "
 "triangle to the left of the folder to show the nested folder that is your "
 "target."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:988
+#: ../maxgalleria-media-library.php:1005
 msgid ""
 "To delete a folder, right click on the folder and a popup menu will appear. "
 "Click on the option, \"Delete this folder?\" If the folder is empty, it will "
 "be deleted."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:989
+#: ../maxgalleria-media-library.php:1006
 msgid ""
 "To hide a folder and all its sub folders and files, right click on a folder, "
 "On the popup menu that appears, click \"Hide this folder?\" and those "
@@ -365,7 +407,7 @@ msgid ""
 "server."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1003
+#: ../maxgalleria-media-library.php:1020
 msgid ""
 "Move/Copy Toggle. Move or copy selected files to a different folder.<br> "
 "When move is selected, images links in posts and pages will be updated.<br> "
@@ -373,323 +415,278 @@ msgid ""
 "not be updated.</span>"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1012
+#: ../maxgalleria-media-library.php:1029
 msgid ""
 "Rename a file; select only one file. Folders cannot be renamed. Type in a "
 "new name with no spaces and without the extention and click Rename."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1012 ../maxgalleria-media-library.php:1071
+#: ../maxgalleria-media-library.php:1029 ../maxgalleria-media-library.php:1088
 msgid "Rename"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1014
+#: ../maxgalleria-media-library.php:1031
 msgid "Delete selected files."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1014
+#: ../maxgalleria-media-library.php:1031
 msgid "Delete"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1016
+#: ../maxgalleria-media-library.php:1033
 msgid "Select or unselect all files in the folder."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1016
+#: ../maxgalleria-media-library.php:1033
 msgid "Select/Unselect All"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1019
+#: ../maxgalleria-media-library.php:1036
 msgid "Sort by Name"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1020
+#: ../maxgalleria-media-library.php:1037
 msgid "Sort by Date"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1024
+#: ../maxgalleria-media-library.php:1041
 msgid "Search"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1027
+#: ../maxgalleria-media-library.php:1044
 msgid "Sync the contents of the current folder with the server"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1027
+#: ../maxgalleria-media-library.php:1044
 msgid "Sync"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1031
+#: ../maxgalleria-media-library.php:1048
 msgid "Regenerates the thumbnails of selected images"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1034
+#: ../maxgalleria-media-library.php:1051
 msgid ""
 "Add images to an existing MaxGalleria gallery. Folders can not be added to a "
 "gallery. Images already in the gallery will not be added. "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1034
+#: ../maxgalleria-media-library.php:1051
 msgid "Add to MaxGalleria Gallery"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1055
+#: ../maxgalleria-media-library.php:1072
 msgid "Drag & Drop Files Here"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1056
+#: ../maxgalleria-media-library.php:1073
 msgid "or select a file or image to upload:"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1059
+#: ../maxgalleria-media-library.php:1076
 msgid "Upload Image"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1062
+#: ../maxgalleria-media-library.php:1079
 msgid "Image Title Text:"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1063
+#: ../maxgalleria-media-library.php:1080
 msgid "Image ALT Text:"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1070
+#: ../maxgalleria-media-library.php:1087
 msgid "File Name: "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1106
+#: ../maxgalleria-media-library.php:1123
 msgid "Add Images"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1117
+#: ../maxgalleria-media-library.php:1134
 msgid "Folder Name: "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1118
+#: ../maxgalleria-media-library.php:1135
 msgid "Create Folder"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1735
+#: ../maxgalleria-media-library.php:1777
 msgid "Delete this folder?"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1744
+#: ../maxgalleria-media-library.php:1786
 msgid "Are you sure you want to delete the selected folder?"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1776
+#: ../maxgalleria-media-library.php:1818
 msgid "Hide this folder?"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:1782
+#: ../maxgalleria-media-library.php:1824
 msgid ""
 "Are you sure you want to hide the selected folder and all its sub folders "
 "and files?"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2089
+#: ../maxgalleria-media-library.php:2114
 msgid "No files were found."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2250
+#: ../maxgalleria-media-library.php:2271
 msgid "The folder was created."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2256
+#: ../maxgalleria-media-library.php:2277
 msgid "There was a problem creating the folder."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2263
+#: ../maxgalleria-media-library.php:2284
 msgid "The folder already exists."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2415
+#: ../maxgalleria-media-library.php:2441
 msgid "The folder, "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2415
+#: ../maxgalleria-media-library.php:2441
 msgid ", is not empty. Please delete or move files from the folder"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2431 ../maxgalleria-media-library.php:2444
+#: ../maxgalleria-media-library.php:2457 ../maxgalleria-media-library.php:2470
 msgid "The folder was deleted."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2433
+#: ../maxgalleria-media-library.php:2459
 msgid "The folder could not be deleted."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2454
+#: ../maxgalleria-media-library.php:2480
 msgid "The file(s) were deleted"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2456
+#: ../maxgalleria-media-library.php:2482
 msgid "The file(s) were not deleted"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2558
-msgid "Unable to copy the file; please check the folder and file permissions."
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2651
-msgid "Updating attachment links, please wait..."
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2656
-msgid ""
-"Unable to move the file(s); please check the folder and file permissions."
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2663
-msgid "The destination is not a folder: "
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2669
-msgid "Cannot find destination folder: "
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2675
-msgid "Coping or moving a folder is not allowed."
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2681
-msgid "Cannot find the file: "
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2688
-msgid "The file(s) were copied to "
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2690
-msgid "The file(s) were not copied."
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2694
-msgid "The file(s) were moved to "
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2696
-msgid "The file(s) were not moved."
-msgstr ""
-
-#: ../maxgalleria-media-library.php:2806
+#: ../maxgalleria-media-library.php:2595
 msgid "The images were added."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2858 ../maxgalleria-media-library.php:2958
+#: ../maxgalleria-media-library.php:2647 ../maxgalleria-media-library.php:2747
 msgid "No files were found matching that name."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2876
+#: ../maxgalleria-media-library.php:2665
 msgid "Back to Media Library Folders"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2881
+#: ../maxgalleria-media-library.php:2670
 msgid ""
 "Click on an image to go to its folder or a on folder to view its contents."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:2884
+#: ../maxgalleria-media-library.php:2673
 msgid "Search results for: "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3010
+#: ../maxgalleria-media-library.php:2799
 msgid "Invalid file name."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3015
+#: ../maxgalleria-media-library.php:2804
 msgid "The file name cannot contain spaces or tabs."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3107
+#: ../maxgalleria-media-library.php:2896
 msgid "Updating attachment links, please wait...The file was renamed"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3130
+#: ../maxgalleria-media-library.php:2919
 msgid "Sorting by date."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3134
+#: ../maxgalleria-media-library.php:2923
 msgid "Sorting by name."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3188
+#: ../maxgalleria-media-library.php:2978
 msgid "Scaning for new folders in "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3215 ../maxgalleria-media-library.php:3243
-#: ../maxgalleria-media-library.php:3264 ../maxgalleria-media-library.php:3299
+#: ../maxgalleria-media-library.php:3005 ../maxgalleria-media-library.php:3033
+#: ../maxgalleria-media-library.php:3054 ../maxgalleria-media-library.php:3090
 msgid "Adding"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3277
+#: ../maxgalleria-media-library.php:3067
 msgid "No new folders were found."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3396
+#: ../maxgalleria-media-library.php:3187
 msgid "Rate us Please!"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3397
+#: ../maxgalleria-media-library.php:3188
 msgid ""
 "Your rating is the simplest way to support Media Library Folders. We really "
 "appreciate it!"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3400
+#: ../maxgalleria-media-library.php:3191
 msgid "I've already left a review"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3401
+#: ../maxgalleria-media-library.php:3192
 msgid "Maybe Later"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3402
+#: ../maxgalleria-media-library.php:3193
 msgid "Sure! I'd love to!"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3861
+#: ../maxgalleria-media-library.php:3687
 msgid "Media Library Folders Settings"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3869
+#: ../maxgalleria-media-library.php:3695
 msgid "Disable floating file tree"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3943
+#: ../maxgalleria-media-library.php:3769
 msgid "Error: "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3947
+#: ../maxgalleria-media-library.php:3773
 #, php-format
 msgid "Unknown error with %s"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3958
+#: ../maxgalleria-media-library.php:3784
 #, php-format
 msgid "Thumbnails have been regenerated for %d image(s)"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:3997
+#: ../maxgalleria-media-library.php:3823
 msgid "Cheatin&#8217; uh?"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4008
+#: ../maxgalleria-media-library.php:3834
 #, php-format
 msgid "Unable to find any images. Are you sure <a href='%s'>some exist</a>?"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4019
+#: ../maxgalleria-media-library.php:3845
 msgid ""
 "Please wait while the thumbnails are regenerated. This may take a while."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4023
+#: ../maxgalleria-media-library.php:3849
 #, php-format
 msgid "To go back to the previous page, <a href=\"%s\">click here</a>."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4024
+#: ../maxgalleria-media-library.php:3850
 #, php-format
 msgid ""
 "All done! %1$s image(s) were successfully resized in %2$s seconds and there "
@@ -697,59 +694,59 @@ msgid ""
 "\"%4$s\">click here</a>. %5$s"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4025
+#: ../maxgalleria-media-library.php:3851
 #, php-format
 msgid ""
 "All done! %1$s image(s) were successfully resized in %2$s seconds and there "
 "were 0 failures. %3$s"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4029 ../maxgalleria-media-library.php:4175
+#: ../maxgalleria-media-library.php:3855 ../maxgalleria-media-library.php:4001
 msgid "You must enable Javascript in order to proceed!"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4035
+#: ../maxgalleria-media-library.php:3861
 msgid "Abort Resizing Images"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4037
+#: ../maxgalleria-media-library.php:3863
 msgid "Debugging Information"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4040
+#: ../maxgalleria-media-library.php:3866
 #, php-format
 msgid "Total Images: %s"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4041
+#: ../maxgalleria-media-library.php:3867
 #, php-format
 msgid "Images Resized: %s"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4042
+#: ../maxgalleria-media-library.php:3868
 #, php-format
 msgid "Resize Failures: %s"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4073
+#: ../maxgalleria-media-library.php:3899
 msgid "Stopping..."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4125
+#: ../maxgalleria-media-library.php:3951
 #, php-format
 msgid ""
 "The resize request was abnormally terminated (ID %s). This is likely due to "
 "the image exceeding available memory or some other type of fatal error."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4168
+#: ../maxgalleria-media-library.php:3994
 msgid ""
 "Click the button below to regenerate thumbnails for all images in the Media "
 "Library. This is helpful if you have added new thumbnail sizes to your site. "
 "Existing thumbnails will not be removed to prevent breaking any links."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4170
+#: ../maxgalleria-media-library.php:3996
 msgid ""
 "You can regenerate thumbnails for individual images from the Media Library "
 "Folders page by checking the box below one or more images and clicking the "
@@ -758,47 +755,47 @@ msgid ""
 "sizes to your theme."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4173
+#: ../maxgalleria-media-library.php:3999
 msgid "Regenerate All Thumbnails"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4199
+#: ../maxgalleria-media-library.php:4025
 #, php-format
 msgid "Failed resize: %s is an invalid image ID."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4202
+#: ../maxgalleria-media-library.php:4028
 msgid "Your user account doesn't have permission to resize images"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4207
+#: ../maxgalleria-media-library.php:4033
 #, php-format
 msgid "The originally uploaded image file cannot be found at %s"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4216
+#: ../maxgalleria-media-library.php:4042
 msgid "Unknown failure reason."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4221
+#: ../maxgalleria-media-library.php:4047
 #, php-format
 msgid "&quot;%1$s&quot; (ID %2$s) was successfully resized in %3$s seconds."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4227
+#: ../maxgalleria-media-library.php:4053
 #, php-format
 msgid ""
 "&quot;%1$s&quot; (ID %2$s) failed to resize. The error message was: %3$s"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4262
+#: ../maxgalleria-media-library.php:4088
 msgid ""
 "When Image SEO is enabled Media Library Folders automatically adds  ALT and "
 "Title attributes with the default settings defined below to all your images "
 "as they are uploaded."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4263
+#: ../maxgalleria-media-library.php:4089
 msgid ""
 "You can easily override the Image SEO default settings when you  are "
 "uploading new images. When Image SEO is enabled you will see two fields  "
@@ -807,51 +804,119 @@ msgid ""
 "for the  current upload or sync operations."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4264
+#: ../maxgalleria-media-library.php:4090
 msgid ""
 "To change the settings on an individual image simply click on  the image and "
 "change the settings on the far right.  Save and then back click to return to "
 "Media  Library Plus or MLPP."
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4265
+#: ../maxgalleria-media-library.php:4091
 msgid "Image SEO supports two special tags:"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4266
+#: ../maxgalleria-media-library.php:4092
 #, php-format
 msgid "%filename - replaces image file name ( without extension )"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4267
+#: ../maxgalleria-media-library.php:4093
 #, php-format
 msgid "%foldername - replaces image folder name"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4288
+#: ../maxgalleria-media-library.php:4114
 msgid "Turn on Image SEO:"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4293
+#: ../maxgalleria-media-library.php:4119
 msgid "Image ALT attribute:"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4295 ../maxgalleria-media-library.php:4300
+#: ../maxgalleria-media-library.php:4121 ../maxgalleria-media-library.php:4126
 msgid "example"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4298
+#: ../maxgalleria-media-library.php:4124
 msgid "Image Title attribute:"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4303
+#: ../maxgalleria-media-library.php:4129
 msgid "Update Settings"
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4346
+#: ../maxgalleria-media-library.php:4172
 msgid "The Image SEO setting have been updated "
 msgstr ""
 
-#: ../maxgalleria-media-library.php:4515
+#: ../maxgalleria-media-library.php:4341
 msgid "The selected folder, subfolders and thier files have been hidden."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4668
+msgid "Scanning for new files and folders...please wait."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4673
+msgid "Syncing finished."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4694
+msgid "Adding "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4828
+msgid "Finished copying files. "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4830
+msgid "Finished moving files. "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4892
+msgid "Unable to copy the file; please check the folder and file permissions."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4983
+msgid "Updating attachment links, please wait..."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4988
+msgid "Unable to move "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4988
+msgid "; please check the folder and file permissions."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4994
+msgid "The destination is not a folder: "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:4999
+msgid "Cannot find destination folder: "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:5004
+msgid "Coping or moving a folder is not allowed."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:5009
+msgid "Cannot find the file: "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:5016
+msgid " was copied to "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:5018
+msgid " was not copied."
+msgstr ""
+
+#: ../maxgalleria-media-library.php:5022
+msgid " was moved to "
+msgstr ""
+
+#: ../maxgalleria-media-library.php:5024
+msgid " was not moved."
 msgstr ""

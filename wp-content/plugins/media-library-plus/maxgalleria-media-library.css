@@ -1303,8 +1303,12 @@ div.sticky-panel {
 .locale-nl-nl .onoffswitch-inner:before {
 	content: "Verplaats";
 }
-
-
+.locale-es-es .onoffswitch-inner:after {
+	content: "Copiar";
+}	
+.locale-es-es .onoffswitch-inner:before {
+	content: "Mover";
+}
 
 .onoffswitch-switch {
 	display: block; width: 10px; margin: 6px;

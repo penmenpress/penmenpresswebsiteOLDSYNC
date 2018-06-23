@@ -3,7 +3,7 @@
 Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.2.0
+Version: 4.2.3
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -40,7 +40,7 @@ class MaxGalleriaMediaLib {
 
 	public function set_global_constants() {	
 		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_KEY', 'maxgalleria_media_library_version');
-		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.0');
+		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.3');
 		define('MAXGALLERIA_MEDIA_LIBRARY_IGNORE_NOTICE', 'maxgalleria_media_library_ignore_notice');
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME);
@@ -496,7 +496,7 @@ and pm.meta_key = '_wp_attached_file'";
 			
       $wp_filetype = wp_check_filetype_and_ext($_FILES['file']['tmp_name'], $_FILES['file']['name'] );
       
-      error_log(print_r($wp_filetype,true));
+      //error_log(print_r($wp_filetype,true));
 
       if ($wp_filetype['ext'] === false) {
         echo '<script>' , PHP_EOL;
@@ -1229,13 +1229,13 @@ and pm.meta_key = '_wp_attached_file'";
 										jQuery("#current-folder-id").val(folder);
 										console.log('current ' + folder);
 										console.log('previous '+ jQuery("#previous-folder-id").val());
-										if(window.hide_checkboxes) {
-											jQuery("div#mgmlp-tb-container input.mgmlp-media").hide();
-											jQuery("a.tb-media-attachment").css("cursor", "pointer");
-										} else {
-											jQuery("div#mgmlp-tb-container input.mgmlp-media").show();
-											jQuery("a.tb-media-attachment").css("cursor", "default");
-										}	
+										//if(window.hide_checkboxes) {
+										//	jQuery("div#mgmlp-tb-container input.mgmlp-media").hide();
+										//	jQuery("a.tb-media-attachment").css("cursor", "pointer");
+										//} else {
+										//	jQuery("div#mgmlp-tb-container input.mgmlp-media").show();
+										//	jQuery("a.tb-media-attachment").css("cursor", "default");
+										//}	
 									},
 									error: function (err)
 										{ alert(err.responseText);}
@@ -1380,13 +1380,13 @@ and pm.meta_key = '_wp_attached_file'";
 		$output .= '      success: function (data) ' . PHP_EOL;
 		$output .= '        {' . PHP_EOL;
 		//$output .= '				  console.log(window.hide_checkboxes);' . PHP_EOL;
-		$output .= '				  if(window.hide_checkboxes) {' . PHP_EOL;
-		$output .= '					  jQuery("div#mgmlp-tb-container input.mgmlp-media").hide();' . PHP_EOL;
-		$output .= '	          jQuery("a.tb-media-attachment").css("cursor", "pointer");' . PHP_EOL;
-		$output .= '				  } else {' . PHP_EOL;
-		$output .= '					  jQuery("div#mgmlp-tb-container input.mgmlp-media").show();' . PHP_EOL;
-		$output .= '	          jQuery("a.tb-media-attachment").css("cursor", "default");' . PHP_EOL;
-		$output .= '				  }' . PHP_EOL;
+		//$output .= '				  if(window.hide_checkboxes) {' . PHP_EOL;
+		//$output .= '					  jQuery("div#mgmlp-tb-container input.mgmlp-media").hide();' . PHP_EOL;
+		//$output .= '	          jQuery("a.tb-media-attachment").css("cursor", "pointer");' . PHP_EOL;
+		//$output .= '				  } else {' . PHP_EOL;
+		//$output .= '					  jQuery("div#mgmlp-tb-container input.mgmlp-media").show();' . PHP_EOL;
+		//$output .= '	          jQuery("a.tb-media-attachment").css("cursor", "default");' . PHP_EOL;
+		//$output .= '				  }' . PHP_EOL;
 		$output .= '          jQuery("#mgmlp-file-container").html(data);' . PHP_EOL;		
 		$output .= '          jQuery("li a.media-attachment").draggable({' . PHP_EOL;
 		$output .= '          	cursor: "move",' . PHP_EOL;
@@ -1868,65 +1868,61 @@ order by folder_id";
 	
 function show_mlp_node (e, data) {
 
-  //var thickbox_shown = (jQuery('#TB_window').is(':visible')) ? true : false;
 	if(!window.mlp_busy) {
 		window.mlp_busy = true;
-		//if(thickbox_shown) {
 
-			// opens the closed node
-			jQuery("#folder-tree").jstree("toggle_node", data.node.id);
-			
-			var folder = data.node.id;
+    // opens the closed node
+    jQuery("#folder-tree").jstree("toggle_node", data.node.id);
 
-			jQuery("#ajaxloader").show();
+    var folder = data.node.id;
 
-			jQuery.ajax({
-				type: "POST",
-				async: true,
-				data: { action: "mlp_load_folder", folder: folder, nonce: mgmlp_ajax.nonce },
-				url : mgmlp_ajax.ajaxurl,
-				dataType: "html",
-				success: function (data) {
-					jQuery("#ajaxloader").hide();          
-					jQuery("#mgmlp-file-container").html(data);						
-					jQuery("#current-folder-id").val(folder);
-					jQuery("#folder_id").val(folder);
-					sessionStorage.setItem('folder_id', folder);
-					
-					jQuery("li a.media-attachment").draggable({
-						cursor: "move",
-						helper: function() {
-							var selected = jQuery(".mg-media-list input:checked").parents("li");
-							if (selected.length === 0) {
-								selected = jQuery(this);
-							}
-							var container = jQuery("<div/>").attr("id", "draggingContainer");
-							container.append(selected.clone());
-							return container;
-						}		
-					});
-					
-					jQuery(".media-link").droppable( {
-						accept: "li a.media-attachment",
-						hoverClass: "droppable-hover",
-						drop: handleDropEvent
-					});					
-															
-					if(window.hide_checkboxes) {
-						jQuery("div#mgmlp-tb-container input.mgmlp-media").hide();
-						jQuery("a.tb-media-attachment").css("cursor", "pointer");
-					} else {
-						jQuery("div#mgmlp-tb-container input.mgmlp-media").show();
-						jQuery("a.tb-media-attachment").css("cursor", "default");
-					}	
-				},
-				error: function (err)
-					{ alert(err.responseText);}
-			});
+    jQuery("#ajaxloader").show();
 
-//		} else {	
-//			window.location.href = data.node.a_attr.href;
-//		}
+    jQuery.ajax({
+      type: "POST",
+      async: true,
+      data: { action: "mlp_load_folder", folder: folder, nonce: mgmlp_ajax.nonce },
+      url : mgmlp_ajax.ajaxurl,
+      dataType: "html",
+      success: function (data) {
+        jQuery("#ajaxloader").hide();          
+        jQuery("#mgmlp-file-container").html(data);						
+        jQuery("#current-folder-id").val(folder);
+        jQuery("#folder_id").val(folder);
+        sessionStorage.setItem('folder_id', folder);
+
+        jQuery("li a.media-attachment").draggable({
+          cursor: "move",
+          helper: function() {
+            var selected = jQuery(".mg-media-list input:checked").parents("li");
+            if (selected.length == 0) {
+              selected = jQuery(this);
+            }
+            var container = jQuery("<div/>").attr("id", "draggingContainer");
+            container.append(selected.clone());
+            return container;
+          }		
+        });
+
+        jQuery(".media-link").droppable( {
+          accept: "li a.media-attachment",
+          hoverClass: "droppable-hover",
+          drop: handleDropEvent
+        });					
+
+        //if(window.hide_checkboxes) {
+        //  jQuery("div#mgmlp-tb-container input.mgmlp-media").hide();
+        //  jQuery("a.tb-media-attachment").css("cursor", "pointer");
+        //} else {
+        //  jQuery("div#mgmlp-tb-container input.mgmlp-media").show();
+        //  jQuery("a.tb-media-attachment").css("cursor", "default");
+        //}	
+      },
+      error: function (err) { 
+        alert(err.responseText);
+      }
+    });
+
 		window.mlp_busy = false;
 	}	
 }
@@ -1973,12 +1969,13 @@ function delete_current_folder(node) {
 					
 	
 }
+
 function process_mc_data(phase, folder_id, action_name, parent_folder, serial_copy_ids) {
   
 	jQuery.ajax({
 		type: "POST",
 		async: true,
-		data: { action: "mlfp_process_mc_data", phase, folder_id: folder_id, action_name: action_name, current_folder: parent_folder, serial_copy_ids: serial_copy_ids, nonce: mgmlp_ajax.nonce },
+		data: { action: "mlfp_process_mc_data", phase: phase, folder_id: folder_id, action_name: action_name, current_folder: parent_folder, serial_copy_ids: serial_copy_ids, nonce: mgmlp_ajax.nonce },
 		url: mgmlp_ajax.ajaxurl,
 		dataType: "json",
 		success: function (data) { 
@@ -1995,7 +1992,7 @@ function process_mc_data(phase, folder_id, action_name, parent_folder, serial_co
 		},
 		error: function (err){ 
 		  jQuery("#ajaxloader").hide();
-			alert(err.responseText)
+			alert(err.responseText);
 		}    
 	});																											
   
@@ -2090,13 +2087,13 @@ order by $order_by";
 						echo '				jQuery(document).ready(function(){' . PHP_EOL;
             echo '			    jQuery("#folder-message").html("");' . PHP_EOL;
 //						echo '				  console.log(window.hide_checkboxes);' . PHP_EOL;
-						echo '				  if(window.hide_checkboxes) {' . PHP_EOL;
-						echo '					  jQuery("div#mgmlp-tb-container input.mgmlp-media").hide();' . PHP_EOL;
-						echo '	          jQuery("a.tb-media-attachment").css("cursor", "pointer");' . PHP_EOL;
-						echo '				  } else {' . PHP_EOL;
-						echo '					  jQuery("div#mgmlp-tb-container input.mgmlp-media").show();' . PHP_EOL;
-						echo '	          jQuery("a.tb-media-attachment").css("cursor", "default");' . PHP_EOL;
-						echo '				  }' . PHP_EOL;
+						//echo '				  if(window.hide_checkboxes) {' . PHP_EOL;
+						//echo '					  jQuery("div#mgmlp-tb-container input.mgmlp-media").hide();' . PHP_EOL;
+						//echo '	          jQuery("a.tb-media-attachment").css("cursor", "pointer");' . PHP_EOL;
+						//echo '				  } else {' . PHP_EOL;
+						//echo '					  jQuery("div#mgmlp-tb-container input.mgmlp-media").show();' . PHP_EOL;
+						//echo '	          jQuery("a.tb-media-attachment").css("cursor", "default");' . PHP_EOL;
+						//echo '				  }' . PHP_EOL;
 						echo '          jQuery("li a.media-attachment").draggable({' . PHP_EOL;
 						echo '          	cursor: "move",' . PHP_EOL;
 						echo '            helper: function() {' . PHP_EOL;
@@ -2293,7 +2290,7 @@ AND meta_key = '_wp_attached_file'";
 
   public function get_absolute_path($url) {
 		
-		global $blog_id;
+		global $blog_id, $is_IIS;
 		
 		$baseurl = $this->upload_dir['baseurl'];
 		
@@ -2336,7 +2333,7 @@ AND meta_key = '_wp_attached_file'";
 		}
 		    
     // are we on windows?
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
       $file_path = str_replace('/', '\\', $file_path);
     }
 		
@@ -2346,7 +2343,8 @@ AND meta_key = '_wp_attached_file'";
   }
   
   public function is_windows() {
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') 
+		global $is_IIS;
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') 
       return true;
     else
       return false;      
@@ -2354,7 +2352,9 @@ AND meta_key = '_wp_attached_file'";
   
   public function get_file_url($path) {
     
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+		global $is_IIS;
+    
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
       
       $base_url = $this->upload_dir['baseurl'];
       // replace any slashes in the dir path when running windows
@@ -2369,7 +2369,9 @@ AND meta_key = '_wp_attached_file'";
   }
   
   public function get_file_url_for_copy($path) {
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+		global $is_IIS;
+    
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
       
       $base_url = $this->upload_dir['baseurl'];
       
@@ -2849,13 +2851,21 @@ AND pm.meta_key = '_wp_attached_file'";
 			            
       if(rename($old_file_path, $new_file_path )) {
 
-        $old_file_path = str_replace('.', '*.', $old_file_path );
+        //$old_file_path = str_replace('.', '*.', $old_file_path );
+        
+        $metadata = wp_get_attachment_metadata($file_id);                               
+        $path_to_thumbnails = pathinfo($old_file_path, PATHINFO_DIRNAME);
 
-        foreach (glob($old_file_path) as $source_path) {
-          $thumbnail_file = pathinfo($source_path, PATHINFO_BASENAME);
-          $thumbnail_destination = $destination_path . DIRECTORY_SEPARATOR . $thumbnail_file;
-          unlink($source_path);
-        }                    
+        foreach($metadata['sizes'] as $source_path) {
+          $thumbnail_file = $path_to_thumbnails . DIRECTORY_SEPARATOR . $source_path['file'];
+          unlink($thumbnail_file);
+        }  
+        
+        //foreach (glob($old_file_path) as $source_path) {
+        //  $thumbnail_file = pathinfo($source_path, PATHINFO_BASENAME);
+        //  $thumbnail_destination = $destination_path . DIRECTORY_SEPARATOR . $thumbnail_file;
+        //  unlink($source_path);
+        //}                    
               
         $table = $wpdb->prefix . "posts";
         $data = array('guid' => $new_file_url, 
@@ -2950,7 +2960,8 @@ AND pm.meta_key = '_wp_attached_file'";
   
   public function admin_check_for_new_folders($noecho = null) {
     
-		global $blog_id;
+		global $blog_id, $is_IIS;
+
 		$skip_path = "";
     $uploads_path = wp_upload_dir();
     
@@ -2990,7 +3001,7 @@ AND pm.meta_key = '_wp_attached_file'";
 							$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 							// fix slashes if running windows
-							if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 								$url = str_replace('\\', '/', $url);      
 							}
 
@@ -3018,7 +3029,7 @@ AND pm.meta_key = '_wp_attached_file'";
 								$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 								// fix slashes if running windows
-								if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 									$url = str_replace('\\', '/', $url);      
 								}
 
@@ -3041,7 +3052,7 @@ AND pm.meta_key = '_wp_attached_file'";
 									$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 									// fix slashes if running windows
-									if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+									if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 										$url = str_replace('\\', '/', $url);      
 									}
 
@@ -3071,12 +3082,13 @@ AND pm.meta_key = '_wp_attached_file'";
   }
 		
 	public function new_folder_search($name, $uploads_folder, $uploads_length, $dir_name, $noecho) {
+		global $is_IIS;
 		$folder_found = false;
 		$upload_pos = strpos($name, $uploads_folder);
 		$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 		// fix slashes if running windows
-		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 			$url = str_replace('\\', '/', $url);      
 		}
 
@@ -3216,6 +3228,7 @@ and pm.meta_key = '_wp_attached_file'";
     
     global $wpdb;
 		global $blog_id;
+		global $is_IIS;
 		$skip_path = "";
 		$last_new_folder_id = 0;
 		
@@ -3280,7 +3293,7 @@ and meta_key = '_wp_attached_file'";
 							$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 							// fix slashes if running windows
-							if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+							if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 								$url = str_replace('\\', '/', $url);      
 							}
 
@@ -3312,7 +3325,7 @@ and meta_key = '_wp_attached_file'";
 								$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 								// fix slashes if running windows
-								if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 									$url = str_replace('\\', '/', $url);      
 								}
 
@@ -3348,7 +3361,7 @@ and meta_key = '_wp_attached_file'";
 									//error_log("uploads_url $uploads_url");
 
 									// fix slashes if running windows
-									if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+									if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 										$url = str_replace('\\', '/', $url);      
 									}
 									$existing_folder_id = $this->folder_exist($url);
@@ -4525,7 +4538,7 @@ where folder_id = $folder_id";
   
   public function max_discover_files($parent_folder) {
     
-    global $wpdb;
+    global $wpdb, $is_IIS;
     $user_id = get_current_user_id();
     $files_to_add = array();
     $files_count = 0;
@@ -4556,9 +4569,13 @@ and meta_key = '_wp_attached_file'";
 		$image_location = $baseurl . ltrim($current_row->attached_file, '/');
 		
     $folder_path = $this->get_absolute_path($image_location);
-    
+        
     update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH_ID, $parent_folder);
-    update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH, $folder_path);
+    
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN')    
+      update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH, str_replace('\\', '\\\\', $folder_path));
+    else
+      update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH, $folder_path);
     //error_log("folder_path $folder_path");
     $folder_contents = array_diff(scandir($folder_path), array('..', '.'));
 						
@@ -4722,13 +4739,18 @@ and meta_key = '_wp_attached_file'";
   }
   
   public function mlfp_save_mc_data($serial_copy_ids, $folder_id, $user_id) {
+    
+    global $is_IIS; 
                 
   	update_user_meta($user_id, MAXG_MC_FILES, $serial_copy_ids);
     
     $destination_folder = $this->get_folder_path($folder_id);
+        
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN')  
+      update_user_meta($user_id, MAXG_MC_DESTINATION_FOLDER, str_replace('\\', '\\\\', $destination_folder));
+    else
+      update_user_meta($user_id, MAXG_MC_DESTINATION_FOLDER, $destination_folder);
     
-    update_user_meta($user_id, MAXG_MC_DESTINATION_FOLDER, $destination_folder);
-
   }
   
   public function mlfp_process_mc_data() {
@@ -4900,11 +4922,13 @@ AND meta_key = '_wp_attached_file'";
                 }
 
                 $image_path = str_replace('.', '*.', $image_path );
-
-                foreach (glob($image_path) as $source_path) {
-                  $thumbnail_file = pathinfo($source_path, PATHINFO_BASENAME);
-                  $thumbnail_destination = $destination_path . DIRECTORY_SEPARATOR . $thumbnail_file;
-                  rename($source_path, $thumbnail_destination);
+                $metadata = wp_get_attachment_metadata($copy_id);                               
+                $path_to_thumbnails = pathinfo($image_path, PATHINFO_DIRNAME);
+                  
+                foreach($metadata['sizes'] as $source_path) {
+                  $thumbnail_file = $path_to_thumbnails . DIRECTORY_SEPARATOR . $source_path['file'];
+                  $thumbnail_destination = $destination_path . DIRECTORY_SEPARATOR . $source_path['file'];
+                  rename($thumbnail_file, $thumbnail_destination);
 
                   // check current theme customizer settings for the fileg
                   // and update if found
@@ -4921,9 +4945,9 @@ AND meta_key = '_wp_attached_file'";
                     $this->theme_mods = json_decode(json_encode($theme_mods), true);
                     $update_theme_mods = false;
                   }
-
-                }                    
-
+                    
+                }
+                
                 $destination_url = $this->get_file_url($destination_name);
 
                 // update posts table

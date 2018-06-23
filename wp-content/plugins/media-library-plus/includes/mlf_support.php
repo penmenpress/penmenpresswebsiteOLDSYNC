@@ -31,29 +31,33 @@
               <ul class='tabs'>
                 <li><a href='#tab1'><?php _e('Troubleshooting Tips', 'maxgalleria-media-library' ); ?></a></li>
                 <li><a href='#tab2'><?php _e('Troubleshooting Articles', 'maxgalleria-media-library' ); ?></a></li>
-                <li><a href='#tab3'><?php _e('System Information</a>', 'maxgalleria-media-library' ); ?></li>
+                <li><a href='#tab3'><?php _e('System Information</a>', 'maxgalleria-media-library' ); ?></a></li>
               </ul>
               <div style="clear:both"></div>
               
               <div id='tab1'>
                 
-<h4><?php _e('Folder Tree Not Loading', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('Folder Tree Not Loading', 'maxgalleria-media-library' ); ?></h4>
 
-<p><?php _e('Users who report this issue can usually fix it by running the Media Library Folders Reset plugin that comes with Media Library Folders.', 'maxgalleria-media-library' ); ?></p>
-<ul>
-  <li><?php _e('1. First make sure you have installed the latest version of Media Library Folders.', 'maxgalleria-media-library' ); ?></li>
-  <li><?php _e('2. Deactivate Media Library Folders and activate Media Library Folders Reset and run the Reset Database option from the Media Library Folders Reset sub menu in the dashboard.', 'maxgalleria-media-library' ); ?></li>
-  <li><?php _e('3. After that, reactivate Media Library Folders. It will do a fresh scan of your media library database and no changes will be made to the files or folders on your site.', 'maxgalleria-media-library' ); ?></li>
-</ul>
+                <p><?php _e('Users who report this issue can usually fix it by running the Media Library Folders Reset plugin that comes with Media Library Folders.', 'maxgalleria-media-library' ); ?></p>
+                <ul>
+                  <li><?php _e('1. First make sure you have installed the latest version of Media Library Folders.', 'maxgalleria-media-library' ); ?></li>
+                  <li><?php _e('2. Deactivate Media Library Folders and activate Media Library Folders Reset and run the Reset Database option from the Media Library Folders Reset sub menu in the dashboard.', 'maxgalleria-media-library' ); ?></li>
+                  <li><?php _e('3. After that, reactivate Media Library Folders. It will do a fresh scan of your media library database and no changes will be made to the files or folders on your site.', 'maxgalleria-media-library' ); ?></li>
+                </ul>
 
-<h4><?php _e('How to Unhide a Hidden Folder', 'maxgalleria-media-library' ); ?></h4>
+                <h4><?php _e('How to Unhide a Hidden Folder', 'maxgalleria-media-library' ); ?></h4>
 
-<ul>
-  <li><?php _e('1. Go to the hidden folder via your cPanel or FTP and remove the file ‘mlpp-hidden', 'maxgalleria-media-library' ); ?>.</li>
-  <li><?php _e('2. In the Media Library Folders Menu, click the Check for New folders link. This will add the folder back into Media Library Folders.', 'maxgalleria-media-library' ); ?></li>
-  <li><?php _e('3. Visit the unhidden folder in Media Library Folders and click the Sync button to add contents of the folder. Before doing this, check to see that there are no thumbnail images in the current folder since these will be regenerated automatically; these usually have file names such as image-name-150×150.jpg, etc.', 'maxgalleria-media-library' ); ?></li>
-  <li><?php _e('4. Repeat step 3 for each sub folder.', 'maxgalleria-media-library' ); ?></li>
-</ul>
+                <ul>
+                  <li><?php _e('1. Go to the hidden folder via your cPanel or FTP and remove the file ‘mlpp-hidden', 'maxgalleria-media-library' ); ?>.</li>
+                  <li><?php _e('2. In the Media Library Folders Menu, click the Check for New folders link. This will add the folder back into Media Library Folders.', 'maxgalleria-media-library' ); ?></li>
+                  <li><?php _e('3. Visit the unhidden folder in Media Library Folders and click the Sync button to add contents of the folder. Before doing this, check to see that there are no thumbnail images in the current folder since these will be regenerated automatically; these usually have file names such as image-name-150×150.jpg, etc.', 'maxgalleria-media-library' ); ?></li>
+                  <li><?php _e('4. Repeat step 3 for each sub folder.', 'maxgalleria-media-library' ); ?></li>
+                </ul>
+                
+                <h4><?php _e('How to Delete a Folder?', 'maxgalleria-media-library' ); ?></h4>
+                
+                <p><?php _e('To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup menu will appear with the options, ‘Delete this folder?’ and ‘Hide this folder?’. Click the delete option. The folder has to be empty in order to delete it. If you receive a message that the folder is not empty, use the sync function to display files that are still present in the folder.', 'maxgalleria-media-library' ); ?></p`>
 
                 <h4><?php _e('Folders and images added to the site by FTP are not showing up in Media Library Folders', 'maxgalleria-media-library' ); ?></h4>
 
