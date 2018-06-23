@@ -3,7 +3,7 @@
 Plugin Name: WP Show Posts
 Plugin URI: https://wpshowposts.com
 Description: WP Show Posts allows you to list posts (from any post type) anywhere on your site. This includes WooCommerce products or any other post type you might have! Check out the pro version for even more features at https://wpshowposts.com.
-Version: 1.1.2
+Version: 1.1.3
 Author: Tom Usborne
 Author URI: https://tomusborne.com
 License: GNU General Public License v2 or later
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define the current version
-define( 'WPSP_VERSION', '1.1.2' );
+define( 'WPSP_VERSION', '1.1.3' );
 
 // Add resizer script
 if ( ! class_exists( 'WPSP_Resize' ) ) {
@@ -142,6 +142,7 @@ function wpsp_display( $id, $custom_settings = false ) {
 		'no_results' 		 	 => wp_kses_post( wpsp_get_setting( $id, 'wpsp_no_results' ) ),
 		'post_meta_bottom_style' => sanitize_text_field( wpsp_get_setting( $id, 'wpsp_post_meta_bottom_style' ) ),
 		'post_meta_top_style' 	 => sanitize_text_field( wpsp_get_setting( $id, 'wpsp_post_meta_top_style' ) ),
+		'read_more_class'	 	 => esc_attr( wpsp_get_setting( $id, 'wpsp_read_more_class' ) ),
 	) );
 
 	// Replace args with any custom args.
@@ -365,7 +366,7 @@ function wpsp_display( $id, $custom_settings = false ) {
 	// Get the wrapper ID
 	$wrapper_id = ' id="wpsp-' . $id . '"';
 
-	$wrapper_atts = apply_filters( 'wpsp_wrapper_atts', '' );
+	$wrapper_atts = apply_filters( 'wpsp_wrapper_atts', '', $settings );
 
 	do_action( 'wpsp_before_wrapper', $settings );
 
@@ -403,15 +404,23 @@ function wpsp_display( $id, $custom_settings = false ) {
 				$column_class .= ' wpsp-' . $settings[ 'columns' ];
 			}
 
+			$post_classes = implode( ' ', $settings[ 'inner_wrapper_class' ] );
+
 			// Merge our classes with the post classes.
-			remove_filter( 'post_class', 'generate_blog_post_classes' ); // Remove GPP classes.
-			$settings['inner_wrapper_class'] = array_merge( $settings['inner_wrapper_class'], get_post_class() );
-			add_filter( 'post_class', 'generate_blog_post_classes' ); // Re-add them.
+			if ( has_filter( 'post_class', 'generate_blog_post_classes' ) ) {
+				remove_filter( 'post_class', 'generate_blog_post_classes' ); // Remove GPP classes.
+			}
+
+			$post_classes .= ' ' . implode( ' ', get_post_class() );
+
+			if ( function_exists( 'generate_blog_post_classes' ) ) {
+				add_filter( 'post_class', 'generate_blog_post_classes' ); // Re-add them.
+			}
 
 			// Start inner container
 			printf( '<%1$s class="%2$s" itemtype="http://schema.org/%3$s" itemscope>',
 				$settings[ 'inner_wrapper' ],
-				implode( ' ', $settings[ 'inner_wrapper_class' ] ) . $column_class . $featured,
+				$post_classes . $column_class . $featured,
 				$settings[ 'itemtype' ]
 			);
 
