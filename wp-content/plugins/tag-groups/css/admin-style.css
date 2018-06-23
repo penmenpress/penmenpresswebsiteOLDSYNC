@@ -70,6 +70,10 @@ License: GNU GENERAL PUBLIC LICENSE, Version 3
   overflow: hidden;
 }
 
+.tg_no_underline, .tg_no_underline:link {
+  text-decoration: none;
+}
+
 .tg_admin_accordion .ui-accordion-content {
   background-color: #FFF;
 }
@@ -108,4 +112,12 @@ License: GNU GENERAL PUBLIC LICENSE, Version 3
 /* SumoSelect menu should not cover "Add new tag" button */
 .SumoUnder {
   height: 1em !important;
+}
+
+.tg_list {
+  list-style-type: disc !important;
+}
+
+.tg_list li {
+  margin-left: 20px;
 }

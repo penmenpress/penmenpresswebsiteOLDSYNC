@@ -192,9 +192,21 @@ if ( ! class_exists('TagGroups_REST_API') ) {
 
                 $taxonomy = get_option( 'tag_group_taxonomy', array('post_tag') );
 
+              } elseif ( 'public' == strtolower( $taxonomy) ) {
+
+                $taxonomy = array_values( get_taxonomies(
+                  array(
+                    'public'  => true
+                  ),
+                  'names'
+                  )
+                );
+
               }
 
               $hide_empty = $request->get_param( 'hide_empty' ) ? true : false;
+
+              $short = $request->get_param( 'short' ) ? true : false;
 
 
               $args = array(
@@ -243,24 +255,33 @@ if ( ! class_exists('TagGroups_REST_API') ) {
 
               foreach ( $terms as $term ) {
 
-                $term_o = new TagGroups_Term( $term );
+                if ( is_object( $term ) ) {
 
-                $info = array(
-                  'id'  => $term->term_id,
-                  'name' => $term->name,
-                  'slug' => $term->slug,
-                  'taxonomy' => $term->taxonomy,
-                  'description' => $term->description,
-                  'groups' => $term_o->get_groups(),
-                );
+                  $term_o = new TagGroups_Term( $term );
 
-                if ( isset( $post_counts ) && isset( $post_counts[ $term->term_id ] ) ) {
+                  $info = array(
+                    'id'  => $term->term_id,
+                    'name' => html_entity_decode( $term->name ),
+                    'slug' => $term->slug,
+                    'taxonomy' => $term->taxonomy,
+                    'description' => $term->description,
+                  );
 
-                  $info[ 'post_count' ] = $post_counts[ $term->term_id ];
+                  if ( ! $short ) {
+
+                    $info['groups'] = $term_o->get_groups();
+
+                    if ( isset( $post_counts ) && isset( $post_counts[ $term->term_id ] ) ) {
+
+                      $info[ 'post_count' ] = $post_counts[ $term->term_id ];
+
+                    }
+
+                  }
+
+                  $result[] = $info;
 
                 }
-
-                $result[] = $info;
 
               }
 
@@ -291,20 +312,21 @@ if ( ! class_exists('TagGroups_REST_API') ) {
             switch ( $type ) {
 
               case 'metabox':
-              $taxonomy_names = TagGroups_Taxonomy::get_metabox();
+              $taxonomy_slugs = TagGroups_Taxonomy::get_taxonomies_for_metabox();
               break;
 
               case 'enabled':
               default:
-              $taxonomy_names = TagGroups_Taxonomy::get_enabled_taxonomies();
+              $taxonomy_slugs = TagGroups_Taxonomy::get_enabled_taxonomies();
               break;
 
             }
 
-            foreach ( $taxonomy_names as $taxonomy_name ) {
+            foreach ( $taxonomy_slugs as $taxonomy_slug ) {
 
               $result[] = array(
-                'name' => $taxonomy_name
+                'slug'  => $taxonomy_slug,
+                'name'  => TagGroups_Taxonomy::get_name_from_slug( $taxonomy_slug )
               );
 
             }

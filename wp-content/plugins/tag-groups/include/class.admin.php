@@ -49,7 +49,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       add_action( 'delete_term', array( 'TagGroups_Admin', 'update_post_meta' ), 10, 2 );
 
-      add_action( 'term_groups_saved', array( 'TagGroups_Admin', 'update_post_meta' ), 10, 2 );
+      add_action( 'groups_of_term_saved', array( 'TagGroups_Admin', 'update_post_meta' ), 10, 2 );
 
       add_action( 'load-edit-tags.php', array( 'TagGroups_Admin', 'bulk_action' ) );
 
@@ -982,22 +982,24 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       /*
       * 	constructing the action menu
+      *
+      *   Using .html() instead of .text() to avoid ambersands displaying
       */
       ?>
       <script type="text/javascript">
       jQuery(document).ready(function () {
-        jQuery('<option>').val('assign').text('<?php
+        jQuery('<option>').val('assign').html('<?php
         _e( 'Assign to', 'tag-groups' )
         ?>').appendTo("select[name='action']");
-        jQuery('<option>').val('assign').text('<?php
+        jQuery('<option>').val('assign').html('<?php
         _e( 'Assign to', 'tag-groups' )
         ?>').appendTo("select[name='action2']");
         var sel_top = jQuery("<select name='term-group-top'>").insertAfter("select[name='action']");
         var sel_bottom = jQuery("<select name='term-group-bottom'>").insertAfter("select[name='action2']");
         <?php foreach ( $data as $term_group ) : ?>
-        sel_top.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )
+        sel_top.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").html("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )
         ?>"));
-        sel_bottom.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )
+        sel_bottom.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").html("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )
         ?>"));
         <?php endforeach; ?>
 
@@ -1042,13 +1044,16 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
           }
 
+          /**
+          *   Using .html() instead of .text() to avoid ambersands displaying
+          */
           ?>
           var sel_filter = jQuery("<select id='tag_filter' name='term-filter' style='margin-left: 20px;'>").insertAfter("select[name='term-group-top']");
-          sel_filter.append(jQuery("<option>").attr("value", "-1").text("<?php
+          sel_filter.append(jQuery("<option>").attr("value", "-1").html("<?php
           _e( 'Filter off', 'tag-groups' )
           ?>"));
           <?php foreach ( $data as $term_group ) : ?>
-          sel_filter.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").text("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )?>"));
+          sel_filter.append(jQuery("<option>").attr("value", "<?php echo $term_group['term_group'] ?>").html("<?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" )?>"));
           <?php endforeach; ?>
           jQuery("#tag_filter option[value=<?php echo $tag_filter ?>]").prop('selected', true);
         });</script>
@@ -1649,24 +1654,6 @@ if ( ! class_exists('TagGroups_Admin') ) {
         $tag_groups_id = 0;
       }
 
-      if ( isset( $_POST['theme-name'] ) ) {
-        $theme_name = stripslashes( sanitize_text_field( $_POST['theme-name'] ) );
-      } else {
-        $theme_name = '';
-      }
-
-      if ( isset( $_POST['theme'] ) ) {
-        $theme = stripslashes( sanitize_text_field( $_POST['theme'] ) );
-      } else {
-        $theme = '';
-      }
-
-      if ( isset( $_POST['taxonomies'] ) ) {
-        $taxonomy = $_POST['taxonomies'];
-      } else {
-        $taxonomy = array();
-      }
-
       if ( isset( $_POST['ok'] ) ) {
         $ok = $_POST['ok'];
       } else {
@@ -1678,7 +1665,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         case 'shortcode':
 
-        if ( !isset( $_POST['tag-groups-shortcode-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-shortcode-nonce'], 'tag-groups-shortcode' ) ) {
+        if ( !isset( $_POST['tag-groups-shortcode-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-shortcode-nonce'], 'tag-groups-shortcode' ) ) {
 
           die( "Security check" );
 
@@ -1714,7 +1701,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         case 'reset':
 
-        if ( !isset( $_POST['tag-groups-reset-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-reset-nonce'], 'tag-groups-reset' ) ) {
+        if ( !isset( $_POST['tag-groups-reset-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-reset-nonce'], 'tag-groups-reset' ) ) {
 
           die( "Security check" );
 
@@ -1744,7 +1731,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         case 'uninstall':
 
-        if ( !isset( $_POST['tag-groups-uninstall-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-uninstall-nonce'], 'tag-groups-uninstall' ) ) {
+        if ( !isset( $_POST['tag-groups-uninstall-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-uninstall-nonce'], 'tag-groups-uninstall' ) ) {
 
           die( "Security check" );
 
@@ -1787,13 +1774,33 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         case 'theme':
 
+        if ( isset( $_POST['theme-name'] ) ) {
+
+          $theme_name = stripslashes( sanitize_text_field( $_POST['theme-name'] ) );
+
+        } else {
+
+          $theme_name = '';
+
+        }
+
+        if ( isset( $_POST['theme'] ) ) {
+
+          $theme = stripslashes( sanitize_text_field( $_POST['theme'] ) );
+
+        } else {
+
+          $theme = '';
+
+        }
+
         if ( $theme == 'own' ) {
 
           $theme = $theme_name;
 
         }
 
-        if ( ! isset( $_POST['tag-groups-settings-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-settings-nonce'], 'tag-groups-settings' ) ) {
+        if ( ! isset( $_POST['tag-groups-settings-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-settings-nonce'], 'tag-groups-settings' ) ) {
 
           die( "Security check" );
 
@@ -1828,26 +1835,50 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         case 'taxonomy':
 
-        if ( ! isset( $_POST['tag-groups-taxonomy-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-taxonomy-nonce'], 'tag-groups-taxonomy' ) ) {
+        if ( ! isset( $_POST['tag-groups-taxonomy-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-taxonomy-nonce'], 'tag-groups-taxonomy' ) ) {
 
           die( "Security check" );
 
         }
 
-        $taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
+        if ( isset( $_POST['taxonomies'] ) ) {
 
-        foreach ( $taxonomy as $taxonomy_item ) {
-          $taxonomy_item = stripslashes( sanitize_text_field( $taxonomy_item ) );
+          $taxonomies = $_POST['taxonomies'];
 
-          if ( ! in_array( $taxonomy_item, $taxonomies ) ) {
+          if ( is_array( $taxonomies ) ) {
+
+            $taxonomies = array_map( 'sanitize_text_field', $taxonomies );
+
+            $taxonomies = array_map( 'stripslashes', $taxonomies );
+
+          } else {
+
+            $taxonomies = array( 'post_tag' );
+
+          }
+
+        } else {
+
+          $taxonomies = array( 'post_tag' );
+
+        }
+
+        $public_taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
+
+        foreach ( $taxonomies as $taxonomy_item ) {
+
+          if ( ! in_array( $taxonomy_item, $public_taxonomies ) ) {
 
             die( "Security check: taxonomies" );
 
           }
+
         }
 
-        update_option( 'tag_group_taxonomy', $taxonomy );
+        update_option( 'tag_group_taxonomy', $taxonomies );
 
+        // trigger actions
+        do_action( 'taxonomies_saved', $taxonomies );
 
         if ( class_exists( 'TagGroups_Premium_Post' ) && ( ! defined( 'TAG_GROUPS_DISABLE_CACHE_REBUILD' ) || TAG_GROUPS_DISABLE_CACHE_REBUILD ) ) {
 
@@ -1865,7 +1896,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         case 'backend':
 
-        if ( !isset( $_POST['tag-groups-backend-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-backend-nonce'], 'tag-groups-backend' ) ) {
+        if ( !isset( $_POST['tag-groups-backend-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-backend-nonce'], 'tag-groups-backend' ) ) {
 
           die( "Security check" );
 
@@ -1888,7 +1919,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         case 'export':
 
-        if ( !isset( $_POST['tag-groups-export-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-export-nonce'], 'tag-groups-export' ) ) {
+        if ( !isset( $_POST['tag-groups-export-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-export-nonce'], 'tag-groups-export' ) ) {
 
           die( "Security check" );
 
@@ -1999,7 +2030,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         case 'import':
 
-        if ( !isset( $_POST['tag-groups-import-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-import-nonce'], 'tag-groups-import' ) ) {
+        if ( !isset( $_POST['tag-groups-import-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-import-nonce'], 'tag-groups-import' ) ) {
           die( "Security check" );
         }
 
@@ -2309,9 +2340,9 @@ if ( ! class_exists('TagGroups_Admin') ) {
           $html = '<form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">' .
           wp_nonce_field( 'tag-groups-taxonomy', 'tag-groups-taxonomy-nonce', true, false ) .
           '<h3>' . __( 'Taxonomies', 'tag-groups' ) . '</h3>
-          <p>' . __( 'Choose the taxonomies for which you want to use tag groups. Default is <b>post_tag</b>. Please note that the tag cloud might not work with all taxonomies and that some taxonomies listed here may not be accessible in the admin backend. If you don\'t understand what is going on here, just leave the default.', 'tag-groups' ) . '</p>' .
-          '<p>' . __( '<b>Please deselect taxonomies that you don\'t use. Using several taxonomies for the same post type or hierarchical taxonomies (like categories) is experimental and not supported.</b>', 'tag-groups' ) . '</p>' .
-          '<p>' . __( 'To see the post type, hover you mouse over the option.', 'tag-groups' ) . '</p>' .
+          <p>' . __( "Choose the taxonomies for which you want to use tag groups. Default is <b>post_tag</b>. Please note that the tag cloud might not work with all taxonomies and that some taxonomies listed here may not be accessible in the admin backend. If you don't understand what is going on here, just leave the default.", 'tag-groups' ) . '</p>' .
+          '<p>' . __( "<b>Please deselect taxonomies that you don't use. Using several taxonomies for the same post type or hierarchical taxonomies (like categories) is experimental and not supported.</b>", 'tag-groups' ) . '</p>' .
+          '<p>' . __( 'To see the post type, hover your mouse over the option.', 'tag-groups' ) . '</p>' .
           '<ul>';
 
           foreach ( $taxonomies as $taxonomy ) {
@@ -2321,10 +2352,18 @@ if ( ! class_exists('TagGroups_Admin') ) {
             $html .= '<li><input type="checkbox" name="taxonomies[]" id="' . $taxonomy . '" value="' . $taxonomy . '"';
 
             if ( in_array( $taxonomy, $tag_group_taxonomy ) ) {
+
               $html .= 'checked';
+
+              $link_to_group_admin = '<a href="' . TagGroups_Taxonomy::get_tag_group_admin_url( $taxonomy ) . '" title="' . __( 'go to tag groups page', 'tag-groups' ) . '"><span class="dashicons dashicons-index-card tg_no_underline"></span></a>';
+
+            } else {
+
+              $link_to_group_admin = '<span class="dashicons dashicons-index-card tg_no_underline tg_faded"></span>';
+
             }
 
-            $html .= '/>&nbsp;<label for="' . $taxonomy . '" class="tg_unhide_trigger">' . $taxonomy . ' <span style="display:none; color:#999;">(' . __( 'post type', 'tag-groups-premium') . ': ' . implode( ', ', $post_types ) . ')</span></label></li>';
+            $html .= '/>&nbsp;' . $link_to_group_admin . ' <label for="' . $taxonomy . '" class="tg_unhide_trigger">' . TagGroups_Taxonomy::get_name_from_slug( $taxonomy ) . ' ('. $taxonomy . ') <span style="display:none; color:#999;">(' . __( 'post type', 'tag-groups-premium') . ': ' . implode( ', ', $post_types ) . ')</span></label></li>';
 
           }
 
@@ -2502,963 +2541,968 @@ if ( ! class_exists('TagGroups_Admin') ) {
           echo $html;
         }
         if ( 'tag-cloud' == $active_tab ): ?>
-        <p><?php
-        _e( 'You can use a shortcode to embed the tag cloud directly in a post, page or widget or you call the function in the PHP code of your theme.', 'tag-groups' )
-        ?></p>
-        <form method="POST" action="<?php echo esc_url( $_SERVER['REQUEST_URI'] ); ?>">
-          <input type="hidden" name="tag-groups-shortcode-nonce" id="tag-groups-shortcode-nonce" value="<?php echo wp_create_nonce( 'tag-groups-shortcode' )
-          ?>" />
-          <ul>
-            <li><input type="checkbox" name="widget" id="tg_widget" value="1" <?php if ( $tag_group_shortcode_widget ) echo 'checked'; ?> >&nbsp;<label for="tg_widget"><?php
-            _e( 'Enable shortcode in sidebar widgets (if not visible anyway).', 'tag-groups' )
-            ?></label></li>
-            <li><input type="checkbox" name="enqueue" id="tg_enqueue" value="1" <?php if ( $tag_group_shortcode_enqueue_always ) echo 'checked'; ?> >&nbsp;<label for="tg_enqueue"><?php
-            _e( 'Always load shortcode scripts. (Otherwise only if shortcode appears in a post or page. Turn on if you use these shortcodes in widgets.)', 'tag-groups' )
-            ?></label></li>
-          </ul>
-          <input type="hidden" id="action" name="tg_action" value="shortcode">
-          <input class='button-primary' type='submit' name='save' value='<?php
-          _e( 'Save', 'tag-groups' ); ?>' id='submitbutton' />
-        </form>
+        <p><?php _e( 'You can use a shortcode to embed the tag cloud directly in a post, page or widget or you call the function in the PHP code of your theme.', 'tag-groups' ) ?>
+          <?php _e( 'Several tag clouds are also available as blocks for the Gutenberg editor.', 'tag-groups' ) ?></p>
+          <form method="POST" action="<?php echo esc_url( $_SERVER['REQUEST_URI'] ); ?>">
+            <input type="hidden" name="tag-groups-shortcode-nonce" id="tag-groups-shortcode-nonce" value="<?php echo wp_create_nonce( 'tag-groups-shortcode' )
+            ?>" />
+            <ul>
+              <li><input type="checkbox" name="widget" id="tg_widget" value="1" <?php if ( $tag_group_shortcode_widget ) echo 'checked'; ?> >&nbsp;<label for="tg_widget"><?php
+              _e( 'Enable shortcode in sidebar widgets (if not visible anyway).', 'tag-groups' )
+              ?></label></li>
+              <li><input type="checkbox" name="enqueue" id="tg_enqueue" value="1" <?php if ( $tag_group_shortcode_enqueue_always ) echo 'checked'; ?> >&nbsp;<label for="tg_enqueue"><?php
+              _e( 'Always load shortcode scripts. (Otherwise only if shortcode appears in a post or page. Turn on if you use these shortcodes in widgets.)', 'tag-groups' )
+              ?></label></li>
+            </ul>
+            <input type="hidden" id="action" name="tg_action" value="shortcode">
+            <input class='button-primary' type='submit' name='save' value='<?php
+            _e( 'Save', 'tag-groups' ); ?>' id='submitbutton' />
+          </form>
 
-        <p>&nbsp;</p>
-        <p><?php _e('Click for more information.', 'tag-groups') ?></p>
-        <h3><?php _e('Shortcodes', 'tag-groups') ?></h3>
-        <div class="tg_admin_accordion" >
-          <h4>
-            <?php _e( 'Tabbed Tag Cloud', 'tag-groups' ) ?>
-          </h4>
-          <div>
-            <h4>[tag_groups_cloud]</h4>
-            <p><?php _e( 'Display the tags in a tabbed tag cloud.', 'tag-groups' ) ?></p>
-            <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
-            <p>[tag_groups_cloud smallest=9 largest=30 include=1,2,10]</p>
-            <h4><?php _e( 'Parameters', 'tag-groups' ) ?></h4>
-            <p><?php printf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'href="https://chattymango.com/tag-groups/tag-groups-shortcodes/?pk_campaign=tg&pk_kwd=documentation#Parameters" target="_blank"' ) ?></p>
+          <p>&nbsp;</p>
+          <p><?php _e('Click for more information.', 'tag-groups') ?></p>
+          <h3><?php _e('Shortcodes', 'tag-groups') ?></h3>
+          <div class="tg_admin_accordion" >
+            <h4>
+              <?php _e( 'Tabbed Tag Cloud', 'tag-groups' ) ?>
+            </h4>
+            <div>
+              <h4>[tag_groups_cloud]</h4>
+              <p><?php _e( 'Display the tags in a tabbed tag cloud.', 'tag-groups' ) ?></p>
+              <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
+              <p>[tag_groups_cloud smallest=9 largest=30 include=1,2,10]</p>
+              <h4><?php _e( 'Parameters', 'tag-groups' ) ?></h4>
+              <p><?php printf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'https://documentation.chattymango.com/documentation/tag-groups-premium/tabbed-tag-cloud/tabbed-tag-cloud-parameters/?pk_campaign=tg&pk_kwd=documentation#Parameters" target="_blank"' ) ?></p>
+            </div>
+
+            <h4>
+              <?php _e( 'Accordion', 'tag-groups' ) ?>
+            </h4>
+            <div>
+              <h4>[tag_groups_accordion]</h4>
+              <p><?php _e( 'Display the tags in an accordion.', 'tag-groups' ) ?></p>
+              <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
+              <p>[tag_groups_accordion smallest=9 largest=30 include=1,2,10]</p>
+              <h4><?php _e( 'Parameters', 'tag-groups' ) ?></h4>
+              <p><?php printf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'https://documentation.chattymango.com/documentation/tag-groups-premium/accordion-tag-cloud/accordion-tag-cloud-parameters/?pk_campaign=tg&pk_kwd=documentation#Parameters-2" target="_blank"' ) ?></p>
+            </div>
+            <?php
+            do_action( 'tag_groups_hook_shortcodes' );
+            ?>
+
+            <h4>
+              <?php _e( 'Group Information', 'tag-groups' ) ?>
+            </h4>
+            <div>
+              <h4>[tag_groups_info]</h4>
+              <p><?php _e( 'Display information about tag groups.', 'tag-groups' ) ?></p>
+              <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
+              <p>[tag_groups_info group_id="all"]</p>
+              <h4><?php _e( 'Parameters', 'tag-groups' ) ?></h4>
+              <p><?php printf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'https://documentation.chattymango.com/documentation/tag-groups-premium/tag-groups-info/tag-groups-info-parameters/?pk_campaign=tg&pk_kwd=documentation#Parameters-3" target="_blank"' ) ?></p>
+            </div>
           </div>
 
-          <h4>
-            <?php _e( 'Accordion', 'tag-groups' ) ?>
-          </h4>
-          <div>
-            <h4>[tag_groups_accordion]</h4>
-            <p><?php _e( 'Display the tags in an accordion.', 'tag-groups' ) ?></p>
-            <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
-            <p>[tag_groups_accordion smallest=9 largest=30 include=1,2,10]</p>
-            <h4><?php _e( 'Parameters', 'tag-groups' ) ?></h4>
-            <p><?php printf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'href="https://chattymango.com/tag-groups/tag-groups-shortcodes/?pk_campaign=tg&pk_kwd=documentation#Parameters-2" target="_blank"' ) ?></p>
+          <h3>PHP</h3>
+          <div class="tg_admin_accordion">
+            <h4> tag_groups_cloud()</h4>
+            <div>
+              <p><?php _e( 'The function <b>tag_groups_cloud</b> accepts the same parameters as the [tag_groups_cloud] shortcode, except for those that determine tabs and styling.', 'tag-groups' ) ?></p>
+              <p><?php _e( 'By default it returns a string with the html for a tabbed tag cloud.', 'tag-groups' ) ?></p>
+              <h4><?php _e( 'Example', 'tag-groups' );
+              echo '</h4>
+              <p><code>' . htmlentities( "<?php if ( function_exists( 'tag_groups_cloud' ) ) echo tag_groups_cloud( array( 'include' => '1,2,5,6' ) ); ?>" )
+              ?></code></p>
+              <p>&nbsp;</p>
+              <p><?php
+              _e( 'If the optional second parameter is set to \'true\', the function returns a multidimensional array containing tag groups and tags.', 'tag-groups' ); ?></p>
+              <h4><?php _e( 'Example', 'tag-groups' );
+              echo '</h4>
+              <p><code>' . htmlentities( "<?php if ( function_exists( 'tag_groups_cloud' ) ) print_r( tag_groups_cloud( array( 'orderby' => 'count', 'order' => 'DESC' ), true ) ); ?>" )
+              ?></code></p>
+            </div>
           </div>
-          <?php
-          do_action( 'tag_groups_hook_shortcodes' );
+
+
+        <?php endif; ?>
+
+        <?php if ( 'export-import' == $active_tab ): ?>
+          <p>
+            <form method="POST" action="<?php echo esc_url( $_SERVER['REQUEST_URI'] ); ?>">
+              <h3><?php
+              _e( 'Export', 'tag-groups' )
+              ?></h3>
+              <input type="hidden" name="tag-groups-export-nonce" id="tag-groups-export-nonce" value="<?php echo wp_create_nonce( 'tag-groups-export' )
+              ?>" />
+              <p><?php
+              _e( 'Use this button to export all Tag Groups settings and groups and all terms that are assigned to a group into files.', 'tag-groups' )
+              ?></p>
+              <p><?php
+              _e( "You can import both files separately. Category hierarchy won't be saved. When you restore terms that were deleted, they receive new IDs and you must assign them to posts again. Exporting cannot substitute a backup.", 'tag-groups' )
+              ?></p>
+              <input type="hidden" id="action" name="tg_action" value="export">
+              <p><input class='button-primary' type='submit' name='export' value='<?php
+              _e( 'Export Files', 'tag-groups' ); ?>' id='submitbutton' /></p>
+            </form>
+          </p>
+          <p>&nbsp;</p>
+          <p>
+            <form method="POST" action="<?php echo esc_url( $_SERVER['REQUEST_URI'] ); ?>" enctype="multipart/form-data">
+              <h3><?php
+              _e( 'Import', 'tag-groups' )
+              ?></h3>
+              <input type="hidden" name="tag-groups-import-nonce" id="tag-groups-import-nonce" value="<?php echo wp_create_nonce( 'tag-groups-import' )
+              ?>" />
+              <p><?php
+              _e( 'Below you can import previously exported settings/groups or terms from a file.', 'tag-groups' )
+              ?></p>
+              <p><?php
+              _e( 'It is recommended to back up the database of your blog before proceeding.', 'tag-groups' )
+              ?></p>
+              <input type="hidden" id="action" name="tg_action" value="import">
+              <p><input type="file" id="settings_file" name="settings_file"></p>
+              <p><input class='button-primary' type='submit' name='import' value='<?php
+              _e( 'Import File', 'tag-groups' ); ?>' id='submitbutton' /></p>
+            </form>
+          </p>
+        <?php endif;
+
+        if ( 'reset' == $active_tab ) {
+          $html = '<form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ). '">' .
+          wp_nonce_field( 'tag-groups-reset', 'tag-groups-reset-nonce', true, false ) .
+          '<p>' .
+          __( 'Use this button to delete all tag groups and assignments. Your tags will not be changed. Check the checkbox to confirm.', 'tag-groups' ) .
+          '</p>
+          <p>' .
+          __( '(Please keep in mind that the tag assignments cannot be recovered by the export/import function.)', 'tag-groups' ) .
+          '</p>
+          <input type="checkbox" id="ok" name="ok" value="yes" />
+          <label>' .
+          __( 'I know what I am doing.', 'tag-groups' ) .
+          '</label>
+          <input type="hidden" id="action" name="tg_action" value="reset">
+          <p><input class="button-primary" type="submit" name="delete" value="' .
+          __( "Delete Groups", "tag-groups" ) . '" id="submitbutton" /></p>
+          </form>
+          <p>&nbsp;</p>
+          <h4>' .
+          __( 'Delete Settings and Groups', 'tag-groups' ) .
+          '</h4>
+          <form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">
+          <p>' .
+          wp_nonce_field( 'tag-groups-uninstall', 'tag-groups-uninstall-nonce', true, false ) .
+          '<input type="checkbox" id="ok" name="ok" value="yes"';
+
+          if ( $tag_group_reset_when_uninstall ) {
+            $html .= ' checked';
+          }
+          $html .= '/>
+          <label>' .
+          __( "Delete all groups and settings when uninstalling the plugin.", "tag-groups" ) .
+          '</label>
+          <input type="hidden" id="action" name="tg_action" value="uninstall">
+          </p>
+          <input class="button-primary" type="submit" name="save" value="' .
+          __( "Save", "tag-groups" ) . '" id="submitbutton" />
+          </form>';
+
+          echo $html;
+        }
+
+        if ( ! defined( 'TAG_GROUPS_PREMIUM_VERSION' ) && 'premium' == $active_tab ) :
           ?>
 
-          <h4>
-            <?php _e( 'Group Information', 'tag-groups' ) ?>
-          </h4>
-          <div>
-            <h4>[tag_groups_info]</h4>
-            <p><?php _e( 'Display information about tag groups.', 'tag-groups' ) ?></p>
-            <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
-            <p>[tag_groups_info group_id="all"]</p>
-            <h4><?php _e( 'Parameters', 'tag-groups' ) ?></h4>
-            <p><?php printf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'href="https://chattymango.com/tag-groups/tag-groups-shortcodes/?pk_campaign=tg&pk_kwd=documentation#Parameters-3" target="_blank"' ) ?></p>
+          <div style="margin:0 0 40px;">
+            <img src="<?php echo TAG_GROUPS_PLUGIN_URL . '/images/tgp-preview-800.jpg'
+            ?>" alt="Tag Groups Premium banner" border="0" style="clear:both; width:100%; max-width:800px;"/>
           </div>
-        </div>
-
-        <h3>PHP</h3>
-        <div class="tg_admin_accordion">
-          <h4> tag_groups_cloud()</h4>
-          <div>
-            <p><?php _e( 'The function <b>tag_groups_cloud</b> accepts the same parameters as the [tag_groups_cloud] shortcode, except for those that determine tabs and styling.', 'tag-groups' ) ?></p>
-            <p><?php _e( 'By default it returns a string with the html for a tabbed tag cloud.', 'tag-groups' ) ?></p>
-            <h4><?php _e( 'Example', 'tag-groups' );
-            echo '</h4>
-            <p><code>' . htmlentities( "<?php if ( function_exists( 'tag_groups_cloud' ) ) echo tag_groups_cloud( array( 'include' => '1,2,5,6' ) ); ?>" )
-            ?></code></p>
-            <p>&nbsp;</p>
-            <p><?php
-            _e( 'If the optional second parameter is set to \'true\', the function returns a multidimensional array containing tag groups and tags.', 'tag-groups' ); ?></p>
-            <h4><?php _e( 'Example', 'tag-groups' );
-            echo '</h4>
-            <p><code>' . htmlentities( "<?php if ( function_exists( 'tag_groups_cloud' ) ) print_r( tag_groups_cloud( array( 'orderby' => 'count', 'order' => 'DESC' ), true ) ); ?>" )
-            ?></code></p>
-          </div>
-        </div>
-
-
-      <?php endif; ?>
-
-      <?php if ( 'export-import' == $active_tab ): ?>
-        <p>
-          <form method="POST" action="<?php echo esc_url( $_SERVER['REQUEST_URI'] ); ?>">
-            <h3><?php
-            _e( 'Export', 'tag-groups' )
-            ?></h3>
-            <input type="hidden" name="tag-groups-export-nonce" id="tag-groups-export-nonce" value="<?php echo wp_create_nonce( 'tag-groups-export' )
-            ?>" />
-            <p><?php
-            _e( 'Use this button to export all Tag Groups settings and groups and all terms that are assigned to a group into files.', 'tag-groups' )
-            ?></p>
-            <p><?php
-            _e( "You can import both files separately. Category hierarchy won't be saved. When you restore terms that were deleted, they receive new IDs and you must assign them to posts again. Exporting cannot substitute a backup.", 'tag-groups' )
-            ?></p>
-            <input type="hidden" id="action" name="tg_action" value="export">
-            <p><input class='button-primary' type='submit' name='export' value='<?php
-            _e( 'Export Files', 'tag-groups' ); ?>' id='submitbutton' /></p>
-          </form>
-        </p>
-        <p>&nbsp;</p>
-        <p>
-          <form method="POST" action="<?php echo esc_url( $_SERVER['REQUEST_URI'] ); ?>" enctype="multipart/form-data">
-            <h3><?php
-            _e( 'Import', 'tag-groups' )
-            ?></h3>
-            <input type="hidden" name="tag-groups-import-nonce" id="tag-groups-import-nonce" value="<?php echo wp_create_nonce( 'tag-groups-import' )
-            ?>" />
-            <p><?php
-            _e( 'Below you can import previously exported settings/groups or terms from a file.', 'tag-groups' )
-            ?></p>
-            <p><?php
-            _e( 'It is recommended to back up the database of your blog before proceeding.', 'tag-groups' )
-            ?></p>
-            <input type="hidden" id="action" name="tg_action" value="import">
-            <p><input type="file" id="settings_file" name="settings_file"></p>
-            <p><input class='button-primary' type='submit' name='import' value='<?php
-            _e( 'Import File', 'tag-groups' ); ?>' id='submitbutton' /></p>
-          </form>
-        </p>
-      <?php endif;
-
-      if ( 'reset' == $active_tab ) {
-        $html = '<form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ). '">' .
-        wp_nonce_field( 'tag-groups-reset', 'tag-groups-reset-nonce', true, false ) .
-        '<p>' .
-        __( 'Use this button to delete all tag groups and assignments. Your tags will not be changed. Check the checkbox to confirm.', 'tag-groups' ) .
-        '</p>
-        <p>' .
-        __( '(Please keep in mind that the tag assignments cannot be recovered by the export/import function.)', 'tag-groups' ) .
-        '</p>
-        <input type="checkbox" id="ok" name="ok" value="yes" />
-        <label>' .
-        __( 'I know what I am doing.', 'tag-groups' ) .
-        '</label>
-        <input type="hidden" id="action" name="tg_action" value="reset">
-        <p><input class="button-primary" type="submit" name="delete" value="' .
-        __( "Delete Groups", "tag-groups" ) . '" id="submitbutton" /></p>
-        </form>
-        <p>&nbsp;</p>
-        <h4>' .
-        __( 'Delete Settings and Groups', 'tag-groups' ) .
-        '</h4>
-        <form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">
-        <p>' .
-        wp_nonce_field( 'tag-groups-uninstall', 'tag-groups-uninstall-nonce', true, false ) .
-        '<input type="checkbox" id="ok" name="ok" value="yes"';
-
-        if ( $tag_group_reset_when_uninstall ) {
-          $html .= ' checked';
-        }
-        $html .= '/>
-        <label>' .
-        __( "Delete all groups and settings when uninstalling the plugin.", "tag-groups" ) .
-        '</label>
-        <input type="hidden" id="action" name="tg_action" value="uninstall">
-        </p>
-        <input class="button-primary" type="submit" name="save" value="' .
-        __( "Save", "tag-groups" ) . '" id="submitbutton" />
-        </form>';
-
-        echo $html;
-      }
-
-      if ( ! defined( 'TAG_GROUPS_PREMIUM_VERSION' ) && 'premium' == $active_tab ) :
-        ?>
-        <div style="float:right; margin:10px; width:300px; clear:right;"><img src="<?php echo TAG_GROUPS_PLUGIN_URL . '/images/tgp-meta-box.png'
-        ?>" alt="Tag Groups Meta Box" title="Replace the default tag meta box with one that understands your tag groups!" border="0" style="clear:both;"/>
-        <span>Replace the default tag meta box with one that understands your tag groups!</span>
-      </div>
-      <h2><?php _e( 'Get More Features', 'tag-groups' ) ?></h2>
-      <p><?php printf( __( 'The <b>Tag Groups</b> plugin can be extended by <a %s>Tag Groups Premium</a>, which offers you many more useful features to take your tags to the next level:', 'tag-groups' ), 'href="https://chattymango.com/tag-groups-premium/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"' ); ?></p>
-      <ul style="list-style:disc;">
-        <li style="padding:0 1em; margin-left:1em;">A <b>tag input tool</b> on the post edit screen allows you to work with tags on two levels: first select the group, and then choose among the tags of that group with type-ahead.</li>
-        <li style="padding:0 1em; margin-left:1em;"><b>Color coding</b> minimizes the risk of accidentally creating a new tag with a typo: New tags are green, tags that changed their groups are yellow.</li>
-        <li style="padding:0 1em; margin-left:1em;"><b>Control new tags:</b> Optionally restrict the creation of new tags or prevent moving tags to another group on the post edit screen. These restrictions can be overridden per user role.</li>
-        <li style="padding:0 1em; margin-left:1em;"><b>Bulk-add tags:</b> If you often need to insert the same set of tags, simply join them in one group and insert them with the push of a button.</li>
-        <li style="padding:0 1em; margin-left:1em;">The option to add each term to <b>multiple groups</b>.</li>
-        <li style="padding:0 1em; margin-left:1em;"><b>Filter posts</b> on the front end by a tag group.</li>
-        <li style="padding:0 1em; margin-left:1em;">Your visitors will love the <b>Dynamic Post Filter</b>: While they choose from available tags, the list shows posts that match these tags. Tags are organized under groups, which allows for useful logical operators. (e.g. show products that are (group "color") red OR blue AND (group "size") M OR XL OR XXL.)</li>
-        <li style="padding:0 1em; margin-left:1em;">Set <b>permission</b> who is allowed to edit tag groups.</li>
-        <li style="padding:0 1em; margin-left:1em;"><b>New tag clouds:</b> Display your tags in a table or tags from multiple groups combined into one tag cloud.</li>
-      </ul>
-      <p><?php printf( __( 'See the complete <a %1$s>feature comparison</a> or check out the <a %2$s>demos</a>.', 'tag-groups' ), 'href="https://chattymango.com/tag-groups-base-premium-comparison/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"', 'href="https://demo.chattymango.com/category/tag-groups-premium/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"' ); ?></p>
-
-
-      <?php
-    endif;
-
-    // hook for premium plugin
-    $premium_html  = apply_filters( 'tag_groups_hook_settings_content', '', $active_tab );
-
-    // "About" page either for premium plugin or default version
-    if ( ! empty( $premium_html ) ) :
-
-      echo $premium_html;
-
-      elseif ( 'support' == $active_tab ):
-
-        $settings_url = admin_url( 'options-general.php?page=tag-groups-settings' );
-
-        ?>
-
-        <h2><?php _e( 'Support', 'tag-groups' ) ?></h2>
-        <div style="background:#fff; padding:10px;">
-          <p>Get started in 3 easy steps:</p><ol>
-            <li>Go to the <span class="dashicons dashicons-admin-settings"></span>&nbsp;<a href="<?php echo $settings_url ?>">settings</a> and select the <b>taxonomy</b> of your tags. In most cases just leave the default: post_tag.</li>
-            <li>Go to the <b>Tag Groups</b> page and create some groups. The default location of this page is under <span class="dashicons dashicons-admin-post"></span>Posts.</li>
-            <li>Go to your <b>tags</b> and assign them to these groups.</li>
-          </ol>
-        </div>
-        <p>&nbsp;</p>
-        <p><?php printf( __( 'If you need help, please make sure to read the <a %1$s>instructions and troubleshooting information</a> or visit the official <a %2$s>support forum</a>.', 'tag-groups' ), 'href="https://chattymango.com/tag-groups/tag-groups-documentation/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"', 'href="https://wordpress.org/support/plugin/tag-groups" target="_blank"' ); ?></p>
-
-      <?php elseif ( 'about' == $active_tab ): ?>
-        <h4>Tag Groups, Version: <?php echo TAG_GROUPS_VERSION ?></h4>
-        <ul>
-          <li>Developed by Christoph Amthor @ <a href="https://chattymango.com?pk_campaign=tg&pk_kwd=dashboard" target="_blank">Chatty Mango</a></li>
-        </ul>
-
-        <div style="float:left; width:400px; margin:20px;">
-          <h2><?php
-          _e( 'Newsletter', 'tag-groups' )
-          ?></h2>
-          <p><?php printf( __( '<a %s>Sign up for our newsletter</a> to receive updates about new versions and related tipps and news.', 'tag-groups' ), 'href="http://eepurl.com/c6AeK1" target="_blank"' ) ?></p>
-            <p>&nbsp;</p>
-
-            <h2><?php
-            _e( 'Donations', 'tag-groups' )
-            ?></h2>
-            <p><?php
-            _e( 'This plugin is the result of many years of development, adding new features, fixing bugs and answering to support questions.', 'tag-groups' )
-            ?></p>
-            <p><?php
-            _e( 'If you find <b>Tag Groups</b> useful or use it to make money, I would appreciate a donation:', 'tag-groups' ); ?></p>
-            <p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NUR3YJG7VAENA" target="_blank"><img src="<?php echo TAG_GROUPS_PLUGIN_URL . '/images/btn_donateCC_LG.gif'
-            ?>" alt="Donate via Paypal" title="Donate via Paypal" border="0" /></a></p>
-            <p><strong>Bitcoin: </strong><a href="bitcoin:1Fe21r57vDK56Yy2MbwjEoTVMiLefpV1v?label=Donation%20for%20Free%20Software" target="_blank">1Fe21r57vDK56Yy2MbwjEoTVMiLefpV1v</a></p>
-            <p><?php printf( __( 'If you travel a lot, you can <a %s>use this affiliate link to book a hotel</a> so that I get a percentage of the sales.', 'tag-groups' ), 'href="http://www.booking.com/index.html?aid=947828&label=plugin" target="_blank"' );
-            ?></p>
-            <p><?php printf( __( 'You can also <a %s>donate to my favourite charity</a>.', 'tag-groups' ), 'href="http://www.burma-center.org/support-our-work/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"' ); ?></p>
-
-            <p>&nbsp;</p>
-            <h2><?php
-            _e( 'Reviews', 'tag-groups' )
-            ?></h2>
-            <p><?php printf( __( 'I would be glad if you could give my plugin a <a %s>five-star rating</a>.', 'tag-groups' ), 'href="https://wordpress.org/support/plugin/tag-groups/reviews/?filter=5" target="_blank"' ); ?>
-              <div style="display:inline-block;"><a href="https://wordpress.org/support/plugin/tag-groups/reviews/?filter=5" target="_blank" style="color: #ffb900;text-decoration: none;">
-                <span class="dashicons dashicons-star-filled"></span>
-                <span class="dashicons dashicons-star-filled"></span>
-                <span class="dashicons dashicons-star-filled"></span>
-                <span class="dashicons dashicons-star-filled"></span>
-                <span class="dashicons dashicons-star-filled"></span>
-              </a></div>
-            </p>
-            <?php
-            _e( 'Thanks!', 'tag-groups' )
-            ?></p>
-            <p>Christoph</p>
-            <p>&nbsp;</p>
-            <h2><?php
-            _e( 'Credits and 3rd-party licences', 'tag-groups' )
-            ?></h2>
-            <ul>
-              <li><?php printf( __( 'These plugins use css and images by <a %s>jQuery UI</a>. (bundled with WordPress)', 'tag-groups' ), 'href="http://jqueryui.com/" target="_blank"') ?></li>
-              <li><?php printf( __( 'jQuery plugin <a %1$s>SumoSelect</a>: <a %2$s>MIT License</a>. Copyright (c) 2016 Hemant Negi', 'tag-groups' ), 'href="https://github.com/HemantNegi/jquery.sumoselect"', 'href="http://www.opensource.org/licenses/mit-license.php" target="_blank"') ?>'</li>
-              <li><?php printf( __( 'React JS plugin <a %1$s>React-Select</a>: <a %2$s>MIT License</a>. Copyright (c) 2018 Jed Watson', 'tag-groups' ), 'https://github.com/JedWatson/react-select"', 'href="http://www.opensource.org/licenses/mit-license.php" target="_blank"') ?>'</li>
-              <li>Spanish translation (es_ES) by <a href="http://www.webhostinghub.com/" target="_blank">Andrew Kurtis</a></li>
+          <div style="border:solid 2px #CCC; float:left; max-width:770px; padding:15px;">
+            <h1><?php _e( 'Get more features', 'tag-groups' ) ?></h1>
+            <p><?php printf( __( 'The <b>Tag Groups</b> plugin can be extended by <a %s>Tag Groups Premium</a>, which offers you many more useful features to take your tags to the next level:', 'tag-groups' ), 'href="https://chattymango.com/tag-groups-premium/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"' ); ?></p>
+            <ul style="list-style:disc;">
+              <li style="padding:0 1em; margin-left:1em;">A <b>tag input tool</b> on the post edit screen allows you to work with tags on two levels: first select the group, and then choose among the tags of that group.</li>
+              <li style="padding:0 1em; margin-left:1em;"><b>Color coding</b> minimizes the risk of accidentally creating a new tag with a typo: New tags are green, tags that changed their groups are yellow.</li>
+              <li style="padding:0 1em; margin-left:1em;"><b>Control new tags:</b> Optionally restrict the creation of new tags or prevent moving tags to another group on the post edit screen. These restrictions can be overridden per user role.</li>
+              <li style="padding:0 1em; margin-left:1em;"><b>Bulk-add tags:</b> If you often need to insert the same set of tags, simply join them in one group and insert them with the push of a button.</li>
+              <li style="padding:0 1em; margin-left:1em;">The option to add each term to <b>multiple groups</b>.</li>
+              <li style="padding:0 1em; margin-left:1em;"><b>Filter posts</b> on the front end by tag group through a URL parameter.</li>
+              <li style="padding:0 1em; margin-left:1em;"><b>Dynamic Post Filter</b>: While visitors choose from available tags, the list shows posts that match these tags. Tags are organized under groups, which allows for useful logical operators. (e.g. show products that are red OR blue (group "color") AND have a size of M OR XL OR XXL.)</li>
+              <li style="padding:0 1em; margin-left:1em;">Display <b>post tags</b> segmented into groups under you posts.</li>
+              <li style="padding:0 1em; margin-left:1em;"><b>New tag clouds:</b> Display your tags in a table or tags from multiple groups combined into one tag cloud.</li>
             </ul>
+            <p><?php printf( __( 'See the complete <a %1$s>feature comparison</a> or check out the <a %2$s>demos</a>.', 'tag-groups' ), 'href="https://chattymango.com/tag-groups-base-premium-comparison/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"', 'href="https://demo.chattymango.com/tag-group-premium-demos/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"' ); ?></p>
+          </div>
+          <div style="float:left; margin:10px; width:300px; clear:right;">
+            <img src="<?php echo TAG_GROUPS_PLUGIN_URL . '/images/tgp-meta-box.png' ?>" alt="Tag Groups Meta Box" title="Replace the default tag meta box with one that understands your tag groups!" border="0" style="clear:both;"/>
+            <span>Replace the default tag meta box with one that understands your tag groups!</span>
+          </div>
+
+          <?php
+        endif;
+
+        // hook for premium plugin
+        $premium_html  = apply_filters( 'tag_groups_hook_settings_content', '', $active_tab );
+
+        // "About" page either for premium plugin or default version
+        if ( ! empty( $premium_html ) ) :
+
+          echo $premium_html;
+
+          elseif ( 'support' == $active_tab ):
+
+            $settings_url = admin_url( 'options-general.php?page=tag-groups-settings' );
+
+            ?>
+
+            <h2><?php _e( 'Support', 'tag-groups' ) ?></h2>
+            <div style="background:#fff; padding:10px;">
+              <p><?php _e( 'Get started in 3 easy steps:', 'tag-groups' ) ?></p><ol>
+                <li><?php printf( __( 'Go to the <span class="dashicons dashicons-admin-settings"></span>&nbsp;<a %s>settings</a> and select the <b>taxonomy</b> of your tags. In most cases just leave the default: post_tag.', 'tag-groups' ), 'href="' . $settings_url . '"') ?></li>
+                <li><?php _e( 'Go to the <span class="dashicons dashicons-index-card"></span>&nbsp;<b>Tag Groups</b> page and create some groups. The default location of this page is under <span class="dashicons dashicons-admin-post"></span>Posts.', 'tag-groups' ) ?></li>
+                <li><?php _e( 'Go to your <b>tags</b> and assign them to these groups.', 'tag-groups' ) ?></li>
+              </ol>
+            </div>
+            <p>&nbsp;</p>
+            <p><?php printf( __( 'If you need help, please make sure to read the <a %1$s>instructions and troubleshooting information</a> or visit the official <a %2$s>support forum</a>.', 'tag-groups' ), 'href="https://documentation.chattymango.com/documentation/tag-groups/support/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"', 'href="https://wordpress.org/support/plugin/tag-groups" target="_blank"' ); ?></p>
+
+          <?php elseif ( 'about' == $active_tab ): ?>
+            <h4>Tag Groups, Version: <?php echo TAG_GROUPS_VERSION ?></h4>
+            <ul>
+              <li>Developed by Christoph Amthor @ <a href="https://chattymango.com?pk_campaign=tg&pk_kwd=dashboard" target="_blank">Chatty Mango</a></li>
+            </ul>
+
+            <div style="float:left; width:400px; margin:20px;">
+              <h2><?php
+              _e( 'Newsletter', 'tag-groups' )
+              ?></h2>
+              <p><?php printf( __( '<a %s>Sign up for our newsletter</a> to receive updates about new versions and related tipps and news.', 'tag-groups' ), 'href="http://eepurl.com/c6AeK1" target="_blank"' ) ?></p>
+                <p>&nbsp;</p>
+
+                <h2><?php
+                _e( 'Donations', 'tag-groups' )
+                ?></h2>
+                <p><?php
+                _e( 'This plugin is the result of many years of development, adding new features, fixing bugs and answering to support questions.', 'tag-groups' )
+                ?></p>
+                <p><?php
+                _e( 'If you find <b>Tag Groups</b> useful or use it to make money, I would appreciate a donation:', 'tag-groups' ); ?></p>
+                <p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NUR3YJG7VAENA" target="_blank"><img src="<?php echo TAG_GROUPS_PLUGIN_URL . '/images/btn_donateCC_LG.gif'
+                ?>" alt="Donate via Paypal" title="Donate via Paypal" border="0" /></a></p>
+                <p><strong>Bitcoin: </strong><a href="bitcoin:1Fe21r57vDK56Yy2MbwjEoTVMiLefpV1v?label=Donation%20for%20Free%20Software" target="_blank">1Fe21r57vDK56Yy2MbwjEoTVMiLefpV1v</a></p>
+                <p><?php printf( __( 'If you travel a lot, you can <a %s>use this affiliate link to book a hotel</a> so that I get a percentage of the sales.', 'tag-groups' ), 'href="http://www.booking.com/index.html?aid=947828&label=plugin" target="_blank"' );
+                ?></p>
+                <p><?php printf( __( 'You can also <a %s>donate to my favourite charity</a>.', 'tag-groups' ), 'href="http://www.burma-center.org/support-our-work/?pk_campaign=tg&pk_kwd=dashboard" target="_blank"' ); ?></p>
+
+                <p>&nbsp;</p>
+                <h2><?php
+                _e( 'Reviews', 'tag-groups' )
+                ?></h2>
+                <p><?php printf( __( 'I would be glad if you could give my plugin a <a %s>five-star rating</a>.', 'tag-groups' ), 'href="https://wordpress.org/support/plugin/tag-groups/reviews/?filter=5" target="_blank"' ); ?>
+                  <div style="display:inline-block;"><a href="https://wordpress.org/support/plugin/tag-groups/reviews/?filter=5" target="_blank" style="color: #ffb900;text-decoration: none;">
+                    <span class="dashicons dashicons-star-filled"></span>
+                    <span class="dashicons dashicons-star-filled"></span>
+                    <span class="dashicons dashicons-star-filled"></span>
+                    <span class="dashicons dashicons-star-filled"></span>
+                    <span class="dashicons dashicons-star-filled"></span>
+                  </a></div>
+                </p>
+                <?php
+                _e( 'Thanks!', 'tag-groups' )
+                ?></p>
+                <p>Christoph</p>
+                <p>&nbsp;</p>
+                <h2><?php
+                _e( 'Credits and 3rd-party licences', 'tag-groups' )
+                ?></h2>
+                <ul>
+                  <li><?php printf( __( 'These plugins use css and images by <a %s>jQuery UI</a>. (bundled with WordPress)', 'tag-groups' ), 'href="http://jqueryui.com/" target="_blank"') ?></li>
+                  <li><?php printf( __( 'jQuery plugin <a %1$s>SumoSelect</a>: <a %2$s>MIT License</a>. Copyright (c) 2016 Hemant Negi', 'tag-groups' ), 'href="https://github.com/HemantNegi/jquery.sumoselect"', 'href="http://www.opensource.org/licenses/mit-license.php" target="_blank"') ?>'</li>
+                  <li><?php printf( __( 'React JS plugin <a %1$s>React-Select</a>: <a %2$s>MIT License</a>. Copyright (c) 2018 Jed Watson', 'tag-groups' ), 'https://github.com/JedWatson/react-select"', 'href="http://www.opensource.org/licenses/mit-license.php" target="_blank"') ?>'</li>
+                  <li>Spanish translation (es_ES) by <a href="http://www.webhostinghub.com/" target="_blank">Andrew Kurtis</a></li>
+                </ul>
+              </div>
+
+              <?php
+
+              $html = '<div style="float:left; margin:20px;">';
+
+              $html .= '<h2>' . __( 'Latest Development News', 'tag-groups' ) . '</h2>'.
+              '
+              <table class="widefat fixed" cellspacing="0" style="max-width:550px;">
+              <thead>
+              <tr>
+              <th style="width:200px;"></th>
+              <th></th>
+              </tr>
+              </thead>
+              <tbody id="tg_feed_container"><tr><td colspan="2" style="text-align:center;">' .
+              __( 'Loading...', 'tag-groups') .
+              '</td></tr></tbody>
+              </table>
+
+              <script>
+              jQuery(document).ready(function(){
+                var tg_feed_amount = jQuery("#tg_feed_amount").val();
+                var data = {
+                  action: "tg_ajax_get_feed",
+                  url: "' . TAG_GROUPS_UPDATES_RSS_URL . '",
+                  amount: 5
+                };
+
+                jQuery.post("';
+
+                $protocol = isset( $_SERVER['HTTPS'] ) ? 'https://' : 'http://';
+                $html .= admin_url( 'admin-ajax.php', $protocol ) .
+
+                '", data, function (data) {
+                  var status = jQuery(data).find("response_data").text();
+                  if (status == "success") {
+                    var output = jQuery(data).find("output").text();
+                    jQuery("#tg_feed_container").html(output);
+                  }
+                });
+              });
+              </script>
+              </div>';
+              echo $html;
+
+            endif;
+            ?>
           </div>
 
           <?php
 
-          $html = '<div style="float:left; margin:20px;">';
-
-          $html .= '<h2>' . __( 'Latest Development News', 'tag-groups' ) . '</h2>'.
-          '
-          <table class="widefat fixed" cellspacing="0" style="max-width:550px;">
-          <thead>
-          <tr>
-          <th style="width:200px;"></th>
-          <th></th>
-          </tr>
-          </thead>
-          <tbody id="tg_feed_container"><tr><td colspan="2" style="text-align:center;">' .
-          __( 'Loading...', 'tag-groups') .
-          '</td></tr></tbody>
-          </table>
-
-          <script>
-          jQuery(document).ready(function(){
-            var tg_feed_amount = jQuery("#tg_feed_amount").val();
-            var data = {
-              action: "tg_ajax_get_feed",
-              url: "' . TAG_GROUPS_UPDATES_RSS_URL . '",
-              amount: 5
+          $html = '
+          <!-- begin Tag Groups plugin -->
+          <script type="text/javascript">
+          jQuery(function() {
+            var icons = {
+              header: "dashicons dashicons-arrow-right",
+              activeHeader: "dashicons dashicons-arrow-down"
             };
-
-            jQuery.post("';
-
-            $protocol = isset( $_SERVER['HTTPS'] ) ? 'https://' : 'http://';
-            $html .= admin_url( 'admin-ajax.php', $protocol ) .
-
-            '", data, function (data) {
-              var status = jQuery(data).find("response_data").text();
-              if (status == "success") {
-                var output = jQuery(data).find("output").text();
-                jQuery("#tg_feed_container").html(output);
-              }
+            jQuery( ".tg_admin_accordion" ).accordion({
+              icons:icons,
+              collapsible: true,
+              active: false,
+              heightStyle: "content"
             });
           });
           </script>
-          </div>';
+          <!-- end Tag Groups plugin -->
+          ';
           echo $html;
 
-        endif;
-        ?>
-      </div>
+        }
 
-      <?php
-
-      $html = '
-      <!-- begin Tag Groups plugin -->
-      <script type="text/javascript">
-      jQuery(function() {
-        var icons = {
-          header: "dashicons dashicons-arrow-right",
-          activeHeader: "dashicons dashicons-arrow-down"
-        };
-        jQuery( ".tg_admin_accordion" ).accordion({
-          icons:icons,
-          collapsible: true,
-          active: false,
-          heightStyle: "content"
-        });
-      });
-      </script>
-      <!-- end Tag Groups plugin -->
-      ';
-      echo $html;
-
-    }
-
-
-    /**
-    * Outputs a table on a submenu page where you can add, delete, change tag groups, their labels and their order.
-    */
-    static function group_administration()
-    {
-
-      $tag_group_show_filter_tags = get_option( 'tag_group_show_filter_tags', 1 );
-
-      $tag_group_show_filter = get_option( 'tag_group_show_filter', 1 );
-
-      $taxonomy_link = '';
-
-      $post_type_link = '';
-
-
-      if ( $tag_group_show_filter_tags || $tag_group_show_filter ) {
-
-        $post_type = preg_replace( '/tag-groups_(.+)/', '$1', sanitize_title( $_GET['page'] ) );
-
-      }
-
-      /**
-      * Check if the tag filter is activated
-      */
-      if ( $tag_group_show_filter_tags ) {
-
-        // get first of taxonomies that are associated with that $post_type
-        $tg_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
-
-        $taxonomy_names = get_object_taxonomies( $post_type );
-
-        $taxonomies = array_intersect( $tg_taxonomies, $taxonomy_names );
 
         /**
-        * Show the link to the taxonomy filter only if there is only one taxonomy for this post type (otherwise ambiguous where to link)
+        * Outputs a table on a submenu page where you can add, delete, change tag groups, their labels and their order.
         */
-        if ( ! empty( $taxonomies ) && count( $taxonomies ) == 1 ) {
+        static function group_administration()
+        {
 
-          $taxonomy_link = reset( $taxonomies );
+          $tag_group_show_filter_tags = get_option( 'tag_group_show_filter_tags', 1 );
 
-        }
-      }
+          $tag_group_show_filter = get_option( 'tag_group_show_filter', 1 );
+
+          $taxonomy_link = '';
+
+          $post_type_link = '';
 
 
-      /**
-      * Check if the post filter is activated
-      */
-      if ( $tag_group_show_filter ) {
+          if ( $tag_group_show_filter_tags || $tag_group_show_filter ) {
 
-        $post_type_link = $post_type;
+            $post_type = preg_replace( '/tag-groups_(.+)/', '$1', sanitize_title( $_GET['page'] ) );
 
-      }
+          }
 
-      $items_per_page = self::get_items_per_page();
+          /**
+          * Check if the tag filter is activated
+          */
+          if ( $tag_group_show_filter_tags ) {
 
-      ?>
+            // get first of taxonomies that are associated with that $post_type
+            $tg_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
 
-      <div class='wrap'>
-        <h2><?php _e( 'Tag Groups', 'tag-groups' ) ?></h2>
+            $taxonomy_names = get_object_taxonomies( $post_type );
 
-        <p><?php
-        _e( 'On this page you can define tag groups. Tags (or terms) can be assigned to these groups on the page where you edit the tags (terms).', 'tag-groups' ); ?></p>
-        <p><?php _e( 'Change the order by drag and drop or with the up/down icons. Click into a labels for editing.', 'tag-groups' );
-        ?></p>
+            $taxonomies = array_intersect( $tg_taxonomies, $taxonomy_names );
 
-        <div id="tg_message_container"></div>
+            /**
+            * Show the link to the taxonomy filter only if there is only one taxonomy for this post type (otherwise ambiguous where to link)
+            */
+            if ( ! empty( $taxonomies ) && count( $taxonomies ) == 1 ) {
 
-        <table class="widefat tg_groups_table">
-          <thead>
-            <tr>
-              <th style="min-width:30px;"><?php
-              _e( 'Group ID', 'tag-groups' )
-              ?></th>
-              <th><?php
-              _e( 'Label displayed on the frontend', 'tag-groups' )
-              ?></th>
-              <th><?php
-              _e( 'Number of assigned tags', 'tag-groups' )
-              ?></th>
-              <th><?php
-              _e( 'Action', 'tag-groups' )
-              ?></th>
-              <th><?php
-              _e( 'Change sort order', 'tag-groups' )
-              ?></th>
-            </tr>
-          </thead>
-          <tfoot>
-            <tr>
-              <th><?php
-              _e( 'Group ID', 'tag-groups' )
-              ?></th>
-              <th><?php
-              _e( 'Label displayed on the frontend', 'tag-groups' )
-              ?></th>
-              <th><?php
-              _e( 'Number of assigned tags', 'tag-groups' )
-              ?></th>
-              <th><?php
-              _e( 'Action', 'tag-groups' )
-              ?></th>
-              <th><?php
-              _e( 'Change sort order', 'tag-groups' )
-              ?></th>
-            </tr>
-          </tfoot>
-          <tbody id="tg_groups_container">
-            <tr>
-              <td colspan="5" style="padding: 50px; text-align: center;">
-                <img src="<?php echo admin_url('images/spinner.gif') ?>" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              $taxonomy_link = reset( $taxonomies );
 
-      <div id="tg_pager_container_adjuster">
-        <div id="tg_pager_container"></div>
-      </div>
-      <input type="hidden" id="tg_nonce" value="">
-      <input type="hidden" id="tg_start_position" value="1">
-
-      <script>
-      var labels = new Object();
-      labels.edit = '<?php
-      _e( 'Edit', 'tag-groups' )
-      ?>';
-      labels.create = '<?php
-      _e( 'Create', 'tag-groups' )
-      ?>';
-      labels.newgroup = '<?php
-      _e( 'new', 'tag-groups' )
-      ?>';
-      labels.placeholder_new = '<?php
-      _e( 'label', 'tag-groups' )
-      ?>';
-      labels.tooltip_delete = '<?php
-      _e( 'Delete this group.', 'tag-groups' )
-      ?>';
-      labels.tooltip_newbelow = '<?php
-      _e( 'Create a new group below.', 'tag-groups' )
-      ?>';
-      labels.tooltip_move_up = '<?php
-      _e( 'move up', 'tag-groups' )
-      ?>';
-      labels.tooltip_move_down = '<?php
-      _e( 'move down', 'tag-groups' )
-      ?>';
-      labels.tooltip_reload = '<?php
-      _e( 'reload', 'tag-groups' )
-      ?>';
-      labels.tooltip_showposts = '<?php
-      _e( 'Show posts', 'tag-groups' )
-      ?>';
-      labels.tooltip_showtags = '<?php
-      _e( 'Show tags', 'tag-groups' )
-      ?>';
-
-      var tg_params = {"ajaxurl": "<?php
-        $protocol = isset( $_SERVER['HTTPS'] ) ? 'https://' : 'http://';
-        echo admin_url( 'admin-ajax.php', $protocol );
-        ?>", "postsurl": "<?php
-        if ( ! empty( $post_type_link ) ) {
-          echo admin_url( 'edit.php?post_type=' . $post_type_link, $protocol );
-        }
-        ?>", "tagsurl": "<?php
-        if ( ! empty( $taxonomy_link ) ) {
-          echo admin_url( 'edit-tags.php?taxonomy=' . $taxonomy_link, $protocol );
-        }
-        ?>", "items_per_page": "<?php echo $items_per_page ?>"};
-        var data = {
-          taxonomy: <?php echo json_encode( $taxonomies ) ?>
-        };
-
-        jQuery(document).ready(function () {
-          data.task = "refresh";
-          tg_do_ajax(tg_params, data, labels);
-
-          jQuery(".tg_edit_label").live('click', function () {
-            tg_close_all_textfields();
-            var element = jQuery(this);
-            var position = element.attr("data-position");
-            var label = escape_html(element.attr("data-label"));
-            element.replaceWith('<span class="tg_edit_label_active"><input data-position="' + position + '" data-label="' + label + '" value="' + label + '"> <span class="tg_edit_label_yes dashicons dashicons-yes tg_pointer" ></span> <span class="tg_edit_label_no dashicons dashicons-no-alt tg_pointer"></span></span>');
-          });
-
-          jQuery(".tg_edit_label_active").live('keypress', function (e) {
-            if (e.keyCode == 13) {
-              var input = jQuery(this).children(":first");
-              var data = {
-                task: 'update',
-                position: input.attr('data-position'),
-                label: input.val(),
-                taxonomy: <?php echo json_encode( $taxonomies ) ?>,
-              };
-              tg_do_ajax(tg_params, data, labels);
             }
-          });
+          }
 
-          jQuery(".tg_edit_label_yes").live('click', function () {
-            var input = jQuery(this).parent().children(":first");
-            var data = {
-              task: 'update',
-              position: input.attr('data-position'),
-              label: input.val(),
-              taxonomy: <?php echo json_encode( $taxonomies ) ?>,
-            };
-            tg_do_ajax(tg_params, data, labels);
-          });
 
-          jQuery(".tg_edit_label_no").live('click', function () {
-            var input = jQuery(this).parent().children(":first");
-            tg_close_textfield(jQuery(this).parent(), false);
-          });
+          /**
+          * Check if the post filter is activated
+          */
+          if ( $tag_group_show_filter ) {
 
-          jQuery("[id^='tg_new_']:visible").live('keypress', function (e) {
-            if (e.keyCode == 13) {
-              var input = jQuery(this).find("input");
-              var data = {
-                task: 'new',
-                position: input.attr('data-position'),
-                label: input.val(),
-                taxonomy: <?php echo json_encode( $taxonomies ) ?>,
-              };
-              tg_do_ajax(tg_params, data, labels);
-            }
-          });
+            $post_type_link = $post_type;
 
-          jQuery(".tg_new_yes").live('click', function () {
-            var input = jQuery(this).parent().children(":first");
-            var data = {
-              task: 'new',
-              position: input.attr('data-position'),
-              label: input.val(),
-              taxonomy: <?php echo json_encode( $taxonomies ) ?>,
-            };
-            tg_do_ajax(tg_params, data, labels);
-          });
+          }
 
-          jQuery(".tg_delete").live('click', function () {
-            var position = jQuery(this).attr("data-position");
-            jQuery('.tg_sort_tr[data-position='+position+'] td').addClass('tg_ask_delete');
-            var answer = confirm('<?php
-            _e( 'Do you really want to delete this tag group?', 'tag-groups' )
-            ?> ');
-            if (answer) {
-              var data = {
-                task: 'delete',
-                position: position,
-                taxonomy: <?php echo json_encode( $taxonomies ) ?>,
-              };
-              tg_do_ajax(tg_params, data, labels);
+          $items_per_page = self::get_items_per_page();
 
-            } else {
-              jQuery('.tg_sort_tr[data-position='+position+'] td').removeClass('tg_ask_delete')
-            }
-          });
-
-          jQuery(".tg_edit_label").live('mouseenter', function () {
-            jQuery(this).children(".dashicons-edit").fadeIn();
-          });
-
-          jQuery(".tg_edit_label").live('mouseleave', function () {
-            jQuery(this).children(".dashicons-edit").fadeOut();
-          });
-
-          jQuery(".tg_pager_button").live('click', function () {
-            var page = jQuery(this).attr('data-page');
-            jQuery("#tg_start_position").val((page - 1) * <?php echo $items_per_page ?> + 1);
-            data.task = "refresh";
-            tg_do_ajax(tg_params, data, labels);
-          });
-
-          jQuery(".tg_up").live('click', function () {
-            data.position = jQuery(this).attr('data-position');
-            data.task = "up";
-            tg_do_ajax(tg_params, data, labels);
-          });
-
-          jQuery(".tg_down").live('click', function () {
-            data.position = jQuery(this).attr('data-position');
-            data.task = "down";
-            tg_do_ajax(tg_params, data, labels);
-          });
-
-          var element, start_pos, end_pos;
-          jQuery("#tg_groups_container").sortable({
-            start: function (event, ui) {
-              element = Number(ui.item.attr("data-position"));
-              start_pos = ui.item.index(".tg_sort_tr") + 1;
-            },
-            update: function (event, ui) {
-              end_pos = ui.item.index(".tg_sort_tr") + 1;
-              data.position = element;
-              data.task = "move";
-              data.new_position = element + end_pos - start_pos;
-              tg_do_ajax(tg_params, data, labels);
-            }
-          });
-          jQuery("#tg_groups_container").disableSelection();
-
-          jQuery("#tg_groups_reload").live('click', function () {
-            data.task = "refresh";
-            tg_do_ajax(tg_params, data, labels);
-          });
-        });
-        </script>
-        <?php if ( current_user_can( 'manage_options' ) ) :
-          $settings_url = admin_url( 'options-general.php?page=tag-groups-settings' );
           ?>
-          <p><a href="<?php echo $settings_url ?>"><?php
-          _e( 'Go to the settings.', 'tag-groups' )
-          ?></a></p>
-        <?php endif;
 
-      }
+          <div class='wrap'>
+            <h2><?php _e( 'Tag Groups', 'tag-groups' ) ?></h2>
 
+            <p><?php
+            _e( 'On this page you can define tag groups. Tags (or terms) can be assigned to these groups on the page where you edit the tags (terms).', 'tag-groups' ); ?></p>
+            <p><?php _e( 'Change the order by drag and drop or with the up/down icons. Click into a labels for editing.', 'tag-groups' );
+            ?></p>
 
-      /**
-      * Good idea to purge the cache after changing theme options - else your visitors won't see the change for a while. Currently implemented for W3T Total Cache and WP Super Cache.
-      */
-      static function clear_cache()
-      {
+            <div id="tg_message_container"></div>
 
-        if ( function_exists( 'flush_pgcache' ) ) {
-          flush_pgcache;
-        }
+            <table class="widefat tg_groups_table">
+              <thead>
+                <tr>
+                  <th style="min-width:30px;"><?php
+                  _e( 'Group ID', 'tag-groups' )
+                  ?></th>
+                  <th><?php
+                  _e( 'Label displayed on the frontend', 'tag-groups' )
+                  ?></th>
+                  <th><?php
+                  _e( 'Number of assigned tags', 'tag-groups' )
+                  ?></th>
+                  <th><?php
+                  _e( 'Action', 'tag-groups' )
+                  ?></th>
+                  <th><?php
+                  _e( 'Change sort order', 'tag-groups' )
+                  ?></th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th><?php
+                  _e( 'Group ID', 'tag-groups' )
+                  ?></th>
+                  <th><?php
+                  _e( 'Label displayed on the frontend', 'tag-groups' )
+                  ?></th>
+                  <th><?php
+                  _e( 'Number of assigned tags', 'tag-groups' )
+                  ?></th>
+                  <th><?php
+                  _e( 'Action', 'tag-groups' )
+                  ?></th>
+                  <th><?php
+                  _e( 'Change sort order', 'tag-groups' )
+                  ?></th>
+                </tr>
+              </tfoot>
+              <tbody id="tg_groups_container">
+                <tr>
+                  <td colspan="5" style="padding: 50px; text-align: center;">
+                    <img src="<?php echo admin_url('images/spinner.gif') ?>" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-        if ( function_exists( 'flush_minify' ) ) {
-          flush_minify;
-        }
+          <div id="tg_pager_container_adjuster">
+            <div id="tg_pager_container"></div>
+          </div>
+          <input type="hidden" id="tg_nonce" value="">
+          <input type="hidden" id="tg_start_position" value="1">
 
-        if ( function_exists( 'wp_cache_clear_cache' ) ) {
-          wp_cache_clear_cache();
-        }
+          <script>
+          var labels = new Object();
+          labels.edit = '<?php
+          _e( 'Edit', 'tag-groups' )
+          ?>';
+          labels.create = '<?php
+          _e( 'Create', 'tag-groups' )
+          ?>';
+          labels.newgroup = '<?php
+          _e( 'new', 'tag-groups' )
+          ?>';
+          labels.placeholder_new = '<?php
+          _e( 'label', 'tag-groups' )
+          ?>';
+          labels.tooltip_delete = '<?php
+          _e( 'Delete this group.', 'tag-groups' )
+          ?>';
+          labels.tooltip_newbelow = '<?php
+          _e( 'Create a new group below.', 'tag-groups' )
+          ?>';
+          labels.tooltip_move_up = '<?php
+          _e( 'move up', 'tag-groups' )
+          ?>';
+          labels.tooltip_move_down = '<?php
+          _e( 'move down', 'tag-groups' )
+          ?>';
+          labels.tooltip_reload = '<?php
+          _e( 'reload', 'tag-groups' )
+          ?>';
+          labels.tooltip_showposts = '<?php
+          _e( 'Show posts', 'tag-groups' )
+          ?>';
+          labels.tooltip_showtags = '<?php
+          _e( 'Show tags', 'tag-groups' )
+          ?>';
 
-      }
+          var tg_params = {"ajaxurl": "<?php
+            $protocol = isset( $_SERVER['HTTPS'] ) ? 'https://' : 'http://';
+            echo admin_url( 'admin-ajax.php', $protocol );
+            ?>", "postsurl": "<?php
+            if ( ! empty( $post_type_link ) ) {
+              echo admin_url( 'edit.php?post_type=' . $post_type_link, $protocol );
+            }
+            ?>", "tagsurl": "<?php
+            if ( ! empty( $taxonomy_link ) ) {
+              echo admin_url( 'edit-tags.php?taxonomy=' . $taxonomy_link, $protocol );
+            }
+            ?>", "items_per_page": "<?php echo $items_per_page ?>"};
+            var data = {
+              taxonomy: <?php echo json_encode( $taxonomies ) ?>
+            };
 
+            jQuery(document).ready(function () {
+              data.task = "refresh";
+              tg_do_ajax(tg_params, data, labels);
 
-      /**
-      * Makes sure that WPML knows about the tag group label that can have different language versions.
-      *
-      * @param string $name
-      * @param string $value
-      */
-      static function register_string_wpml( $name, $value )
-      {
+              jQuery(".tg_edit_label").live('click', function () {
+                tg_close_all_textfields();
+                var element = jQuery(this);
+                var position = element.attr("data-position");
+                var label = escape_html(element.attr("data-label"));
+                element.replaceWith('<span class="tg_edit_label_active"><input data-position="' + position + '" data-label="' + label + '" value="' + label + '"> <span class="tg_edit_label_yes dashicons dashicons-yes tg_pointer" ></span> <span class="tg_edit_label_no dashicons dashicons-no-alt tg_pointer"></span></span>');
+              });
 
-        if ( function_exists( 'icl_register_string' ) ) {
+              jQuery(".tg_edit_label_active").live('keypress', function (e) {
+                if (e.keyCode == 13) {
+                  var input = jQuery(this).children(":first");
+                  var data = {
+                    task: 'update',
+                    position: input.attr('data-position'),
+                    label: input.val(),
+                    taxonomy: <?php echo json_encode( $taxonomies ) ?>,
+                  };
+                  tg_do_ajax(tg_params, data, labels);
+                }
+              });
 
-          icl_register_string( 'tag-groups', $name, $value );
+              jQuery(".tg_edit_label_yes").live('click', function () {
+                var input = jQuery(this).parent().children(":first");
+                var data = {
+                  task: 'update',
+                  position: input.attr('data-position'),
+                  label: input.val(),
+                  taxonomy: <?php echo json_encode( $taxonomies ) ?>,
+                };
+                tg_do_ajax(tg_params, data, labels);
+              });
 
-        }
+              jQuery(".tg_edit_label_no").live('click', function () {
+                var input = jQuery(this).parent().children(":first");
+                tg_close_textfield(jQuery(this).parent(), false);
+              });
 
-      }
+              jQuery("[id^='tg_new_']:visible").live('keypress', function (e) {
+                if (e.keyCode == 13) {
+                  var input = jQuery(this).find("input");
+                  var data = {
+                    task: 'new',
+                    position: input.attr('data-position'),
+                    label: input.val(),
+                    taxonomy: <?php echo json_encode( $taxonomies ) ?>,
+                  };
+                  tg_do_ajax(tg_params, data, labels);
+                }
+              });
 
+              jQuery(".tg_new_yes").live('click', function () {
+                var input = jQuery(this).parent().children(":first");
+                var data = {
+                  task: 'new',
+                  position: input.attr('data-position'),
+                  label: input.val(),
+                  taxonomy: <?php echo json_encode( $taxonomies ) ?>,
+                };
+                tg_do_ajax(tg_params, data, labels);
+              });
 
-      /**
-      * Asks WPML to forget about $name
-      *
-      * @param string $name
-      */
-      static function unregister_string_wpml( $name )
-      {
+              jQuery(".tg_delete").live('click', function () {
+                var position = jQuery(this).attr("data-position");
+                jQuery('.tg_sort_tr[data-position='+position+'] td').addClass('tg_ask_delete');
+                var answer = confirm('<?php
+                _e( 'Do you really want to delete this tag group?', 'tag-groups' )
+                ?> ');
+                if (answer) {
+                  var data = {
+                    task: 'delete',
+                    position: position,
+                    taxonomy: <?php echo json_encode( $taxonomies ) ?>,
+                  };
+                  tg_do_ajax(tg_params, data, labels);
 
-        if ( function_exists( 'icl_unregister_string' ) ) {
+                } else {
+                  jQuery('.tg_sort_tr[data-position='+position+'] td').removeClass('tg_ask_delete')
+                }
+              });
 
-          icl_unregister_string( 'tag-groups', $name );
+              jQuery(".tg_edit_label").live('mouseenter', function () {
+                jQuery(this).children(".dashicons-edit").fadeIn();
+              });
 
-        }
+              jQuery(".tg_edit_label").live('mouseleave', function () {
+                jQuery(this).children(".dashicons-edit").fadeOut();
+              });
 
-      }
+              jQuery(".tg_pager_button").live('click', function () {
+                var page = jQuery(this).attr('data-page');
+                jQuery("#tg_start_position").val((page - 1) * <?php echo $items_per_page ?> + 1);
+                data.task = "refresh";
+                tg_do_ajax(tg_params, data, labels);
+              });
 
+              jQuery(".tg_up").live('click', function () {
+                data.position = jQuery(this).attr('data-position');
+                data.task = "up";
+                tg_do_ajax(tg_params, data, labels);
+              });
 
-      /**
-      *
-      * Modifies the query to retrieve tags for filtering in the backend.
-      *
-      * @param array $pieces
-      * @param array $taxonomies
-      * @param array $args
-      * @return array
-      */
-      static function terms_clauses( $pieces, $taxonomies, $args )
-      {
-        $taxonomy = TagGroups_Base::get_first_element( $taxonomies );
+              jQuery(".tg_down").live('click', function () {
+                data.position = jQuery(this).attr('data-position');
+                data.task = "down";
+                tg_do_ajax(tg_params, data, labels);
+              });
 
-        if ( empty( $taxonomy ) || is_array( $taxonomy ) ) {
+              var element, start_pos, end_pos;
+              jQuery("#tg_groups_container").sortable({
+                start: function (event, ui) {
+                  element = Number(ui.item.attr("data-position"));
+                  start_pos = ui.item.index(".tg_sort_tr") + 1;
+                },
+                update: function (event, ui) {
+                  end_pos = ui.item.index(".tg_sort_tr") + 1;
+                  data.position = element;
+                  data.task = "move";
+                  data.new_position = element + end_pos - start_pos;
+                  tg_do_ajax(tg_params, data, labels);
+                }
+              });
+              jQuery("#tg_groups_container").disableSelection();
 
-          $taxonomy = 'post_tag';
-
-        }
-
-        $show_filter_tags = get_option( 'tag_group_show_filter_tags', 1 );
-
-        if ( $show_filter_tags ) {
-
-          $tag_group_tags_filter = get_option( 'tag_group_tags_filter', array() );
-
-          if ( isset( $tag_group_tags_filter[ $taxonomy ] ) ) {
-
-            $group_id = $tag_group_tags_filter[ $taxonomy ];
-
-          } else {
-
-            $group_id = -1;
+              jQuery("#tg_groups_reload").live('click', function () {
+                data.task = "refresh";
+                tg_do_ajax(tg_params, data, labels);
+              });
+            });
+            </script>
+            <?php if ( current_user_can( 'manage_options' ) ) :
+              $settings_url = admin_url( 'options-general.php?page=tag-groups-settings' );
+              ?>
+              <p><a href="<?php echo $settings_url ?>" class="dashicons-before dashicons-admin-settings tg_no_underline">&nbsp;<?php
+              _e( 'Go to the settings.', 'tag-groups' )
+              ?></a></p>
+            <?php endif;
 
           }
 
 
-          // check if group exists (could be deleted since last time the filter was set)
-          $group_o = new TagGroups_Group();
+          /**
+          * Good idea to purge the cache after changing theme options - else your visitors won't see the change for a while. Currently implemented for W3T Total Cache and WP Super Cache.
+          */
+          static function clear_cache()
+          {
 
-          if ( $group_id > $group_o->get_max_term_group() ) {
+            if ( function_exists( 'flush_pgcache' ) ) {
+              flush_pgcache;
+            }
 
-            $group_id = -1;
+            if ( function_exists( 'flush_minify' ) ) {
+              flush_minify;
+            }
+
+            if ( function_exists( 'wp_cache_clear_cache' ) ) {
+              wp_cache_clear_cache();
+            }
 
           }
 
 
-          if ( $group_id > -1 ) {
+          /**
+          * Makes sure that WPML knows about the tag group label that can have different language versions.
+          *
+          * @param string $name
+          * @param string $value
+          */
+          static function register_string_wpml( $name, $value )
+          {
 
-            if ( ! class_exists('TagGroups_Premium_Group') ) {
+            if ( function_exists( 'icl_register_string' ) ) {
 
-              if ( ! empty( $pieces['where'] ) ) {
+              icl_register_string( 'tag-groups', $name, $value );
 
-                $pieces['where'] .= sprintf( " AND t.term_group = %d ", $group_id );
+            }
+
+          }
+
+
+          /**
+          * Asks WPML to forget about $name
+          *
+          * @param string $name
+          */
+          static function unregister_string_wpml( $name )
+          {
+
+            if ( function_exists( 'icl_unregister_string' ) ) {
+
+              icl_unregister_string( 'tag-groups', $name );
+
+            }
+
+          }
+
+
+          /**
+          *
+          * Modifies the query to retrieve tags for filtering in the backend.
+          *
+          * @param array $pieces
+          * @param array $taxonomies
+          * @param array $args
+          * @return array
+          */
+          static function terms_clauses( $pieces, $taxonomies, $args )
+          {
+            $taxonomy = TagGroups_Base::get_first_element( $taxonomies );
+
+            if ( empty( $taxonomy ) || is_array( $taxonomy ) ) {
+
+              $taxonomy = 'post_tag';
+
+            }
+
+            $show_filter_tags = get_option( 'tag_group_show_filter_tags', 1 );
+
+            if ( $show_filter_tags ) {
+
+              $tag_group_tags_filter = get_option( 'tag_group_tags_filter', array() );
+
+              if ( isset( $tag_group_tags_filter[ $taxonomy ] ) ) {
+
+                $group_id = $tag_group_tags_filter[ $taxonomy ];
 
               } else {
 
-                $pieces['where'] = sprintf( "t.term_group = %d ", $group_id );
+                $group_id = -1;
+
+              }
+
+
+              // check if group exists (could be deleted since last time the filter was set)
+              $group_o = new TagGroups_Group();
+
+              if ( $group_id > $group_o->get_max_term_group() ) {
+
+                $group_id = -1;
+
+              }
+
+
+              if ( $group_id > -1 ) {
+
+                if ( ! class_exists('TagGroups_Premium_Group') ) {
+
+                  if ( ! empty( $pieces['where'] ) ) {
+
+                    $pieces['where'] .= sprintf( " AND t.term_group = %d ", $group_id );
+
+                  } else {
+
+                    $pieces['where'] = sprintf( "t.term_group = %d ", $group_id );
+
+                  }
+
+                } else {
+
+                  $mq_sql = TagGroups_Premium_Group::terms_clauses( $group_id );
+
+                  if ( ! empty( $pieces['join'] ) ) {
+
+                    $pieces['join'] .= $mq_sql['join'];
+
+                  } else {
+
+                    $pieces['join'] = $mq_sql['join'];
+
+                  }
+
+                  if ( ! empty( $pieces['where'] ) ) {
+
+                    $pieces['where'] .= $mq_sql['where'];
+
+                  } else {
+
+                    $pieces['where'] = $mq_sql['where'];
+
+                  }
+
+                }
+              }
+            }
+
+            return $pieces;
+
+          }
+
+
+          /**
+          * Adds css to backend
+          */
+          static function add_admin_js_css( $where )
+          {
+
+            if ( strpos( $where, 'tag-groups-settings' ) !== false ) {
+
+              wp_enqueue_script( 'jquery' );
+
+              wp_enqueue_script( 'jquery-ui-core' );
+
+              wp_enqueue_script( 'jquery-ui-accordion' );
+
+              wp_register_style( 'tag-groups-css-backend', TAG_GROUPS_PLUGIN_URL .  '/css/admin-style.css', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_style( 'tag-groups-css-backend' );
+
+              wp_register_style( 'tag-groups-css-backend-structure', TAG_GROUPS_PLUGIN_URL . '/css/jquery-ui.structure.min.css', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_style( 'tag-groups-css-backend-structure' );
+
+              wp_register_script( 'sumoselect-js', TAG_GROUPS_PLUGIN_URL . '/js/jquery.sumoselect.min.js', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_script( 'sumoselect-js' );
+
+              wp_register_style( 'sumoselect-css', TAG_GROUPS_PLUGIN_URL .  '/css/sumoselect.css', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_style( 'sumoselect-css' );
+
+
+            } elseif ( strpos( $where, '_page_tag-groups' ) !== false ) {
+
+              wp_register_style( 'tag-groups-css-backend', TAG_GROUPS_PLUGIN_URL .  '/css/admin-style.css', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_style( 'tag-groups-css-backend' );
+
+              if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+                wp_register_script( 'tag-groups-js-backend', TAG_GROUPS_PLUGIN_URL . '/js/taggroups.js', array(), TAG_GROUPS_VERSION );
+
+              } else {
+
+                wp_register_script( 'tag-groups-js-backend', TAG_GROUPS_PLUGIN_URL . '/js/taggroups.min.js', array(), TAG_GROUPS_VERSION );
+
+              }
+
+              wp_enqueue_script( 'tag-groups-js-backend' );
+
+              wp_enqueue_script( 'jquery-ui-sortable' );
+
+            } elseif ( strpos( $where, 'edit-tags.php' ) !== false || strpos( $where, 'term.php' ) !== false  || strpos( $where, 'edit.php' ) !== false ) {
+
+              wp_register_script( 'sumoselect-js', TAG_GROUPS_PLUGIN_URL . '/js/jquery.sumoselect.min.js', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_script( 'sumoselect-js' );
+
+              wp_register_style( 'sumoselect-css', TAG_GROUPS_PLUGIN_URL .  '/css/sumoselect.css', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_style( 'sumoselect-css' );
+
+              wp_register_style( 'tag-groups-css-backend', TAG_GROUPS_PLUGIN_URL .  '/css/admin-style.css', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_style( 'tag-groups-css-backend' );
+
+            } elseif ( strpos( $where, 'post-new.php' ) !== false || strpos( $where, 'post.php' ) !== false ) {
+
+              wp_register_style( 'react-select-css', TAG_GROUPS_PLUGIN_URL .  '/css/react-select.css', array(), TAG_GROUPS_VERSION );
+
+              wp_enqueue_style( 'react-select-css' );
+
+            }
+
+          }
+
+
+          /**
+          * Adds Settings link to plugin list
+          *
+          * @param array $links
+          * @return array
+          */
+          static function add_plugin_settings_link( $links )
+          {
+
+            $settings_link = '<a href="' . admin_url( 'options-general.php?page=tag-groups-settings' ) . '">' . __( 'Settings', 'tag-groups' ) . '</a>';
+
+            array_unshift( $links, $settings_link );
+
+
+            if ( ! class_exists('TagGroups_Premium') ) {
+
+              $settings_link = '<a href="https://chattymango.com/tag-groups-premium/?pk_campaign=tg&pk_kwd=settings_link" target="_blank"><span style="color:#3A0;">' . __( 'Upgrade to Premium', 'tag-groups' ) . '</span></a>';
+
+              array_unshift( $links, $settings_link );
+
+            }
+
+            return $links;
+
+          }
+
+
+          /**
+          * Returns the items per page on the tag groups screen
+          *
+          *
+          * @param void
+          * @return int
+          */
+          public static function get_items_per_page()
+          {
+
+            if ( class_exists( 'TagGroups_Premium_Admin' ) && method_exists( 'TagGroups_Premium_Admin', 'add_screen_option' ) ) {
+
+              $items_per_page_all_users = get_option( 'tag_groups_per_page', array() );
+
+              $user = get_current_user_id();
+
+              if ( isset( $items_per_page_all_users[ $user ] ) ) {
+
+                $items_per_page = intval( $items_per_page_all_users[ $user ] );
+
+              }
+
+
+              if ( ! isset( $items_per_page_all_users[ $user ] ) || $items_per_page < 1 ) {
+
+                $items_per_page = TAG_GROUPS_ITEMS_PER_PAGE;
 
               }
 
             } else {
 
-              $mq_sql = TagGroups_Premium_Group::terms_clauses( $group_id );
-
-              if ( ! empty( $pieces['join'] ) ) {
-
-                $pieces['join'] .= $mq_sql['join'];
-
-              } else {
-
-                $pieces['join'] = $mq_sql['join'];
-
-              }
-
-              if ( ! empty( $pieces['where'] ) ) {
-
-                $pieces['where'] .= $mq_sql['where'];
-
-              } else {
-
-                $pieces['where'] = $mq_sql['where'];
-
-              }
+              $items_per_page = TAG_GROUPS_ITEMS_PER_PAGE;
 
             }
-          }
-        }
 
-        return $pieces;
-
-      }
-
-
-      /**
-      * Adds css to backend
-      */
-      static function add_admin_js_css( $where )
-      {
-
-        if ( strpos( $where, 'tag-groups-settings' ) !== false ) {
-
-          wp_enqueue_script( 'jquery' );
-
-          wp_enqueue_script( 'jquery-ui-core' );
-
-          wp_enqueue_script( 'jquery-ui-accordion' );
-
-          wp_register_style( 'tag-groups-css-backend', TAG_GROUPS_PLUGIN_URL .  '/css/admin-style.css', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_style( 'tag-groups-css-backend' );
-
-          wp_register_style( 'tag-groups-css-backend-structure', TAG_GROUPS_PLUGIN_URL . '/css/jquery-ui.structure.min.css', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_style( 'tag-groups-css-backend-structure' );
-
-          wp_register_script( 'sumoselect-js', TAG_GROUPS_PLUGIN_URL . '/js/jquery.sumoselect.min.js', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_script( 'sumoselect-js' );
-
-          wp_register_style( 'sumoselect-css', TAG_GROUPS_PLUGIN_URL .  '/css/sumoselect.css', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_style( 'sumoselect-css' );
-
-
-        } elseif ( strpos( $where, '_page_tag-groups' ) !== false ) {
-
-          wp_register_style( 'tag-groups-css-backend', TAG_GROUPS_PLUGIN_URL .  '/css/admin-style.css', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_style( 'tag-groups-css-backend' );
-
-          if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-
-            wp_register_script( 'tag-groups-js-backend', TAG_GROUPS_PLUGIN_URL . '/js/taggroups.js', array(), TAG_GROUPS_VERSION );
-
-          } else {
-
-            wp_register_script( 'tag-groups-js-backend', TAG_GROUPS_PLUGIN_URL . '/js/taggroups.min.js', array(), TAG_GROUPS_VERSION );
-
+            return $items_per_page;
           }
 
-          wp_enqueue_script( 'tag-groups-js-backend' );
-
-          wp_enqueue_script( 'jquery-ui-sortable' );
-
-        } elseif ( strpos( $where, 'edit-tags.php' ) !== false || strpos( $where, 'term.php' ) !== false  || strpos( $where, 'edit.php' ) !== false ) {
-
-          wp_register_script( 'sumoselect-js', TAG_GROUPS_PLUGIN_URL . '/js/jquery.sumoselect.min.js', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_script( 'sumoselect-js' );
-
-          wp_register_style( 'sumoselect-css', TAG_GROUPS_PLUGIN_URL .  '/css/sumoselect.css', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_style( 'sumoselect-css' );
-
-          wp_register_style( 'tag-groups-css-backend', TAG_GROUPS_PLUGIN_URL .  '/css/admin-style.css', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_style( 'tag-groups-css-backend' );
-
-        } elseif ( strpos( $where, 'post-new.php' ) !== false || strpos( $where, 'post.php' ) !== false ) {
-
-          wp_register_style( 'react-select-css', TAG_GROUPS_PLUGIN_URL .  '/css/react-select.css', array(), TAG_GROUPS_VERSION );
-
-          wp_enqueue_style( 'react-select-css' );
-
-        }
+        } // class
 
       }
-
-
-      /**
-      * Adds Settings link to plugin list
-      *
-      * @param array $links
-      * @return array
-      */
-      static function add_plugin_settings_link( $links )
-      {
-
-        $settings_link = '<a href="' . admin_url( 'options-general.php?page=tag-groups-settings' ) . '">' . __( 'Settings', 'tag-groups' ) . '</a>';
-
-        array_unshift( $links, $settings_link );
-
-
-        if ( ! class_exists('TagGroups_Premium') ) {
-
-          $settings_link = '<a href="https://chattymango.com/tag-groups-premium/?pk_campaign=tg&pk_kwd=settings_link" target="_blank"><span style="color:#3A0;">' . __( 'Upgrade to Premium', 'tag-groups' ) . '</span></a>';
-
-          array_unshift( $links, $settings_link );
-
-        }
-
-        return $links;
-
-      }
-
-
-      /**
-      * Returns the items per page on the tag groups screen
-      *
-      *
-      * @param void
-      * @return int
-      */
-      public static function get_items_per_page()
-      {
-
-        if ( class_exists( 'TagGroups_Premium_Admin' ) && method_exists( 'TagGroups_Premium_Admin', 'add_screen_option' ) ) {
-
-          $items_per_page_all_users = get_option( 'tag_groups_per_page', array() );
-
-          $user = get_current_user_id();
-
-          if ( isset( $items_per_page_all_users[ $user ] ) ) {
-
-            $items_per_page = intval( $items_per_page_all_users[ $user ] );
-
-          }
-
-
-          if ( ! isset( $items_per_page_all_users[ $user ] ) || $items_per_page < 1 ) {
-
-            $items_per_page = TAG_GROUPS_ITEMS_PER_PAGE;
-
-          }
-
-        } else {
-
-          $items_per_page = TAG_GROUPS_ITEMS_PER_PAGE;
-
-        }
-
-        return $items_per_page;
-      }
-
-    } // class
-
-  }

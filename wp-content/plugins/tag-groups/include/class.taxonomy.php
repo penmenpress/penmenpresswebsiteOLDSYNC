@@ -29,15 +29,21 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
     * Removes taxonomy names that are not registered with this WP site as public
     *
     *
-    * @param array $taxonomy_names
+    * @param array $taxonomy_slugs
     * @return array
     */
-    public static function remove_invalid( $taxonomy_names, $must_be_in_options = false )
+    public static function remove_invalid( $taxonomy_slugs )
     {
 
-      $valid_taxonomy_names = self::get_public_taxonomies();
+      if ( ! is_array( $taxonomy_slugs ) ) {
 
-      return array_intersect( $taxonomy_names, $valid_taxonomy_names );
+        $taxonomy_slugs = array( $taxonomy_slugs );
+
+      }
+
+      $valid_taxonomy_slugs = self::get_public_taxonomies();
+
+      return array_intersect( $taxonomy_slugs, $valid_taxonomy_slugs );
 
     }
 
@@ -46,23 +52,23 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
     * Returns taxonomy names that are enabled in the options
     *
     *
-    * @param array $merge_taxonomy_names Optional array of taxonomy names that needs to be intersected
+    * @param array $merge_taxonomy_slugs Optional array of taxonomy names that needs to be intersected
     * @return array
     */
-    public static function get_enabled_taxonomies( $intersect_taxonomy_names = null )
+    public static function get_enabled_taxonomies( $intersect_taxonomy_slugs = null )
     {
 
       $tag_group_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
 
-      $valid_taxonomy_names = self::get_public_taxonomies();
+      $valid_taxonomy_slugs = self::get_public_taxonomies();
 
-      if ( empty( $intersect_taxonomy_names ) ) {
+      if ( empty( $intersect_taxonomy_slugs ) ) {
 
-        return array_intersect( $tag_group_taxonomies, $valid_taxonomy_names );
+        return array_intersect( $tag_group_taxonomies, $valid_taxonomy_slugs );
 
       } else {
 
-        return array_intersect( $tag_group_taxonomies, $valid_taxonomy_names, $intersect_taxonomy_names );
+        return array_intersect( $tag_group_taxonomies, $valid_taxonomy_slugs, $intersect_taxonomy_slugs );
 
       }
 
@@ -73,25 +79,25 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
     * Returns taxonomy names that are enabled in the options for the metabox
     *
     *
-    * @param array $merge_taxonomy_names Optional array of taxonomy names that needs to be intersected
+    * @param array $merge_taxonomy_slugs Optional array of taxonomy names that needs to be intersected
     * @return array
     */
-    public static function get_metabox( $intersect_taxonomy_names = null )
+    public static function get_taxonomies_for_metabox( $intersect_taxonomy_slugs = null )
     {
 
       $tag_group_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
 
       $tag_group_meta_box_taxonomies = get_option( 'tag_group_meta_box_taxonomy', array() );
 
-      $valid_taxonomy_names = self::get_public_taxonomies();
+      $valid_taxonomy_slugs = self::get_public_taxonomies();
 
-      if ( empty( $intersect_taxonomy_names ) ) {
+      if ( empty( $intersect_taxonomy_slugs ) ) {
 
-        return array_intersect( $tag_group_taxonomies, $valid_taxonomy_names, $tag_group_meta_box_taxonomies );
+        return array_intersect( $tag_group_taxonomies, $valid_taxonomy_slugs, $tag_group_meta_box_taxonomies );
 
       } else {
 
-        return array_intersect( $tag_group_taxonomies, $valid_taxonomy_names, $tag_group_meta_box_taxonomies, $intersect_taxonomy_names );
+        return array_intersect( $tag_group_taxonomies, $valid_taxonomy_slugs, $tag_group_meta_box_taxonomies, $intersect_taxonomy_slugs );
 
       }
 
@@ -116,17 +122,17 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
     /**
     *   Retrieves post types from taxonomies
     */
-    static function post_types_from_taxonomies( $taxonomy_names = array() ) {
+    static function post_types_from_taxonomies( $taxonomy_slugs = array() ) {
 
-      if ( ! is_array( $taxonomy_names ) ) {
+      if ( ! is_array( $taxonomy_slugs ) ) {
 
-        $taxonomy_names = array( $taxonomy_names );
+        $taxonomy_slugs = array( $taxonomy_slugs );
 
       }
 
-      asort( $taxonomy_names ); // avoid duplicate cache entries
+      asort( $taxonomy_slugs ); // avoid duplicate cache entries
 
-      $key = md5( serialize( $taxonomy_names ) );
+      $key = md5( serialize( $taxonomy_slugs ) );
 
       $transient_value = get_transient( 'tag_groups_post_types' );
 
@@ -134,7 +140,7 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
 
         $post_types = array();
 
-        foreach ( $taxonomy_names as $taxonomy ) {
+        foreach ( $taxonomy_slugs as $taxonomy ) {
 
           $post_type_a = array();
 
@@ -190,6 +196,72 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
 
     }
 
+
+    /**
+    * Gets the taxonomy name for a given slug
+    *
+    *
+    * @param string $taxonomy_slug
+    * @return string name
+    */
+    public static function get_name_from_slug( $taxonomy_slug )
+    {
+
+      $taxonomy = get_taxonomy( $taxonomy_slug );
+
+      if ( is_object( $taxonomy ) && is_object( $taxonomy->labels ) ) {
+
+        return $taxonomy->labels->name;
+
+      } else {
+
+        return $taxonomy_slug;
+
+      }
+
+    }
+
+
+    /**
+    * Wrapper for backwards compatibility
+    *
+    *
+    * @param array $merge_taxonomy_slugs Optional array of taxonomy names that needs to be intersected
+    * @return array
+    */
+    public static function get_metabox( $intersect_taxonomy_slugs = null )
+    {
+
+      return self::get_taxonomies_for_metabox( $intersect_taxonomy_slugs );
+
+    }
+
+
+    /**
+    * Returns the URL to a tag groups admin page
+    *
+    *
+    * @param string $taxonomy
+    * @return string
+    */
+    public static function get_tag_group_admin_url( $taxonomy )
+    {
+
+      $post_type = TagGroups_Base::get_first_element( self::post_types_from_taxonomies( $taxonomy ) );
+
+      if ( 'post' == $post_type ) {
+
+        $rel_url = 'edit.php?page=tag-groups_' . $post_type;
+
+      } else {
+
+        $rel_url = 'edit.php?post_type=' . $post_type . '&page=tag-groups_' . $post_type;
+
+      }
+
+      return admin_url( $rel_url );
+
+    }
 
   }
 }

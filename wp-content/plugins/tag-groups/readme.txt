@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
 Tested up to: 4.9.6
-Stable tag: 0.38.3
+Stable tag: 0.38.6
 Requires PHP: 5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -34,24 +34,26 @@ Please find more information [here](https://chattymango.com/tag-groups/?pk_campa
 
 **If you find this plugin useful, please give it a [5-star rating](https://wordpress.org/support/plugin/tag-groups/reviews/?filter=5 "reviews"). Thank you!**
 
-= Extra Features =
 
-If you want to get more out of your tag groups, check out [Tag Groups Premium](https://chattymango.com/tag-groups-premium/?pk_campaign=tg&pk_kwd=readme "plugin website"). The premium plugin comes with
-
-* a meta box for the post edit screen so that you can enter and edit post tags segmented by groups;
-* the option to bulk-add all tags of a group to a post with one click;
-* add the same tag to multiple groups;
-* the option to prevent authors from creating new tags;
-* a Dynamic Post Filter for the frontend: Your visitors can pick tags from groups and see all matching posts in a list;
-* custom permissions who can edit tag groups;
-* a new tag cloud where you can combine the tags of specific groups into one cloud;
-* and more.
+> ### Extra Features
+>
+> If you want to get more out of your tag groups, check out [Tag Groups Premium](https://chattymango.com/tag-groups-premium/?pk_campaign=tg&pk_kwd=readme "plugin website"). The premium plugin comes with
+>
+> * a meta box for the post edit screen so that you can enter and edit post tags segmented by groups;
+> * the option to bulk-add all tags of a group to a post with one click;
+> * add the same tag to multiple groups;
+> * the option to prevent authors from creating new tags;
+> * a Dynamic Post Filter for the frontend: Your visitors can pick tags from groups and see all matching posts in a list;
+> * custom permissions who can edit tag groups;
+> * a new tag cloud where you can combine the tags of specific groups into one cloud;
+> * and more.
 
 https://www.youtube.com/watch?v=xonGSR9VswQ
 
-See the difference between the free and the premium plugin [in this table](https://chattymango.com/tag-groups-base-premium-comparison/?pk_campaign=tg&pk_kwd=readme "feature comparison table").
+> See the difference between the free and the premium plugin [in this table](https://chattymango.com/tag-groups-base-premium-comparison/?pk_campaign=tg&pk_kwd=readme "feature comparison table").
+>
+> **You can also [get Tag Groups Premium for free if you help us translate](https://chattymango.com/tag-groups-premium/free-premium-plugin-for-your-help/?pk_campaign=tg&pk_kwd=readme).**
 
-**You can also [get Tag Groups Premium for free if you help us translate](https://chattymango.com/tag-groups-premium/free-premium-plugin-for-your-help/?pk_campaign=tg&pk_kwd=readme).**
 
 Follow us on [Facebook](https://www.facebook.com/chattymango/) or [Twitter](https://twitter.com/ChattyMango).
 
@@ -113,6 +115,45 @@ This plugin does not collect or process any personal user data.
 
 == Changelog ==
 
+= 0.38.6 =
+
+BUG FIXES
+
+* Fixed wrong options in accordion Gutenberg block.
+* Fixed occasional errors during transformation of Gutenberg block.
+* Fixed sanitation of multiple class names.
+* Fixed prepend and append parameters not working with {count} and hide_empty=0.
+
+OTHER
+
+* Updated links to new documentation site.
+* New action hook "taxonomies_saved".
+
+= 0.38.5 =
+
+BUG FIXES
+
+* Fixed some action hooks not triggered for term group update.
+
+OTHER
+
+* Added direct link from selected taxonomies in settings to tag groups page.
+* Prepared the i18n of the Gutenberg blocks.
+
+= 0.38.4 =
+
+BUG FIXES
+
+* Fixed wrong encoding in some admin filter menus.
+
+OTHER
+
+* Gutenberg: Don't export parameters during transformation to shortcode if they hold default values.
+* Gutenberg: Updates to match latest version of Gutenberg.
+* REST API: Include taxonomy names.
+* REST API: Option to show terms of all public taxonomies.
+* Improved possibility to remove deprecated options.
+
 = 0.38.3 =
 
 OTHER
@@ -149,36 +190,8 @@ OTHER
 * New REST API endpoint for enabled taxonomies.
 * Added support for exporting latest Tag Groups Premium settings.
 * Tested shortcodes with the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/). No issues found.
-* New [documentation pages](https://documentation.chattymango.com/start?pk_campaign=tg&pk_kwd=readme) with the possibility to link from plugin backend directly to a help topic. (work in progress)
+* New [documentation pages](https://documentation.chattymango.com/?pk_campaign=tg&pk_kwd=readme) with the possibility to link from plugin backend directly to a help topic. (work in progress)
 * The HTML structure around tags was slightly changed. Please check if you customized anything.
-
-= 0.37.2  =
-
-BUG FIXES
-
-* Fixed wrong entity encoding in menus on some servers.
-
-= 0.37.1  =
-
-BUG FIXES
-
-* Fixing broken HTML in tabbed tag cloud if "not assigned" included.
-* Fixing "include" not working in tabbed tag cloud with "tags_post_id."
-
-= 0.37.0  =
-
-FEATURES
-
-* API endpoints /wp-json/tag-groups/v1/groups/ and /wp-json/tag-groups/v1/terms/ (currently only GET/read)
-
-BUG FIXES
-
-* fixed broken HTML in accordion with parameter "include"
-
-OTHER
-
-* If you use a custom theme, make sure your theme's selector (CSS Scope on jQuery UI) is ".tag-groups-cloud", not ".tag-groups-cloud-tabs". Or add ".tag-groups-cloud-tabs" to div_class.
-
 
 
 = Older Versions =

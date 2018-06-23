@@ -51,7 +51,7 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
     /**
     * Constructor
     *
-    * @param int $term term_id
+    * @param int|object $term term_id
     * @return object $this|boolean false if error occured during loading
     *
     */
@@ -198,7 +198,7 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
 
       }
 
-      do_action( 'term_groups_saved', $this->term_id, $term_groups );
+      do_action( 'groups_of_term_saved', $this->term_id, $term_groups );
 
       return $this;
 

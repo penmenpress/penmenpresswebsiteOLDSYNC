@@ -19,10 +19,13 @@ const { __ } = wp.i18n;
 
 const {
   createBlock,
-  InspectorControls,
-  PlainText,
   registerBlockType,
 } = wp.blocks;
+
+const {
+  InspectorControls,
+  PlainText,
+} = wp.editor;
 
 const {
   SelectControl,
@@ -40,14 +43,14 @@ const {
   hasPremium,
 } = ChattyMangoTagGroupsGlobal;
 
-const helpUrl = 'https://documentation.chattymango.com/';
-const helpProduct = 'tag_groups';
-const helpComponent = 'tag_cloud_accordion';
+const helpUrl = 'https://documentation.chattymango.com/documentation/';
+const helpProduct = 'tag-groups';
+const helpComponent = 'accordion-tag-cloud/accordion-tag-cloud-parameters/';
 const logoUrl = pluginUrl + '/images/cm-tg-icon-64x64.png';
 
 class TagGroupsHelp extends Component {
   render() {
-    let href = helpUrl + helpProduct + ":" + helpComponent;
+    let href = helpUrl + helpProduct + "/" + helpComponent;
 
     if ( '' != siteLang ) {
       href += "?lang=" + siteLang;
@@ -85,8 +88,8 @@ class tagGroupsAccordionCloudParameters extends Component {
     }
 
     return {
-      groups: {},
-      taxonomies: {},
+      groups: [],
+      taxonomies: [],
       selectedGroups: selectedGroups, // array representation
       selectedTaxonomies: selectedTaxonomies, // array representation
     };
@@ -114,10 +117,10 @@ class tagGroupsAccordionCloudParameters extends Component {
     this.toggleOptionCollapsible = this.toggleOptionCollapsible.bind( this );
     this.toggleOptionMouseover = this.toggleOptionMouseover.bind( this );
     this.toggleOptionHideEmpty = this.toggleOptionHideEmpty.bind( this );
-    this.toggleAdjustOperatorSize = this.toggleAdjustOperatorSize.bind( this );
+    this.toggleOptionAdjustSeperatorSize = this.toggleOptionAdjustSeperatorSize.bind( this );
     this.toggleOptionAddPremiumFilter = this.toggleOptionAddPremiumFilter.bind( this );
-    this.toggleOptionHideEmptyTabs = this.toggleOptionHideEmptyTabs.bind( this );
-    this.toggleOptionShowTabs = this.toggleOptionShowTabs.bind( this );
+    this.toggleOptionHideEmptyContent = this.toggleOptionHideEmptyContent.bind( this );
+    this.toggleOptionShowAccordion = this.toggleOptionShowAccordion.bind( this );
     this.toggleOptionShowTagCount = this.toggleOptionShowTagCount.bind( this );
 
     // Load data from REST API.
@@ -260,14 +263,9 @@ class tagGroupsAccordionCloudParameters extends Component {
     this.props.setAttributes( { hide_empty } );
   }
 
-  toggleAdjustOperatorSize() {
+  toggleOptionAdjustSeperatorSize() {
     let adjust_separator_size = ( 1 === this.props.attributes.adjust_separator_size ) ? 0 : 1;
     this.props.setAttributes( { adjust_separator_size } );
-  }
-
-  toggleOptionHasPremiumFilter() {
-    let add_premium_filter = ( 1 === this.props.attributes.add_premium_filter ) ? 0 : 1;
-    this.props.setAttributes( { add_premium_filter } );
   }
 
   toggleOptionAddPremiumFilter( key ) {
@@ -275,14 +273,14 @@ class tagGroupsAccordionCloudParameters extends Component {
     this.props.setAttributes( { add_premium_filter } );
   }
 
-  toggleOptionHideEmptyTabs( ) {
-    let hide_empty_tabs = ( 1 === this.props.attributes.hide_empty_tabs ) ? 0 : 1;
-    this.props.setAttributes( { hide_empty_tabs } );
+  toggleOptionHideEmptyContent( ) {
+    let hide_empty_content = ( 1 === this.props.attributes.hide_empty_content ) ? 0 : 1;
+    this.props.setAttributes( { hide_empty_content } );
   }
 
-  toggleOptionShowTabs( ) {
-    let show_tabs = ( 1 === this.props.attributes.show_tabs ) ? 0 : 1;
-    this.props.setAttributes( { show_tabs } );
+  toggleOptionShowAccordion( ) {
+    let show_accordion = ( 1 === this.props.attributes.show_accordion ) ? 0 : 1;
+    this.props.setAttributes( { show_accordion } );
   }
 
   toggleOptionShowTagCount( ) {
@@ -311,7 +309,7 @@ class tagGroupsAccordionCloudParameters extends Component {
       header_class,
       heightstyle,
       hide_empty,
-      hide_empty_tabs,
+      hide_empty_content,
       inner_div_class,
       largest,
       link_append,
@@ -325,7 +323,7 @@ class tagGroupsAccordionCloudParameters extends Component {
       separator_size,
       show_not_assigned,
       show_tag_count,
-      show_tabs,
+      show_accordion,
       smallest,
       tags_post_id,
     } = attributes;
@@ -340,7 +338,7 @@ class tagGroupsAccordionCloudParameters extends Component {
 
     if( this.state.taxonomies && this.state.taxonomies.length > 0 ) {
       this.state.taxonomies.forEach( ( taxonomy ) => {
-        optionsTaxonomies.push({ value:taxonomy.name, label:taxonomy.name });
+        optionsTaxonomies.push({ value:taxonomy.slug, label:taxonomy.name });
       });
     }
 
@@ -366,7 +364,7 @@ class tagGroupsAccordionCloudParameters extends Component {
               <TagGroupsHelp topic="smallest"/>
               <RangeControl
   							label={ __( 'Smallest font size' ) }
-  							value={ smallest ? Number( smallest ) : 22 }
+  							value={ smallest ? Number( smallest ) : 12 }
   							onChange={ ( value ) => { if ( value <= largest && value < 73 ) setAttributes( { smallest: value } ) } }
   							min={ 6 }
   							max={ 72 }
@@ -442,7 +440,7 @@ class tagGroupsAccordionCloudParameters extends Component {
                   <ToggleControl
                     label={ __( 'Adjust separator size to following tag' ) }
                     checked={ adjust_separator_size }
-                    onChange={ this.toggleAdjustOperatorSize }
+                    onChange={ this.toggleOptionAdjustSeperatorSize }
                   />
                   { ! adjust_separator_size &&
                     <div>
@@ -567,17 +565,17 @@ class tagGroupsAccordionCloudParameters extends Component {
             </PanelBody>
 
             <PanelBody title={ __( 'Groups and Tabs' ) } initialOpen={false}>
-            <TagGroupsHelp topic="show_tabs"/>
+            <TagGroupsHelp topic="show_accordion"/>
               <ToggleControl
-                label={ __( 'Show the tabs' ) }
-                checked={ show_tabs }
-                onChange={ this.toggleOptionShowTabs }
+                label={ __( 'Show the panels' ) }
+                checked={ show_accordion }
+                onChange={ this.toggleOptionShowAccordion }
               />
-              <TagGroupsHelp topic="hide_empty_tabs"/>
+              <TagGroupsHelp topic="hide_empty_content"/>
               <ToggleControl
-                label={ __( 'Hide empty tabs' ) }
-                checked={ hide_empty_tabs }
-                onChange={ this.toggleOptionHideEmptyTabs }
+                label={ __( 'Hide empty panels' ) }
+                checked={ hide_empty_content }
+                onChange={ this.toggleOptionHideEmptyContent }
               />
               <TagGroupsHelp topic="mouseover"/>
               <ToggleControl
@@ -745,7 +743,7 @@ class tagGroupsAccordionCloudParameters extends Component {
 * @return {?WPBlock}		   The block, if it has been successfully
 *							   registered; otherwise `undefined`.
 */
-registerBlockType( 'chatty-mango/tag-groups-cloud-accordion', {
+var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-cloud-accordion', {
   title: __( 'Accordion Tag Cloud' ),
   icon: 'tagcloud', // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
   category: 'widgets',
@@ -765,7 +763,7 @@ registerBlockType( 'chatty-mango/tag-groups-cloud-accordion', {
           let parameters = [];
           for ( var attribute in attributes ) {
             if (attributes.hasOwnProperty( attribute )) {
-              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] ) {
+              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] && cmTagGroupsAccordionBlock.attributes[ attribute ] && attributes[ attribute ] !== cmTagGroupsAccordionBlock.attributes[ attribute ].default ) {
                 if ( typeof attributes[attribute] === 'number' ) {
                   parameters.push( attribute + '=' + attributes[ attribute ] );
                 } else {
@@ -847,7 +845,7 @@ registerBlockType( 'chatty-mango/tag-groups-cloud-accordion', {
       type: 'integer',
       default: 1
     },
-    hide_empty_tabs: {// configurable in block
+    hide_empty_content: {// configurable in block
       type: 'integer',
       default: 0
     },
@@ -907,7 +905,7 @@ registerBlockType( 'chatty-mango/tag-groups-cloud-accordion', {
       type: 'integer',
       default: 0
     },
-    show_tabs: { // configurable in block
+    show_accordion: { // configurable in block
       type: 'integer',
       default: 1
     },
@@ -917,7 +915,7 @@ registerBlockType( 'chatty-mango/tag-groups-cloud-accordion', {
     },
     smallest: {// configurable in block
       type: 'integer',
-      default: 22
+      default: 12
     },
     tags_post_id: {// configurable in block
       type: 'integer',

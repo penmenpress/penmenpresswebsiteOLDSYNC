@@ -50,7 +50,7 @@ if ( ! class_exists('TagGroups_Base') ) {
     private function get_version_from_plugin_data( $path )
     {
 
-      if ( !function_exists('get_plugin_data') ){
+      if ( ! function_exists('get_plugin_data') ){
 
         require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 
@@ -130,6 +130,7 @@ if ( ! class_exists('TagGroups_Base') ) {
         return;
 
       }
+
     }
 
 
@@ -177,27 +178,24 @@ if ( ! class_exists('TagGroups_Base') ) {
 
       $group_o->save();
 
-
-      // @since 0.33: Remove old fields for previous versions higher than 0.36
-      $version = get_option( 'tag_group_base_version', '0' );
-
+      // If requested and new options exist, then remove old options.
       if (
-        1 == version_compare( $version, '0.36' )
+        defined( 'TAG_GROUPS_REMOVE_OLD_OPTIONS' )
+        && TAG_GROUPS_REMOVE_OLD_OPTIONS
         && get_option( 'term_groups', false )
         && get_option( 'term_group_positions', false )
         && get_option( 'term_group_labels', false )
       ) {
 
-        // TODO: enable later
-        // delete_option( 'tag_group_labels' );
-        //
-        // delete_option( 'tag_group_ids' );
-        //
-        // delete_option( 'max_tag_group_id' );
+        delete_option( 'tag_group_labels' );
+
+        delete_option( 'tag_group_ids' );
+
+        delete_option( 'max_tag_group_id' );
 
         if ( defined( 'WP_DEBUG') && WP_DEBUG ) {
 
-          error_log( 'Deleted deprecated options' );
+          error_log( 'Tag Groups: Deleted deprecated options' );
 
         }
 
@@ -396,11 +394,11 @@ if ( ! class_exists('TagGroups_Base') ) {
 
           if ( defined( 'TAG_GROUPS_PREMIUM_VERSION' ) ) {
 
-            $documentation_link = 'https://chattymango.com/tag-groups-premium/tag-groups-premium-documentation/';
+            $documentation_link = 'https://documentation.chattymango.com/documentation/tag-groups-premium/';
 
           } else {
 
-            $documentation_link = 'https://chattymango.com/tag-groups/tag-groups-documentation/';
+            $documentation_link = 'https://documentation.chattymango.com/documentation/tag-groups/';
 
           }
 
@@ -410,7 +408,7 @@ if ( ! class_exists('TagGroups_Base') ) {
           '<p>' . __( 'Get started in 3 easy steps:', 'tag-groups' ) . '</p>' .
           '<ol>
           <li>' . sprintf( __( 'Go to the <span class="dashicons dashicons-admin-settings"></span>&nbsp;<a %s>settings</a> and select the <b>taxonomy</b> of your tags. In most cases just leave the default: post_tag.', 'tag-groups' ), 'href="' . $settings_link . '"' ) . '</li>
-          <li>' . __( 'Go to the <b>Tag Groups</b> page and create some groups. The default location of this page is under <span class="dashicons dashicons-admin-post"></span>Posts.', 'tag-groups' ) . '</li>
+          <li>' . __( 'Go to the <span class="dashicons dashicons-index-card"></span>&nbsp;<b>Tag Groups</b> page and create some groups. The default location of this page is under <span class="dashicons dashicons-admin-post"></span>Posts.', 'tag-groups' ) . '</li>
           <li>' . __( 'Go to your <b>tags</b> and assign them to these groups.', 'tag-groups' ) . '</li>
           </ol>
           <p>' . sprintf( __( 'Now your tags are organized in groups. You can use them, for example, in a tag cloud. Just insert a shortcode into a page or post - try: [tag_groups_cloud]. You find all shortcodes and <a %s>links to the documentation</a> in the <span class="dashicons dashicons-admin-settings"></span> settings.', 'tag-groups' ), 'href="' . $documentation_link . '?pk_campaign=tg&pk_kwd=onboarding" target="_blank"' ) . '</p>
@@ -432,6 +430,34 @@ if ( ! class_exists('TagGroups_Base') ) {
         {
 
           return reset( $array );
+
+        }
+
+
+        /**
+        * sanitizes many classes separated by space
+        *
+        * @param string $classes
+        * @return string
+        */
+        public static function sanitize_html_classes( $classes ){
+
+          // replace multiple spaces by one
+          $classes = preg_replace( '!\s+!', ' ', $classes );
+
+          // turn into array
+          $classes = explode( ' ', $classes );
+
+          if( ! empty( $classes ) ) {
+
+            $classes = array_map( 'sanitize_html_class', $classes );
+
+          }
+
+          // turn back
+          $classes = implode( ' ', $classes );
+
+          return $classes;
 
         }
 

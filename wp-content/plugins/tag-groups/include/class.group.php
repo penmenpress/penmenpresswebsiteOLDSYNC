@@ -363,7 +363,7 @@ if ( ! class_exists('TagGroups_Group') ) {
     /**
     * returns all terms that are associated with this term group
     *
-    * @param string $taxonomy See get_terms
+    * @param string|array $taxonomy See get_terms
     * @param string $hide_empty See get_terms
     * @param string $fields See get_terms
     * @return array
@@ -420,27 +420,55 @@ if ( ! class_exists('TagGroups_Group') ) {
         $result = array();
 
         foreach ( $terms as $key => $term ) {
-          if ( $term->term_group == $this->term_group ) {
+
+          $tg_term = new TagGroups_Term( $term );
+
+          if ( $tg_term->is_in_group( $this->term_group ) || ! in_array( $term->term_id, $result ) ) {
 
             $result[] = $term->term_id;
 
           }
+
         }
+
+        return $result;
+
+      } elseif ( strtolower( $fields ) == 'names' ) {
+
+        $result = array();
+
+        foreach ( $terms as $key => $term ) {
+
+          $tg_term = new TagGroups_Term( $term );
+
+          if ( $tg_term->is_in_group( $this->term_group ) || ! in_array( $term->term_id, $result ) ) {
+
+            $result[] = $term->name;
+
+          }
+
+        }
+
         return $result;
 
       } else {
 
         foreach ( $terms as $key => $term ) {
-          if ( $term->term_group != $this->term_group ) {
+
+          $tg_term = new TagGroups_Term( $term );
+
+          if ( $tg_term->is_in_group( $this->term_group ) || ! in_array( $term->term_id, $result ) ) {
 
             unset( $key );
 
           }
+
         }
 
         return $terms;
 
       }
+      
     }
 
 

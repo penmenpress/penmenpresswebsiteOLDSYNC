@@ -19,27 +19,27 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
     */
     static function register() {
 
-      add_shortcode( 'tag_groups_cloud', array( 'TagGroups_Shortcode', 'tag_groups_cloud') );
+      add_shortcode( 'tag_groups_cloud', array( 'TagGroups_Shortcode', 'tag_groups_cloud' ) );
 
-      if ( function_exists( 'register_block_type') ) {
+      if ( function_exists( 'register_block_type' ) ) {
 
         register_block_type( 'chatty-mango/tag-groups-cloud-tabs', array(
-          'render_callback' => 'tag_groups_cloud',
+          'render_callback' => array( 'TagGroups_Shortcode', 'tag_groups_cloud' ),
         ) );
 
       }
 
-      add_shortcode( 'tag_groups_accordion', array( 'TagGroups_Shortcode', 'tag_groups_accordion') );
+      add_shortcode( 'tag_groups_accordion', array( 'TagGroups_Shortcode', 'tag_groups_accordion' ) );
 
-      if ( function_exists( 'register_block_type') ) {
+      if ( function_exists( 'register_block_type' ) ) {
 
         register_block_type( 'chatty-mango/tag-groups-cloud-accordion', array(
-          'render_callback' => 'tag_groups_accordion',
+          'render_callback' => array( 'TagGroups_Shortcode', 'tag_groups_accordion' ) ,
         ) );
 
       }
 
-      add_shortcode( 'tag_groups_info', array( 'TagGroups_Shortcode', 'tag_groups_info') );
+      add_shortcode( 'tag_groups_info', array( 'TagGroups_Shortcode', 'tag_groups_info' ) );
 
     }
 
@@ -243,11 +243,11 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       }
 
-      $div_id_output = $div_id ? ' id="' . sanitize_html_class( $div_id ) . '"' : '';
+      $div_id_output = $div_id ? ' id="' . TagGroups_Base::sanitize_html_classes( $div_id ) . '"' : '';
 
-      $div_class_output = $div_class ? ' class="' . sanitize_html_class( $div_class ) . '"' : '';
+      $div_class_output = $div_class ? ' class="' . TagGroups_Base::sanitize_html_classes( $div_class ) . '"' : '';
 
-      $ul_class_output = $ul_class ? ' class="' . sanitize_html_class( $ul_class ) . '"' : '';
+      $ul_class_output = $ul_class ? ' class="' . TagGroups_Base::sanitize_html_classes( $ul_class ) . '"' : '';
 
       if ( $include !== '' ) {
 
@@ -721,11 +721,19 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                       $prepend_output = preg_replace("/(\{count\})/", $tag_count, $prepend );
 
+                    } else {
+
+                      $prepend_output = '';
+
                     }
 
                     if ( ! empty( $append ) ) {
 
                       $append_output = preg_replace("/(\{count\})/", $tag_count, $append );
+
+                    } else {
+
+                      $append_output = '';
 
                     }
 
@@ -733,17 +741,17 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
                     $link_target_html = ! empty( $link_target ) ? 'target="' . $link_target . '"' : '';
 
                     // assembling a tag
-                    $html_tags[ $i ] .= '<span class="tag-groups-tag' . $other_tag_classes . '"><a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . '">';
+                    $html_tags[ $i ] .= '<span class="tag-groups-tag' . $other_tag_classes . '" style="font-size:' . $font_size . 'px"><a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . '">';
 
-                    if ( ! empty( $prepend_output ) ) {
+                    if ( '' != $prepend_output ) {
 
                       $html_tags[ $i ] .= '<span class="tag-groups-prepend" style="font-size:' . $font_size . 'px">' . htmlentities( $prepend_output, ENT_QUOTES, "UTF-8" ) . '</span>';
 
                     }
 
-                    $html_tags[ $i ] .= '<span style="font-size:' . $font_size . 'px">' . $tag->name . '</span>';
+                    $html_tags[ $i ] .= '<span class="tag-groups-label" style="font-size:' . $font_size . 'px">' . $tag->name . '</span>';
 
-                    if ( ! empty( $append_output ) ) {
+                    if ( '' != $append_output ) {
 
                       $html_tags[ $i ] .= '<span class="tag-groups-append" style="font-size:' . $font_size . 'px">' . htmlentities( $append_output, ENT_QUOTES, "UTF-8" ) . '</span>';
 
@@ -978,13 +986,13 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       }
 
-      $div_id_output = $div_id ? ' id="' . sanitize_html_class( $div_id ) . '"' : '';
+      $div_id_output = $div_id ? ' id="' . TagGroups_Base::sanitize_html_classes( $div_id ) . '"' : '';
 
-      $div_class_output = $div_class ? ' class="' . sanitize_html_class( $div_class ) . '"' : '';
+      $div_class_output = $div_class ? ' class="' . TagGroups_Base::sanitize_html_classes( $div_class ) . '"' : '';
 
-      $header_class_output = $header_class ? ' class="' . sanitize_html_class( $header_class ) . '"' : '';
+      $header_class_output = $header_class ? ' class="' . TagGroups_Base::sanitize_html_classes( $header_class ) . '"' : '';
 
-      $inner_div_class_output = $inner_div_class ? ' class="' . sanitize_html_class( $inner_div_class ) . '"' : '';
+      $inner_div_class_output = $inner_div_class ? ' class="' . TagGroups_Base::sanitize_html_classes( $inner_div_class ) . '"' : '';
 
       if ( $include !== '' ) {
 
@@ -1342,11 +1350,19 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
                     $prepend_output = preg_replace("/(\{count\})/", $tag_count, $prepend );
 
+                  } else {
+
+                    $prepend_output = '';
+
                   }
 
                   if ( ! empty( $append ) ) {
 
                     $append_output = preg_replace("/(\{count\})/", $tag_count, $append );
+
+                  } else {
+
+                    $append_output = '';
 
                   }
 
@@ -1354,17 +1370,17 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
                   $link_target_html = ! empty( $link_target ) ? 'target="' . $link_target . '"' : '';
 
                   // assembling a tag
-                  $html_tags .= '<span class="tag-groups-tag' . $other_tag_classes . '"><a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . '">';
+                  $html_tags .= '<span class="tag-groups-tag' . $other_tag_classes . '" style="font-size:' . $font_size . 'px"><a href="' . $tag_link . '" ' . $link_target_html . ' title="' . $title . '"  class="' . $tag->slug . '">';
 
-                  if ( ! empty( $prepend_output ) ) {
+                  if ( '' != $prepend_output ) {
 
                     $html_tags .= '<span class="tag-groups-prepend" style="font-size:' . $font_size . 'px">' . htmlentities( $prepend_output, ENT_QUOTES, "UTF-8" ) . '</span>';
 
                   }
 
-                  $html_tags .= '<span style="font-size:' . $font_size . 'px">' . $tag->name . '</span>';
+                  $html_tags .= '<span class="tag-groups-label" style="font-size:' . $font_size . 'px">' . $tag->name . '</span>';
 
-                  if ( ! empty( $append_output ) ) {
+                  if ( '' != $append_output ) {
 
                     $html_tags .= '<span class="tag-groups-append" style="font-size:' . $font_size . 'px">' . htmlentities( $append_output, ENT_QUOTES, "UTF-8" ) . '</span>';
 
@@ -1533,7 +1549,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       } else {
 
-        $id = sanitize_html_class( $id );
+        $id = TagGroups_Base::sanitize_html_classes( $id );
 
       }
 
@@ -1640,7 +1656,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
       } else {
 
-        $id = sanitize_html_class( $id );
+        $id = TagGroups_Base::sanitize_html_classes( $id );
 
       }
 

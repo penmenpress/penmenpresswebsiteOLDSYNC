@@ -19,19 +19,25 @@ const { __ } = wp.i18n;
 
 const {
   createBlock,
-  InspectorControls,
-  PlainText,
   registerBlockType,
 } = wp.blocks;
+
+const {
+  InspectorControls,
+  PlainText,
+} = wp.editor;
 
 const {
   SelectControl,
   PanelBody,
   ToggleControl,
-  RangeControl
+  RangeControl,
+  ServerSideRender
 } = wp.components;
 
-const { Component } = wp.element;
+const {
+  Component,
+} = wp.element;
 
 const {
   siteUrl,
@@ -40,14 +46,15 @@ const {
   hasPremium,
 } = ChattyMangoTagGroupsGlobal;
 
-const helpUrl = 'https://documentation.chattymango.com/';
-const helpProduct = 'tag_groups';
-const helpComponent = 'tag_cloud_tabs';
+const helpUrl = 'https://documentation.chattymango.com/documentation/';
+const helpProduct = 'tag-groups';
+const helpComponent = 'tabbed-tag-cloud/tabbed-tag-cloud-parameters/';
 const logoUrl = pluginUrl + '/images/cm-tg-icon-64x64.png';
+
 
 class TagGroupsHelp extends Component {
   render() {
-    let href = helpUrl + helpProduct + ":" + helpComponent;
+    let href = helpUrl + helpProduct + "/" + helpComponent;
 
     if ( '' != siteLang ) {
       href += "?lang=" + siteLang;
@@ -85,8 +92,8 @@ class tagGroupsTabbedCloudParameters extends Component {
     }
 
     return {
-      groups: {},
-      taxonomies: {},
+      groups: [],
+      taxonomies: [],
       posts: {},
       selectedGroups: selectedGroups, // array representation
       selectedTaxonomies: selectedTaxonomies, // array representation
@@ -115,7 +122,7 @@ class tagGroupsTabbedCloudParameters extends Component {
     this.toggleOptionCollapsible = this.toggleOptionCollapsible.bind( this );
     this.toggleOptionMouseover = this.toggleOptionMouseover.bind( this );
     this.toggleOptionHideEmpty = this.toggleOptionHideEmpty.bind( this );
-    this.toggleAdjustOperatorSize = this.toggleAdjustOperatorSize.bind( this );
+    this.toggleOptionAdjustSeperatorSize = this.toggleOptionAdjustSeperatorSize.bind( this );
     this.toggleOptionAddPremiumFilter = this.toggleOptionAddPremiumFilter.bind( this );
     this.toggleOptionHideEmptyTabs = this.toggleOptionHideEmptyTabs.bind( this );
     this.toggleOptionShowTabs = this.toggleOptionShowTabs.bind( this );
@@ -246,14 +253,9 @@ class tagGroupsTabbedCloudParameters extends Component {
     this.props.setAttributes( { hide_empty } );
   }
 
-  toggleAdjustOperatorSize() {
+  toggleOptionAdjustSeperatorSize() {
     let adjust_separator_size = ( 1 === this.props.attributes.adjust_separator_size ) ? 0 : 1;
     this.props.setAttributes( { adjust_separator_size } );
-  }
-
-  toggleOptionHasPremiumFilter() {
-    let add_premium_filter = ( 1 === this.props.attributes.add_premium_filter ) ? 0 : 1;
-    this.props.setAttributes( { add_premium_filter } );
   }
 
   toggleOptionAddPremiumFilter( key ) {
@@ -324,7 +326,7 @@ class tagGroupsTabbedCloudParameters extends Component {
 
     if( this.state.taxonomies && this.state.taxonomies.length > 0 ) {
       this.state.taxonomies.forEach( ( taxonomy ) => {
-        optionsTaxonomies.push({ value:taxonomy.name, label:taxonomy.name });
+        optionsTaxonomies.push({ value:taxonomy.slug, label:taxonomy.name });
       });
     }
 
@@ -350,7 +352,7 @@ class tagGroupsTabbedCloudParameters extends Component {
               <TagGroupsHelp topic="smallest"/>
               <RangeControl
   							label={ __( 'Smallest font size' ) }
-  							value={ smallest ? Number( smallest ) : 22 }
+  							value={ smallest ? Number( smallest ) : 12 }
   							onChange={ ( value ) => { if ( value <= largest && value < 73 ) setAttributes( { smallest: value } ) } }
   							min={ 6 }
   							max={ 72 }
@@ -426,7 +428,7 @@ class tagGroupsTabbedCloudParameters extends Component {
                   <ToggleControl
                     label={ __( 'Adjust separator size to following tag' ) }
                     checked={ adjust_separator_size }
-                    onChange={ this.toggleAdjustOperatorSize }
+                    onChange={ this.toggleOptionAdjustSeperatorSize }
                   />
                   { ! adjust_separator_size &&
                     <div>
@@ -702,7 +704,7 @@ class tagGroupsTabbedCloudParameters extends Component {
 * @return {?WPBlock}		   The block, if it has been successfully
 *							   registered; otherwise `undefined`.
 */
-registerBlockType( 'chatty-mango/tag-groups-cloud-tabs', {
+var cmTagGroupsTabsBlock = registerBlockType( 'chatty-mango/tag-groups-cloud-tabs', {
   title: __( 'Tabbed Tag Cloud' ),
   icon: 'tagcloud', // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
   category: 'widgets',
@@ -722,7 +724,7 @@ registerBlockType( 'chatty-mango/tag-groups-cloud-tabs', {
           let parameters = [];
           for ( var attribute in attributes ) {
             if (attributes.hasOwnProperty( attribute )) {
-              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] ) {
+              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] && cmTagGroupsTabsBlock.attributes[ attribute ] && attributes[ attribute ] !== cmTagGroupsTabsBlock.attributes[ attribute ].default ) {
                 if ( typeof attributes[attribute] === 'number' ) {
                   parameters.push( attribute + '=' + attributes[ attribute ] );
                 } else {
@@ -870,7 +872,7 @@ registerBlockType( 'chatty-mango/tag-groups-cloud-tabs', {
     },
     smallest: {// configurable in block
       type: 'integer',
-      default: 22
+      default: 12
     },
     tags_post_id: {// configurable in block
       type: 'integer',
