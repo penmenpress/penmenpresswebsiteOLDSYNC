@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: MH Magazine lite v2.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-18 06:46+0000\n"
-"PO-Revision-Date: 2018-05-18 06:47+0000\n"
+"PO-Revision-Date: 2018-06-16 12:54+0200\n"
 "Last-Translator: Michael <info@mhthemes.com>\n"
 "Language-Team: Portuguese (Brazil)\n"
 "Language: pt_BR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Loco https://localise.biz/\n"
+"X-Generator: Poedit 2.0.1\n"
 "X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
 "__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
 "_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
@@ -21,7 +21,7 @@ msgstr ""
 "X-Poedit-Basepath: ..\n"
 "X-Textdomain-Support: yes\n"
 "X-Loco-Target-Locale: pt_BR\n"
-"X-Poedit-SearchPath-0: ."
+"X-Poedit-SearchPath-0: .\n"
 
 # @ mh-magazine-lite
 #: functions.php:53
@@ -113,7 +113,7 @@ msgstr ""
 # @ mh-magazine-lite
 #: 404.php:16 content-none.php:19
 msgid "Search"
-msgstr ""
+msgstr "Pesquisar"
 
 # @ mh-magazine-lite
 #: 404.php:22 content-none.php:25
@@ -122,7 +122,7 @@ msgstr ""
 
 #: content-none.php:4
 msgid "Nothing found"
-msgstr ""
+msgstr "Nada encontrado"
 
 # @ mh-magazine-lite
 #: content-none.php:10
@@ -160,17 +160,17 @@ msgstr[1] ""
 # @ mh-magazine-lite
 #: comments.php:43
 msgid "Comments are closed."
-msgstr ""
+msgstr "Comentários não permitidos."
 
 # @ mh-magazine-lite
 #: comments.php:50
 msgid "Be the first to comment"
-msgstr ""
+msgstr "Seja o primeiro a comentar"
 
 # @ mh-magazine-lite
 #: comments.php:57
 msgid "Leave a Reply"
-msgstr ""
+msgstr "Faça um comentário"
 
 # @ mh-magazine-lite
 #: comments.php:58
@@ -190,25 +190,25 @@ msgstr "Comentário"
 #: includes/widgets/mh-posts-stacked.php:90 includes/widgets/mh-slider.php:52
 #: includes/widgets/mh-slider.php:54 includes/widgets/mh-custom-posts.php:58
 msgid "No Image"
-msgstr ""
+msgstr "Sem imagem"
 
 # @ mh-magazine-lite
 #: search.php:8 includes/mh-compatibility.php:46
 #, php-format
 msgid "Search Results for %s"
-msgstr ""
+msgstr "Resultados da pesquisa para %s"
 
 # @ mh-magazine-lite
 #: content-author-box.php:11
 #, php-format
 msgid "About %s"
-msgstr ""
+msgstr "Sobre %s"
 
 # @ mh-magazine-lite
 #: content-author-box.php:15
 #, php-format
 msgid "More articles written by %s"
-msgstr ""
+msgstr "Mais artigos escritos por %s"
 
 # @ mh-magazine-lite
 #: content-author-box.php:16
@@ -281,12 +281,12 @@ msgstr ""
 # @ mh-magazine-lite
 #: includes/mh-custom-functions.php:291
 msgid "Name "
-msgstr "Nome"
+msgstr "Nome "
 
 # @ mh-magazine-lite
 #: includes/mh-custom-functions.php:292
 msgid "Email "
-msgstr "E-mail"
+msgstr "E-mail "
 
 # @ mh-magazine-lite
 #: includes/mh-custom-functions.php:293
