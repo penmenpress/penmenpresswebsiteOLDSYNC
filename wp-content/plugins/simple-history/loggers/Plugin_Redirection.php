@@ -97,29 +97,34 @@ if ( ! class_exists( 'Plugin_Redirection' ) ) {
 		 * @return WP_HTTP_Response $response
 		 */
 		public function on_rest_request_before_callbacks( $response, $handler, $request ) {
-			// API route callback object, for example "Redirection_Api_Redirect" Object.
-			$route_callback_object = isset( $handler['callback'][0] ) ? $handler['callback'][0] : false;
-			$route_callback_object_class = get_class( $route_callback_object );
-
-			// Method name to call on callback class, for example "route_bulk".
-			$route_callback_method = isset( $handler['callback'][1] ) ? $handler['callback'][1] : false;
-
-			$redirection_api_classes = array(
-				'Redirection_Api_Redirect',
-				'Redirection_Api_Group',
-				'Redirection_Api_Settings',
-			);
-
-			// Bail directly if this is not a Redirection API call.
-			if ( ! in_array( $route_callback_object_class, $redirection_api_classes ) ) {
+			// Callback must be set.
+			if ( ! isset( $handler['callback'] ) ) {
 				return $response;
 			}
 
-			if ( 'Redirection_Api_Redirect' == $route_callback_object_class && 'route_create' === $route_callback_method ) {
+			$callback = $handler['callback'];
+
+			$callable_name = sh_get_callable_name( $callback );
+
+			$ok_redirection_api_callable_names = array(
+				'Redirection_Api_Redirect::route_bulk',
+				'Redirection_Api_Redirect::route_create',
+				'Redirection_Api_Redirect::route_update',
+				'Redirection_Api_Group::route_create',
+				'Redirection_Api_Group::route_bulk',
+				'Redirection_Api_Settings::route_save_settings',
+			);
+
+			// Bail directly if this is not a Redirection API call.
+			if ( ! in_array( $callable_name, $ok_redirection_api_callable_names ) ) {
+				return $response;
+			}
+
+			if ( 'Redirection_Api_Redirect::route_create' === $callable_name ) {
 				$this->log_redirection_add( $request );
-			} elseif ( 'route_update' === $route_callback_method ) {
+			} elseif ( 'Redirection_Api_Redirect::route_update' === $callable_name ) {
 				$this->log_redirection_edit( $request );
-			} else if ( 'Redirection_Api_Redirect' == $route_callback_object_class && 'route_bulk' === $route_callback_method ) {
+			} else if ( 'Redirection_Api_Redirect::route_bulk' === $callable_name ) {
 				$bulk_action = $request->get_param( 'bulk' );
 
 				$bulk_items = $request->get_param( 'items' );
@@ -140,9 +145,9 @@ if ( ! class_exists( 'Plugin_Redirection' ) ) {
 				} elseif ( 'delete' === $bulk_action ) {
 					$this->log_redirection_delete( $request, $bulk_items );
 				}
-			} elseif ( 'Redirection_Api_Group' == $route_callback_object_class && 'route_create' === $route_callback_method ) {
+			} elseif ( 'Redirection_Api_Group::route_create' === $callable_name ) {
 				$this->log_group_add( $request );
-			} else if ( 'Redirection_Api_Group' == $route_callback_object_class && 'route_bulk' === $route_callback_method ) {
+			} else if ( 'Redirection_Api_Group::route_bulk' === $callable_name ) {
 				$bulk_action = $request->get_param( 'bulk' );
 
 				$bulk_items = $request->get_param( 'items' );
@@ -163,7 +168,7 @@ if ( ! class_exists( 'Plugin_Redirection' ) ) {
 				} elseif ( 'delete' === $bulk_action ) {
 					$this->log_group_delete( $request, $bulk_items );
 				}
-			} else if ( 'Redirection_Api_Settings' == $route_callback_object_class ) {
+			} else if ( 'Redirection_Api_Settings::route_save_settings' == $callable_name ) {
 				$this->log_options_save( $request );
 			}
 
