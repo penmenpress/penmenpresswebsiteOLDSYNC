@@ -32,6 +32,11 @@ class PUM_AssetCache {
 	public static $css_url;
 
 	/**
+	 * @var bool
+	 */
+	public static $disabled = true;
+
+	/**
 	 * @var
 	 */
 	public static $debug;
@@ -50,11 +55,13 @@ class PUM_AssetCache {
 			self::$asset_url = Popup_Maker::$URL . 'assets/';
 			self::$js_url    = self::$asset_url . 'js/';
 			self::$css_url   = self::$asset_url . 'css/';
+			self::$disabled  = pum_get_option( 'disable_asset_caching', false );
 
 			add_action( 'pum_extension_updated', array( __CLASS__, 'reset_cache' ) );
 			add_action( 'pum_extension_deactivated', array( __CLASS__, 'reset_cache' ) );
 			add_action( 'pum_extension_activated', array( __CLASS__, 'reset_cache' ) );
 			add_action( 'pum_regenerate_asset_cache', array( __CLASS__, 'reset_cache' ) );
+			add_action( 'pum_save_settings', array( __CLASS__, 'reset_cache' ) );
 			add_action( 'pum_save_popup', array( __CLASS__, 'reset_cache' ) );
 			add_action( 'popmake_save_popup_theme', array( __CLASS__, 'reset_cache' ) );
 			add_action( 'pum_update_core_version', array( __CLASS__, 'reset_cache' ) );
@@ -65,11 +72,25 @@ class PUM_AssetCache {
 	}
 
 	/**
+	 * Checks if Asset caching is possible and enabled.
+	 *
+	 * @return bool
+	 */
+	public static function enabled() {
+		return self::writeable() && ! self::$disabled;
+	}
+
+	/**
 	 * Is the cache directory writeable?
 	 *
 	 * @return bool
 	 */
 	public static function writeable() {
+		// TODO Remove this once all extensions have been thoroughly updated with time to get them to users.
+		if ( self::$disabled ) {
+			return false;
+		}
+
 		// Check and create cachedir
 		if ( ! is_dir( self::$cache_dir ) ) {
 
@@ -228,7 +249,7 @@ class PUM_AssetCache {
 		/** @var WP_Filesystem_Base $wp_filesystem */
 		global $wp_filesystem;
 
-		return $wp_filesystem->put_contents( $file, $contents, defined('FS_CHMOD_FILE' ) ? FS_CHMOD_FILE : false );
+		return $wp_filesystem->put_contents( $file, $contents, defined( 'FS_CHMOD_FILE' ) ? FS_CHMOD_FILE : false );
 	}
 
 	/**
@@ -248,22 +269,22 @@ class PUM_AssetCache {
 		 */
 		$css = array(
 			'imports' => array(
-				'content' => self::generate_font_imports(),
-				'priority' => -1,
+				'content'  => self::generate_font_imports(),
+				'priority' => - 1,
 			),
-			'core'   => array(
+			'core'    => array(
 				'content'  => $core_css,
 				'priority' => 0,
 			),
-			'themes' => array(
+			'themes'  => array(
 				'content'  => self::generate_popup_theme_styles(),
 				'priority' => 1,
 			),
-			'popups' => array(
+			'popups'  => array(
 				'content'  => self::generate_popup_styles(),
 				'priority' => 15,
 			),
-			'custom' => array(
+			'custom'  => array(
 				'content'  => self::custom_css(),
 				'priority' => 20,
 			),
@@ -308,6 +329,10 @@ class PUM_AssetCache {
 
 				$popup = pum_get_popup( $query->post->ID );
 
+				if ( ! pum_is_popup( $popup ) ) {
+					continue;
+				}
+
 				ob_start();
 
 				if ( $popup->get_setting( 'zindex', false ) ) {
@@ -316,7 +341,7 @@ class PUM_AssetCache {
 				}
 
 				// Allow per popup CSS additions.
-				do_action( 'pum_generate_popup_css', $query->post->ID );
+				do_action( 'pum_generate_popup_css', $popup->ID );
 
 				$popup_css .= ob_get_clean();
 

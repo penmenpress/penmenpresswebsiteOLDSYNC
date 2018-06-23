@@ -79,6 +79,8 @@ class PUM_Admin_Settings {
 					'type'    => 'success',
 					'message' => __( 'Settings saved successfully!', 'popup-maker' ),
 				);
+
+				do_action( 'pum_save_settings', $settings );
 			} else {
 				self::$notices[] = array(
 					'type'    => 'error',
@@ -279,7 +281,7 @@ class PUM_Admin_Settings {
 							'type'  => 'text',
 							'std'   => __( 'You are already a subscriber.', 'popup-maker' ),
 						),
-						'default_consent_required_message' => array(
+						'default_consent_required_message'   => array(
 							'label' => __( 'Consent Required Message', 'popup-maker' ),
 							'desc'  => __( 'Message to show user who is already subscribed.', 'popup-maker' ),
 							'type'  => 'text',
@@ -339,7 +341,7 @@ class PUM_Admin_Settings {
 								'privacy_consent_always_enabled' => 'yes',
 							),
 						),
-						'default_privacy_consent_required'             => array(
+						'default_privacy_consent_required'     => array(
 							'label'        => __( 'Consent Required', 'popup-maker' ),
 							'type'         => 'checkbox',
 							'std'          => pum_get_option( 'default_privacy_consent_required' ),
@@ -380,13 +382,14 @@ class PUM_Admin_Settings {
 							),
 						),
 						'default_privacy_usage_text'           => array(
-							'label' => __( 'Consent Usage Text', 'popup-maker' ),
-							'desc'  => function_exists( 'get_privacy_policy_url' ) ? sprintf( __( 'You can use %1$%2$s to insert a link to your privacy policy. To customize the link text use %1$s:Link Text%2$s', 'popup-maker' ), '{{privacy_link', '}}' ) : '',
-							'type'  => 'text',
-							'std'   => __( 'If you opt in above we use this information send related content, discounts and other special offers.', 'popup-maker' ),
+							'label'        => __( 'Consent Usage Text', 'popup-maker' ),
+							'desc'         => function_exists( 'get_privacy_policy_url' ) ? sprintf( __( 'You can use %1$%2$s to insert a link to your privacy policy. To customize the link text use %1$s:Link Text%2$s', 'popup-maker' ), '{{privacy_link', '}}' ) : '',
+							'type'         => 'text',
+							'std'          => __( 'If you opt in above we use this information send related content, discounts and other special offers.', 'popup-maker' ),
 							'dependencies' => array(
 								'privacy_consent_always_enabled' => 'yes',
-							),						),
+							),
+						),
 					),
 				),
 
@@ -419,7 +422,13 @@ class PUM_Admin_Settings {
 						),
 						'disable_cache'                        => array(
 							'type'  => 'checkbox',
-							'label' => __( 'Disable Popup Maker caching', 'popup-maker' ),
+							'label' => __( 'Disable object caching', 'popup-maker' ),
+							'desc'  => __( 'If you are seeing issues with settings not saving or popups not rendering changes immediately, try this option.', 'popup-maker' ),
+						),
+						'disable_asset_caching'                => array(
+							'type'  => 'checkbox',
+							'label' => __( 'Disable asset caching.', 'popup-maker' ),
+							'desc'  => __( 'By default Popup Maker caches a single JS & CSS file in your Uploads folder. These files include core, extension & user customized styles & scripts in a single set of files.', 'popup-maker' ),
 						),
 						'disable_shortcode_ui'                 => array(
 							'type'  => 'checkbox',
@@ -429,7 +438,7 @@ class PUM_Admin_Settings {
 					'assets' => array(
 						'disable_google_font_loading'     => array(
 							'type'  => 'checkbox',
-							'label' => __( 'Don\'t Load Google Fonts', 'popup-maker' ),
+							'label' => __( "'Don't Load Google Fonts", 'popup-maker' ),
 							'desc'  => __( 'Check this disable loading of google fonts, useful if the fonts you chose are already loaded with your theme.', 'popup-maker' ),
 						),
 						'disable_popup_maker_core_styles' => array(
@@ -501,12 +510,12 @@ class PUM_Admin_Settings {
 
 				<div id="pum-settings-container" class="pum-settings-container">
 					<div class="pum-no-js" style="padding: 0 12px;">
-						<p><?php printf( __( 'If you are seeing this, the most likely cause is that there are Javascript errors on this page. %sView troubleshooting guide%s', 'popup-maker' ), '<a href="https://docs.wppopupmaker.com/article/373-checking-for-javascript-errors" target="_blank">', '</a>' ); ?></p>
+						<p><?php printf( __( 'If you are seeing this, the page is still loading or there are Javascript errors on this page. %sView troubleshooting guide%s', 'popup-maker' ), '<a href="https://docs.wppopupmaker.com/article/373-checking-for-javascript-errors" target="_blank">', '</a>' ); ?></p>
 					</div>
 				</div>
 
 				<script type="text/javascript">
-                    window.pum_settings_editor = <?php echo json_encode( apply_filters( 'pum_settings_editor_args', array(
+                    window.pum_settings_editor = <?php echo PUM_Utils_Array::safe_json_encode( apply_filters( 'pum_settings_editor_args', array(
 						'form_args'      => array(
 							'id'       => 'pum-settings',
 							'tabs'     => self::tabs(),

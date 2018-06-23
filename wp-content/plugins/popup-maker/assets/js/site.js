@@ -55,6 +55,26 @@ var PUM;
 (function ($, document, undefined) {
     "use strict";
 
+    window.pum_vars = window.pum_vars || {
+        // TODO Add defaults.
+        default_theme: '0',
+        home_url: '/',
+        version: 1.7,
+        ajaxurl: '',
+        restapi: false,
+        rest_nonce: null,
+        debug_mode: false,
+        disable_tracking: true,
+        message_position: 'top',
+        core_sub_forms_enabled: true,
+        popups: {}
+    };
+
+    window.pum_popups = window.pum_popups || {};
+
+    // Backward compatibility fill.
+    window.pum_vars.popups = window.pum_popups;
+
     function isInt(value) {
         return !isNaN(value) && parseInt(Number(value)) === parseInt(value) && !isNaN(parseInt(value, 10));
     }
@@ -185,10 +205,10 @@ var PUM;
             var $popup = PUM.getPopup(el),
                 settings = PUM.getSettings(el),
                 trigger_selectors = [
-                '.popmake-' + settings.id,
-                '.popmake-' + decodeURIComponent(settings.slug),
-                'a[href$="#popmake-' + settings.id + '"]'
-            ];
+                    '.popmake-' + settings.id,
+                    '.popmake-' + decodeURIComponent(settings.slug),
+                    'a[href$="#popmake-' + settings.id + '"]'
+                ];
 
             if (trigger_settings.extra_selectors && trigger_settings.extra_selectors !== '') {
                 trigger_selectors.push(trigger_settings.extra_selectors);
@@ -225,7 +245,7 @@ var PUM;
             }
         }
 
-};
+    };
 
     $.fn.popmake = function (method) {
         // Method calling logic
@@ -291,7 +311,7 @@ var PUM;
         },
         getSettings: function () {
             var $popup = PUM.getPopup(this);
-            return $.extend(true, {}, $.fn.popmake.defaults, $popup.data('popmake') || {}, pum_vars.popups[$popup.attr('id')] || {});
+            return $.extend(true, {}, $.fn.popmake.defaults, $popup.data('popmake') || {}, typeof pum_popups === 'object' && typeof pum_popups[$popup.attr('id')] !== 'undefined' ? pum_popups[$popup.attr('id')] : {});
         },
         state: function (test) {
             var $popup = PUM.getPopup(this);
@@ -1621,7 +1641,32 @@ var pum_debug_mode = false,
 
         var inited = false,
             current_popup_event = false,
-            vars = window.pum_debug_vars || {};
+            vars = window.pum_debug_vars || {
+                'debug_mode_enabled': 'Popup Maker: Debug Mode Enabled',
+                'debug_started_at': 'Debug started at:',
+                'debug_more_info': 'For more information on how to use this information visit https://docs.wppopupmaker.com/?utm_medium=js-debug-info&utm_campaign=ContextualHelp&utm_source=browser-console&utm_content=more-info',
+                'global_info': 'Global Information',
+                'localized_vars': 'Localized variables',
+                'popups_initializing': 'Popups Initializing',
+                'popups_initialized': 'Popups Initialized',
+                'single_popup_label': 'Popup: #',
+                'theme_id': 'Theme ID: ',
+                'label_method_call': 'Method Call:',
+                'label_method_args': 'Method Arguments:',
+                'label_popup_settings': 'Settings',
+                'label_triggers': 'Triggers',
+                'label_cookies': 'Cookies',
+                'label_delay': 'Delay:',
+                'label_conditions': 'Conditions',
+                'label_cookie': 'Cookie:',
+                'label_settings': 'Settings:',
+                'label_selector': 'Selector:',
+                'label_mobile_disabled': 'Mobile Disabled:',
+                'label_tablet_disabled': 'Tablet Disabled:',
+                'label_event': 'Event: %s',
+                'triggers': [],
+                'cookies': []
+            };
 
         pum_debug = {
             odump: function (o) {
@@ -3305,7 +3350,7 @@ var pum_debug_mode = false,
         }
     };
 
-    $.fn.pumSerializeObject = $.fn.popmake.utilities.serializeObject;
+    //$.fn.pumSerializeObject = $.fn.popmake.utilities.serializeObject;
 
     // Deprecated fix. utilies was renamed because of typo.
     $.fn.popmake.utilies = $.fn.popmake.utilities;
@@ -3315,6 +3360,170 @@ var pum_debug_mode = false,
     window.PUM.utilities = $.extend(window.PUM.utilities, $.fn.popmake.utilities);
 
 }(jQuery, document));
+/*******************************************************************************
+ * Copyright (c) 2018, WP Popup Maker
+ ******************************************************************************/
+(function (root, factory) {
+
+    // AMD
+    if (typeof define === "function" && define.amd) {
+        define(["exports", "jquery"], function (exports, $) {
+            return factory(exports, $);
+        });
+    }
+
+    // CommonJS
+    else if (typeof exports !== "undefined") {
+        var $ = require("jquery");
+        factory(exports, $);
+    }
+
+    // Browser
+    else {
+        factory(root, (root.jQuery || root.Zepto || root.ender || root.$));
+    }
+
+}(this, function (exports, $) {
+
+    var patterns = {
+        validate: /^[a-z_][a-z0-9_]*(?:\[(?:\d*|[a-z0-9_]+)\])*$/i,
+        key: /[a-z0-9_]+|(?=\[\])/gi,
+        push: /^$/,
+        fixed: /^\d+$/,
+        named: /^[a-z0-9_]+$/i
+    };
+
+    function FormSerializer(helper, $form) {
+
+        // private variables
+        var data = {},
+            pushes = {};
+
+        // private API
+        function build(base, key, value) {
+            base[key] = value;
+            return base;
+        }
+
+        function makeObject(root, value) {
+
+            var keys = root.match(patterns.key), k;
+
+            try {
+                value = JSON.parse(value);
+            } catch (Error) {
+            }
+
+            // nest, nest, ..., nest
+            while ((k = keys.pop()) !== undefined) {
+                // foo[]
+                if (patterns.push.test(k)) {
+                    var idx = incrementPush(root.replace(/\[\]$/, ''));
+                    value = build([], idx, value);
+                }
+
+                // foo[n]
+                else if (patterns.fixed.test(k)) {
+                    value = build([], k, value);
+                }
+
+                // foo; foo[bar]
+                else if (patterns.named.test(k)) {
+                    value = build({}, k, value);
+                }
+            }
+
+            return value;
+        }
+
+        function incrementPush(key) {
+            if (pushes[key] === undefined) {
+                pushes[key] = 0;
+            }
+            return pushes[key]++;
+        }
+
+        function encode(pair) {
+            switch ($('[name="' + pair.name + '"]', $form).attr("type")) {
+            case "checkbox":
+                return pair.value === "1" ? true : pair.value;
+            default:
+                return pair.value;
+            }
+        }
+
+        function addPair(pair) {
+            if (!patterns.validate.test(pair.name)) return this;
+            var obj = makeObject(pair.name, encode(pair));
+
+            data = helper.extend(true, data, obj);
+            return this;
+        }
+
+        function addPairs(pairs) {
+            if (!helper.isArray(pairs)) {
+                throw new Error("formSerializer.addPairs expects an Array");
+            }
+            for (var i = 0, len = pairs.length; i < len; i++) {
+                this.addPair(pairs[i]);
+            }
+            return this;
+        }
+
+        function serialize() {
+            return data;
+        }
+
+        function serializeJSON() {
+            return JSON.stringify(serialize());
+        }
+
+        // public API
+        this.addPair = addPair;
+        this.addPairs = addPairs;
+        this.serialize = serialize;
+        this.serializeJSON = serializeJSON;
+    }
+
+    FormSerializer.patterns = patterns;
+
+    FormSerializer.serializeObject = function serializeObject() {
+        var serialized;
+
+        if (this.is('form')) {
+            serialized = this.serializeArray();
+        } else {
+            serialized = this.find(':input').serializeArray();
+        }
+
+        return new FormSerializer($, this)
+            .addPairs(serialized)
+            .serialize();
+    };
+
+    FormSerializer.serializeJSON = function serializeJSON() {
+        var serialized;
+
+        if (this.is('form')) {
+            serialized = this.serializeArray();
+        } else {
+            serialized = this.find(':input').serializeArray();
+        }
+
+        return new FormSerializer($, this)
+            .addPairs(serialized)
+            .serializeJSON();
+    };
+
+    if (typeof $.fn !== "undefined") {
+        $.fn.pumSerializeObject = FormSerializer.serializeObject;
+        $.fn.pumSerializeJSON = FormSerializer.serializeJSON;
+    }
+
+    exports.FormSerializer = FormSerializer;
+
+    return FormSerializer;
+}));
 /**
  * Initialize Popup Maker.
  * Version 1.7

@@ -1,12 +1,12 @@
 === Popup Maker - Popup Forms, Optins & More ===
-Contributors: danieliser, wppopupmaker, yogaman5020
+Contributors: danieliser, wppopupmaker
 Author URI: https://wppopupmaker.com/?utm_source=readme-header&utm_campaign=Readme&utm_medium=author-uri
 Plugin URI: https://wppopupmaker.com/?utm_capmaign=Readme&utm_source=readme-header&utm_medium=plugin-uri
 Donate link:
 Tags: marketing, popup, popups, optin, advertising, conversion, responsive popups, promotion, popover, pop-up, pop over, lightbox, conversion, modal
 Requires at least: 3.6
-Tested up to: 4.9.4
-Stable tag: 1.7.20
+Tested up to: 4.9.6
+Stable tag: 1.7.29
 License: GNU Version 3 or Any Later Version
 
 Everything you need to create unique user experiences. Insert forms & other content from your favorite plugins to create custom responsive popups.
@@ -101,7 +101,50 @@ There are several common causes for this which include:
 
 == Changelog ==
 
-= v1.7.19 - 05/19/2018 =
+= v1.7.29 - 06/13/2018 =
+* Improvement: Added new enabled() method for the PUM_AssetCache class that checks both is writable and not disabled.
+* Improvement: Added option to disable just asset caching. This should help in the case your server is blocking the use of our JS from the /uploads/ folder with a 403 error.
+* Fix: Bug caused by string representations of boolean values passed in our subscription forms.
+
+= v1.7.28 - 06/10/2018 =
+* Tweak: Improved validation of subscription form data and messaging.
+* Fix: Bug with front end form serialization issue with single checkboxes (privacy field).
+
+= v1.7.27 - 06/08/2018 =
+* Improvement: Added additional variable checks to allow graceful failing during certain JS errors when page cache is out of date.
+
+= v1.7.26 - 06/07/2018 =
+* Fix: Add empty popups array to prevent errors due to page caching.
+
+= v1.7.25 - 06/05/2018 =
+* Tweak: Localized most variables earlier to prevent errors. Added in default values in case they do not get rendered to prevent fatal JS errors.
+* Fix: Tweaked extension activation class to be compatible with PHP 5.2.
+* Fix: Bug where boolean scalar values were changed to "" for json_encode.
+
+= v1.7.24 - 06/04/2018 =
+* Tweak: Updated subscriber table for existing sites that failed to add it properly before.
+
+= v1.7.23 - 06/04/2018 =
+* Improvement: Converted cookie privacy info to tabular rendering.
+* Tweak: Improved update notice text.
+* Fix: Issues with subscriber table not being created. Thanks @jnorell
+* Fix: Bug not allowing more than one cookie for a trigger.
+* Fix: Undefined index errors in shortcake/shortcode-ui integration.
+
+= v1.7.22 - 05/25/2018 =
+* Tweak: Updated Freemius library for GDPR optin support.
+* Improvement: Made all popup loops more reliable.
+* Fix: Error where objects were processed incorrectly.
+* Fix: "Uncaught Error: Call to a member function get_setting() on boolean in /popup-maker/classes/AssetCache.php:314"
+
+= v1.7.21 - 05/24/2018 =
+* Tweak: Clear asset cache on settings save.
+* Improvement: Check that post is singular to prevent Post Selected conditions from working on site index.
+* Improvement: Remove jquery-cookie from assets as we no longer use or load it anywhere.
+* Fix: Missing function errors if you don't have WordPress v4.9.6.
+* Fix: Added better & safer json encoding function that properly sanitizes data for encoding to prevent empty strings for non english sites.
+
+= v1.7.20 - 05/19/2018 =
 * Feature: Support for GDPR Personal Data Exporter
 * Feature: Support for GDPR Personal Data Eraser
 * Feature: New privacy consent field for Subscription Forms for GDPR consent collection.

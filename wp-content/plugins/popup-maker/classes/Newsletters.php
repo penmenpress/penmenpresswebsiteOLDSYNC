@@ -61,6 +61,9 @@ class PUM_Newsletters {
 			$values['popup_id'] = absint( $values['pum_form_popup_id'] );
 		}
 
+		// Clean JSON passed values.
+		$values = PUM_Utils_Array::fix_json_boolean_values( $values );
+
 		do_action( 'pum_sub_form_ajax_override', $values );
 
 		// Allow sanitization & manipulation of form values prior to usage.
@@ -220,13 +223,21 @@ class PUM_Newsletters {
 
 		$values['provider'] = sanitize_text_field( $values['provider'] );
 
-		$consent_args = ! empty( $values['consent_args'] ) ? (array) json_decode( stripslashes( $values['consent_args'] ) ) : array();
+		if( ! empty( $values['consent_args'] ) && is_string( $values['consent_args'] ) ) {
+			if ( strpos( $values['consent_args'], '\"' ) >= 0 ) {
+				$values['consent_args'] = stripslashes( $values["consent_args"] );
+			}
 
-		$values['consent_args'] = wp_parse_args( $consent_args, array(
+			$values['consent_args'] = (array) json_decode( $values['consent_args'] );
+		}
+
+
+		$values['consent_args'] = wp_parse_args( $values['consent_args'], array(
 			'enabled'  => 'no',
 			'required' => false,
 			'text'     => '',
 		) );
+
 
 		// Anonymize the data if they didn't consent and privacy is enabled.
 		if ( $values['consent_args']['enabled'] === 'yes' && ! $values['consent_args']['required'] && $values['consent'] === 'no' ) {
@@ -235,7 +246,7 @@ class PUM_Newsletters {
 			$values['name'] = '';
 			$values['fname'] = '';
 			$values['lname'] = '';
-			$values['email']   = wp_privacy_anonymize_data( 'email', $values['email'] );
+			$values['email']   = function_exists( 'wp_privacy_anonymize_data' ) ? wp_privacy_anonymize_data( 'email', $values['email'] ) : 'deleted@site.invalid';
 		}
 
 		// Split name into fname & lname or vice versa.

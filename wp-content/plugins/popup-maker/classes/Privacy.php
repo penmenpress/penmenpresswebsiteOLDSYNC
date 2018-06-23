@@ -44,15 +44,16 @@ class PUM_Privacy {
 			<p class="privacy-policy-tutorial"><?php _e( 'Hello,', 'popup-maker' ); ?></p> <p class="privacy-policy-tutorial"><?php _e( 'This information serves as a guide on what sections need to be modified due to usage of Popup Maker and its extensions.', 'popup-maker' ); ?></p>
 			<p class="privacy-policy-tutorial"><?php _e( 'You should include the information below in the correct sections of you privacy policy.', 'popup-maker' ); ?></p>
 			<p class="privacy-policy-tutorial"><strong> <?php _e( 'Disclaimer:', 'popup-maker' ); ?></strong> <?php _e( 'This information is only for guidance and not to be considered as legal advice.', 'popup-maker' ); ?></p>
+			<p class="privacy-policy-tutorial"><strong> <?php _e( 'Note:', 'popup-maker' ); ?></strong> <?php _e( 'Some of the information below is dynamically generated, such as cookies. If you add or change popups you will see those additions or changes below and will need to update your policy accordingly.', 'popup-maker' ); ?></p>
 
 			<h2><?php _e( 'What personal data we collect and why we collect it', 'popup-maker' ); ?></h2>
 
 			<h3><?php _e( 'Subscription forms', 'popup-maker' ); ?></h3>
 			<p class="privacy-policy-tutorial"><?php _e( 'Popup Maker subscription forms are not enabled by default.', 'popup-maker' ); ?></p>
 			<p class="privacy-policy-tutorial"><?php _e( 'If you have used them in your popups to collect email subscribers, use this subsection to note what personal data is captured when someone submits a subscription form, and how long you keep it.', 'popup-maker' ); ?></p>
-			<p class="privacy-policy-tutorial"><?php _e( 'For example, you may note that you keep form submissions for a ongoing marketing purposes.', 'popup-maker' ); ?></p>
-			<p><?php echo $suggested_text . __( 'If you submit an subscription form on our site you will be opting in for us to save your name, email address and other relevant information. These subscriptions are so we can notify you about related content, discounts & other special offers.', 'popup-maker' ); ?></p>
-			<p><?php _e( 'These subscriptions are so we can notify you about related content, discounts & other special offers.', 'popup-maker' ); ?></p> <p><?php _e( 'You can opt our or unsubscribe at any time in the future by clicking link in the bottom of any email.', 'popup-maker' ); ?></p>
+			<p class="privacy-policy-tutorial"><?php _e( 'For example, you may note that you keep form submissions for ongoing marketing purposes.', 'popup-maker' ); ?></p>
+			<p><?php echo $suggested_text . __( 'If you submit a subscription form on our site you will be opting in for us to save your name, email address and other relevant information.', 'popup-maker' ); ?></p>
+			<p><?php _e( 'These subscriptions are used to notify you about related content, discounts & other special offers.', 'popup-maker' ); ?></p> <p><?php _e( 'You can opt our or unsubscribe at any time in the future by clicking link in the bottom of any email.', 'popup-maker' ); ?></p>
 
 			<h3><?php _e( 'Cookies', 'popup-maker' ); ?></h3>
 			<p class="privacy-policy-tutorial"><?php _e( 'Popup Maker uses cookies for most popups. The primary function is to prevent your users from being annoyed by seeing the same popup repeatedly.', 'popup-maker' ); ?></p>
@@ -62,10 +63,33 @@ class PUM_Privacy {
 			$cookies = self::get_all_cookies();
 			if ( ! empty( $cookies ) ) : ?>
 				<p class="privacy-policy-tutorial"><?php _e( 'Below is a list of all cookies currently registered within your popup settings. These are here for you to disclose if you are so required.', 'popup-maker' ); ?></p>
-				<ul class="ul-square">
-					<li><?php echo implode( '</li><li>', $cookies ); ?></li>
-				</ul>
-			<?php endif; ?>
+				<table class="wp-list-table" style="width: 100%;">
+					<thead>
+					<tr>
+						<th align="left"><?php _e( 'Cookie Name', 'popup-maker' ); ?></th>
+						<th align="left"><?php _e( 'Usage', 'popup-maker' ); ?></th>
+						<th align="left"><?php _e( 'Time', 'popup-maker' ); ?></th>
+					</tr>
+					</thead>
+					<tbody style="border: 1px solid;"><?php
+					foreach ( $cookies as $cookie ) {
+						if ( ! is_array( $cookie ) ) {
+							continue;
+						}
+
+						$cookie = wp_parse_args( $cookie, array(
+							'name'  => '',
+							'label' => '',
+							'time'  => '',
+						) );
+
+						printf( '<tr><td style="border-top: 1px dashed;">%s</td><td style="border-top: 1px dashed;">%s</td><td style="border-top: 1px dashed;">%s</td></tr>', $cookie['name'], $cookie['label'], $cookie['time'] );
+					}
+					?>
+					</tbody>
+				</table>
+			<?php
+			endif; ?>
 
 			<p><?php echo $suggested_text . __( 'We use anonymous cookies to prevent users from seeing the same popup repetitively in an attempt to make our users experience more pleasant while still delivering time sensitive messaging.', 'popup-maker' ); ?></p>
 
@@ -74,8 +98,7 @@ class PUM_Privacy {
 
 			<h2><?php _e( 'How long we retain your data', 'popup-maker' ); ?></h2>
 			<p><?php _e( 'Subscriber information is retained in the local database indefinitely for analytic tracking purposes and for future export.', 'popup-maker' ); ?></p>
-			<p><?php _e( 'Data will be exported or removed upon users request via the existing Exporter or Eraser.', 'popup-maker' ); ?></p>
-			<p><?php _e( 'If syncing data to a 3rd party service (for example Mailchimp), data is retained there until unsubscribed or deleted.', 'popup-maker' ); ?></p>
+			<p><?php _e( 'Data will be exported or removed upon users request via the existing Exporter or Eraser.', 'popup-maker' ); ?></p> <p><?php _e( 'If syncing data to a 3rd party service (for example Mailchimp), data is retained there until unsubscribed or deleted.', 'popup-maker' ); ?></p>
 
 			<h2><?php _e( 'Where we send your data', 'popup-maker' ); ?></h2>
 			<p><?php _e( 'Popup Maker does not send any user data outside of your site by default.', 'popup-maker' ); ?></p>
@@ -368,19 +391,49 @@ class PUM_Privacy {
 	 * @return array
 	 */
 	public static function get_all_cookies() {
-		$popups  = PUM_Popups::get_all()->posts;
+		$popups  = PUM_Popups::get_all();
 		$cookies = array();
-		foreach ( $popups as $popup ) {
-			$popup = pum_get_popup( $popup->ID );
 
-			$pcookies = $popup->get_setting( 'cookies', array() );
-			if ( ! empty( $pcookies ) ) {
-				foreach ( $pcookies as $cookie ) {
-					if ( ! empty ( $cookie['settings']['name'] ) ) {
-						$cookies[ $cookie['settings']['name'] ] = $cookie['settings']['name'];
+		if ( $popups->have_posts() ) {
+			while ( $popups->have_posts() ) : $popups->next_post();
+				// Set this popup as the global $current.
+				PUM_Site_Popups::current_popup( $popups->post );
+
+				$popup = pum_get_popup( $popups->post->ID );
+
+				if ( ! pum_is_popup( $popup ) ) {
+					continue;
+				}
+
+				$pcookies = $popup->get_setting( 'cookies', array() );
+
+				if ( ! empty( $pcookies ) ) {
+					foreach ( $pcookies as $cookie ) {
+						if ( ! empty ( $cookie['settings']['name'] ) ) {
+							$current_time = 0;
+							if ( ! empty( $cookies[ $cookie['settings']['name'] ] ) ) {
+								$current_time = strtotime( '+' . $cookies[ $cookie['settings']['name'] ]['time'] );
+							}
+
+							if ( empty( $cookies[ $cookie['settings']['name'] ] ) ) {
+								$cookies[ $cookie['settings']['name'] ] = array(
+									'label' => __( 'Cookie used to prevent popup from displaying repeatedly.', 'popup-maker' ),
+									'name'  => $cookie['settings']['name'],
+									'time'  => $cookie['settings']['time'],
+								);
+							}
+
+							$new_time = strtotime( '+' . $cookie['settings']['time'] );
+							if ( $new_time > $current_time ) {
+								$cookies[ $cookie['settings']['name'] ]['time'] = $cookie['settings']['time'];
+							}
+						}
 					}
 				}
-			}
+			endwhile;
+
+			// Clear the global $current.
+			PUM_Site_Popups::current_popup( null );
 		}
 
 		return apply_filters( 'pum_privacy_get_all_cookies', $cookies );

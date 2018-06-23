@@ -147,7 +147,7 @@ class PUM_Admin_Popups {
 		wp_enqueue_script( 'popup-maker-admin' );
 		?>
 		<script type="text/javascript">
-            window.pum_popup_settings_editor = <?php echo json_encode( apply_filters( 'pum_popup_settings_editor_var', array(
+            window.pum_popup_settings_editor = <?php echo PUM_Utils_Array::safe_json_encode( apply_filters( 'pum_popup_settings_editor_var', array(
 				'form_args'             => array(
 					'id'       => 'pum-popup-settings',
 					'tabs'     => self::tabs(),
@@ -164,7 +164,7 @@ class PUM_Admin_Popups {
 
 		<div id="pum-popup-settings-container" class="pum-popup-settings-container">
 			<div class="pum-no-js" style="padding: 0 12px;">
-				<p><?php printf( __( 'If you are seeing this, the most likely cause is that there are Javascript errors on this page. %sView troubleshooting guide%s', 'popup-maker' ), '<a href="https://docs.wppopupmaker.com/article/373-checking-for-javascript-errors" target="_blank">', '</a>' ); ?></p>
+				<p><?php printf( __( 'If you are seeing this, the page is still loading or there are Javascript errors on this page. %sView troubleshooting guide%s', 'popup-maker' ), '<a href="https://docs.wppopupmaker.com/article/373-checking-for-javascript-errors" target="_blank">', '</a>' ); ?></p>
 			</div>
 		</div>
 		<?php
