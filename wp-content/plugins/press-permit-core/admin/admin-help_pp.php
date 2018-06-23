@@ -4,6 +4,8 @@ class PP_AdminHelp {
 		$screen_obj = get_current_screen();
 		if ( is_object($screen_obj) )
 			$screen = $screen_obj->id;
+		else
+			return;
 		
 		if ( strpos( $screen, 'pp-' ) ) {
 			$match = array();

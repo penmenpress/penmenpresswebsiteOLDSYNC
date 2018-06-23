@@ -161,7 +161,6 @@ class PP_Plugin_Status {
 		
 		$plugin_updates = (object) get_site_transient('update_plugins');
 
-		$any_update_modifications = false;
 		if ( $updates && ! empty($updates->response) ) {
 			if ( ! empty($updates->response[PPC_BASENAME]) ) {
 				if ( $update_transient ) {
@@ -182,21 +181,6 @@ class PP_Plugin_Status {
 					pp_update_option('support_key', $_key);
 				}
 			}
-			
-			foreach( $ext_by_basename as $ext_base => $ext ) {
-				if ( ! empty( $updates->response[$ext_base]->package ) ) {
-					$plugin_updates->response[$ext_base] = (object) array( 'slug' => $ext->slug, 'new_version' => $updates->response[$ext->basename]->new_version );	// Add this PP extension to the WP plugin update notification count
-					$any_update_modifications = true;
-				
-				} elseif ( isset( $plugin_updates->response ) && isset( $plugin_updates->response[$ext_base] ) ) {
-					unset( $plugin_updates->response[$ext_base] );
-					$any_update_modifications = true;
-				}
-			}
-		}
-
-		if ( $update_transient && $any_update_modifications && ! defined('UPDATED_PP_PLUGIN') ) {
-			set_site_transient( 'update_plugins', $plugin_updates );
 		}
 		
 		if ( $return_all ) {
@@ -277,7 +261,7 @@ class PP_Plugin_Status {
 					
 					set_site_transient('ppc_update_info', false);
 				} else {
-					$message = sprintf(_pp_('There is a new version of %1$s available. <a href="%2$s" class="thickbox" title="%3$s">View version %4$s details</a> or <a href="%5$s">upgrade automatically</a>.'),$plugin_data['Name'],$details_url,esc_attr($plugin_data['Name']),$version_info->new_version,$update_url);
+					$message = sprintf(_pp_('There is a new version of %1$s available. <a href="%2$s" class="thickbox" title="%3$s">View version %4$s details</a> or <a href="%5$s">update now</a>.'),$plugin_data['Name'],$details_url,esc_attr($plugin_data['Name']),$version_info->new_version,$update_url);
 				}
 				echo '<tr class="plugin-update-tr"><td colspan="3" class="plugin-update"><div class="update-message">'.$message.'</div></td></tr>';
 

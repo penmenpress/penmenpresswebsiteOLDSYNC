@@ -407,7 +407,7 @@ public static function insert_exceptions( $mod_type, $operation, $via_item_sourc
 	
 	$qry_item_delete_base = "SELECT eitem_id FROM $wpdb->ppc_exception_items WHERE 1=1";
 	
-	if ( $optimized_insertions = ( ( 'post' != $via_item_source ) || ( 1 == count( $propagate_post_types ) ) ) && ! defined( 'PP_DISABLE_OPTIMIZED_INSERTIONS' ) ) {
+	if ( $optimized_insertions = ( ( 'post' != $via_item_source ) || ( ! empty($propagate_post_types) && ( 1 == count( $propagate_post_types ) ) ) ) && ! defined( 'PP_DISABLE_OPTIMIZED_INSERTIONS' ) ) {
 		$qry_insert_base = "INSERT INTO $wpdb->ppc_exception_items (item_id, assign_for, exception_id, inherited_from) VALUES ";
 		$qry_insert = $qry_insert_base;
 		$insert_row_count = 0;

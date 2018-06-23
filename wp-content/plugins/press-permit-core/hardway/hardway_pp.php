@@ -102,7 +102,7 @@ class PP_Hardway
 		$args['child_of'] = (int) $r['child_of'];
 
 		// Avoid conflict with ACF, other plugins
-		if ( is_admin() && false !== strpos( $args['sort_column'], 'menu_order' ) && ! defined( 'PP_GET_PAGES_LEGACY_FILTER' ) ) {
+		if ( is_admin() && ( empty( $args['name'] ) || ( 'parent_id' !== $args['name'] ) ) && false !== strpos( $args['sort_column'], 'menu_order' ) && ! defined( 'PP_GET_PAGES_LEGACY_FILTER' ) ) {
 			return $results;
 		}
 		

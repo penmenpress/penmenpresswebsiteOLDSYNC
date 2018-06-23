@@ -8,7 +8,7 @@ pp_load_admin_api();
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2017, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 class PP_AdminFilters
@@ -69,8 +69,6 @@ class PP_AdminFilters
 			global $pp_filters_update_core;
 			require_once( dirname(__FILE__).'/filters-update-core_pp.php' );
 			$pp_filters_update_core = new PP_FiltersUpdateCore();
-		} else {
-			add_filter( 'pre_set_site_transient_update_plugins', array( &$this, 'flt_insert_pp_update_info' ) );
 		}
 		
 		global $wp_roles;	// fires on role creation / deletion
@@ -100,26 +98,6 @@ class PP_AdminFilters
 		
 		self::act_sync_wproles();
 		return $roles;
-	}
-
-	// @todo: use new plugin api
-	function flt_insert_pp_update_info( $plugin_updates ) {
-		global $pp_extensions;
-		
-		static $busy;
-		if ( defined( 'UPDATED_PP_PLUGIN' ) || ! empty($busy) || did_action( 'pp_deactivate' ) ) { return $plugin_updates; }
-		
-		$busy = true;
-		$pp_updates = pp_get_version_info();
-		$busy = false;
-
-		foreach( $pp_extensions as $ext ) {
-			if ( ! empty( $pp_updates->response[$ext->basename]->package ) ) {
-				$plugin_updates->response[$ext->basename] = (object) array( 'slug' => $ext->slug );	// Add this PP extension to the WP plugin update notification count
-			}
-		}
-		
-		return $plugin_updates;
 	}
 
 	function act_log_post_status( $new_status, $old_status, $post ) {

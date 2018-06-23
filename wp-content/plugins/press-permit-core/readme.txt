@@ -4,8 +4,8 @@ Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JWZVF
 Tags: restrict, access, permissions, cms, user, private, category, pages, privacy, capabilities, role, scoper
 License: GPLv3
 Requires at least: 3.4
-Tested up to: 4.9.5
-Stable tag: 2.4.3
+Tested up to: 4.9.6
+Stable tag: 2.4.4
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
@@ -49,6 +49,11 @@ Pro [extensions](http://presspermit.com/extensions) are [available](http://press
 Initial production release
 
 == Changelog ==
+
+= 2.4.4 - 14 Jun 2018 =
+* Fixed : Page Association exceptions were not applied to parent selection dropdown on Edit Page screen (since 2.4.2)
+* Fixed : Pro - PHP warnings for PP extensions on Plugins, WordPress Updates screens
+* Fixed : PHP warnings in wp-admin
 
 = 2.4.3 - 3 May 2018 =
 * Fixed : Pro - Invalid update links and PHP warnings for PP extensions on Plugins, WordPress Updates screens
