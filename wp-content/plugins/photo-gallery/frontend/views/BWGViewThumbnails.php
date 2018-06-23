@@ -58,7 +58,7 @@ class BWGViewThumbnails extends BWGViewSite {
                 <?php if ( $is_embed_video && $params['play_icon'] ) { echo $play_icon; } ?>
                 <div class="bwg-item2">
                   <img class="bwg_standart_thumb_img_<?php echo $bwg; ?>"
-                       id="<?php echo $image_row->id; ?>"
+                       data-id="<?php echo $image_row->id; ?>"
                        src="<?php echo ($is_embed ? "" : site_url() . '/' . BWG()->upload_dir) . $image_row->thumb_url; ?>"
                        alt="<?php echo $image_row->alt; ?>" />
                 </div>
@@ -89,6 +89,24 @@ class BWGViewThumbnails extends BWGViewSite {
     #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> .bwg-container-<?php echo $bwg; ?> {
       width: <?php echo ($params['image_column_number'] * $params['thumb_width']) + ($theme_row->container_margin ? $theme_row->thumb_margin : 0); ?>px;
       justify-content: <?php echo $theme_row->thumb_align; ?>;
+      <?php
+      if ( $theme_row->thumb_align == 'center' ) {
+        ?>
+        margin-left: auto;
+        margin-right: auto;
+        <?php
+      }
+      elseif ( $theme_row->thumb_align == 'left') {
+        ?>
+        margin-right: auto;
+        <?php
+      }
+      else {
+        ?>
+        margin-left: auto;
+        <?php
+      }
+      ?>
       background-color: rgba(<?php echo $rgb_thumbs_bg_color['red']; ?>, <?php echo $rgb_thumbs_bg_color['green']; ?>, <?php echo $rgb_thumbs_bg_color['blue']; ?>, <?php echo number_format($theme_row->thumb_bg_transparent / 100, 2, ".", ""); ?>);
       <?php
       if ( $theme_row->container_margin ) {

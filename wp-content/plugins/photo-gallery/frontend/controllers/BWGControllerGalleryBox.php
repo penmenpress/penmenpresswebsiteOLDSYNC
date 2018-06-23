@@ -46,7 +46,7 @@ class BWGControllerGalleryBox {
       $captcha = TRUE;
     }
 
-    if ($email && $captcha) {
+    if ( $email && $captcha ) {
       global $wpdb;
       $image_id = (isset($_POST['image_id']) ? (int) $_POST['image_id'] : 0);
       $name = (isset($_POST['bwg_name']) ? esc_html(stripslashes($_POST['bwg_name'])) : '');
@@ -77,23 +77,29 @@ class BWGControllerGalleryBox {
 
   public function save_rate() {
     global $wpdb;
-    $image_id = (isset($_POST['image_id']) ? esc_html(stripslashes($_POST['image_id'])) : 0);
-    $rate = (isset($_POST['rate']) ? esc_html(stripslashes($_POST['rate'])) : '');
-    if (!$wpdb->get_var($wpdb->prepare('SELECT image_id FROM ' . $wpdb->prefix . 'bwg_image_rate WHERE ip="%s" AND image_id="%d"', $_SERVER['REMOTE_ADDR'], $image_id))) {
+    $image_id = WDWLibrary::get('image_id', 0);
+    (isset($_POST['image_id']) ? esc_html(stripslashes($_POST['image_id'])) : 0);
+    $rate = WDWLibrary::get('rate', 0);
+    (isset($_POST['rate']) ? esc_html(stripslashes($_POST['rate'])) : '');
+    $ip = BWG()->options->save_ip ? $_SERVER['REMOTE_ADDR'] : '';
+    if ( !$ip || !$wpdb->get_var($wpdb->prepare('SELECT `image_id` FROM `' . $wpdb->prefix . 'bwg_image_rate` WHERE `ip`="%s" AND `image_id`="%d"', $ip, $image_id)) ) {
       $wpdb->insert($wpdb->prefix . 'bwg_image_rate', array(
         'image_id' => $image_id,
         'rate' => $rate,
-        'ip' => $_SERVER['REMOTE_ADDR'],
+        'ip' => $ip,
         'date' => date('Y-m-d H:i:s'),
       ), array(
-        '%d',
-        '%f',
-        '%s',
-        '%s',
-      ));
-      $rates = $wpdb->get_row($wpdb->prepare('SELECT AVG(`rate`) as `average`, COUNT(`rate`) as `rate_count` FROM ' . $wpdb->prefix . 'bwg_image_rate WHERE image_id="%d"', $image_id));
-      $wpdb->update($wpdb->prefix . 'bwg_image', array('avg_rating' => $rates->average, 'rate_count' => $rates->rate_count), array('id' => $image_id));
+                      '%d',
+                      '%f',
+                      '%s',
+                      '%s',
+                    ));
     }
+    $rates = $wpdb->get_row($wpdb->prepare('SELECT AVG(`rate`) as `average`, COUNT(`rate`) as `rate_count` FROM ' . $wpdb->prefix . 'bwg_image_rate WHERE image_id="%d"', $image_id));
+    $wpdb->update($wpdb->prefix . 'bwg_image', array(
+      'avg_rating' => $rates->average,
+      'rate_count' => $rates->rate_count
+    ), array( 'id' => $image_id ));
     $this->display();
   }
 

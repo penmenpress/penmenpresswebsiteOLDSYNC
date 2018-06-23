@@ -17,8 +17,9 @@ class BWGControllerSite {
   public function execute($params = array(), $from_shortcode = 0, $bwg = 0) {
     $theme_id = $params['theme_id'];
     $theme_row = $this->model->get_theme_row_data($theme_id);
-    if (!$theme_row) {
+    if ( !$theme_row ) {
       echo WDWLibrary::message(__('There is no theme selected or the theme was deleted.', BWG()->prefix), 'wd_error');
+
       return;
     }
     else {
@@ -48,12 +49,15 @@ class BWGControllerSite {
       }
       $params['theme_row'] = $theme_row;
     }
-    if (!isset($params['type'])) {
+
+    if ( !isset($params['type']) ) {
       $params['type'] = '';
     }
+
     $gallery_row = $this->model->get_gallery_row_data($params['gallery_id']);
-    if (!$gallery_row && ($params['type'] == '') && $params["tag"] == 0) {
+    if ( !$gallery_row && ($params['type'] == '') && $params["tag"] == 0 ) {
       echo WDWLibrary::message(__('There is no gallery selected or the gallery was deleted.', BWG()->prefix), 'wd_error');
+
       return;
     }
     else {
@@ -77,17 +81,21 @@ class BWGControllerSite {
 
     $params['load_more_image_count'] = (isset($params['load_more_image_count']) && ($params['image_enable_page'] == 2)) ? $params['load_more_image_count'] : $params['images_per_page'];
     $params['items_per_page'] = array('images_per_page' => $params['images_per_page'], 'load_more_image_count' => $params['load_more_image_count']);
+
     $image_rows = $this->model->get_image_rows_data($params['gallery_id'], $bwg, $params['type'], 'bwg_tag_id_bwg_standart_thumbnails_' . $bwg, $params['tag'], $params['images_per_page'], $params['load_more_image_count'], $params['sort_by'], $params['order_by']);
-    $images_count = count($image_rows);
-    if (!$images_count) {
-      if ($params['tag']) {
+    $images_count = count($image_rows['images']);
+    if ( !$images_count ) {
+      if ( $params['tag'] ) {
         echo WDWLibrary::message(__('There are no images.', BWG()->prefix), 'wd_error');
       }
       else {
         echo WDWLibrary::message(__('There are no images in this gallery.', BWG()->prefix), 'wd_error');
       }
+
+      return;
     }
     $params['image_rows'] = $image_rows;
+
     $params['tags_rows'] = $this->model->get_tags_rows_data($params['gallery_id']);
 
     $params['current_url'] = (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -126,7 +134,17 @@ class BWGControllerSite {
       'enable_image_tumblr' => $params['popup_enable_tumblr'],
       'watermark_type' => $params['watermark_type'],
       'slideshow_effect_duration' => isset($params['popup_effect_duration']) ? $params['popup_effect_duration'] : 1,
-      'current_url' => urlencode($params['current_url'])
+      'current_url' => urlencode($params['current_url']),
+      'popup_enable_email' => $params['popup_enable_email'],
+      'popup_enable_captcha' => $params['popup_enable_captcha'],
+      'comment_moderation' => $params['comment_moderation'],
+      'autohide_lightbox_navigation' => $params['autohide_lightbox_navigation'],
+      'popup_enable_fullsize_image' => $params['popup_enable_fullsize_image'],
+      'popup_enable_download' => $params['popup_enable_download'],
+      'show_image_counts' => $params['show_image_counts'],
+      'enable_loop' => $params['enable_loop'],
+      'enable_addthis' => $params['enable_addthis'],
+      'addthis_profile_id' => $params['addthis_profile_id']
     );
     if ($params['watermark_type'] != 'none') {
       $params_array['watermark_link'] = $params['watermark_link'];

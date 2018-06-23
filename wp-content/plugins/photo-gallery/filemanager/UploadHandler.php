@@ -882,7 +882,6 @@ class bwg_UploadHandler {
     public function post($print_response = true) {
       if ( isset($_REQUEST['import']) && $_REQUEST['import'] == 1 ) {
         $file_names = json_decode(isset($_REQUEST['file_namesML']) ? stripslashes($_REQUEST['file_namesML']) : '');
-
         $files = array();
         foreach ($file_names as $index => $value) {
           $file_name_array = explode('/', $value);

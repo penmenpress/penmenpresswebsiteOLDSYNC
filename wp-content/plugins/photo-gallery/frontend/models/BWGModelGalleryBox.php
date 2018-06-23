@@ -60,9 +60,11 @@ class BWGModelGalleryBox {
   
   public function get_image_pricelists($pricelist_id) {
     $pricelist_data = array();
+
     return $pricelist_data;
   }
 
   public function get_image_pricelist($image_id) {
-    return FALSE;  }
+    return FALSE;
+  }
 }

@@ -41,24 +41,6 @@ class OptionsController_bwg {
       'monospace' => 'Monospace',
       'serif' => 'Serif',
     );
-    $params['effects'] = array(
-      'none' => 'None',
-      'cubeH' => 'Cube Horizontal',
-      'cubeV' => 'Cube Vertical',
-      'fade' => 'Fade',
-      'sliceH' => 'Slice Horizontal',
-      'sliceV' => 'Slice Vertical',
-      'slideH' => 'Slide Horizontal',
-      'slideV' => 'Slide Vertical',
-      'scaleOut' => 'Scale Out',
-      'scaleIn' => 'Scale In',
-      'blockScale' => 'Block Scale',
-      'kaleidoscope' => 'Kaleidoscope',
-      'fan' => 'Fan',
-      'blindH' => 'Blind Horizontal',
-      'blindV' => 'Blind Vertical',
-      'random' => 'Random',
-    );
     $params['page_title'] = __('Edit options', BWG()->prefix);
     $params['active_tab'] = WDWLibrary::get('active_tab', 0);
     $params['gallery_type'] = WDWLibrary::get('gallery_type', 'thumbnails');

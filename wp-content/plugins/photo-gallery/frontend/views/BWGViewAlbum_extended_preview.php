@@ -142,7 +142,17 @@ class BWGViewAlbum_extended_preview {
       'enable_image_pinterest' => $params['popup_enable_pinterest'],
       'enable_image_tumblr' => $params['popup_enable_tumblr'],
       'watermark_type' => $params['watermark_type'],
-      'slideshow_effect_duration' => isset($params['popup_effect_duration']) ? $params['popup_effect_duration'] : 1
+      'slideshow_effect_duration' => isset($params['popup_effect_duration']) ? $params['popup_effect_duration'] : 1,
+      'popup_enable_email' => $params['popup_enable_email'],
+      'popup_enable_captcha' => $params['popup_enable_captcha'],
+      'comment_moderation' => $params['comment_moderation'],
+      'autohide_lightbox_navigation' => $params['autohide_lightbox_navigation'],
+      'popup_enable_fullsize_image' => $params['popup_enable_fullsize_image'],
+      'popup_enable_download' => $params['popup_enable_download'],
+      'show_image_counts' => $params['show_image_counts'],
+      'enable_loop' => $params['enable_loop'],
+      'enable_addthis' => $params['enable_addthis'],
+      'addthis_profile_id' => $params['addthis_profile_id']
     );
     if ( BWG()->is_pro ) {
       $current_url = (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];

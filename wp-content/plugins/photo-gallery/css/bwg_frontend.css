@@ -7,6 +7,10 @@ div[id^="bwg_container"] img {
   box-shadow: none !important;
 }
 
+div[id^="bwg_container"] * {
+  margin: 0;
+}
+
 div[id^="bwg_container"] .SumoSelect > .CaptionCont,
 div[id^="bwg_container"] .SumoSelect:focus > .CaptionCont,
 div[id^="bwg_container"] .SumoSelect:hover > .CaptionCont,
@@ -412,6 +416,7 @@ div[id^="bwg_container"] .bwg-border-box * {
 }
 
 .bwg-item0:hover {
+  background: none !important;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
@@ -529,6 +534,21 @@ div[id^="bwg_container"] .bwg-border-box * {
 
 .hidden {
   display: none;
+}
+
+.bwg-loading {
+  width: 100%;
+  height: 100%;
+  opacity: 0.95;
+  position: absolute;
+  background-color: #FFFFFF;
+  background-image: url('../images/ajax_loader.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 50px;
+  z-index: 100100;
+  top: 0;
+  left: 0;
 }
 
 #bwg_download {

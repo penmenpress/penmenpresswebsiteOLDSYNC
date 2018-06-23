@@ -15,9 +15,14 @@ class ThemesView_bwg extends AdminView_bwg {
    */
   public function display( $params ) {
     if ( !BWG()->is_pro && get_option("wd_bwg_theme_version") ) {
-      echo WDWLibrary::message_id(0, __('You can\'t change theme parameters in free version.', BWG()->prefix), 'error');
+      WDWLibrary::topbar();
+      ?>
+      <div class="wrap">
+      <?php
+      echo WDWLibrary::message_id(0, __('You can\'t change theme parameters in free version.', BWG()->prefix), 'error inline');
       ?>
       <img class="wd-width-100" src="<?php echo BWG()->plugin_url . '/images/theme.png'; ?>" />
+      </div>
       <?php
       return;
     }
