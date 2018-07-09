@@ -144,6 +144,23 @@
             </div>
             <div class="columns">
                 <div class="column is-one-third">
+                    <label><?php _e( "Emails", "defender-security" ) ?></label>
+                    <span class="sub">
+                        <?php _e( "Customize the default copy for emails the two-factor feature sends to users.", "defender-security" ) ?>
+                    </span>
+                </div>
+                <div class="column">
+                  <div class="well well-white">
+                    <div class="box-title">
+                        <strong><?php _e( 'Email', "defender-security" );?></strong>
+                    </div>
+                    <div class="line"><?php _e( 'Lost phone one time password', "defender-security" );?></div>
+                    <span class="pull-right"><span class="span-icon icon-edit change-one-time-pass-email" tooltip="Edit"></span></span>
+                  </div>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column is-one-third">
                     <label><?php _e( "App Download", "defender-security" ) ?></label>
                     <span class="sub">
                         <?php _e( "Need the app? Here’s links to the official Google Authenticator apps.", "defender-security" ) ?>
@@ -192,3 +209,8 @@
         </form>
     </div>
 </div>
+<?php
+$view     = '2factor-otp-email-edit-from';
+$settings = array( 'settings' => $settings );
+$controller->renderPartial( $view, $settings );
+?>

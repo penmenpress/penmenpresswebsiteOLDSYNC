@@ -18,6 +18,10 @@ class WD_Main_Activator {
 	 * redirect to defender dahsboard after plugin activated
 	 */
 	public function redirectToDefender( $plugin ) {
+		if ( isset( $_POST['plugin_status'] ) && $_POST['plugin_status'] == 'all' ) {
+			//seem like a bulk action, do nothing
+			return;
+		}
 		if ( $plugin == wp_defender()->plugin_slug ) {
 			exit( wp_redirect( network_admin_url( 'admin.php?page=wp-defender' ) ) );
 		}
@@ -40,7 +44,10 @@ class WD_Main_Activator {
 			update_site_option( 'wd_db_version', "1.7.1" );
 		}
 
-		add_filter( 'plugin_action_links_' . plugin_basename( wp_defender()->plugin_slug ), array( &$this, 'addSettingsLink' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( wp_defender()->plugin_slug ), array(
+			&$this,
+			'addSettingsLink'
+		) );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'register_styles' ) );
 		if ( ! \WP_Defender\Behavior\Utils::instance()->checkRequirement() ) {
 		} else {
@@ -53,6 +60,7 @@ class WD_Main_Activator {
 			\Hammer\Base\Container::instance()->set( 'audit', new \WP_Defender\Module\Audit() );
 			\Hammer\Base\Container::instance()->set( 'lockout', new \WP_Defender\Module\IP_Lockout() );
 			\Hammer\Base\Container::instance()->set( 'advanced_tool', new \WP_Defender\Module\Advanced_Tools() );
+			\Hammer\Base\Container::instance()->set( 'gdpr', new \WP_Defender\Controller\GDPR() );
 			//no need to set debug
 			require_once $this->wp_defender->getPluginPath() . 'free-dashboard/module.php';
 			add_filter( 'wdev-email-message-' . plugin_basename( __FILE__ ), array( &$this, 'defenderAdsMessage' ) );
@@ -60,7 +68,7 @@ class WD_Main_Activator {
 				'wdev-register-plugin',
 				/* 1             Plugin ID */
 				plugin_basename( __FILE__ ),
-				'WP Defender',
+				'Defender',
 				'/plugins/defender-security/',
 				/* 4      Email Button CTA */
 				__( 'Get Members!', "defender-security" ),
@@ -112,7 +120,7 @@ class WD_Main_Activator {
 	}
 
 	public function showUpgradeNotification() {
-		$class   = 'notice notice-info is-dismissible wp-defender-notice';
+		$class = 'notice notice-info is-dismissible wp-defender-notice';
 		$message = sprintf( __( "%s, you now have access to Defender's pro features but you still have the free version installed. Let's upgrade Defender and unlock all those juicy features! &nbsp; %s", "defender-security" ),
 			\WP_Defender\Behavior\Utils::instance()->getDisplayName(),
 			'<button id="install-defender-pro" type="button" data-id="1081723" data-nonce="' . wp_create_nonce( 'installDefenderPro' ) . '" class="button button-small">' . __( "Upgrade", "defender-security" ) . '</button>'
@@ -160,8 +168,9 @@ class WD_Main_Activator {
 		$mylinks = array_merge( $mylinks, $links );
 		$mylinks = array_merge( $mylinks, array(
 			'<a target="_blank" href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/defender/">' . __( "Docs", "defender-security" ) . '</a>',
-			'<a style="color: #1ABC9C" target="_blank" href="'.\WP_Defender\Behavior\Utils::instance()->campaignURL('defender_wppluginslist_upgrade').'">' . __( "Upgrade", "defender-security" ) . '</a>',
+			'<a style="color: #1ABC9C" target="_blank" href="' . \WP_Defender\Behavior\Utils::instance()->campaignURL( 'defender_wppluginslist_upgrade' ) . '">' . __( "Upgrade", "defender-security" ) . '</a>',
 		) );
+
 		return $mylinks;
 	}
 

@@ -58,7 +58,7 @@
                         <label class="toggle-label" for="redirectTraffic"></label>
                     </span>&nbsp;
                     <span><?php _e( "Enable 404 redirection", "defender-security" ) ?></span>
-                    <div class="clear line"></div>
+                    <div class="clear mline"></div>
                     <div class="well well-white <?php echo $settings->redirectTraffic == false ? 'is-hidden' : null ?>">
                         <p>
                             <span class="form-help"><strong><?php _e( "Redirection URL", "defender-security" ) ?></strong></span>

@@ -1,13 +1,13 @@
 === Defender Security, Monitoring, and Hack Protection ===
 Plugin Name: Defender Security, Monitoring, and Hack Protection
-Version: 1.8
+Version: 1.9
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV
 Tags: Security, Security Tweaks, Hardening, IP lockout, Monitoring, Blacklist, Site Protection, Hacked, Security Scan
 Requires at least: 4.6
-Tested up to: 4.9.5
-Stable tag: 1.8
+Tested up to: 4.9.7
+Stable tag: 1.9
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Protect WordPress from hackers with security tweaks, code scans, 2-Step Verification, IP lockouts, and monitoring.
@@ -121,6 +121,16 @@ Hackers and bot attacks are not the only threat to your site.  No matter what se
 
 
 == Changelog ==
+
+= 1.9 =
+- New: Ability to edit default two-factor authentication email notifications
+- New: Added Privacy Policy in privacy guideline page
+- Improvements for lockout logs interface
+- Improvement: Smarter report default time.
+- Fix: Defender auto redirect issue when bulk activating plugins
+- Fix: saving 404 redirect URL issue
+- Fix: Some layouts are shifted on mobile devices
+- Other minor enhancements and fixes
 
 = 1.8 =
 - New: Hide the default WordPress login URLs with the new Mask Login Area feature, giving you enhanced protection from hackers and bots.

@@ -156,7 +156,7 @@ class Utils extends Behavior {
 		if ( strlen( $timestring ) == 0 ) {
 			return null;
 		}
-		if ( ! is_int( $timestring ) ) {
+		if ( ! filter_var( $timestring, FILTER_VALIDATE_INT ) ) {
 			$timestring = strtotime( $timestring );
 		}
 		$format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
@@ -460,6 +460,9 @@ class Utils extends Behavior {
 	 * @return bool
 	 */
 	function isCloudflare() {
+		if ( php_sapi_name() == 'cli' ) {
+			return false;
+		}
 		if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 			$ip = $_SERVER['HTTP_CLIENT_IP'];
 		} elseif ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
