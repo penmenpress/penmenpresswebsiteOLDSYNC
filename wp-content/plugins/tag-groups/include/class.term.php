@@ -235,7 +235,15 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
     */
     public function get_groups() {
 
-      return array_map( 'intval', $this->groups );
+      if ( is_array( $this->groups ) ) {
+
+        return array_map( 'intval', $this->groups );
+
+      } else {
+
+        return $this->groups;
+
+      }
 
     }
 

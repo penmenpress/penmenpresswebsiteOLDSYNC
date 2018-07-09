@@ -94,7 +94,7 @@ class tagGroupsTabbedCloudParameters extends Component {
     return {
       groups: [],
       taxonomies: [],
-      posts: {},
+      posts: [],
       selectedGroups: selectedGroups, // array representation
       selectedTaxonomies: selectedTaxonomies, // array representation
     };
@@ -132,6 +132,7 @@ class tagGroupsTabbedCloudParameters extends Component {
     this.getGroupsFromApi();
     this.getTaxonomiesFromApi();
     this.getPostsFromApi();
+
   }
 
 
@@ -330,6 +331,9 @@ class tagGroupsTabbedCloudParameters extends Component {
       });
     }
 
+    if ( attributes.source !== 'gutenberg' ) {
+      setAttributes({ source: 'gutenberg' });
+    }
 
     return [
       (
@@ -724,7 +728,7 @@ var cmTagGroupsTabsBlock = registerBlockType( 'chatty-mango/tag-groups-cloud-tab
           let parameters = [];
           for ( var attribute in attributes ) {
             if (attributes.hasOwnProperty( attribute )) {
-              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] && cmTagGroupsTabsBlock.attributes[ attribute ] && attributes[ attribute ] !== cmTagGroupsTabsBlock.attributes[ attribute ].default ) {
+              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] && 'source' !== attribute && cmTagGroupsTabsBlock.attributes[ attribute ] && attributes[ attribute ] !== cmTagGroupsTabsBlock.attributes[ attribute ].default ) {
                 if ( typeof attributes[attribute] === 'number' ) {
                   parameters.push( attribute + '=' + attributes[ attribute ] );
                 } else {
@@ -750,6 +754,10 @@ var cmTagGroupsTabsBlock = registerBlockType( 'chatty-mango/tag-groups-cloud-tab
   * Attributes are the same as shortcode parameters
   **/
   attributes: {
+    source: { // internal indicator to identify Gutebergb blocks
+      type: 'string',
+      default: ''
+    },
     active: { // configurable in block
       type: 'integer',
       default: 1

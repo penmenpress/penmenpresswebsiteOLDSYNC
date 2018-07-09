@@ -90,6 +90,7 @@ class tagGroupsAccordionCloudParameters extends Component {
     return {
       groups: [],
       taxonomies: [],
+      posts: [],
       selectedGroups: selectedGroups, // array representation
       selectedTaxonomies: selectedTaxonomies, // array representation
     };
@@ -342,6 +343,9 @@ class tagGroupsAccordionCloudParameters extends Component {
       });
     }
 
+    if ( attributes.source !== 'gutenberg' ) {
+      setAttributes({ source: 'gutenberg' });
+    }
 
     return [
       (
@@ -763,7 +767,7 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
           let parameters = [];
           for ( var attribute in attributes ) {
             if (attributes.hasOwnProperty( attribute )) {
-              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] && cmTagGroupsAccordionBlock.attributes[ attribute ] && attributes[ attribute ] !== cmTagGroupsAccordionBlock.attributes[ attribute ].default ) {
+              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] && 'source' !== attribute && cmTagGroupsAccordionBlock.attributes[ attribute ] && attributes[ attribute ] !== cmTagGroupsAccordionBlock.attributes[ attribute ].default ) {
                 if ( typeof attributes[attribute] === 'number' ) {
                   parameters.push( attribute + '=' + attributes[ attribute ] );
                 } else {
@@ -789,6 +793,10 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
   * Attributes are the same as shortcode parameters
   **/
   attributes: {
+    source: { // internal indicator to identify Gutebergb blocks
+      type: 'string',
+      default: ''
+    },
     active: { // configurable in block
       type: 'integer',
       default: 1

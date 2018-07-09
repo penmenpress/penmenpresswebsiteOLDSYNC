@@ -423,7 +423,7 @@ if ( ! class_exists('TagGroups_Group') ) {
 
           $tg_term = new TagGroups_Term( $term );
 
-          if ( $tg_term->is_in_group( $this->term_group ) || ! in_array( $term->term_id, $result ) ) {
+          if ( $tg_term->is_in_group( $this->term_group ) && ! in_array( $term->term_id, $result ) ) {
 
             $result[] = $term->term_id;
 
@@ -441,7 +441,7 @@ if ( ! class_exists('TagGroups_Group') ) {
 
           $tg_term = new TagGroups_Term( $term );
 
-          if ( $tg_term->is_in_group( $this->term_group ) || ! in_array( $term->term_id, $result ) ) {
+          if ( $tg_term->is_in_group( $this->term_group ) && ! in_array( $term->term_id, $result ) ) {
 
             $result[] = $term->name;
 
@@ -457,7 +457,7 @@ if ( ! class_exists('TagGroups_Group') ) {
 
           $tg_term = new TagGroups_Term( $term );
 
-          if ( $tg_term->is_in_group( $this->term_group ) || ! in_array( $term->term_id, $result ) ) {
+          if ( $tg_term->is_in_group( $this->term_group ) && ! in_array( $term->term_id, $result ) ) {
 
             unset( $key );
 
@@ -468,7 +468,7 @@ if ( ! class_exists('TagGroups_Group') ) {
         return $terms;
 
       }
-      
+
     }
 
 

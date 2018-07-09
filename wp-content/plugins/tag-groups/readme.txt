@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
 Tested up to: 4.9.6
-Stable tag: 0.38.6
+Stable tag: 0.38.8
 Requires PHP: 5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -114,6 +114,24 @@ No, unfortunately it isn't. But, nevertheless, I'm glad you asked! You are warml
 This plugin does not collect or process any personal user data.
 
 == Changelog ==
+
+= 0.38.8 =
+
+BUG FIXES
+
+* Fixed error in retrieving terms of group for REST API.
+
+= 0.38.7 =
+
+BUG FIXES
+
+* Fixing HTML encoding in some cases for "prepend" and "append" parameters.
+
+OTHER
+
+* Fixing warning when processing tags.
+* Tabbed/accordion tag cloud: Make sure we keep class to produce tabs/accordion.
+* Please help us [translate](https://translate.wordpress.org/projects/wp-plugins/tag-groups)!
 
 = 0.38.6 =
 

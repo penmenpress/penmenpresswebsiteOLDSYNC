@@ -325,7 +325,7 @@ if ( ! class_exists('TagGroups_Feed') ) {
     *
     * modified from https://wp-mix.com/php-truncate-text-word/
     */
-    private function truncate_string_at_word( $string, $limit, $break = ".", $pad = "..." ) {
+    private function truncate_string_at_word( $string, $limit, $break = ". ", $pad = " ..." ) {
 
       if (mb_strlen($string) <= $limit) return $string;
 

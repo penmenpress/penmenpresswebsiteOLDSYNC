@@ -115,7 +115,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         'assigned_class' => null,
         'collapsible' => null,
         'custom_title' => null,
-        'div_class' => 'tag-groups-cloud',
+        'div_class' => 'tag-groups-cloud',  // tag-groups-cloud preserved to create tab functionality
         'div_id' => 'tag-groups-cloud-tabs-' . uniqid(),
         'exclude_terms' => '',
         'groups_post_id' => -1,
@@ -138,10 +138,22 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         'show_tabs' => '1',
         'show_tag_count' => true,
         'smallest' => 12,
+        'source' => 'shortcode',
         'tags_post_id' => -1,
         'taxonomy' => null,
         'ul_class' => ''
       ), $atts ) );
+
+
+      if ( 'shortcode' == $source ) {
+
+        $prepend = html_entity_decode( $prepend );
+
+        $append = html_entity_decode( $append );
+
+        $separator = html_entity_decode( $separator );
+
+      }
 
       if ( 'natural' == $orderby ) {
 
@@ -240,6 +252,15 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
       if ( ! is_array( $posttags ) ) {
 
         $posttags = array();
+
+      }
+
+      /**
+      * Keep always jQuery UI class to produce correct output
+      */
+      if ( strpos( $div_class, 'tag-groups-cloud' )  === false ) {
+
+        $div_class .= ' tag-groups-cloud';
 
       }
 
@@ -857,7 +878,7 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         'assigned_class' => null,
         'collapsible' => null,
         'custom_title' => null,
-        'div_class' => 'tag-groups-cloud', // change for different themes tabs vs. accordion
+        'div_class' => 'tag-groups-cloud', // tag-groups-cloud preserved to create accordion functionality
         'div_id' => 'tag-groups-cloud-accordion-' . uniqid(),
         'exclude_terms' => '',
         'groups_post_id' => -1,
@@ -882,10 +903,22 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
         'show_all_groups' => false,
         'show_accordion' => 1,
         'show_tag_count' => true,
+        'source' => 'shortcode',
         'smallest' => 12,
         'tags_post_id' => -1,
         'taxonomy' => null
       ), $atts ) );
+
+
+      if ( 'shortcode' == $source ) {
+
+        $prepend = html_entity_decode( $prepend );
+
+        $append = html_entity_decode( $append );
+
+        $separator = html_entity_decode( $separator );
+
+      }
 
       if ( 'natural' == $orderby ) {
 
@@ -983,6 +1016,15 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
       if ( ! is_array( $posttags ) ) {
 
         $posttags = array();
+
+      }
+
+      /**
+      * Keep always jQuery UI class to produce correct output
+      */
+      if ( strpos( $div_class, 'tag-groups-cloud' ) === false ) {
+
+        $div_class .= ' tag-groups-cloud';
 
       }
 
