@@ -4,66 +4,89 @@
   Plugin URI: https://wordpress.org/plugins/wp-media-folders/
   Description: WP media Folders had the ability to rename and move files under real folders
   Author: Damien Barrère
-  Version: 1.0.0
+  Version: 1.1.0
   Text Domain: wp-media-folders
   Domain Path: /languages
   Licence : GNU General Public License version 2 or later; http://www.gnu.org/licenses/gpl-2.0.html
-  Copyright : Copyright (C) 2017 Damien Barrère All right reserved
+  Copyright : Copyright (C) 2018 Damien Barrère All right reserved
  */
-
-/**
- * @copyright 2017 Damien Barrère
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-
 
 // Prohibit direct script loading
 defined('ABSPATH') || die('No direct script access allowed!');
 
+define('WP_MEDIA_FOLDERS_VERSION', '1.1.0');
+
 // This functionality is only needed on backend
-if(!is_admin()) {
+if (!is_admin()) {
     return;
 }
 
 //Check plugin requirements
-if (version_compare(PHP_VERSION, '5.3', '<')) {
-    if( !function_exists('wp_media_folders_disable_plugin') ){
-        function wp_media_folders_disable_plugin(){
-            if ( current_user_can('activate_plugins') && is_plugin_active( plugin_basename( __FILE__ ) ) ) {
-                deactivate_plugins( __FILE__ );
-                unset( $_GET['activate'] );
+if (version_compare(PHP_VERSION, '5.4', '<')) {
+    if (!function_exists('wp_media_folders_disable_plugin')) {
+        /**
+         * Disable the plugin
+         *
+         * @return void
+         */
+        function wp_media_folders_disable_plugin()
+        {
+            if (current_user_can('activate_plugins') && is_plugin_active(plugin_basename(__FILE__))) {
+                deactivate_plugins(__FILE__);
+                unset($_GET['activate']);
             }
         }
     }
 
-    if( !function_exists('wp_media_folders_show_error') ){
-        function wp_media_folders_show_error(){
-            echo '<div class="error"><p><strong>WP Media Folders</strong> need at least PHP 5.3 version, please update php before installing the plugin.</p></div>';
+    if (!function_exists('wp_media_folders_show_error')) {
+        /**
+         * Display erros
+         *
+         * @return void
+         */
+        function wp_media_folders_show_error()
+        {
+            echo '<div class="error"><p><strong>WP Media Folders</strong> need at least PHP 5.4 version, please update php before installing the plugin.</p></div>';
         }
     }
 
     //Add actions
-    add_action( 'admin_init', 'wp_media_folders_disable_plugin' );
-    add_action( 'admin_notices', 'wp_media_folders_show_error' );
+    add_action('admin_init', 'wp_media_folders_disable_plugin');
+    add_action('admin_notices', 'wp_media_folders_show_error');
 
     //Do not load anything more
     return;
 }
 
-include_once('classes' . DIRECTORY_SEPARATOR . 'wp-media-folders.php');
+// Show disclaimer if not already accepted
+global $pagenow;
 
-new WP_Media_Folders(__FILE__);
+if (!get_option('wp-media-folders-disclaimer-confirmed', false) && $pagenow !== 'options-general.php') {
+    add_action(
+        'admin_notices',
+        function () {
+            if (current_user_can('manage_options')) {
+                echo '<div class="error">'
+                    . '<p>'
+                    . esc_html__('Thanks for having installed WP Media Folders!', 'wp-media-folders').'<br/>'
+                    . '<b>' . esc_html__('Please read the instruction carefuly to understand how the plugin works and what it does', 'wp-media-folders').'</b>&nbsp;'
+                    . '<a href="'.admin_url('options-general.php?page=wp-media-folders-settings').'" class="button button-primary">'
+                    . esc_html__('Read disclaimer', 'wp-media-folders').'</a>'
+                    . '</p>'
+                    . '</div>';
+            }
+        },
+        3
+    );
 
+    add_action('wp_ajax_wpmfs_disclaimer', function () {
+        check_ajax_referer('wpmfs_nonce', 'nonce');
+        update_option('wp-media-folders-disclaimer-confirmed', true);
+    });
+}
+
+require_once 'classes' . DIRECTORY_SEPARATOR . 'wp-media-folders.php';
+require_once 'classes' . DIRECTORY_SEPARATOR . 'helper.php';
+require_once 'classes' . DIRECTORY_SEPARATOR . 'queue.php';
+
+new WPMediaFolders(__FILE__);
