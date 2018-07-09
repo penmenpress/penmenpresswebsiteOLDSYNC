@@ -1,1 +1,2 @@
 23-06-2018 15:57:48 - INFO  - m: 6.0 MB, u: 0 - Version changed from 1.4.3 to 1.4.9
+29-06-2018 04:48:37 - ERROR - m: 13.4 MB, u: 0 - Blocked by transient newsletter_main_engine set 0 seconds ago
