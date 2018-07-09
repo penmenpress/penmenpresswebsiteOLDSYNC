@@ -3,7 +3,7 @@ Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
 Tested up to: 4.9 
-Stable tag: 1.4.12
+Stable tag: 1.4.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -278,6 +278,35 @@ Choose whether to display random or the first/last specific number of images.
 
 
 == Changelog ==
+
+= 1.4.14 =
+* Fixed: Conflict with IE 11 version.   
+* Fixed: Lightbox autoplay.    
+
+= 1.4.13 =
+* Added: Download button functionality related to the filters.  
+* Added: Gutenberg integration.  
+* Added: Recreate thumbnails, set and reset watermark functions actions by Ajax ( part to part by limit 50 ) in options.  
+* Added: Images sorting functionality in gallery edit page.  
+* Changed: Moved Slideshow view inline javascript to js file.  
+* Changed: Remove static css from Slideshow view.  
+* Changed: Check GD2 library availability.  
+* Changed: Thumbnail titles styles in thumbnail view.  
+* Changed: Design of filters in thumbnail view.  
+* Improved: Open lightbox faster.  
+* Improved: How to use.  
+* Fixed: Add shortcode functionality on Beaver, Elementor, SiteOrigin and Visual Composer builders.  
+* Fixed: Bug on setting watermark.  
+* Fixed: Conflict with "Fast Velocity Minify".  
+* Fixed: Filmstrip image ordering  
+* Fixed: Bug on searched images delete in admin.   
+* Fixed: Conflict Wordpress.com hosting.  
+* Fixed: Search logic when the image title contains several words and when you add space before searched word.  
+* Fixed: Bug on scroll load.    
+* Fixed: Add items to gallery group in IE.    
+* Fixed: Slideshow widget bug.   
+* Fixed: Importing to many images from Media library.   
+
 
 = 1.4.12 =
 * Added: GDPR compliance.  

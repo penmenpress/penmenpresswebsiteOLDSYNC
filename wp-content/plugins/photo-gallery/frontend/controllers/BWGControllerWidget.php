@@ -10,7 +10,7 @@ class BWGControllerWidgetFrontEnd {
     }
   }
 
-  public function view_tags($params) {
+  public function view_tags($params = array()) {
     require_once BWG()->plugin_dir . "/frontend/models/BWGModelWidget.php";
     $model = new BWGModelWidgetFrontEnd();
 

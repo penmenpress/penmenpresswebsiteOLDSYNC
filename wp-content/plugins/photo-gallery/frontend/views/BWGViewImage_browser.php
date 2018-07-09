@@ -1,6 +1,6 @@
 <?php
 class BWGViewImage_browser {
-  public function display($params, $from_shortcode = 0, $bwg = 0) {
+  public function display($params = array(), $from_shortcode = 0, $bwg = 0) {
     require_once(BWG()->plugin_dir . '/framework/WDWLibrary.php');
     require_once(BWG()->plugin_dir . '/framework/WDWLibraryEmbed.php');
 
@@ -250,7 +250,7 @@ class BWGViewImage_browser {
                       if (!$is_embed) {
                       ?>
                         <a style="position:relative;" <?php echo ($params['thumb_click_action'] == 'open_lightbox' ? (' class="bwg_lightbox_' . $bwg . '" data-image-id="' . $image_row->id . '"') : ($params['thumb_click_action'] == 'redirect_to_url' && $image_row->redirect_url ? 'href="' . $image_row->redirect_url . '" target="' .  ($params['thumb_link_target'] ? '_blank' : '')  . '"' : '')) ?>>
-                          <img class="bwg_image_browser_img_<?php echo $bwg; ?>" src="<?php echo site_url() . '/' . BWG()->upload_dir . $image_row->image_url; ?>" alt="<?php echo $image_row->alt; ?>" />
+                          <img class="bwg_image_browser_img_<?php echo $bwg; ?>" src="<?php echo BWG()->upload_url . $image_row->image_url; ?>" alt="<?php echo $image_row->alt; ?>" />
                         </a>
                       <?php 
                       }
@@ -348,6 +348,9 @@ class BWGViewImage_browser {
                 $query_url = addslashes(add_query_arg(array(
                                                         "action" => "download_gallery",
                                                         "gallery_id" => $params['gallery_id'],
+                                                        "bwg" => $bwg,
+                                                        "type" => 'gallery',
+                                                        "bwg_search_".$bwg => WDWLibrary::get('bwg_search_'.$bwg),
                                                       ), admin_url('admin-ajax.php')));
                 ?>
                 <div class="bwg_download_gallery">
@@ -385,21 +388,6 @@ class BWGViewImage_browser {
         var filtersearchname = jQuery("#bwg_search_input_<?php echo $bwg; ?>" ).val() ? "&filter_search_name_<?php echo $bwg; ?>=" + jQuery("#bwg_search_input_<?php echo $bwg; ?>" ).val() : '';
         spider_createpopup('<?php echo addslashes(add_query_arg($params_array, admin_url('admin-ajax.php'))); ?>&image_id=' + image_id + filtersearchname, '<?php echo $bwg; ?>', '<?php echo $params['popup_width']; ?>', '<?php echo $params['popup_height']; ?>', 1, 'testpopup', 5, "<?php echo $theme_row->lightbox_ctrl_btn_pos ;?>");
       }
-      <?php
-      if ( BWG()->is_pro ) {
-        ?>
-      var bwg_hash = window.location.hash.substring(1);
-      if (bwg_hash) {
-        if (bwg_hash.indexOf("bwg") != "-1") {
-          bwg_hash_array = bwg_hash.replace("bwg", "").split("/");
-          if (bwg_hash_array[0] == "<?php echo $params_array['gallery_id']; ?>") {
-            bwg_gallery_box_<?php echo $bwg; ?>(bwg_hash_array[1]);
-          }
-        }
-      }
-        <?php
-      }
-      ?>
       function bwg_document_ready_<?php echo $bwg; ?>() {
         var bwg_touch_flag = false;
         jQuery(".bwg_lightbox_<?php echo $bwg; ?>").on("click", function () {
@@ -410,6 +398,21 @@ class BWGViewImage_browser {
             return false;
           }
         });
+        <?php
+        if ( BWG()->is_pro ) {
+        ?>
+        var bwg_hash = window.location.hash.substring(1);
+        if (bwg_hash) {
+          if (bwg_hash.indexOf("bwg") != "-1") {
+            bwg_hash_array = bwg_hash.replace("bwg", "").split("/");
+            if (bwg_hash_array[0] == "<?php echo $params_array['gallery_id']; ?>") {
+              bwg_gallery_box_<?php echo $bwg; ?>(bwg_hash_array[1]);
+            }
+          }
+        }
+        <?php
+        }
+        ?>
       }
       jQuery(document).ready(function () {
         bwg_document_ready_<?php echo $bwg; ?>();

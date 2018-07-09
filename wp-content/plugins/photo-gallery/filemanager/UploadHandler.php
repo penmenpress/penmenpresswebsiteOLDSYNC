@@ -299,35 +299,7 @@ class bwg_UploadHandler {
       } else {
         $new_file_path = $file_path;
       }
-      $image = wp_get_image_editor( $file_path );
-      $success = false;
-      if ( ! is_wp_error( $image ) ) {
-        $image_size = $image->get_size();
-        $img_width = $image_size['width'];
-        $img_height = $image_size['height'];
-        if (!$img_width || !$img_height) {
-          return false;
-        }
-        $max_width = $options['max_width'];
-        $max_height = $options['max_height'];
-        $scale = min(
-          $max_width / $img_width,
-          $max_height / $img_height
-        );
-        if (($scale >= 1) || (($max_width == NULL) && ($max_height == NULL))) {
-          if ($file_path !== $new_file_path) {
-            return copy($file_path, $new_file_path);
-          }
-          return true;
-        }
-
-        $new_width = $img_width * $scale;
-        $new_height = $img_height * $scale;
-        $image->set_quality(BWG()->options->image_quality);
-        $image->resize($new_width, $new_height, false);
-        $success = $image->save($new_file_path);
-        $success = !is_wp_error($success);
-      }
+      $success = WDWLibrary::resize_image($file_path, $new_file_path, $options['max_width'], $options['max_height']);
 
       return $success;
     }
@@ -557,7 +529,7 @@ class bwg_UploadHandler {
         if ($allow_extract) {
           $target_dir = substr($file_path, 0, strlen($file_path) - 4);
           if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0777);
+            mkdir($target_dir, 0755);
           }
           $zip->extractTo($target_dir);
         }
@@ -620,54 +592,57 @@ class bwg_UploadHandler {
 
       $file_type_array = explode('.', $name);
       $type = strtolower(end($file_type_array));
-
       $file = new stdClass();
-      $file->name = $this->get_file_name($name, $type, 0, "");
-      $file->type = $type;
-      $this->handle_form_data($file, 0);
-      $upload_dir = $this->get_upload_path();
-      if ( !is_dir($upload_dir) ) {
-        mkdir($upload_dir, $this->options['mkdir_mode'], true);
+	    if ( WDWLibrary::allowed_upload_types($type) ) {
+        $file->error = false;
+        $file->name = $this->get_file_name($name, $type, 0, "");
+        $file->type = $type;
+        $this->handle_form_data($file, 0);
+        $upload_dir = $this->get_upload_path();
+        if ( !is_dir($upload_dir) ) {
+          mkdir($upload_dir, $this->options['mkdir_mode'], true);
+        }
+        $file_path = $this->get_upload_path($file->name);
+        copy($basedir . '/' . $uploaded_file, $file_path);
+
+        if ( $this->options['max_width'] && $this->options['max_height'] ) {
+          // Media library Upload.
+          $this->create_scaled_image($file->name, 'main', $this->options);
+        }
+        list($img_width) = @getimagesize(htmlspecialchars_decode($file_path, ENT_COMPAT | ENT_QUOTES));
+        if ( is_int($img_width) ) {
+          $this->handle_image_file($file_path, $file);
+        }
+        $this->set_file_delete_properties($file);
+
+        // Additional information.
+        $file->filetype = $type;
+        $file->filename = str_replace('.' . $file->filetype, '', $file->name);
+        $file->alt = $file->filename;
+        $file->reliative_url = $this->options['upload_url'] . '/' . $this->options['media_library_folder'] . $file->name;
+        $file->url = '/' . $this->options['media_library_folder'] . '/' . $file->name;
+        $file->thumb = $this->options['upload_url'] . '/' . $this->options['media_library_folder'] . '/thumb/' . $file->name;
+        $file->thumb_url = '/' . $this->options['media_library_folder'] . '/thumb/' . $file->name;
+
+        $file_size_kb = (int)(filesize($file_path) / 1024);
+        $file->size = $file_size_kb . ' KB';
+        $file->date_modified = date('d F Y, H:i', filemtime($file_path));
+        $image_info = getimagesize(htmlspecialchars_decode($file_path, ENT_COMPAT | ENT_QUOTES));
+        $file->resolution = $image_info[0]  . ' x ' . $image_info[1] . ' px';
+
+        if ( BWG()->options->read_metadata ) {
+          $exif = WDWLibrary::read_image_metadata($upload_dir . '.original/' . $file->name);
+          $file->credit = $exif['credit'];
+          $file->aperture = $exif['aperture'];
+          $file->camera = $exif['camera'];
+          $file->caption = $exif['caption'];
+          $file->iso = $exif['iso'];
+          $file->orientation = $exif['orientation'];
+          $file->copyright = $exif['copyright'];
+        }
       }
-      $file_path = $this->get_upload_path($file->name);
-	    copy($basedir . '/' . $uploaded_file, $file_path);
-	  
-      if ( $this->options['max_width'] && $this->options['max_height'] ) {
-        // Media library Upload.
-        $this->create_scaled_image($file->name, 'main', $this->options);
-      }
-      list($img_width) = @getimagesize(htmlspecialchars_decode($file_path, ENT_COMPAT | ENT_QUOTES));
-      if ( is_int($img_width) ) {
-        $this->handle_image_file($file_path, $file);
-      }
-      $this->set_file_delete_properties($file);
-
-      // Additional information.
-
-      $file->filetype = $type;
-      $file->filename = str_replace('.' . $file->filetype, '', $file->name);
-      $file->alt = $file->filename;
-      $file->reliative_url = $this->options['upload_url'] . '/' . $this->options['media_library_folder'] . $file->name;
-      $file->url = '/' . $this->options['media_library_folder'] . '/' . $file->name;
-      $file->thumb = $this->options['upload_url'] . '/' . $this->options['media_library_folder'] . '/thumb/' . $file->name;
-      $file->thumb_url = '/' . $this->options['media_library_folder'] . '/thumb/' . $file->name;
-
-      $file_size_kb = (int)(filesize($file_path) / 1024);
-      $file->size = $file_size_kb . ' KB';
-      $file->date_modified = date('d F Y, H:i', filemtime($file_path));
-      $image_info = getimagesize(htmlspecialchars_decode($file_path, ENT_COMPAT | ENT_QUOTES));
-      $file->resolution = $image_info[0]  . ' x ' . $image_info[1] . ' px';
-
-      
-      if ( BWG()->options->read_metadata ) {
-        $exif = WDWLibrary::read_image_metadata($upload_dir . '.original/' . $file->name);
-        $file->credit = $exif['credit'];
-        $file->aperture = $exif['aperture'];
-        $file->camera = $exif['camera'];
-        $file->caption = $exif['caption'];
-        $file->iso = $exif['iso'];
-        $file->orientation = $exif['orientation'];
-        $file->copyright = $exif['copyright'];
+      else {
+        $file->error = true;
       }
 
       return $file;

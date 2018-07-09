@@ -2,7 +2,7 @@
 
 class OptionsView_bwg extends AdminView_bwg {
 
-  public function display($params) {
+  public function display($params = array()) {
     wp_enqueue_script('thickbox');
     wp_enqueue_script('jquery-ui-tabs');
     wp_enqueue_script(BWG()->prefix . '_admin');
@@ -25,10 +25,12 @@ class OptionsView_bwg extends AdminView_bwg {
     echo $this->form(ob_get_clean(), $form_attr);
   }
 
-  public function body($params) {
+  public function body($params = array()) {
     $row = $params['row'];
-	  $instagram_return_url = $params['instagram_return_url'];
+	$instagram_return_url = $params['instagram_return_url'];
     $instagram_reset_href = $params['instagram_reset_href'];
+    $options_url_ajax = $params['options_url_ajax'];
+    $imgcount = $params['imgcount'];
     if (!$row) {
       echo WDWLibrary::message_id(2);
       return;
@@ -71,13 +73,13 @@ class OptionsView_bwg extends AdminView_bwg {
           <a href="#bwg_tab_general_content" class="bwg-tablink"><?php _e('General', BWG()->prefix); ?></a>
         </li>
         <li class="tabs">
-          <a href="#bwg_tab_gallery_content" class="bwg-tablink"><?php _e('Gallery', BWG()->prefix); ?></a>
+          <a href="#bwg_tab_gallery_content" class="bwg-tablink"><?php _e('Gallery defaults', BWG()->prefix); ?></a>
         </li>
         <li class="tabs">
-          <a href="#bwg_tab_gallery_group_content" class="bwg-tablink"><?php _e('Gallery group', BWG()->prefix); ?></a>
+          <a href="#bwg_tab_gallery_group_content" class="bwg-tablink"><?php _e('Gallery Group defaults', BWG()->prefix); ?></a>
         </li>
         <li class="tabs">
-          <a href="#bwg_tab_lightbox_content" class="bwg-tablink"><?php _e('Lightbox', BWG()->prefix); ?></a>
+          <a href="#bwg_tab_lightbox_content" class="bwg-tablink"><?php _e('Lightbox defaults', BWG()->prefix); ?></a>
         </li>
         <li class="tabs">
           <a href="#bwg_tab_advanced_content" class="bwg-tablink"><?php _e('Advanced', BWG()->prefix); ?></a>
@@ -90,17 +92,23 @@ class OptionsView_bwg extends AdminView_bwg {
         <div class="bwg-section bwg-flex-wrap">
           <div class="wd-box-content wd-width-100 bwg-flex-wrap">
             <div class="wd-box-content wd-width-50">
+              <?php
+              if ( $row->images_directory !== 'wp-content/uploads' ) {
+                ?>
               <div class="wd-box-content wd-width-100">
                 <div class="wd-group">
                   <label class="wd-label" for="images_directory"><?php _e('Images directory', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
                     <input id="images_directory" name="images_directory" type="text" style="display:inline-block; width:100%;" value="<?php echo $row->images_directory; ?>" />
-                    <input type="hidden" id="old_images_directory" name="old_images_directory" value="<?php echo $row->old_images_directory; ?>"/>
+                    <input type="hidden" id="old_images_directory" name="old_images_directory" value="<?php echo $row->old_images_directory; ?>" />
                   </div>
                   <p class="description"><?php _e('Provide the path of an existing folder inside the WordPress directory of your website to store uploaded images.<br />The content of the previous directory will be moved to the new one.', BWG()->prefix); ?></p>
                 </div>
               </div>
-                <div class="wd-box-content wd-width-100">
+                <?php
+              }
+              ?>
+              <div class="wd-box-content wd-width-100">
                 <div class="wd-group">
                   <label class="wd-label" for="upload_img_width"><?php _e('Image dimensions', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
@@ -116,7 +124,8 @@ class OptionsView_bwg extends AdminView_bwg {
                   <div class="bwg-flex">
                     <input type="number" name="upload_thumb_width" id="upload_thumb_width" value="<?php echo $row->upload_thumb_width; ?>" min="0" /><span>x</span>
                     <input type="number" name="upload_thumb_height" id="upload_thumb_height" value="<?php echo $row->upload_thumb_height; ?>" min="0" /><span>px</span>
-                    <input type="submit" class="button-primary" onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\'); return false;' : 'spider_set_input_value(\'task\', \'save\'); spider_set_input_value(\'recreate\', \'resize_image_thumb\');'); ?>" value="<?php _e('Recreate', BWG()->prefix); ?>" />
+                    <input type="hidden" name="imgcount" id="bwg_imgcount" value="<?php echo $imgcount; ?>">
+                    <input type="submit" class="button-primary" onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\'); return false;' : (BWG()->wp_editor_exists ? 'return bwg_recreate_thumb(0);' : 'alert(\'' . addslashes(__('Image edit functionality is not supported by your web host.', BWG()->prefix)) . '\'); return false;')); ?>" value="<?php _e('Recreate', BWG()->prefix); ?>" />
                   </div>
                   <p class="description"><?php _e('Specify the maximum dimensions of generated thumbnails. They must be larger than frontend thumbnail dimensions.', BWG()->prefix); ?></p>
                 </div>
@@ -867,10 +876,10 @@ class OptionsView_bwg extends AdminView_bwg {
                       </tbody>
                     </table>
                     <input type="submit" class="button-primary" title="<?php _e('Set watermark', BWG()->prefix); ?>" style="margin-top: 5px;"
-                           onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\'); return false;' : 'spider_set_input_value(\'task\', \'save\'); spider_set_input_value(\'watermark\', \'image_set_watermark\');'); ?>"
+                           onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\'); return false;' : (BWG()->wp_editor_exists ?  'return bwg_set_watermark(0)' : 'alert(\'' . addslashes(__('Image edit functionality is not supported by your web host.', BWG()->prefix)) . '\'); return false;')); ?>"
                            value="<?php _e('Set Watermark', BWG()->prefix); ?>"/>
                     <input type="submit" class="button" title="<?php _e('Reset watermark', BWG()->prefix); ?>" style="margin-top: 5px;"
-                           onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\'); return false;' : 'spider_set_input_value(\'task\', \'image_recover_all\');'); ?>"
+                           onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\'); return false;' : (BWG()->wp_editor_exists ? 'return bwg_reset_watermark_all(0)' : 'alert(\'' . addslashes(__('Image edit functionality is not supported by your web host.', BWG()->prefix)) . '\'); return false;')); ?>"
                            value="<?php _e('Reset Watermark', BWG()->prefix); ?>"/>
                   </div>
                   <p class="description"><?php _e('Mark the position where the watermark should appear on images.', BWG()->prefix) ?></p>
@@ -891,11 +900,12 @@ class OptionsView_bwg extends AdminView_bwg {
     <input id="gallery_type" name="gallery_type" type="hidden" value="<?php echo $params['gallery_type']; ?>" />
     <input id="album_type" name="album_type" type="hidden" value="<?php echo $params['album_type']; ?>" />
     <script>
+      var bwg_options_url_ajax = '<?php echo $options_url_ajax; ?>';
       function bwg_add_built_in_watermark_image(files) {
-        document.getElementById("built_in_watermark_url").value = '<?php echo site_url() . '/' . BWG()->upload_dir; ?>' + files[0]['url'];
+        document.getElementById("built_in_watermark_url").value = '<?php echo BWG()->upload_url; ?>' + files[0]['url'];
       }
       function bwg_add_watermark_image(files) {
-        document.getElementById("watermark_url").value = '<?php echo site_url() . '/' . BWG()->upload_dir; ?>' + files[0]['url'];
+        document.getElementById("watermark_url").value = '<?php echo BWG()->upload_url; ?>' + files[0]['url'];
       }
       jQuery(document).ready(function() {		
         bwg_inputs();
@@ -1096,7 +1106,7 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>
           <div class="wd-box-content wd-width-100" id="tr_search_box_width">
             <div class="wd-group">
-              <label class="wd-label" for="search_box_width"><?php _e('Search box width', BWG()->prefix); ?></label>
+              <label class="wd-label" for="search_box_width"><?php _e('Search box maximum width', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input type="number" name="search_box_width" id="search_box_width" value="<?php echo $row->search_box_width; ?>" min="0" /><span>px</span>
               </div>
@@ -1306,7 +1316,7 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>
           <div class="wd-box-content wd-width-100" id="tr_masonry_search_box_width">
             <div class="wd-group">
-              <label class="wd-label" for="masonry_search_box_width"><?php _e('Search box width', BWG()->prefix); ?></label>
+              <label class="wd-label" for="masonry_search_box_width"><?php _e('Search box maximum width', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input type="number" name="masonry_search_box_width" id="masonry_search_box_width" value="<?php echo $row->masonry_search_box_width; ?>" min="0" /><span>px</span>
               </div>
@@ -1526,7 +1536,7 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>
           <div class="wd-box-content wd-width-100" id="tr_mosaic_search_box_width">
             <div class="wd-group">
-              <label class="wd-label" for="mosaic_search_box_width"><?php _e('Search box width', BWG()->prefix); ?></label>
+              <label class="wd-label" for="mosaic_search_box_width"><?php _e('Search box maximum width', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input type="number" name="mosaic_search_box_width" id="mosaic_search_box_width" value="<?php echo $row->mosaic_search_box_width; ?>" min="0" /><span>px</span>
               </div>
@@ -1954,7 +1964,7 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>
           <div class="wd-box-content wd-width-100" id="tr_image_browser_search_box_width">
             <div class="wd-group">
-              <label class="wd-label" for="image_browser_search_box_width"><?php _e('Search box width', BWG()->prefix); ?></label>
+              <label class="wd-label" for="image_browser_search_box_width"><?php _e('Search box maximum width', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input type="number" name="image_browser_search_box_width" id="image_browser_search_box_width" value="<?php echo $row->image_browser_search_box_width; ?>" min="0" /><span>px</span>
               </div>
@@ -2088,7 +2098,7 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>
           <div class="wd-box-content wd-width-100" id="tr_blog_style_search_box_width">
             <div class="wd-group">
-              <label class="wd-label" for="blog_style_search_box_width"><?php _e('Search box width', BWG()->prefix); ?></label>
+              <label class="wd-label" for="blog_style_search_box_width"><?php _e('Search box maximum width', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input type="number" name="blog_style_search_box_width" id="blog_style_search_box_width" value="<?php echo $row->blog_style_search_box_width; ?>" min="0" /><span>px</span>
               </div>
@@ -2444,7 +2454,7 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>
           <div class="wd-box-content wd-width-100" id="tr_album_search_box_width">
             <div class="wd-group">
-              <label class="wd-label" for="album_search_box_width"><?php _e('Search box width', BWG()->prefix); ?></label>
+              <label class="wd-label" for="album_search_box_width"><?php _e('Search box maximum width', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input type="number" name="album_search_box_width" id="album_search_box_width" value="<?php echo $row->album_search_box_width; ?>" min="0" /><span>px</span>
               </div>
@@ -2715,7 +2725,7 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>
           <div class="wd-box-content wd-width-100" id="tr_album_masonry_search_box_width">
             <div class="wd-group">
-              <label class="wd-label" for="album_masonry_search_box_width"><?php _e('Search box width', BWG()->prefix); ?></label>
+              <label class="wd-label" for="album_masonry_search_box_width"><?php _e('Search box maximum width', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input type="number" name="album_masonry_search_box_width" id="album_masonry_search_box_width" value="<?php echo $row->album_masonry_search_box_width; ?>" min="0" /><span>px</span>
               </div>
@@ -2911,7 +2921,7 @@ class OptionsView_bwg extends AdminView_bwg {
             </div>
             <div class="wd-box-content wd-width-100" id="tr_album_extended_search_box_width">
               <div class="wd-group">
-                <label class="wd-label" for="album_extended_search_box_width"><?php _e('Search box width', BWG()->prefix); ?></label>
+                <label class="wd-label" for="album_extended_search_box_width"><?php _e('Search box maximum width', BWG()->prefix); ?></label>
                 <div class="bwg-flex">
                   <input type="number" name="album_extended_search_box_width" id="album_extended_search_box_width" value="<?php echo $row->album_extended_search_box_width; ?>" min="0" /><span>px</span>
                 </div>

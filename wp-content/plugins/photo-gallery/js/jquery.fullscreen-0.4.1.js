@@ -25,9 +25,9 @@ function extend(child, parent, prototype) {
 }
 
 var SUBST = [
-    ['', ''],               // spec
-    ['exit', 'cancel'],     // firefox & old webkits expect cancelFullScreen instead of exitFullscreen
-    ['screen', 'Screen']    // firefox expects FullScreen instead of Fullscreen
+    ['', ''],               /* spec*/
+    ['exit', 'cancel'],     /* firefox & old webkits expect cancelFullScreen instead of exitFullscreen*/
+    ['screen', 'Screen']    /* firefox expects FullScreen instead of Fullscreen*/
 ];
 
 var VENDOR_PREFIXES = ['', 'o', 'ms', 'moz', 'webkit', 'webkitCurrent'];
@@ -83,11 +83,11 @@ FullScreenAbstract.prototype = {
 	_preventDocumentScroll: function() {
 		this.__documentOverflow = $('body')[0].style.overflow;
 		this.__htmlOverflow = $('html')[0].style.overflow;
-		// $('body, html').css('overflow', 'hidden');
+		/* $('body, html').css('overflow', 'hidden');*/
 	},
 	_allowDocumentScroll: function() {
-		// $('body')[0].style.overflow = this.__documentOverflow;
-		// $('html')[0].style.overflow = this.__htmlOverflow;
+		/* $('body')[0].style.overflow = this.__documentOverflow;*/
+		/* $('html')[0].style.overflow = this.__htmlOverflow; */
 	},
 	_fullScreenChange: function() {
 		if (!this.isFullScreen()) {
@@ -115,9 +115,9 @@ FullScreenAbstract.prototype = {
 		var $elem = $(this._fullScreenElement);
 		this.__savedStyles = {};
 		for (var property in this.__options.styles) {
-			// save
+			/* save */
 			this.__savedStyles[property] = this._fullScreenElement.style[property];
-			// apply
+			/* apply */
 			this._fullScreenElement.style[property] = this.__options.styles[property];
 		}
 		if (this.__options.toggleClass) {
@@ -134,19 +134,19 @@ FullScreenAbstract.prototype = {
 		}
 	},
 	open: function(elem, options) {
-		// do nothing if request is for already fullscreened element
+		/* do nothing if request is for already fullscreened element */
 		if (elem === this._fullScreenElement) {
 			return;
 		}
-		// exit active fullscreen before opening another one
+		/* exit active fullscreen before opening another one */
 		if (this.isFullScreen()) {
 			this.exit();
 		}
-		// save fullscreened element
+		/* save fullscreened element */
 		this._fullScreenElement = elem;
-		// apply options, if any
+		/* apply options, if any */
 		this.__options = $.extend(true, {}, this._DEFAULT_OPTIONS, options);
-		// save current element styles and apply new
+		/* save current element styles and apply new */
 		this._saveAndApplyStyles();
 	},
 	exit: null,
@@ -226,7 +226,7 @@ extend(FullScreenFallback, FullScreenAbstract, {
 	},
 	_revertStyles: function() {
 		FullScreenFallback._super._revertStyles.apply(this, arguments);
-		// force redraw (fixes bug in IE7 with content dissapearing)
+		/* force redraw (fixes bug in IE7 with content dissapearing) */
 		this._fullScreenElement.offsetHeight;
 	},
 	open: function(elem) {
@@ -253,12 +253,12 @@ $.fn.fullscreen = function(options) {
 
 	options = $.extend({
 		toggleClass: null,
-		// overflow: 'hidden'
+		/* overflow: 'hidden'*/
 	}, options);
 	options.styles = {
-		// overflow: options.overflow
+		/* overflow: options.overflow */
 	};
-	// delete options.overflow;
+	/* delete options.overflow; */
 
 	if (elem) {
 		$.fullscreen.open(elem, options);

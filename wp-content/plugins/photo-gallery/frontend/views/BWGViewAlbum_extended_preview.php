@@ -1,6 +1,6 @@
 <?php
 class BWGViewAlbum_extended_preview {
-  public function display($params, $from_shortcode = 0, $bwg = 0) {
+  public function display($params = array(), $from_shortcode = 0, $bwg = 0) {
     require_once(BWG()->plugin_dir . '/framework/WDWLibrary.php');
 
     $order_by = $params['order_by'];
@@ -335,8 +335,8 @@ class BWGViewAlbum_extended_preview {
                   }
                   else {
                     if($local_preview_image){
-                      $preview_url = site_url() . '/' . BWG()->upload_dir . $preview_image;
-                      $preview_path = ABSPATH . BWG()->upload_dir . $preview_image;
+                      $preview_url = BWG()->upload_url . $preview_image;
+                      $preview_path = BWG()->upload_dir . $preview_image;
                     }
                     else{
                       $preview_url = $preview_image;
@@ -424,7 +424,7 @@ class BWGViewAlbum_extended_preview {
                   $is_embed_video = preg_match('/VIDEO/', $image_row->filetype) == 1 ? true : false;
                   $is_embed_instagram = preg_match('/EMBED_OEMBED_INSTAGRAM/', $image_row->filetype) == 1 ? true : false;
                   if (!$is_embed) {
-                    $thumb_path_url = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_row->thumb_url, ENT_COMPAT | ENT_QUOTES);
+                    $thumb_path_url = htmlspecialchars_decode(BWG()->upload_dir . $image_row->thumb_url, ENT_COMPAT | ENT_QUOTES);
                     $thumb_path_url = explode('?bwg', $thumb_path_url);
                     list($image_thumb_width, $image_thumb_height) = getimagesize($thumb_path_url[0]);
                   }
@@ -462,7 +462,7 @@ class BWGViewAlbum_extended_preview {
                   $thumb_top = ($params['extended_album_image_thumb_height'] - $image_thumb_height) / 2;
                   if ($album_view_type == 'thumbnail') {
                     ?>
-                  <a <?php echo ($params['thumb_click_action'] == 'open_lightbox' ? (' class="bwg_lightbox_' . $bwg . '"' . (BWG()->options->enable_seo ? ' href="' . ($is_embed ? $image_row->thumb_url : site_url() . '/' . BWG()->upload_dir . $image_row->image_url) . '"' : '') . ' data-image-id="' . $image_row->id . '" data-gallery-id="' . $album_gallery_id . '"') : ($params['thumb_click_action'] == 'redirect_to_url' && $image_row->redirect_url ? 'href="' . $image_row->redirect_url . '" target="' .  ($params['thumb_link_target'] ? '_blank' : '')  . '"' : '')) ?>>
+                  <a <?php echo ($params['thumb_click_action'] == 'open_lightbox' ? (' class="bwg_lightbox_' . $bwg . '"' . (BWG()->options->enable_seo ? ' href="' . ($is_embed ? $image_row->thumb_url : BWG()->upload_url . $image_row->image_url) . '"' : '') . ' data-image-id="' . $image_row->id . '" data-gallery-id="' . $album_gallery_id . '"') : ($params['thumb_click_action'] == 'redirect_to_url' && $image_row->redirect_url ? 'href="' . $image_row->redirect_url . '" target="' .  ($params['thumb_link_target'] ? '_blank' : '')  . '"' : '')) ?>>
                     <span class="bwg_standart_thumb_<?php echo $bwg; ?>">
                       <span class="bwg_standart_thumb_spun1_<?php echo $bwg; ?>">
                         <span class="bwg_standart_thumb_spun2_<?php echo $bwg; ?>">
@@ -494,7 +494,7 @@ class BWGViewAlbum_extended_preview {
                        <?php
                           }                              
                       ?>
-                          <img class="bwg_img_clear bwg_img_custom" style="width:<?php echo $image_thumb_width; ?>px; height:<?php echo $image_thumb_height; ?>px; margin-left: <?php echo $thumb_left; ?>px; margin-top: <?php echo $thumb_top; ?>px;" id="<?php echo $image_row->id; ?>" src="<?php echo ( $is_embed ? "" : site_url() . '/' . BWG()->upload_dir) . $image_row->thumb_url; ?>" alt="<?php echo $image_row->alt; ?>" />
+                          <img class="bwg_img_clear bwg_img_custom" style="width:<?php echo $image_thumb_width; ?>px; height:<?php echo $image_thumb_height; ?>px; margin-left: <?php echo $thumb_left; ?>px; margin-top: <?php echo $thumb_top; ?>px;" id="<?php echo $image_row->id; ?>" src="<?php echo ( $is_embed ? "" : BWG()->upload_url) . $image_row->thumb_url; ?>" alt="<?php echo $image_row->alt; ?>" />
                         </span>
                       </span>
                       <?php
@@ -522,7 +522,7 @@ class BWGViewAlbum_extended_preview {
                     </span>
                   </a>
                     <?php
-                  } 			  
+                  }
                 }
               } /* End of if gallery.*/
               ?>
@@ -544,9 +544,16 @@ class BWGViewAlbum_extended_preview {
             <?php
             if ( $type == 'gallery' ) {
               if ( BWG()->is_pro && $gallery_download && $image_rows ) {
+                $bwg_tags_input_value = WDWLibrary::get('bwg_tag_id_bwg_album_extended_' . $bwg);
                 $query_url = addslashes(add_query_arg(array(
                                                         "action" => "download_gallery",
-                                                        "gallery_id" => $album_gallery_id,
+                                                        "gallery_id" => $params['gallery_id'],
+                                                        "bwg" => $bwg,
+                                                        "type" => 'gallery',
+                                                        "tag_input_name" => 'bwg_tag_id_bwg_album_extended_' . $bwg,
+                                                        "bwg_tag_id_bwg_album_extended_" . $bwg => $bwg_tags_input_value,
+                                                        "tag" => $params['tag'],
+                                                        "bwg_search_".$bwg => WDWLibrary::get('bwg_search_'.$bwg),
                                                       ), admin_url('admin-ajax.php')));
                 ?>
                 <div class="bwg_download_gallery">
@@ -579,19 +586,6 @@ class BWGViewAlbum_extended_preview {
         var filtersearchname = jQuery("#bwg_search_input_<?php echo $bwg; ?>" ).val() ? "&filter_search_name_<?php echo $bwg; ?>=" + jQuery("#bwg_search_input_<?php echo $bwg; ?>" ).val() : '';
         spider_createpopup('<?php echo addslashes(add_query_arg($params_array, admin_url('admin-ajax.php'))); ?>&gallery_id=' + gallery_id + '&image_id=' + image_id + "&filter_tag_<?php echo $bwg; ?>=" +  filterTags + ecommerce + filtersearchname, '<?php echo $bwg; ?>', '<?php echo $params['popup_width']; ?>', '<?php echo $params['popup_height']; ?>', 1, 'testpopup', 5, "<?php echo $theme_row->lightbox_ctrl_btn_pos ;?>");
       }
-      <?php
-      if ( BWG()->is_pro ) {
-        ?>
-      var bwg_hash = window.location.hash.substring(1);
-      if (bwg_hash) {
-        if (bwg_hash.indexOf("bwg") != "-1") {
-          bwg_hash_array = bwg_hash.replace("bwg", "").split("/");
-          bwg_gallery_box_<?php echo $bwg; ?>(bwg_hash_array[0], bwg_hash_array[1]);
-        }
-      }
-        <?php
-      }
-      ?>
       function bwg_document_ready_<?php echo $bwg; ?>() {
         var bwg_touch_flag = false;
         jQuery("#bwg_container2_<?php echo $bwg; ?>").on("click", ".bwg_lightbox_<?php echo $bwg; ?>", function () {
@@ -621,7 +615,39 @@ class BWGViewAlbum_extended_preview {
             return false;
           }
         });
-         <?php 
+
+        jQuery( 'div[id^="bwg_container"]' ).each( function () {
+          var bwg_container = jQuery(this);
+          if (bwg_container.data('right-click-protection')) {
+            /* Disable right click.*/
+            bwg_container.bind("contextmenu", function () {
+              return false;
+            });
+            bwg_container.css('webkitTouchCallout', 'none');
+          }
+          var search_tags = bwg_container.find('.search_tags');
+          if (search_tags.length) {
+            search_tags.SumoSelect({
+              triggerChangeCombined: true,
+              placeholder: bwg_objectsL10n.bwg_select_tag,
+              search: 1,
+              searchText: bwg_objectsL10n.bwg_search,
+              forceCustomRendering: true,
+              noMatch: bwg_objectsL10n.bwg_tag_no_match,
+              captionFormatAllSelected: bwg_objectsL10n.bwg_all_tags_selected,
+              captionFormat: '{0} ' + bwg_objectsL10n.bwg_tags_selected,
+            });
+          }
+          var bwg_order = bwg_container.find('.bwg_order');
+          if (bwg_order.length) {
+            bwg_order.SumoSelect({
+              triggerChangeCombined: true,
+              forceCustomRendering: true,
+            });
+          }
+        });
+
+      <?php
         if ($image_right_click) {
           ?>
           /* Disable right click.*/
@@ -630,6 +656,17 @@ class BWGViewAlbum_extended_preview {
           });
           jQuery('div[id^="bwg_container"]').css('webkitTouchCallout','none');
           <?php
+        }
+        if ( BWG()->is_pro ) {
+        ?>
+        var bwg_hash = window.location.hash.substring(1);
+        if (bwg_hash) {
+          if (bwg_hash.indexOf("bwg") != "-1") {
+            bwg_hash_array = bwg_hash.replace("bwg", "").split("/");
+            bwg_gallery_box_<?php echo $bwg; ?>(bwg_hash_array[0], bwg_hash_array[1]);
+          }
+        }
+        <?php
         }
         ?>
       }

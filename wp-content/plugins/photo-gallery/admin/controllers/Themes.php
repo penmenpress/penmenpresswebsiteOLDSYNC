@@ -61,8 +61,8 @@ class ThemesController_bwg {
   public function execute() {
     $task = WDWLibrary::get('task');
     $id = (int) WDWLibrary::get('current_id', 0);
-    if ( method_exists($this, $task) ) {
-      if ( $task != 'add' && $task != 'edit' && $task != 'display' ) {
+    if ( $task != 'display' && method_exists($this, $task) ) {
+      if ( $task != 'add' && $task != 'edit' ) {
         check_admin_referer(BWG()->nonce, BWG()->nonce);
       }
       $action = WDWLibrary::get('bulk_action', -1);
@@ -224,9 +224,9 @@ class ThemesController_bwg {
    * @param bool $bulk
    */
 public function edit( $id = 0, $bulk = FALSE ) {
-		$reset = WDWLibrary::get('reset', FALSE);
-		// Get Theme data.
-		$row = $this->model->get_row_data($id, $reset);
+	$reset = WDWLibrary::get('reset', FALSE);
+	// Get Theme data.
+	$row = $this->model->get_row_data($id, $reset);
     if (!isset($row->container_margin)) {
       $row->container_margin = 1;
     }
@@ -321,7 +321,7 @@ public function edit( $id = 0, $bulk = FALSE ) {
 			'square' => __('Square', BWG()->prefix),
 		);
 
-    $active_tab = WDWLibrary::get('active_tab','Thumbnail');
+		$active_tab = WDWLibrary::get('active_tab','Thumbnail');
 
 		$params = array(
 			'id' => $id,

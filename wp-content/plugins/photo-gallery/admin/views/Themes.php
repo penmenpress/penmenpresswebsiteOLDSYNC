@@ -13,7 +13,7 @@ class ThemesView_bwg extends AdminView_bwg {
    *
    * @param $params
    */
-  public function display( $params ) {
+  public function display( $params = array() ) {
     if ( !BWG()->is_pro && get_option("wd_bwg_theme_version") ) {
       WDWLibrary::topbar();
       ?>
@@ -43,7 +43,7 @@ class ThemesView_bwg extends AdminView_bwg {
    *
    * @param $params
    */
-  public function body( $params ) {
+  public function body( $params = array() ) {
     $order = $params['order'];
     $orderby = $params['orderby'];
     $actions = $params['actions'];
@@ -146,7 +146,7 @@ class ThemesView_bwg extends AdminView_bwg {
     * @param  array  $params.
     * @return string html.
 	*/
-	public function edit( $params ) {
+	public function edit( $params = array() ) {
 		ob_start();
 		if ( $params['reset'] ) {
 			echo WDWLibrary::message_id(17);
@@ -168,7 +168,7 @@ class ThemesView_bwg extends AdminView_bwg {
 	*
 	* @param $params
 	*/
-	public function edit_body( $params ) {
+	public function edit_body( $params = array() ) {
 		extract($params);
     ?>
 		<div class="bwg-page-header">
@@ -381,6 +381,12 @@ class ThemesView_bwg extends AdminView_bwg {
 										  <td class="spider_label"><label for="thumb_title_font_color"><?php echo __('Title font color:', BWG()->prefix); ?> </label></td>
 										  <td>
 											<input type="text" name="thumb_title_font_color" id="thumb_title_font_color" value="<?php echo $row->thumb_title_font_color; ?>" class="color" />
+										  </td>
+										</tr>
+										<tr>
+										  <td class="spider_label"><label for="thumb_title_font_color_hover"><?php echo __('Title font color (Show on hover):', BWG()->prefix); ?> </label></td>
+										  <td>
+											<input type="text" name="thumb_title_font_color_hover" id="thumb_title_font_color_hover" value="<?php echo $row->thumb_title_font_color_hover; ?>" class="color" />
 										  </td>
 										</tr>
 										<tr>

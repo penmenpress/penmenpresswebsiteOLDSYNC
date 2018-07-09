@@ -25,8 +25,8 @@ class UninstallModel_bwg {
       }
 
       if (BWG()->upload_dir) {
-        if (is_dir(ABSPATH . BWG()->upload_dir)) {
-          delfiles(ABSPATH . BWG()->upload_dir);
+        if (is_dir(BWG()->upload_dir)) {
+          delfiles(BWG()->upload_dir);
         }
       }
     }

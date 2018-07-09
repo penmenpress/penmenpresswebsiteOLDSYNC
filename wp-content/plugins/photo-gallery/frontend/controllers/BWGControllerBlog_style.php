@@ -22,12 +22,9 @@ class BWGControllerBlog_style {
     $this->display($params, $from_shortcode, $bwg);
   }
 
-  public function display($params, $from_shortcode = 0, $bwg = 0) {
-    require_once BWG()->plugin_dir . "/frontend/models/BWGModelBlog_style.php";
-    $model = new BWGModelBlog_style();
-
+  public function display($params = array(), $from_shortcode = 0, $bwg = 0) {
     require_once BWG()->plugin_dir . "/frontend/views/BWGViewBlog_style.php";
-    $view = new BWGViewBlog_style($model);
+    $view = new BWGViewBlog_style();
 
     $view->display($params, $from_shortcode, $bwg);
   }

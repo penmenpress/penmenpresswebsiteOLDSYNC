@@ -63,7 +63,7 @@ class BWGUpdate {
       // Add search box option.
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_option ADD `show_search_box` tinyint(1) NOT NULL DEFAULT 0");
       // Add search box width option.
-      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_option ADD `search_box_width` int(4) NOT NULL DEFAULT 180");
+      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_option ADD `search_box_width` int(4) NOT NULL DEFAULT 330");
       // Add info enable/disable option.
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_option ADD `popup_enable_info` tinyint(1) NOT NULL DEFAULT 1");
     }

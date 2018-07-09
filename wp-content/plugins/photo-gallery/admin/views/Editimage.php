@@ -13,8 +13,9 @@ class EditimageView_bwg {
 
     $instagram_post_width  = (int) WDWLibrary::get('instagram_post_width', $image_width);
     $instagram_post_height = (int) WDWLibrary::get('instagram_post_height', $image_height);
-	  $FeedbackSocialProofHeight = 132;
-	  if ( $instagram_post_width ) {
+    $modified_date = WDWLibrary::get('modified_date', '');
+    $FeedbackSocialProofHeight = 132;
+    if ( $instagram_post_width ) {
       if ( $image_height / ($instagram_post_height + $FeedbackSocialProofHeight) < $image_width / $instagram_post_width ) {
         $instagram_post_width = ($image_height - $FeedbackSocialProofHeight) * $instagram_post_width / $instagram_post_height + 16;
         $instagram_post_height = $image_height;
@@ -29,12 +30,12 @@ class EditimageView_bwg {
     $facebook_post = WDWLibrary::get('FACEBOOK_POST', '0');
     $fb_post_url =  WDWLibrary::get('fb_post_url', '');
     $app_id = BWG()->options->facebook_app_id;
-    ?>
+	?>
 	<div id="loading_div"></div>
     <div id="wd-content" style="width:100%; height:100%;">
       <div id="bwg_container_for_media_1" style="width:100%; height:100%; margin:0 auto; text-align:center; vertical-align:middle;">
         <?php if ( !$facebook_post ) { ?>
-			<img id="image_display" src="<?php echo site_url() . '/' . BWG()->upload_dir . $image_url . '?date=' . date('Y-m-y H:i:s'); ?>" style="max-width:100%; max-height:100%" />
+			<img id="image_display" src="<?php echo BWG()->upload_url . WDWLibrary::image_url_version($image_url, $modified_date); ?>" style="max-width:100%; max-height:100%" />
         <?php }
 		else { ?>
           <div id="fb-root"></div>
@@ -86,8 +87,8 @@ class EditimageView_bwg {
           }
         }
       }
-	  jQuery(window).load(function() {
-		jQuery('#loading_div', window.parent.document).hide();
+      jQuery(window).load(function() {
+      jQuery('#loading_div', window.parent.document).hide();
 	  });
     </script>
     <?php
@@ -100,6 +101,7 @@ class EditimageView_bwg {
     $popup_height = ((int) (isset($_GET['height']) ? esc_html($_GET['height']) : '500')) - 50;
     $image_height = $popup_height - 40;
     $image_id = (isset($_GET['image_id']) ? esc_html($_GET['image_id']) : '0');
+    $modified_date = WDWLibrary::get('modified_date', '');
     ?>
     <div style="display:table; width:100%; height:<?php echo $popup_height; ?>px;">
       <div style="display:table-cell; text-align:center; vertical-align:middle;">
@@ -107,8 +109,8 @@ class EditimageView_bwg {
       </div>
     </div>
     <script>
-      var image_url = "<?php echo site_url() . '/' . BWG()->upload_dir; ?>" + window.parent.document.getElementById("thumb_url_<?php echo $image_id; ?>").value;
-      window.document.getElementById("thumb_view").src = image_url + "?date=<?php echo date('Y-m-y H:i:s'); ?>";
+      var image_url = "<?php echo BWG()->upload_url; ?>" + window.parent.document.getElementById("thumb_url_<?php echo $image_id; ?>").value;
+      window.document.getElementById("thumb_view").src = image_url + "<?php echo $modified_date ? '?bwg=' . $modified_date : ''; ?>";
     </script>
     <?php
     die();
@@ -127,12 +129,13 @@ class EditimageView_bwg {
     $y = (isset($_POST['y']) ? (int) $_POST['y'] : 0);
     $w = (isset($_POST['w']) ? (int) $_POST['w'] : 0);
     $h = (isset($_POST['h']) ? (int) $_POST['h'] : 0);
+    $modified_date = time();
     if ( isset($_GET['image_url']) ) {
       $image_data = new stdClass();
       $image_data->image_url = (isset($_GET['image_url']) ? esc_html(stripcslashes($_GET['image_url'])) : '');
       $image_data->thumb_url = (isset($_GET['thumb_url']) ? esc_html(stripcslashes($_GET['thumb_url'])) : '');
-      $filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
-      $thumb_filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
+      $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
+      $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
       $form_action = add_query_arg(array(
                                      'action' => 'editimage_' . BWG()->prefix,
                                      'type' => 'crop',
@@ -146,8 +149,8 @@ class EditimageView_bwg {
     }
     else {
       $image_data->image_url = stripslashes($image_data->image_url);
-      $filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
-      $thumb_filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
+      $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
+      $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
       $form_action = add_query_arg(array(
                                      'action' => 'editimage_' . BWG()->prefix,
                                      'type' => 'crop',
@@ -157,9 +160,15 @@ class EditimageView_bwg {
                                      'TB_iframe' => '1',
                                    ), admin_url('admin-ajax.php'));
     }
+    $image_data->image_url = WDWLibrary::image_url_version($image_data->image_url, $modified_date);
     @ini_set('memory_limit', '-1');
     list($width_orig, $height_orig, $type_orig) = getimagesize($filename);
     if ( $edit_type == 'crop' ) {
+	  if( ! $aspect_ratio ) {
+		 $scale = min( $w / $width_orig, $h / $height_orig );
+		 $thumb_width = $w * $scale;
+        $thumb_height = $h * $scale;
+	  }
       if ( $type_orig == 2 ) {
         $img_r = imagecreatefromjpeg($filename);
         $dst_r = ImageCreateTrueColor($thumb_width, $thumb_height);
@@ -200,8 +209,9 @@ class EditimageView_bwg {
         </div>
         <?php
       }
-	  $where = ' `id` = ' . $image_id;
-	  WDWLibrary::update_image_modified_date( $where );
+      $where = ' `id` = ' . $image_id;
+      $updated_image = WDWLibrary::update_image_modified_date( $where );
+      $image_data->image_url = WDWLibrary::image_url_version($image_data->image_url, $updated_image['modified_date']);
     }
     @ini_restore('memory_limit');
     wp_print_scripts('jquery');
@@ -287,12 +297,12 @@ class EditimageView_bwg {
       <strong><?php echo __('Select the area for the thumbnail.', BWG()->prefix); ?></strong></div><?php
     }
     ?>
-    <div class="thumb_preview_td" style="padding: 5px;">
-      <input type="checkbox" id="chb" onclick="spider_crop_ratio()" checked="checked">
-      <label for="chb"><?php _e('Keep aspect ratio', BWG()->prefix); ?></label>
-    </div>
     <form method="post" id="crop_image" action="<?php echo $form_action; ?>">
       <?php wp_nonce_field('editimage_' . BWG()->prefix, 'bwg_nonce'); ?>
+	  <div class="thumb_preview_td" style="padding: 5px;">
+		<input type="checkbox" id="chb" name="aspect_ratio" value="1" checked="checked" onclick="spider_crop_ratio()">
+		<label for="chb"><?php _e('Keep aspect ratio', BWG()->prefix); ?></label>
+	  </div>
       <div style="height:<?php echo $popup_height - 60; ?>px; width:<?php echo $popup_width; ?>px; margin: 5px auto;">
         <div id="crop_button">
           <img title="Crop" class="spider_crop" onclick="spider_crop('crop', 'crop_image')" src="<?php echo BWG()->plugin_url . '/images/crop.png'; ?>" />
@@ -300,11 +310,11 @@ class EditimageView_bwg {
         <table style="height: inherit; top: 80px; position: absolute; width: inherit; margin: 0 auto;">
           <tr>
             <td class="thumb_preview_td" style="vertical-align: middle; width: <?php echo ($popup_width - $thumb_width) - 40; ?>px;">
-              <img id="image_view" src="<?php echo site_url() . '/' . BWG()->upload_dir . $image_data->image_url; ?>?date=<?php echo date('Y-m-y H:i:s'); ?>" style="max-width:<?php echo $image_width; ?>px; max-height:<?php echo $image_height; ?>px;" />
+              <img id="image_view" src="<?php echo BWG()->upload_url . $image_data->image_url; ?>" style="max-width:<?php echo $image_width; ?>px; max-height:<?php echo $image_height; ?>px;" />
             </td>
             <td class="thumb_preview_td" style="width:<?php echo $thumb_width + 20; ?>px;">
               <div class="thumb_preview">
-                <img id="thumb_image_preview" src="<?php echo site_url() . '/' . BWG()->upload_dir . $image_data->image_url; ?>?date=<?php echo date('Y-m-y H:i:s'); ?>">
+                <img id="thumb_image_preview" src="<?php echo BWG()->upload_url . $image_data->image_url; ?>">
               </div>
             </td>
           </tr>
@@ -334,11 +344,10 @@ class EditimageView_bwg {
         document.getElementById("edit_type").value = type;
         document.getElementById(form_id).submit();
       }
-
       var image_src = window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src;
-      window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src = image_src + "?date=<?php echo date('Y-m-y H:i:s'); ?>";
-      // jQuery('#image_view').Jcrop();
-      jQuery(window).load(function () {
+		  window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src = image_src + "<?php echo isset($updated_image['modified_date']) && $updated_image['modified_date'] ? '?bwg=' . $updated_image['modified_date'] : ''; ?>";
+
+	    jQuery(window).load(function () {
         spider_crop_fix("<?php echo $thumb_width * 300 / $thumb_height; ?>", "<?php echo 300; ?>");
       });
 
@@ -384,11 +393,18 @@ class EditimageView_bwg {
         jQuery('#crop_button').hide();
         jQuery('#croped_message').show();
         var thumb_width = parseInt('<?php echo $thumb_width * 300 / $thumb_height; ?>');
-        var thumb_height = parseInt('<?php echo 300; ?>');
-        jQuery('#thumb_image_preview').css("margin-left", -c.x * (thumb_width / c.w) + "px");
-        jQuery('#thumb_image_preview').css("margin-top", -c.y * (thumb_height / c.h) + "px");
-        jQuery('#thumb_image_preview').css("width", ((thumb_width / c.w) * jQuery('#image_view').width()) + "px");
-        jQuery('#thumb_image_preview').css("height", ((thumb_height / c.h) * jQuery('#image_view').height()) + "px");
+		var thumb_height = 300;
+		var width = (thumb_width / c.w);
+		var height = (thumb_height / c.h);
+		var left = -c.x * (thumb_width / c.w);
+		var top  = -c.y * (thumb_height / c.h);
+		//TODO broken style on preview.
+		if ( !jQuery('#chb').is(':checked') ) {
+		}
+        jQuery('#thumb_image_preview').css("margin-left", left + "px");
+        jQuery('#thumb_image_preview').css("margin-top", top + "px");
+        jQuery('#thumb_image_preview').css("width",  width * jQuery('#image_view').width() + "px");
+        jQuery('#thumb_image_preview').css("height", height * jQuery('#image_view').height() + "px");
       }
     </script>
     <?php
@@ -403,48 +419,11 @@ class EditimageView_bwg {
       $image_data->image_url = (isset($_GET['image_url']) ? esc_html(stripcslashes($_GET['image_url'])) : '');
       $image_data->thumb_url = (isset($_GET['thumb_url']) ? esc_html(stripcslashes($_GET['thumb_url'])) : '');
     }
-    $filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
-    $thumb_filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
-    copy(str_replace('/thumb/', '/.original/', $thumb_filename), $filename);
-    list($width_orig, $height_orig, $type_orig) = getimagesize($filename);
-    $percent = $width_orig / $thumb_width;
-    $thumb_height = $height_orig / $percent;
-    @ini_set('memory_limit', '-1');
-    if ( $type_orig == 2 ) {
-      $img_r = imagecreatefromjpeg($filename);
-      $dst_r = ImageCreateTrueColor($thumb_width, $thumb_height);
-      imagecopyresampled($dst_r, $img_r, 0, 0, 0, 0, $thumb_width, $thumb_height, $width_orig, $height_orig);
-      imagejpeg($dst_r, $thumb_filename, BWG()->options->jpeg_quality);
-      imagedestroy($img_r);
-      imagedestroy($dst_r);
-    }
-    elseif ( $type_orig == 3 ) {
-      $img_r = imagecreatefrompng($filename);
-      $dst_r = ImageCreateTrueColor($thumb_width, $thumb_height);
-      imageColorAllocateAlpha($dst_r, 0, 0, 0, 127);
-      imagealphablending($dst_r, FALSE);
-      imagesavealpha($dst_r, TRUE);
-      imagecopyresampled($dst_r, $img_r, 0, 0, 0, 0, $thumb_width, $thumb_height, $width_orig, $height_orig);
-      imagealphablending($dst_r, FALSE);
-      imagesavealpha($dst_r, TRUE);
-      imagepng($dst_r, $thumb_filename, BWG()->options->png_quality);
-      imagedestroy($img_r);
-      imagedestroy($dst_r);
-    }
-    elseif ( $type_orig == 1 ) {
-      $img_r = imagecreatefromgif($filename);
-      $dst_r = ImageCreateTrueColor($thumb_width, $thumb_height);
-      imageColorAllocateAlpha($dst_r, 0, 0, 0, 127);
-      imagealphablending($dst_r, FALSE);
-      imagesavealpha($dst_r, TRUE);
-      imagecopyresampled($dst_r, $img_r, 0, 0, 0, 0, $thumb_width, $thumb_height, $width_orig, $height_orig);
-      imagealphablending($dst_r, FALSE);
-      imagesavealpha($dst_r, TRUE);
-      imagegif($dst_r, $thumb_filename);
-      imagedestroy($img_r);
-      imagedestroy($dst_r);
-    }
-    @ini_restore('memory_limit');
+    $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
+    $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
+    $original_filename = str_replace('/thumb/', '/.original/', $thumb_filename);
+    WDWLibrary::resize_image($original_filename, $filename, BWG()->options->upload_img_width, BWG()->options->upload_img_height);
+    WDWLibrary::resize_image($original_filename, $thumb_filename, BWG()->options->upload_thumb_width, BWG()->options->upload_thumb_height);
   }
 
   public function rotate($image_data = array()) {
@@ -456,12 +435,13 @@ class EditimageView_bwg {
     $edit_type = (isset($_POST['edit_type']) ? esc_html($_POST['edit_type']) : '');
     $brightness_val = (isset($_POST['brightness_val']) ? esc_html($_POST['brightness_val']) : 0);
     $contrast_val = (isset($_POST['contrast_val']) ? esc_html($_POST['contrast_val']) : 0);
+    $image_data = new stdClass();
+    $modified_date = time();
     if ( isset($_GET['image_url']) ) {
-      $image_data = new stdClass();
       $image_data->image_url = (isset($_GET['image_url']) ? esc_html(stripcslashes($_GET['image_url'])) : '');
       $image_data->thumb_url = (isset($_GET['thumb_url']) ? esc_html(stripcslashes($_GET['thumb_url'])) : '');
-      $filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
-      $thumb_filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
+      $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
+      $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
       $form_action = add_query_arg(array(
                                      'action' => 'editimage_' . BWG()->prefix,
                                      'type' => 'rotate',
@@ -475,8 +455,8 @@ class EditimageView_bwg {
     }
     else {
       $image_data->image_url = stripcslashes($image_data->image_url);
-      $filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
-      $thumb_filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
+      $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
+      $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
       $form_action = add_query_arg(array(
                                      'action' => 'editimage_' . BWG()->prefix,
                                      'type' => 'rotate',
@@ -486,6 +466,7 @@ class EditimageView_bwg {
                                      'TB_iframe' => '1',
                                    ), admin_url('admin-ajax.php'));
     }
+    $image_data->image_url = WDWLibrary::image_url_version($image_data->image_url, $modified_date);
     @ini_set('memory_limit', '-1');
     list($width_rotate, $height_rotate, $type_rotate) = getimagesize($filename);
     if ( $edit_type == '270' || $edit_type == '90' ) {
@@ -574,7 +555,6 @@ class EditimageView_bwg {
         if ( imagecopyresampled($imgdest, $imgsrc, 0, 0, $src_x, $src_y, $width, $height, $src_width, $src_height) ) {
           return $imgdest;
         }
-
         return $imgsrc;
       }
 
@@ -775,10 +755,12 @@ class EditimageView_bwg {
       $this->recover_image($id, $thumb_width, $thumb_height);
     }
     @ini_restore('memory_limit');
-	if ( !empty($edit_type) ) {
-		$where = ' `id` = ' . $image_id;
-		WDWLibrary::update_image_modified_date( $where );
-	}
+    if ( !empty($edit_type) ) {
+      $where = ' `id` = ' . $image_id;
+      $updated_image = WDWLibrary::update_image_modified_date( $where );
+      $image_data->image_url = WDWLibrary::image_url_version($image_data->image_url, $updated_image['modified_date']);
+      $image_data->thumb_url = WDWLibrary::image_url_version($image_data->thumb_url, $updated_image['modified_date']);
+    }
     wp_print_scripts('jquery');
     wp_print_scripts('jquery-ui-widget');
     wp_print_scripts('jquery-ui-slider');
@@ -829,7 +811,7 @@ class EditimageView_bwg {
         <div class="img_cont" style="height:<?php echo $popup_height - 40; ?>px;">
           <div class="img_main_cont">
             <div class="last_cont">
-              <img class="bwg_preview_image" src="<?php echo site_url() . '/' . BWG()->upload_dir . $image_data->image_url; ?>?date=<?php echo date('Y-m-y H:i:s'); ?>" style="max-width: <?php echo $image_width; ?>px; max-height: <?php echo $image_height; ?>px;" />
+              <img class="bwg_preview_image" src="<?php echo BWG()->upload_url . $image_data->image_url; ?>" style="max-width: <?php echo $image_width; ?>px; max-height: <?php echo $image_height; ?>px;" />
             </div>
           </div>
           <div class="cont_bright_cont">
@@ -838,8 +820,7 @@ class EditimageView_bwg {
                 <div class="bwg_opt_cont">
                   <img title="Options" src="<?php echo BWG()->plugin_url . '/images/effects/option.png'; ?>" />
                 </div>
-                <div id="brightness_contrast"><!--
-               -->
+                <div id="brightness_contrast">
                   <div class="brightness_part">
                     <div class="brightness_part_1">
                       <div class="brightness_butt">
@@ -857,8 +838,7 @@ class EditimageView_bwg {
                         </div>
                       </div>
                     </div>
-                  </div><!--
-               -->
+                  </div>
                   <div class="contrast_part">
                     <div class="contrast_part_1">
                       <div class="contrast_part_slider">
@@ -876,8 +856,8 @@ class EditimageView_bwg {
                         </div>
                       </div>
                     </div>
-                  </div><!--
-             --></div>
+                  </div>
+				        </div>
               </div>
             </div>
           </div>
@@ -930,15 +910,15 @@ class EditimageView_bwg {
         document.getElementById("edit_type").value = type;
         document.getElementById(form_id).submit();
       }
-
       if (window.parent.document.getElementById("image_thumb_pr_<?php echo $image_id; ?>") != null) {
         var image_src = window.parent.document.getElementById("image_thumb_pr_<?php echo $image_id; ?>").src;
-        window.parent.document.getElementById("image_thumb_pr_<?php echo $image_id; ?>").src = image_src + "?date=<?php echo date('Y-m-y H:i:s'); ?>";
+        window.parent.document.getElementById("image_thumb_pr_<?php echo $image_id; ?>").src = image_src + "<?php echo isset($updated_image['modified_date']) && $updated_image['modified_date'] ? '?bwg=' . $updated_image['modified_date'] : ''; ?>";
       }
       else {
         var image_src = window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src;
-        window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src = image_src + "?date=<?php echo date('Y-m-y H:i:s'); ?>";
+        window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src = image_src + "<?php echo isset($updated_image['modified_date']) && $updated_image['modified_date'] ? '?bwg=' . $updated_image['modified_date'] : ''; ?>";
       }
+
       jQuery(document).ready(function () {
         jQuery(".bwg_opt_cont").click(function () {
           if (jQuery('#brightness_contrast').height() == 0) {

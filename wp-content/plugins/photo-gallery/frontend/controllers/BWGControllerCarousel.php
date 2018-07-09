@@ -22,12 +22,9 @@ class BWGControllerCarousel {
     $this->display($params, $from_shortcode, $bwg);
   }
 
-  public function display($params, $from_shortcode = 0, $bwg = 0) {
-    require_once BWG()->plugin_dir . "/frontend/models/BWGModelCarousel.php";
-    $model = new BWGModelCarousel();
-
+  public function display($params = array(), $from_shortcode = 0, $bwg = 0) {
     require_once BWG()->plugin_dir . "/frontend/views/BWGViewCarousel.php";
-    $view = new BWGViewCarousel($model);
+    $view = new BWGViewCarousel();
     $view->display($params, $from_shortcode, $bwg);
   }
   ////////////////////////////////////////////////////////////////////////////////////////

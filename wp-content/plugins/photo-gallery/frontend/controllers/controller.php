@@ -4,7 +4,7 @@ class BWGControllerSite {
   private $model;
   private $view;
 
-  public function __construct($view) {
+  public function __construct($view = 'Thumbnails') {
     require_once BWG()->plugin_dir . "/frontend/models/model.php";
     $this->model = new BWGModelSite();
 
@@ -15,11 +15,10 @@ class BWGControllerSite {
   }
 
   public function execute($params = array(), $from_shortcode = 0, $bwg = 0) {
-    $theme_id = $params['theme_id'];
+	$theme_id = $params['theme_id'];
     $theme_row = $this->model->get_theme_row_data($theme_id);
     if ( !$theme_row ) {
       echo WDWLibrary::message(__('There is no theme selected or the theme was deleted.', BWG()->prefix), 'wd_error');
-
       return;
     }
     else {
@@ -70,10 +69,7 @@ class BWGControllerSite {
         $params['sort_by'] = 'RAND()';
       }
       else {
-        if ( $sort_by == 'default' ) {
-          $params['sort_by'] = $params['sort_by'];
-        }
-        else {
+        if ( in_array($sort_by, array('default', 'filename', 'size')) ) {
           $params['sort_by'] = $sort_by;
         }
       }
@@ -91,7 +87,6 @@ class BWGControllerSite {
       else {
         echo WDWLibrary::message(__('There are no images in this gallery.', BWG()->prefix), 'wd_error');
       }
-
       return;
     }
     $params['image_rows'] = $image_rows;
@@ -163,10 +158,10 @@ class BWGControllerSite {
       $params_array['watermark_height'] = $params['watermark_height'];
     }
     $params['params_array'] = $params_array;
-	  $this->display($params, $from_shortcode, $bwg);
+  	$this->display($params, $from_shortcode, $bwg);
   }
 
-  public function display($params, $from_shortcode = 0, $bwg = 0) {
+  public function display($params = array(), $from_shortcode = 0, $bwg = 0) {
     $this->view->display($params, $from_shortcode, $bwg);
   }
 }

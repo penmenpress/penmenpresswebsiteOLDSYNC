@@ -82,7 +82,7 @@
 
         function showPopup( shortcode, shortcode_id ) {
           var shortcodeCbName = generateUniqueCbName( pluginId );
-          // Store shortcode attribute into a global variable to get it from an iframe.
+          /* Store shortcode attribute into a global variable to get it from an iframe. */
           window[shortcodeCbName + '_shortcode'] = shortcode ? shortcode : '';
           window[shortcodeCbName] = function ( shortcode, shortcode_id ) {
             delete window[shortcodeCbName];

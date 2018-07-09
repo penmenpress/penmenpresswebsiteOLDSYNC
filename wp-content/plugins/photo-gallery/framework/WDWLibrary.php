@@ -201,6 +201,11 @@ class WDWLibrary {
           $type = 'updated';
           break;
         }
+		case 26: {
+          $message = __('Watermark could not be set. The image URL is incorrect.', BWG()->prefix);
+          $type = 'error';
+          break;
+        }
         default: {
           $message = '';
           break;
@@ -254,6 +259,23 @@ class WDWLibrary {
     </th>
     <?php
     return ob_get_clean();
+  }
+
+  /**
+   * Possible choices to order images in admin page.
+   *
+   * @return array
+   */
+  public static function admin_images_ordering_choices() {
+    return array(
+      'order_asc' => 'Default sorting',
+      'filename_asc' => 'File name (Asc)',
+      'filename_desc' => 'File name (Desc)',
+      'alt_asc' => 'Alt/Title (Asc)',
+      'alt_desc' => 'Alt/Title (Desc)',
+      'description_asc' => 'Description (Asc)',
+      'description_desc' => 'Description (Desc)',
+    );
   }
 
   /**
@@ -764,7 +786,7 @@ class WDWLibrary {
 
   public static function get_default_theme_id() {
     global $wpdb;
-    $id = $wpdb->get_var('SELECT id FROM ' . $wpdb->prefix . 'bwg_theme WHERE default_theme=1');
+    $id = $wpdb->get_var('SELECT id FROM ' . $wpdb->prefix . 'bwg_theme WHERE default_theme = 1');
     return $id;
   }
 
@@ -970,11 +992,23 @@ class WDWLibrary {
     $gallery_id = (int) $gallery_id;
     $tag = (int) $tag;
     global $wpdb;
-    $bwg_search = ((isset($_POST['bwg_search_' . $bwg]) && esc_html($_POST['bwg_search_' . $bwg]) != '') ? esc_html($_POST['bwg_search_' . $bwg]) : '');
+    $bwg_search = self::get('bwg_search_' . $bwg);
+
     $join = '';
     $where = '';
-    if ( $bwg_search ) {
-      $where = 'AND (image.alt LIKE "%%' . $bwg_search . '%%" OR image.description LIKE "%%' . $bwg_search . '%%")';
+	if ( $bwg_search ) {
+		$bwg_search_keys = explode(' ', trim($bwg_search));
+		$alt_search = '(';
+		$description_search = '(';
+		foreach( $bwg_search_keys as $search_key) {
+			$alt_search .= '`image`.`alt` LIKE "%' . $search_key . '%" AND ';
+			$description_search .= '`image`.`description` LIKE "%' . $search_key . '%" AND ';
+		}
+		$alt_search = rtrim($alt_search, 'AND ');
+		$alt_search .= ')';
+		$description_search = rtrim($description_search, 'AND ');
+		$description_search .= ')';
+	  $where = 'AND (' . $alt_search . ' OR ' . $description_search . ')';
     }
     if ( $sort_by == 'size' || $sort_by == 'resolution' ) {
       $sort_by = ' CAST(image.' . $sort_by . ' AS SIGNED) ';
@@ -1008,7 +1042,7 @@ class WDWLibrary {
     }
     $where .= ($gallery_id ? ' AND image.gallery_id = "' . $gallery_id . '" ' : '') . ($tag ? ' AND tag.tag_id = "' . $tag . '" ' : '');
     $join = $tag ? 'LEFT JOIN ' . $wpdb->prefix . 'bwg_image_tag as tag ON image.id=tag.image_id' : '';
-    if ( isset($_REQUEST[$tag_input_name]) && $_REQUEST[$tag_input_name] ) {
+    if ( self::get($tag_input_name) ) {
       $join .= ' LEFT JOIN (SELECT GROUP_CONCAT(tag_id SEPARATOR ",") AS tags_combined, image_id FROM  ' . $wpdb->prefix . 'bwg_image_tag' . ($gallery_id ? ' WHERE gallery_id="' . $gallery_id . '"' : '') . ' GROUP BY image_id) AS tags ON image.id=tags.image_id';
       $where .= ' AND CONCAT(",", tags.tags_combined, ",") REGEXP ",(' . implode("|", $_REQUEST[$tag_input_name]) . ')," ';
     }
@@ -1025,6 +1059,8 @@ class WDWLibrary {
     $images = array();
     if ( !empty($rows) ) {
       foreach ( $rows as $row ) {
+        $row->pure_image_url = $row->image_url;
+        $row->pure_thumb_url = $row->thumb_url;
         if ( strpos($row->filetype, 'EMBED') === FALSE ) {
           $row->image_url = self::image_url_version($row->image_url, $row->modified_date);
           $row->thumb_url = self::image_url_version($row->thumb_url, $row->modified_date);
@@ -1094,40 +1130,59 @@ class WDWLibrary {
     return array( 'rows' => $row, 'page_nav' => $page_nav );
   }
 
-  public static function bwg_image_set_watermark( $gallery_id, $image_id = 0 ) {
+  /**
+   * Image set watermark.
+   *
+   * @param $gallery_id
+   * @param int $image_id
+   * @param string $limit
+   * @return int
+   */
+  public static function bwg_image_set_watermark( $gallery_id, $image_id = 0, $limit = '' ) {
     global $wpdb;
+    $message_id = 21;
     $options = new WD_BWG_Options();
 
-    if ( $options->built_in_watermark_type == 'none' ) {
-      return 6;
-    }
+    if ( $options->built_in_watermark_type != 'none' ) {
+      $limitstart = '';
+      if ( $limit != '' ) {
+        $limitstart = ' LIMIT 50 OFFSET ' . $limit;
+      }
 
-    $where = ( ($gallery_id) ? ' `gallery_id`=' . $gallery_id . ($image_id ? ' AND `id`=' . $image_id : '' ) : 1 );
-    $images = $wpdb->get_results('SELECT * FROM `' . $wpdb->prefix . 'bwg_image` WHERE '. $where);
-    if ( !empty($images) ) {
+      $where = (($gallery_id) ? ' `gallery_id`=' . $gallery_id . ($image_id ? ' AND `id`=' . $image_id : '') : 1);
+      $search = WDWLibrary::get( 's', '' );
+      if ( $search ) {
+        $where .= ' AND `filename` LIKE "%' . $search . '%"';
+      }
+      $images = $wpdb->get_results( 'SELECT * FROM `' . $wpdb->prefix . 'bwg_image` WHERE ' . $where . $limitstart );
+
+      if ( !empty( $images ) ) {
         switch ( $options->built_in_watermark_type ) {
           case 'text':
             foreach ( $images as $image ) {
-              if ( preg_match('/EMBED/', $image->filetype) == 1 ) {
+              if ( preg_match( '/EMBED/', $image->filetype ) == 1 ) {
                 continue;
               }
-              self::set_text_watermark(ABSPATH . BWG()->upload_dir . $image->image_url, ABSPATH . BWG()->upload_dir . $image->image_url, html_entity_decode($options->built_in_watermark_text), $options->built_in_watermark_font, $options->built_in_watermark_font_size, '#' . $options->built_in_watermark_color, $options->built_in_watermark_opacity, $options->built_in_watermark_position);
+              self::set_text_watermark( BWG()->upload_dir . $image->image_url, BWG()->upload_dir . $image->image_url, html_entity_decode( $options->built_in_watermark_text ), $options->built_in_watermark_font, $options->built_in_watermark_font_size, '#' . $options->built_in_watermark_color, $options->built_in_watermark_opacity, $options->built_in_watermark_position );
             }
             break;
           case 'image':
-            $watermark_path = str_replace(site_url() . '/', ABSPATH, $options->built_in_watermark_url);
+            $watermark_path = str_replace( BWG()->upload_url, BWG()->upload_dir, $options->built_in_watermark_url );
             foreach ( $images as $image ) {
-              if ( preg_match('/EMBED/', $image->filetype) == 1 ) {
+              if ( preg_match( '/EMBED/', $image->filetype ) == 1 ) {
                 continue;
               }
-              self::set_image_watermark(ABSPATH . BWG()->upload_dir . $image->image_url, ABSPATH . BWG()->upload_dir . $image->image_url, $watermark_path, $options->built_in_watermark_size, $options->built_in_watermark_size, $options->built_in_watermark_position);
+              self::set_image_watermark( BWG()->upload_dir . $image->image_url, BWG()->upload_dir . $image->image_url, $watermark_path, $options->built_in_watermark_size, $options->built_in_watermark_size, $options->built_in_watermark_position );
             }
             break;
         }
-		  self::update_image_modified_date( $where );
-
-      return 21;
+        self::update_image_modified_date( $where );
+      }
     }
+    else {
+      $message_id = 6;
+    }
+    return $message_id;
   }
 
   public static function set_text_watermark($original_filename, $dest_filename, $watermark_text, $watermark_font, $watermark_font_size, $watermark_color, $watermark_transparency, $watermark_position) {
@@ -1278,12 +1333,21 @@ class WDWLibrary {
 	}
   }
 
-  public static function bwg_image_recover_all($gallery_id) {
+  public static function bwg_image_recover_all($gallery_id, $limit = '') {
     $thumb_width = BWG()->options->upload_thumb_width;
     $width = BWG()->options->upload_img_width;
     global $wpdb;
     $where = ($gallery_id) ? ' `gallery_id` = ' . $gallery_id : 1;
-    $images = $wpdb->get_results( 'SELECT * FROM `' . $wpdb->prefix . 'bwg_image` WHERE ' . $where );
+    $search = WDWLibrary::get('s', '');
+    if ( $search ) {
+      $where .= ' AND `filename` LIKE "%' . $search . '%"';
+    }
+    $limitstart = '';
+    if ( $limit != '' ) {
+      $limitstart = ' LIMIT 50 OFFSET ' . $limit;
+    }
+
+    $images = $wpdb->get_results( 'SELECT * FROM `' . $wpdb->prefix . 'bwg_image` WHERE ' . $where. $limitstart );
     if ( !empty( $images ) ) {
       foreach ( $images as $image ) {
         if ( preg_match( '/EMBED/', $image->filetype ) == 1 ) {
@@ -1299,8 +1363,8 @@ class WDWLibrary {
     if ( preg_match('/EMBED/', $image->filetype) == 1 ) {
       return;
     }
-    $filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image->image_url, ENT_COMPAT | ENT_QUOTES);
-    $thumb_filename = htmlspecialchars_decode(ABSPATH . BWG()->upload_dir . $image->thumb_url, ENT_COMPAT | ENT_QUOTES);
+    $filename = htmlspecialchars_decode(BWG()->upload_dir . $image->image_url, ENT_COMPAT | ENT_QUOTES);
+    $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image->thumb_url, ENT_COMPAT | ENT_QUOTES);
     $original_filename = str_replace('/thumb/', '/.original/', $thumb_filename);
     if (file_exists($original_filename) || file_exists($filename)) {
       if (!file_exists($original_filename)) {
@@ -1315,12 +1379,16 @@ class WDWLibrary {
         self::recover_image_size($width_orig, $height_orig, $width, $original_image, $filename);
         self::recover_image_size($width_orig, $height_orig, $thumb_width, $original_image, $thumb_filename);
       }
+      else {
+        copy($original_filename, $filename);
+        copy($original_filename, $thumb_filename);
+      }
     }
     if ($page == 'gallery_page') {
       ?>
       <script language="javascript">
         var image_src = window.parent.document.getElementById("image_thumb_<?php echo $image->id; ?>").src;
-        document.getElementById("image_thumb_<?php echo $image->id; ?>").src = image_src + "?date=<?php echo date('Y-m-y H:i:s'); ?>";
+        document.getElementById("image_thumb_<?php echo $image->id; ?>").src = image_src;
       </script>
       <?php
     }
@@ -1332,6 +1400,36 @@ class WDWLibrary {
 
     $original_image->resize($width, $height, false);
     $original_image->save($filename);
+  }
+
+  public static function resize_image($source, $destination, $max_width, $max_height) {
+    $image = wp_get_image_editor( $source );
+    if ( ! is_wp_error( $image ) ) {
+      $image_size = $image->get_size();
+      $img_width = $image_size[ 'width' ];
+      $img_height = $image_size[ 'height' ];
+      $scale = min( $max_width / $img_width, $max_height / $img_height );
+      if ( ($scale >= 1) || (($max_width == NULL) && ($max_height == NULL)) ) {
+        if ( $source !== $destination ) {
+          return copy( $source, $destination );
+        }
+        return true;
+      }
+      else {
+        $new_width = $img_width * $scale;
+        $new_height = $img_height * $scale;
+        $image->set_quality( BWG()->options->image_quality );
+        $image->resize( $new_width, $new_height, false );
+        $saved = $image->save( $destination );
+        return !is_wp_error($saved);
+      }
+    }
+    else {
+      if ( $source !== $destination ) {
+        return copy( $source, $destination );
+      }
+      return true;
+    }
   }
 
   public static function bwg_hex2rgb($hex) {
@@ -1983,45 +2081,48 @@ class WDWLibrary {
 		}
 	}
 
-	/**
-	* Check external link.
-	*
-	* @param  string $link
-	* @return bool
-	*/
-	public static function check_external_link( $link ) {
-		if ( is_string($link) && preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}'.'((:[0-9]{1,5})?\\/.*)?$/i', $link) ) {
-			return TRUE;
-		}
-		return FALSE;
-	}
+    /**
+     * Check external link.
+     *
+     * @param  string $link
+     *
+     * @return bool
+     */
+    public static function check_external_link( $link ) {
+      if ( is_string($link) && preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}' . '((:[0-9]{1,5})?\\/.*)?$/i', $link) ) {
+        return TRUE;
+      }
 
-	/**
-	* Check external link.
-	*
-	* @param  string $table
-	* @param  string $where
-	* @return bool
-	*/
-	public static function update_image_modified_date( $where = '' ) {
-	  if ( strpos($where, 'pr_' ) !== FALSE ) {
-	    // Newly added image.
-	    return;
+      return FALSE;
     }
-		global $wpdb;
-		$update = $wpdb->query( $wpdb->prepare( 'UPDATE `' . $wpdb->prefix  . 'bwg_image` SET `modified_date` = "%d" WHERE ' . $where, time() ) );
-		$items = $wpdb->get_results( 'SELECT `gallery_id`, `thumb_url` FROM `' . $wpdb->prefix . 'bwg_image` WHERE ' . $where );
-        if ( !empty($items) ) {
-			$thumbs_str = '';
-			foreach ( $items as $item ) {
-				$thumbs_str = "'" . $item->thumb_url . "',";
-			}
-			$thumbs_str = rtrim($thumbs_str,',');
-			$wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_gallery` SET `modified_date` = "' . time() . '" WHERE `preview_image` IN (' . $thumbs_str . ') OR `random_preview_image` IN (' . $thumbs_str . ')');
-			$wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_album` SET `modified_date` = "' . time() . '" WHERE `preview_image` IN (' . $thumbs_str . ') OR `random_preview_image` IN (' . $thumbs_str . ')');
-		}
-		return $update;
-	}
+
+    /**
+    * Check external link.
+    *
+    * @param  string $where
+    * @return array
+    */
+    public static function update_image_modified_date( $where = '' ) {
+      if ( strpos($where, 'pr_' ) !== FALSE ) {
+        // Newly added image.
+        return;
+      }
+      global $wpdb;
+      $time = time();
+      $update = $wpdb->query( $wpdb->prepare( 'UPDATE `' . $wpdb->prefix  . 'bwg_image` SET `modified_date` = "%d" WHERE ' . $where, $time ) );
+      $items = $wpdb->get_results( 'SELECT `gallery_id`, `thumb_url` FROM `' . $wpdb->prefix . 'bwg_image` WHERE ' . $where );
+      if ( !empty($items) ) {
+        $thumbs_str = '';
+        foreach ( $items as $item ) {
+          $thumbs_str = "'" . $item->thumb_url . "',";
+        }
+        $thumbs_str = rtrim($thumbs_str,',');
+        $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_gallery` SET `modified_date` = "' . time() . '" WHERE `preview_image` IN (' . $thumbs_str . ') OR `random_preview_image` IN (' . $thumbs_str . ')');
+        $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_album` SET `modified_date` = "' . time() . '" WHERE `preview_image` IN (' . $thumbs_str . ') OR `random_preview_image` IN (' . $thumbs_str . ')');
+      }
+
+      return array('status' => $update, 'modified_date' => $time );
+    }
 
     /**
      * Get description and title from gallery or album tables.
@@ -2040,21 +2141,29 @@ class WDWLibrary {
         return '';
     }
 
-  /**
-   * Adds date modified to image url to avoid caching.
-   *
-   * @param $url
-   * @param $date_modified
-   * @return string
-   */
+    /**
+     * Adds date modified to image url to avoid caching.
+     *
+     * @param $url
+     * @param $date_modified
+     *
+     * @return string
+     */
     public static function image_url_version($url, $date_modified) {
-      if ($date_modified && !WDWLibrary::check_external_link($url)) {
+      if ( !empty($url) && $date_modified && !WDWLibrary::check_external_link($url)) {
+        $key = '?bwg=';
+        if ( strpos($url, $key) > 0 ) {
+          $url_tmp = explode($key, $url);
+          $url = $url_tmp[0];
+        }
+
         return $url . '?bwg=' . $date_modified;
       }
+
       return $url;
     }
 
-    // TODO: To be removed when all views are ready.
+  // TODO: To be removed when all views are ready.
   public static function get_theme_row_data($id) {
     global $wpdb;
     if ($id) {
@@ -2139,7 +2248,7 @@ class WDWLibrary {
         </span>
         <span class="bwg_search_input_container">
           <input id="bwg_search_input_<?php echo $current_view; ?>" class="bwg_search_input" type="text" onkeypress="return bwg_check_search_input_enter(this, event)" name="bwg_search_<?php echo $current_view; ?>" value="<?php echo $bwg_search; ?>" placeholder="<?php echo $placeholder; ?>" />
-          <input id="bwg_images_count_<?php echo $current_view; ?>" class="bwg_search_input" type="hidden" name="bwg_images_count_<?php echo $current_view; ?>" value="<?php echo $images_count; ?>" >
+          <input id="bwg_images_count_<?php echo $current_view; ?>" class="bwg_search_input" type="hidden" name="bwg_images_count_<?php echo $current_view; ?>" value="333<?php echo $images_count; ?>" >
         </span>
       </div>
     </div>
@@ -2300,8 +2409,8 @@ class WDWLibrary {
 		<script type="text/javascript">
 		  jQuery(window).on("scroll", function() {
         if (jQuery(document).scrollTop() + jQuery(window).height() > (jQuery('#<?php echo $form_id; ?>').offset().top + jQuery('#<?php echo $form_id; ?>').height())) {
-          spider_page_<?php echo $current_view; ?>('', <?php echo $page_number; ?>, 1, true);
           jQuery(window).off("scroll");
+          spider_page_<?php echo $current_view; ?>('', <?php echo $page_number; ?>, 1, true);
           return false;
         }
       });
@@ -2375,6 +2484,100 @@ class WDWLibrary {
     if (session_id() == '' || (function_exists('session_status') && (session_status() == PHP_SESSION_NONE))) {
       @session_start();
     }
+  }
+
+  /**
+   * Images bulk actions.
+   *
+   * @return array
+   */
+  public static function image_actions() {
+    $image_actions = array(
+      'image_resize' => array(
+        'title' => __('Resize', BWG()->prefix),
+        'bulk_action' => __('resized', BWG()->prefix),
+        'disabled' => (BWG()->wp_editor_exists ? '' : 'disabled="disabled"'),
+      ),
+      'image_recreate_thumbnail' => array(
+        'title' => __('Recreate thumbnail', BWG()->prefix),
+        'bulk_action' => __('recreated', BWG()->prefix),
+        'disabled' => (BWG()->wp_editor_exists ? '' : 'disabled="disabled"'),
+      ),
+      'image_rotate_left' => array(
+        'title' => __('Rotate left', BWG()->prefix),
+        'bulk_action' => __('rotated left', BWG()->prefix),
+        'disabled' => (BWG()->wp_editor_exists ? '' : 'disabled="disabled"'),
+      ),
+      'image_rotate_right' => array(
+        'title' => __('Rotate right', BWG()->prefix),
+        'bulk_action' => __('rotated right', BWG()->prefix),
+        'disabled' => (BWG()->wp_editor_exists ? '' : 'disabled="disabled"'),
+      ),
+      'image_set_watermark' => array(
+        'title' => __('Set watermark', BWG()->prefix),
+        'bulk_action' => __('edited', BWG()->prefix),
+        'disabled' => (BWG()->wp_editor_exists ? '' : 'disabled="disabled"'),
+      ),
+      'image_reset' => array(
+        'title' => __('Reset', BWG()->prefix),
+        'bulk_action' => __('reset', BWG()->prefix),
+        'disabled' => '',
+      ),
+      'image_edit' => array(
+        'title' => __('Edit info', BWG()->prefix),
+        'bulk_action' => __('edited', BWG()->prefix),
+        'disabled' => '',
+      ),
+      'image_add_tag' => array(
+        'title' => __('Add tag', BWG()->prefix),
+        'bulk_action' => __('edited', BWG()->prefix),
+        'disabled' => '',
+      ),
+      'image_publish' => array(
+        'title' => __('Publish', BWG()->prefix),
+        'bulk_action' => __('published', BWG()->prefix),
+        'disabled' => '',
+      ),
+      'image_unpublish' => array(
+        'title' => __('Unpublish', BWG()->prefix),
+        'bulk_action' => __('unpublished', BWG()->prefix),
+        'disabled' => '',
+      ),
+      'image_delete' => array(
+        'title' => __('Delete', BWG()->prefix),
+        'bulk_action' => __('deleted', BWG()->prefix),
+        'disabled' => '',
+      ),
+    );
+    if ( function_exists('BWGEC') ) {
+      $image_actions['set_image_pricelist'] = array(
+        'title' => __('Add pricelist', BWG()->prefix),
+        'bulk_action' => __('edited', BWG()->prefix),
+        'disabled' => '',
+      );
+      $image_actions['remove_pricelist_all'] = array(
+        'title' => __('Remove pricelist', BWG()->prefix),
+        'bulk_action' => __('edited', BWG()->prefix),
+        'disabled' => '',
+      );
+    }
+
+    return $image_actions;
+  }
+
+  public static function allowed_upload_types( $type = '' ) {
+    if ( $type ) {
+      switch ( $type ) {
+        case 'jpg':
+        case 'jpeg':
+        case 'gif':
+        case 'png':
+          return TRUE;
+          break;
+      }
+    }
+
+    return FALSE;
   }
 
   /**

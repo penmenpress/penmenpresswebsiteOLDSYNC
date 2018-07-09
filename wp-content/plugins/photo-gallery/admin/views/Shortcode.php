@@ -1,7 +1,7 @@
 <?php
 
 class ShortcodeView_bwg extends AdminView_bwg {
-  public function display( $params ) {
+  public function display( $params = array() ) {
     $from_menu = $params['from_menu'];
     if ( !$from_menu ) {
       BWG()->register_admin_scripts();
@@ -40,7 +40,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
     }
   }
 
-  public function body( $params ) {
+  public function body( $params = array() ) {
     $gallery_rows = $params['gallery_rows'];
     $album_rows = $params['album_rows'];
     $theme_rows = $params['theme_rows'];
@@ -491,10 +491,10 @@ class ShortcodeView_bwg extends AdminView_bwg {
       ?>
     </div>
     <div id="loading_div" <?php echo ( $from_menu ) ? 'class="bwg_show"' : ''; ?>></div>
-	<?php
+    <?php
   }
 
-  public function generate_script( $params ) {
+  public function generate_script( $params = array() ) {
     $from_menu = $params['from_menu'];
     $shortcodes = $params['shortcodes'];
     $shortcode_max_id = $params['shortcode_max_id'];
@@ -517,7 +517,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
       var bwg_insert = 1;
       <?php
       if ($params['gutenberg_callback']) {
-        if ($params['gutenberg_id'] == 0) {
+      if ($params['gutenberg_id'] == 0) {
       ?>
       var content = '';
       <?php
@@ -530,7 +530,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
       }
       elseif (!$from_menu) { ?>
       var content;
-      if (top.tinyMCE.activeEditor) {
+      if (top.tinyMCE.activeEditor && top.tinyMCE.activeEditor.selection) {
         content = top.tinyMCE.activeEditor.selection.getContent();
       }
       else {
@@ -1700,7 +1700,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
         }
         elseif (!$from_menu) { ?>
         var selected_text;
-        if (top.tinyMCE.activeEditor) {
+        if (top.tinyMCE.activeEditor && top.tinyMCE.activeEditor.selection) {
           selected_text = top.tinyMCE.activeEditor.selection.getContent();
         }
         else {
@@ -1745,6 +1745,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
       }
 
       function bwg_insert_shortcode(content) {
+        var page_builder_activated = bwg_before_shortcode_add_builder_editor();
+
         window.parent.window.jQuery(window.parent.document).trigger("onOpenShortcode");
         var gallery_type = jQuery("input[name=gallery_type]:checked").val();
         var theme = jQuery("#theme").val();
@@ -1839,7 +1841,6 @@ class ShortcodeView_bwg extends AdminView_bwg {
             title = ' gal_title="' + jQuery.trim(jQuery('#gallery option:selected').text().replace("'", "").replace('"', '')) + '"';
             tagtext += ' gallery_id="' + jQuery("#gallery").val() + '"';
             tagtext += ' tag="' + jQuery("#tag").val() + '"';
-
             tagtext += ' slideshow_effect="' + jQuery("#slideshow_type").val() + '"';
             tagtext += ' slideshow_interval="' + jQuery("#slideshow_interval").val() + '"';
             tagtext += ' slideshow_width="' + jQuery("#slideshow_width").val() + '"';
@@ -2075,9 +2076,12 @@ class ShortcodeView_bwg extends AdminView_bwg {
 
         <?php if (!$from_menu && !$params['gutenberg_callback']) { ?>
         if (top.tinyMCE.activeEditor) {
-          short_code = short_code.replace(/\[Best_Wordpress_Gallery([^\]]*)\]/g, function (d, c) {
-            return "<img src='<?php echo BWG()->plugin_url; ?>/images/icons/gallery-icon.png' class='bwg_shortcode mceItem' title='Best_Wordpress_Gallery" + short_id + "' />";
-          });
+          // If there is no builder, then shortcode replace to image.
+          if( !page_builder_activated ) {
+            short_code = short_code.replace(/\[Best_Wordpress_Gallery([^\]]*)\]/g, function (d, c) {
+              return "<img src='<?php echo BWG()->plugin_url; ?>/images/icons/gallery-icon.png' class='bwg_shortcode mceItem' title='Best_Wordpress_Gallery" + short_id + "' />";
+            });
+          }
         }
         var post_data = {};
         var url = '<?php echo add_query_arg(array( 'action' => 'shortcode_bwg' ), admin_url('admin-ajax.php')); ?>';
@@ -2144,7 +2148,12 @@ class ShortcodeView_bwg extends AdminView_bwg {
         <?php } ?>
         return;
       }
-
+      function bwg_before_shortcode_add_builder_editor() {
+        if ( top.jQuery('body').hasClass('elementor-editor-active') || top.jQuery('body').hasClass('fl-builder') ) {
+          return true;
+        }
+        return false;
+      }
       jQuery(document).ready(function () {
         bwg_shortcode_hide_show_params();
         bwg_change_tab();

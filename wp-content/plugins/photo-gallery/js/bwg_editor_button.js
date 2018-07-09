@@ -106,5 +106,7 @@ function bwg_shortcode_ready() {
     }
   });
   tinymce.PluginManager.add('bwg_mce', tinymce.plugins.bwg_mce);
-  bwg_set_shortcode_popup_dimensions();
+  if ( typeof bwg_set_shortcode_popup_dimensions == "function" ) {
+    bwg_set_shortcode_popup_dimensions();
+  }
 }

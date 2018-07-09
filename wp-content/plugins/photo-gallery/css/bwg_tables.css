@@ -1,5 +1,6 @@
 .ajax-msg,
-.unsaved-msg {
+.unsaved-msg,
+.sorting-msg {
   display: inline-block;
   width: 100%;
 }
@@ -473,12 +474,6 @@
   text-align: right;
   vertical-align: middle;
   width: 30px;
-}
-
-.updated,
-.error,
-.notice {
-  margin: 5px 0 2px !important;
 }
 
 .buttons_div {
@@ -1426,6 +1421,7 @@ textarea.bwg_popup_input {
   height: 100%;
   position: relative;
   background-size: cover;
+  background-position: center;
 }
 .bwg_tabs .tab_link {
   display: block !important;
@@ -1584,7 +1580,7 @@ textarea.bwg_popup_input {
 }
 
 .col_drag {
-  width: 30px !important;
+  width: 90px !important;
   text-align: center !important;
   cursor: pointer;
   vertical-align: top;
@@ -1595,6 +1591,7 @@ textarea.bwg_popup_input {
 }
 
 .wd-order {
+  max-width: 45px;
   width: 100%;
   margin: 0 !important;
   text-align: right;
@@ -1664,6 +1661,11 @@ textarea.bwg_popup_input {
   margin-bottom: 10px;
 }
 
+.search-box select {
+  margin: 0 10px;
+  float: left;
+}
+
 .bwg_albumsgalleries .tablenav .tablenav-pages a,
 .bwg_albumsgalleries .tablenav-pages-navspan,
 .bwg_tags .tablenav .tablenav-pages a,
@@ -1684,6 +1686,11 @@ textarea.bwg_popup_input {
     width: calc(100% - 0%);
     height: 40px;
     margin-bottom: 0px;
+  }
+
+  .search-box select {
+    margin: 5px 0;
+    width: 100%;
   }
 
   .bwg_albumsgalleries p.search-box input,
@@ -2037,6 +2044,19 @@ li.tabs {
   .bwg_change_gallery_type {
     display: flex;
   }
+}
+#bwg_options_form .gallery_type_radio,
+#bwg_options_form .album_type_radio {
+  display: none !important;
+}
+#bwg_options_form .gallery_type_label,
+#bwg_options_form .album_type_label {
+  text-align: center;
+}
+#bwg_options_form .gallery_type.gallery_type_active .gallery_type_div,
+#bwg_options_form .gallery_type.gallery_type_active .album_type_div {
+  background: #0073aa;
+  color: #ffffff;
 }
 /* Shortcode styles in options */
 

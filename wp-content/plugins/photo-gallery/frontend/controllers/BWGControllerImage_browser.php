@@ -8,12 +8,9 @@ class BWGControllerImage_browser {
     $this->display($params, $from_shortcode, $bwg);
   }
 
-  public function display($params, $from_shortcode = 0, $bwg = 0) {
-    require_once BWG()->plugin_dir . "/frontend/models/BWGModelImage_browser.php";
-    $model = new BWGModelImage_browser();
-
+  public function display($params = array(), $from_shortcode = 0, $bwg = 0) {
     require_once BWG()->plugin_dir . "/frontend/views/BWGViewImage_browser.php";
-    $view = new BWGViewImage_browser($model);
+    $view = new BWGViewImage_browser();
 
     $view->display($params, $from_shortcode, $bwg);
   }

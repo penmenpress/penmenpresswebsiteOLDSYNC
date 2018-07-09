@@ -9,7 +9,7 @@ class GalleriesView_bwg extends AdminView_bwg {
    *
    * @param $params
    */
-  public function display( $params ) {
+  public function display( $params = array() ) {
     ob_start();
     echo $this->body($params);
     $form_attr = array(
@@ -26,7 +26,7 @@ class GalleriesView_bwg extends AdminView_bwg {
    *
    * @param $params
    */
-  public function body( $params ) {
+  public function body( $params = array() ) {
     echo $this->title(array(
                         'title' => $params['page_title'],
                         'title_class' => 'wd-header',
@@ -74,10 +74,10 @@ class GalleriesView_bwg extends AdminView_bwg {
           $preview_url =  WDWLibrary::get_custom_post_permalink( array('slug' => $row->slug, 'post_type' => 'gallery' ));
           $preview_image = BWG()->plugin_url . '/images/no-image.png';
           if ( !empty($row->preview_image) ) {
-            $preview_image = site_url() . '/' . BWG()->upload_dir . $row->preview_image;
+            $preview_image = BWG()->upload_url . $row->preview_image;
           }
           if ( !empty($row->random_preview_image)) {
-            $preview_image = site_url() . '/' . BWG()->upload_dir . $row->random_preview_image;
+            $preview_image = BWG()->upload_url . $row->random_preview_image;
             if ( WDWLibrary::check_external_link($row->random_preview_image) ) {
               $preview_image = $row->random_preview_image;
             }
@@ -134,7 +134,7 @@ class GalleriesView_bwg extends AdminView_bwg {
    *
    * @return string html
    */
-  public function edit( $params ) {
+  public function edit( $params = array() ) {
     wp_enqueue_style('thickbox');
     wp_enqueue_script('thickbox');
     wp_enqueue_media();
@@ -162,10 +162,10 @@ class GalleriesView_bwg extends AdminView_bwg {
    *
    * @param $params
    */
-  public function edit_body( $params ) {
+  public function edit_body( $params = array() ) {
     $row = $params['row'];
     $current_id = $params['id'];
-    $enable_wp_editor = isset(BWG()->options->enable_wp_editor) ? BWG()->options->enable_wp_editor : 1;
+    $enable_wp_editor = isset(BWG()->options->enable_wp_editor) ? BWG()->options->enable_wp_editor : 0;
     ?>
     <div class="gal-msg wd-hide">
       <?php
@@ -187,11 +187,7 @@ class GalleriesView_bwg extends AdminView_bwg {
         <div class="bwg-page-actions">
           <?php
           if ( $params['shortcode_id'] ) {
-            ?>
-          <button class="button button-secondary button-large" onclick="how_to_use(); return false;">
-            <?php _e('How to use', BWG()->prefix); ?>
-          </button>
-            <?php
+            require BWG()->plugin_dir . '/framework/howto/howto.php';
           }
           ?>
           <button class="button button-primary button-large" onclick="if (spider_check_required('name', 'Title') || bwg_check_instagram_gallery_input('<?php echo BWG()->options->instagram_access_token ?>') ) {return false;};
@@ -236,7 +232,7 @@ class GalleriesView_bwg extends AdminView_bwg {
                   <input type="hidden" id="preview_image" name="preview_image" value="<?php echo $row->preview_image; ?>" style="display: inline-block;" />
                   <img id="img_preview_image"
                        style="<?php echo empty($row->preview_image) ? 'display:none;' : '' ?>"
-                       src="<?php echo $row->preview_image ? (site_url() . '/' . BWG()->upload_dir . $row->preview_image) : ''; ?>" />
+                       src="<?php echo $row->preview_image ? (BWG()->upload_url . $row->preview_image) : ''; ?>" />
                   <span id="delete_preview_image" class="spider_delete_img dashicons dashicons-no-alt" onclick="spider_remove_url('button_preview_image', 'preview_image', 'delete_preview_image', 'img_preview_image')" style="<?php echo empty($row->preview_image) ? 'display:none;' : '' ?>"></span>
                   <p class="description"><?php _e('Add a preview image, which will be displayed as the cover image of the gallery when it is published in a gallery group.', BWG()->prefix); ?></p>
                 </div>
@@ -365,47 +361,13 @@ class GalleriesView_bwg extends AdminView_bwg {
           </div>
         </div>
       </div>
-      <div class="wd-table-row wd-table-col-100 wd-table-col-left wd-howtouse-cont">
-        <?php if ( $params['shortcode_id'] ) { ?>
-          <div class="wd-box-section">
-            <div class="postbox closed how_to_postbox">
-              <button class="button-link handlediv" type="button" aria-expanded="true">
-                <span class="screen-reader-text"><?php _e('Toggle panel:', BWG()->prefix); ?></span>
-                <span class="toggle-indicator" aria-hidden="false"></span>
-              </button>
-              <h2 class="hndle">
-                <span><?php _e('How to use', BWG()->prefix); ?></span>
-              </h2>
-              <div class="inside">
-                <div class="howto_container">
-                  <div class="howto_content">
-                    <h2><?php _e('Page or Post editor', BWG()->prefix); ?></h2>
-                    <h4><?php _e('Insert it into an existing post with the button.', BWG()->prefix); ?></h4>
-                    <img src="<?php echo BWG()->plugin_url . '/images/wp-publish.png'; ?>" alt="<?php _e('Post editor', BWG()->prefix); ?>" />
-                  </div>
-                  <div class="howto_content">
-                    <h2><?php _e('PHP code', BWG()->prefix); ?></h2>
-                    <h4><?php _e('Copy and paste the PHP code into your template file.', BWG()->prefix); ?></h4>
-                    <input type="text" class="bwg_howto_phpcode" value="&#60;?php photo_gallery(<?php echo $params['shortcode_id']; ?>); ?&#62;" onclick="spider_select_value(this)" size="17" readonly="readonly" />
-                  </div>
-                  <div class="howto_content">
-                    <h2><?php _e('Widget', BWG()->prefix); ?></h2>
-                    <h4><?php _e('Insert as Widget.', BWG()->prefix); ?></h4>
-                    <img src="<?php echo BWG()->plugin_url . '/images/wp-widget.png'; ?>" alt="<?php _e('Widget', BWG()->prefix); ?>" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        <?php } ?>
-      </div>
     </div>
     <?php echo $this->image_display($params); ?>
     <div id="loading_div" class="bwg_show"></div>
     <?php
   }
 
-  public function image_display( $params ) {
+  public function image_display( $params = array() ) {
     $ids_string = '';
     ?>
     <div class="buttons_div_left">
@@ -580,7 +542,12 @@ class GalleriesView_bwg extends AdminView_bwg {
       echo WDWLibrary::message_id(0, __('You have unsaved changes.', BWG()->prefix), 'notice notice-warning');
       ?>
     </div>
-    <?php echo $this->search(); ?>
+    <div class="sorting-msg wd-hide">
+      <?php
+      echo WDWLibrary::message_id(0, __('This sorting does not affect the published galleries. You can change the ordering on frontend by editing gallery shortcode or Photo Gallery Options.', BWG()->prefix), 'notice notice-warning');
+      ?>
+    </div>
+    <?php echo $this->search(array('sorting' => true)); ?>
     <div class="tablenav top">
       <?php
       echo $this->bulk_actions($params['actions'], TRUE, 'image_bulk_action');
@@ -590,7 +557,19 @@ class GalleriesView_bwg extends AdminView_bwg {
     <table id="images_table" class="images_table adminlist table table-striped wp-list-table widefat fixed pages media">
       <thead>
         <td class="col_drag" data-page-number="<?php echo $params['page_num']; ?>">
-          <span class="wd-order-thead" title="<?php _e('Show order column', BWG()->prefix); ?>" onclick="wd_showhide_weights(true);return false;"></span>
+          <?php if ($params['orderby'] == 'order') { ?>
+          <select title="<?php _e('Show order column', BWG()->prefix); ?>" onchange="wd_showhide_weights(true);return false;">
+            <option><?php _e('Drag&Drop', BWG()->prefix); ?></option>
+            <option><?php _e('Numerate', BWG()->prefix); ?></option>
+          </select>
+          <?php
+          }
+          else {
+            ?>
+            <?php _e('Ordering', BWG()->prefix); ?>
+            <?php
+          }
+          ?>
         </td>
         <td id="cb" class="column-cb check-column">
           <label class="screen-reader-text" for="cb-select-all-1"><?php _e('Filename', BWG()->prefix); ?></label>
@@ -620,46 +599,43 @@ class GalleriesView_bwg extends AdminView_bwg {
           $is_embed_instagram_post = preg_match('/INSTAGRAM_POST/', $row->filetype) == 1 ? TRUE : FALSE;
           $instagram_post_width = 'temp_instagram_post_width';
           $instagram_post_height = 'temp_instagram_post_height';
-		  $link = add_query_arg(array(
-			'action' => 'editimage_' . BWG()->prefix,
-			'type' => 'display',
-			'image_url' => urlencode($row->image_url),
-			'thumb_url' => urlencode($row->thumb_url),
-			'image_id' => $row->id,
-			'width' => '800',
-			'height' => '500',
-			BWG()->nonce => wp_create_nonce('editimage_' . BWG()->prefix),
-			), admin_url('admin-ajax.php'));
-
-		  $image_link = add_query_arg(array(
-			'type' => 'display',
-			'FACEBOOK_POST' => ($temp ? 'tempis_facebook_post' : $is_facebook_post),
-			'fb_post_url' => ($temp ? 'tempfb_post_url' : $fb_post_url),
-			), $link);
-
-		  if ( $is_embed_instagram_post ) {
-			$image_resolution = explode(' x ', $row->resolution);
-			if ( is_array($image_resolution) ) {
-			  $instagram_post_width = $image_resolution[0];
-			  $instagram_post_height = explode(' ', $image_resolution[1]);
-			  $instagram_post_height = $instagram_post_height[0];
-
-			}
-		  }
-		  $image_link = add_query_arg(array(
+          $link = add_query_arg(array(
+            'action' => 'editimage_' . BWG()->prefix,
+            'type' => 'display',
+            'modified_date' => $row->modified_date,
+            'image_url' => urlencode($row->pure_image_url),
+            'thumb_url' => urlencode($row->pure_thumb_url),
+            'image_id' => $row->id,
+            'width' => '800',
+            'height' => '500',
+            BWG()->nonce => wp_create_nonce('editimage_' . BWG()->prefix),
+          ), admin_url('admin-ajax.php'));
+          $image_link = add_query_arg(array(
+            'type' => 'display',
+            'FACEBOOK_POST' => ($temp ? 'tempis_facebook_post' : $is_facebook_post),
+            'fb_post_url' => ($temp ? 'tempfb_post_url' : $fb_post_url),
+          ), $link);
+          if ( $is_embed_instagram_post ) {
+            $image_resolution = explode(' x ', $row->resolution);
+            if ( is_array($image_resolution) ) {
+              $instagram_post_width = $image_resolution[0];
+              $instagram_post_height = explode(' ', $image_resolution[1]);
+              $instagram_post_height = $instagram_post_height[0];
+            }
+          }
+          $image_link = add_query_arg(array(
 						'instagram_post_width' => $instagram_post_width,
 						'instagram_post_height' => $instagram_post_height,
 					), $image_link);
-
           $image_link = add_query_arg(array('TB_iframe' => '1'), $image_link);
           $edit_link = add_query_arg(array('type' => 'rotate', 'TB_iframe' => '1'), $link);
           $crop_link = add_query_arg(array('type' => 'crop', 'TB_iframe' => '1'), $link);
-          $image_url = (!$is_embed ? site_url() . '/' . BWG()->upload_dir : "") . $row->thumb_url . ($is_embed ? '' : '?date=' . date('Y-m-y H:i:s'));
+          $image_url = (!$is_embed ? BWG()->upload_url : "") . $row->thumb_url;
           $add_tag_url = add_query_arg(array('image_id' => $row->id, 'TB_iframe' => '1'),  $params['add_tags_action']);
           ?>
           <tr id="tr_<?php echo $row->id; ?>" class="<?php echo $alternate; ?><?php echo $temp ? ' wd-template wd-hide' : ''; ?>">
-            <th class="col_drag connectedSortable handles ui-sortable-handle">
-              <div title="<?php _e('Drag to re-order', BWG()->prefix); ?>" class="wd-drag handle dashicons dashicons-move"></div>
+            <th class="<?php if ($params['orderby'] == 'order') echo 'connectedSortable'; ?> col_drag handles ui-sortable-handle">
+              <div title="<?php _e('Drag to re-order', BWG()->prefix); ?>" class="wd-drag handle dashicons dashicons-move <?php if ($params['orderby'] != 'order') echo 'wd-hide'; ?>"></div>
               <input class="wd-hide wd-order" id="order_input_<?php echo $row->id; ?>" name="order_input_<?php echo $row->id; ?>" type="text" size="1" value="<?php echo $row->order; ?>" />
             </th>
             <th class="check-column">
@@ -686,8 +662,8 @@ class GalleriesView_bwg extends AdminView_bwg {
                 <?php } ?>
               </strong>
               <div class="row-actions">
-                <span class="wd-image-actions <?php echo ( !$is_embed && ( $params['gallery_type'] == '' ) ? '' : ' wd-hide' ); ?>"><a class="<?php echo (BWG()->is_demo ? '' : 'thickbox thickbox-preview'); ?>" href="<?php echo (BWG()->is_demo ? 'javascript:alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\');' : $edit_link); ?>"><?php _e('Edit', BWG()->prefix); ?></a> |</span>
-                <span class="wd-image-actions <?php echo ( !$is_embed && ( $params['gallery_type'] == '' ) ? '' : ' wd-hide' ); ?>"><a class="<?php echo (BWG()->is_demo ? '' : 'thickbox thickbox-preview'); ?>" href="<?php echo (BWG()->is_demo ? 'javascript:alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\');' : $crop_link); ?>"><?php _e('Crop', BWG()->prefix); ?></a> |</span>
+                <span class="wd-image-actions <?php echo ( !$is_embed && ( $params['gallery_type'] == '' ) ? '' : ' wd-hide' ); ?>"><a class="<?php echo (BWG()->is_demo || !BWG()->wp_editor_exists ? '' : 'thickbox thickbox-preview'); ?>" href="<?php echo (BWG()->is_demo ? 'javascript:alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\');' : (BWG()->wp_editor_exists ? $edit_link : 'javascript:alert(\'' . addslashes(__('Image edit functionality is not supported by your web host.', BWG()->prefix)) . '\');')); ?>"><?php _e('Edit', BWG()->prefix); ?></a> |</span>
+                <span class="wd-image-actions <?php echo ( !$is_embed && ( $params['gallery_type'] == '' ) ? '' : ' wd-hide' ); ?>"><a class="<?php echo (BWG()->is_demo || !BWG()->wp_editor_exists ? '' : 'thickbox thickbox-preview'); ?>" href="<?php echo (BWG()->is_demo ? 'javascript:alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\');' : (BWG()->wp_editor_exists ? $crop_link : 'javascript:alert(\'' . addslashes(__('Image edit functionality is not supported by your web host.', BWG()->prefix)) . '\');')); ?>"><?php _e('Crop', BWG()->prefix); ?></a> |</span>
                 <span class="wd-image-actions <?php echo ( !$is_embed && ( $params['gallery_type'] == '' ) ? '' : ' wd-hide' ); ?>"><a onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\');' : 'if (confirm(\'' . addslashes(__('Do you want to reset the image?', BWG()->prefix)) . '\')) { spider_set_input_value(\'ajax_task\', \'image_reset\'); spider_set_input_value(\'image_current_id\', \'' . $row->id . '\'); spider_ajax_save(\'bwg_gallery\'); } return false;'); ?>"><?php _e('Reset', BWG()->prefix); ?></a> |</span>
                 <span><a onclick="spider_set_input_value('ajax_task', 'image_<?php echo $row->published ? 'unpublish' : 'publish'; ?>');
                     spider_set_input_value('image_current_id', '<?php echo $row->id; ?>');
@@ -750,8 +726,8 @@ class GalleriesView_bwg extends AdminView_bwg {
               </div>
 
               <input type="hidden" value="<?php echo $tags_id_string; ?>" id="tags_<?php echo $row->id; ?>" name="tags_<?php echo $row->id; ?>" />
-              <input type="hidden" id="image_url_<?php echo $row->id; ?>" name="image_url_<?php echo $row->id; ?>" value="<?php echo $row->image_url; ?>" />
-              <input type="hidden" id="thumb_url_<?php echo $row->id; ?>" name="thumb_url_<?php echo $row->id; ?>" value="<?php echo $row->thumb_url; ?>" />
+              <input type="hidden" id="image_url_<?php echo $row->id; ?>" name="image_url_<?php echo $row->id; ?>" value="<?php echo $row->pure_image_url; ?>" />
+              <input type="hidden" id="thumb_url_<?php echo $row->id; ?>" name="thumb_url_<?php echo $row->id; ?>" value="<?php echo $row->pure_thumb_url; ?>" />
               <input type="hidden" id="input_filename_<?php echo $row->id; ?>" name="input_filename_<?php echo $row->id; ?>" value="<?php echo $row->filename; ?>" />
               <input type="hidden" id="input_date_modified_<?php echo $row->id; ?>" name="input_date_modified_<?php echo $row->id; ?>" value="<?php echo $row->date; ?>" />
               <input type="hidden" id="input_resolution_<?php echo $row->id; ?>" name="input_resolution_<?php echo $row->id; ?>" value="<?php echo $row->resolution; ?>" />

@@ -66,8 +66,8 @@ class AlbumsController_bwg {
   public function execute() {
     $task = WDWLibrary::get('task');
     $id = (int)WDWLibrary::get('current_id', 0);
-    if (method_exists($this, $task)) {
-      if ($task != 'edit' && $task != 'display') {
+    if ($task != 'display' && method_exists($this, $task)) {
+      if ($task != 'edit') {
         check_admin_referer(BWG()->nonce, BWG()->nonce);
       }
       $action = WDWLibrary::get('bulk_action', -1);
@@ -125,7 +125,7 @@ class AlbumsController_bwg {
    *
    * @param $task
    */
-  public function bulk_action($task) {
+  public function bulk_action($task = '') {
     $message = 0;
     $successfully_updated = 0;
     $url_arg = array('page' => $this->page, 'task' => 'display');

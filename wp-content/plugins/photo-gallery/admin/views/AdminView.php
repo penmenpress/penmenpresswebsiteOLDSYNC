@@ -63,7 +63,7 @@ class AdminView_bwg {
    *
    * @return string Title html.
    */
-  protected function title($params) {
+  protected function title($params = array()) {
     $title = !empty($params['title']) ? $params['title'] : '';
     $title_class = !empty($params['title_class']) ? $params['title_class'] : '';
     $title_name = !empty($params['title_name']) ? $params['title_name'] : '';
@@ -150,6 +150,29 @@ class AdminView_bwg {
   }
 
   /**
+   * Sorting.
+   *
+   * @param  array $params
+   * @return string
+   */
+  protected function sorting() {
+    $options = WDWLibrary::admin_images_ordering_choices();
+    ob_start();
+    ?>
+    <select name="order_by" onchange="bwg_sort_images(this.value);">
+      <?php
+      foreach ( $options as $key => $option ) {
+        ?>
+        <option value="<?php echo $key; ?>"><?php echo $option; ?></option>
+        <?php
+      }
+      ?>
+    </select>
+    <?php
+    return ob_get_clean();
+  }
+
+  /**
    * Search.
    *
    * @param  array $params
@@ -160,6 +183,11 @@ class AdminView_bwg {
     ob_start();
     ?>
     <p class="search-box">
+      <?php
+      if (isset($params['sorting']) && $params['sorting']) {
+        echo $this->sorting();
+      }
+      ?>
       <input name="s" value="<?php echo $search; ?>" type="search" onkeypress="return input_search(event, this)" />
       <input class="button" value="<?php echo __('Search', BWG()->prefix) . ' ' . ( !empty( $params['search_item_name'] ) ? $params['search_item_name'] : '' ); ?>" type="button" onclick="search(this)" />
     </p>
@@ -289,7 +317,7 @@ class AdminView_bwg {
         <?php
         foreach ( $actions as $key => $action ) {
           ?>
-          <option value="<?php echo $key; ?>"><?php echo $action['title']; ?></option>
+          <option value="<?php echo $key; ?>" <?php echo isset($action['disabled']) ? $action['disabled'] : ''; ?>><?php echo $action['title']; ?></option>
           <?php
         }
         ?>

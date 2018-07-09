@@ -10,12 +10,8 @@ class FilemanagerController {
   public $uploads_url;
 
   public function __construct() {
-
-    $this->uploads_dir = ((BWG()->options->images_directory . '/photo-gallery') ? ABSPATH . BWG()->options->images_directory . '/photo-gallery' : BWG()->plugin_dir . '/filemanager/uploads');
-    if (file_exists($this->uploads_dir) == FALSE) {
-      mkdir($this->uploads_dir);
-    }
-    $this->uploads_url = ((BWG()->options->images_directory . '/photo-gallery') ? site_url() . '/' . BWG()->options->images_directory . '/photo-gallery' : BWG()->plugin_url . '/filemanager/uploads');
+    $this->uploads_dir = BWG()->upload_dir;
+    $this->uploads_url = BWG()->upload_url;
   }
 
   public function execute() {
@@ -247,12 +243,12 @@ class FilemanagerController {
           $dest = $dest_dir . '/' . $file_name;
           if (!is_dir($src_dir . '/' . $file_name)) {
             if (!is_dir($dest_dir . '/thumb')) {
-              mkdir($dest_dir . '/thumb', 0777);
+              mkdir($dest_dir . '/thumb', 0755);
             }
             $thumb_src = $src_dir . '/thumb/' . $file_name;
             $thumb_dest = $dest_dir . '/thumb/' . $file_name;
             if (!is_dir($dest_dir . '/.original')) {
-              mkdir($dest_dir . '/.original', 0777);
+              mkdir($dest_dir . '/.original', 0755);
             }
             $original_src = $src_dir . '/.original/' . $file_name;
             $original_dest = $dest_dir . '/.original/' . $file_name;
@@ -307,12 +303,12 @@ class FilemanagerController {
                 $thumb_src = $src_dir . '/thumb/' . $file_name;
                 $thumb_dest = $dest_dir . '/thumb/' . $file_name;
                 if ( !is_dir($dest_dir . '/thumb') ) {
-                  mkdir($dest_dir . '/thumb', 0777);
+                  mkdir($dest_dir . '/thumb', 0755);
                 }
                 $original_src = $src_dir . '/.original/' . $file_name;
                 $original_dest = $dest_dir . '/.original/' . $file_name;
                 if ( !is_dir($dest_dir . '/.original') ) {
-                  mkdir($dest_dir . '/.original', 0777);
+                  mkdir($dest_dir . '/.original', 0755);
                 }
                 rename($thumb_src, $thumb_dest);
                 rename($original_src, $original_dest);

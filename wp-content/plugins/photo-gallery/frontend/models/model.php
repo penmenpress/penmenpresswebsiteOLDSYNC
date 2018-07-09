@@ -1,6 +1,6 @@
 <?php
 class BWGModelSite {
-  public function get_theme_row_data($id) {
+  public function get_theme_row_data($id = 0) {
     global $wpdb;
     if ($id) {
       $row = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . $wpdb->prefix . 'bwg_theme WHERE id="%d"', $id));
@@ -14,7 +14,7 @@ class BWGModelSite {
     return $row;
   }
 
-  public function get_gallery_row_data($id, $from = '') {
+  public function get_gallery_row_data($id = 0, $from = '') {
     global $wpdb;
     $row = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . $wpdb->prefix . 'bwg_gallery WHERE published=1 AND id="%d"', $id));
     if ($row) {
@@ -44,14 +44,25 @@ class BWGModelSite {
   }
 
   public function get_image_rows_data( $gallery_id, $bwg, $type, $tag_input_name, $tag, $images_per_page, $load_more_image_count, $sort_by, $sort_direction = 'ASC' ) {
+    global $wpdb;
     $gallery_id = (int) $gallery_id;
     $tag = (int) $tag;
-    global $wpdb;
     $bwg_search = ((isset($_POST['bwg_search_' . $bwg]) && esc_html($_POST['bwg_search_' . $bwg]) != '') ? esc_html($_POST['bwg_search_' . $bwg]) : '');
     $join = '';
     $where = '';
     if ( $bwg_search ) {
-      $where = 'AND (image.alt LIKE "%%' . $bwg_search . '%%" OR image.description LIKE "%%' . $bwg_search . '%%")';
+		$bwg_search_keys = explode(' ', trim($bwg_search));
+		$alt_search = '(';
+		$description_search = '(';
+		foreach( $bwg_search_keys as $search_key) {
+			$alt_search .= '`image`.`alt` LIKE "%' . $search_key . '%" AND ';
+			$description_search .= '`image`.`description` LIKE "%' . $search_key . '%" AND ';
+		}
+		$alt_search = rtrim($alt_search, 'AND ');
+		$alt_search .= ')';
+		$description_search = rtrim($description_search, 'AND ');
+		$description_search .= ')';
+	  $where = 'AND (' . $alt_search . ' OR ' . $description_search . ')';
     }
     if ( $sort_by == 'size' || $sort_by == 'resolution' ) {
       $sort_by = ' CAST(image.' . $sort_by . ' AS SIGNED) ';
@@ -91,8 +102,8 @@ class BWGModelSite {
     }
     $join .= ' LEFT JOIN '. $wpdb->prefix .'bwg_gallery as gallery ON gallery.id = image.gallery_id';
     $where .= ' AND gallery.published = 1 ';
-
-    $rows = $wpdb->get_results('SELECT image.* FROM ' . $wpdb->prefix . 'bwg_image as image ' . $join . ' WHERE image.published=1 ' . $where . ' ORDER BY ' . str_replace('RAND()', 'RAND(' . $bwg_random_seed . ')', $sort_by) . ' ' . $sort_direction . ' ' . $limit_str);
+  	$query = 'SELECT image.* FROM ' . $wpdb->prefix . 'bwg_image as image ' . $join . ' WHERE image.published=1 ' . $where . ' ORDER BY ' . str_replace('RAND()', 'RAND(' . $bwg_random_seed . ')', $sort_by) . ' ' . $sort_direction . ' ' . $limit_str;
+    $rows = $wpdb->get_results($query);
     $total = $wpdb->get_var('SELECT COUNT(*) FROM ' . $wpdb->prefix . 'bwg_image as image ' . $join . ' WHERE image.published=1 ' . $where);
     $page_nav['total'] = $total;
     $page_nav['limit'] = 1;

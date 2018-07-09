@@ -12,7 +12,7 @@ class AddTagsView_bwg extends AdminView_bwg {
    *
    * @param $params
    */
-  public function display( $params ) {
+  public function display( $params = array() ) {
     ob_start();
     $params['page_url'] = add_query_arg(array(
                                           'action' => 'addTags_' . BWG()->prefix,
@@ -40,7 +40,7 @@ class AddTagsView_bwg extends AdminView_bwg {
    *
    * @param $params
    */
-  public function body( $params ) {
+  public function body( $params = array() ) {
 	  ?>
 	<div class="wd-table-container">
 		<?php
