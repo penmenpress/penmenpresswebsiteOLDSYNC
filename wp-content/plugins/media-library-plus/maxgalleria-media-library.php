@@ -3,7 +3,7 @@
 Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.2.3
+Version: 4.2.4
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -40,7 +40,7 @@ class MaxGalleriaMediaLib {
 
 	public function set_global_constants() {	
 		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_KEY', 'maxgalleria_media_library_version');
-		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.3');
+		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.4');
 		define('MAXGALLERIA_MEDIA_LIBRARY_IGNORE_NOTICE', 'maxgalleria_media_library_ignore_notice');
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME);
@@ -3518,7 +3518,6 @@ and meta_key = '_wp_attached_file'";
               <li><span>Jetpack and the Wordpress Gallery Integration</span></li>
               <li><span>Organize Nextgen Galleries</span></li>
               <li><span>Supports Advanced Custom Fields</span></li>
-              <li><span>Works with WP Offload S3 server files</span></li>
             </ul>
           </div>
           <div class="width-50">

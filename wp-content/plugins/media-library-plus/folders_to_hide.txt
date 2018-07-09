@@ -1,10 +1,13 @@
 am_assets
 author image
+avatars
 backupbuddy_backups
 backupbuddy_temp
 bb-plugin
 bb-theme
 beaver-builder-plugin
+bpfb
+buddypress
 elementor
 events-manager
 galleries
@@ -12,6 +15,8 @@ gppro
 gravity_forms
 h5p
 html_to_wp
+group-avatars
+group-documents
 iw-backup
 js_composer
 magictoolbox_cache
@@ -38,3 +43,4 @@ wp-post-to-pdf-cache
 wp-clone
 wp-migrate-db
 wysija
+yikes-log
