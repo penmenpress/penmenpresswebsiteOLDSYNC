@@ -14,9 +14,9 @@ if ($controls->is_action('save')) {
     if (empty($email)) {
         $controls->errors = __('Wrong email address', 'newsletter');
     } else {
-        $controls->data['email'] = $email;    
+        $controls->data['email'] = $email;
     }
-    
+
 
     if (empty($controls->errors)) {
         $u = $module->get_user($controls->data['email']);
@@ -32,7 +32,7 @@ if ($controls->is_action('save')) {
                 $controls->data['list_' . $i] = 0;
             }
         }
-        
+
         if (empty($controls->data['token'])) {
             $controls->data['token'] = $module->get_token();
         }
@@ -44,7 +44,7 @@ if ($controls->is_action('save')) {
             $controls->errors = __('Error. Check the log files.', 'newsletter');
         } else {
             $controls->add_message_saved();
-            $controls->data = (array)$user;
+            $controls->data = (array) $user;
         }
     }
 }
@@ -56,7 +56,7 @@ if ($controls->is_action('delete')) {
 }
 
 if (!$controls->is_action()) {
-    $controls->data = (array)$user;
+    $controls->data = (array) $user;
 }
 
 $options_profile = NewsletterSubscription::instance()->get_options('profile');
@@ -103,12 +103,12 @@ function percentValue($value, $total) {
             <div id="tabs">
 
                 <ul>
-                    <li><a href="#tabs-general"><?php _e('General', 'newsletter')?></a></li>
-                    <li><a href="#tabs-preferences"><?php _e('Lists', 'newsletter')?></a></li>
-                    <li><a href="#tabs-profile"><?php _e('Extra fields', 'newsletter')?></a></li>
-                    <li><a href="#tabs-other"><?php _e('Other', 'newsletter')?></a></li>
-                    <li><a href="#tabs-newsletters"><?php _e('Newsletters', 'newsletter')?></a></li>
-                    <li><a href="#tabs-history"><?php _e('Logs', 'newsletter')?></a></li>
+                    <li><a href="#tabs-general"><?php _e('General', 'newsletter') ?></a></li>
+                    <li><a href="#tabs-preferences"><?php _e('Lists', 'newsletter') ?></a></li>
+                    <li><a href="#tabs-profile"><?php _e('Extra fields', 'newsletter') ?></a></li>
+                    <li><a href="#tabs-other"><?php _e('Other', 'newsletter') ?></a></li>
+                    <li><a href="#tabs-newsletters"><?php _e('Newsletters', 'newsletter') ?></a></li>
+                    <li><a href="#tabs-history"><?php _e('Logs', 'newsletter') ?></a></li>
 
                 </ul>
 
@@ -119,13 +119,13 @@ function percentValue($value, $total) {
                     <table class="form-table">
 
                         <tr>
-                            <th><?php _e ('Email', 'newsletter'); ?></th>
+                            <th><?php _e('Email', 'newsletter'); ?></th>
                             <td>
                                 <?php $controls->text_email('email', 60); ?>
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e ('First name', 'newsletter'); ?></th>
+                            <th><?php _e('First name', 'newsletter'); ?></th>
                             <td>
                                 <?php $controls->text('name', 50); ?>
                             </td>
@@ -137,19 +137,25 @@ function percentValue($value, $total) {
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e ('Gender', 'newsletter'); ?></th>
+                            <th><?php _e('Gender', 'newsletter'); ?></th>
                             <td>
                                 <?php $controls->select('sex', array('n' => 'Not specified', 'f' => 'female', 'm' => 'male')); ?>
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e ('Status', 'newsletter'); ?></th>
+                            <th><?php _e('Status', 'newsletter'); ?></th>
                             <td>
                                 <?php $controls->select('status', array('C' => 'Confirmed', 'S' => 'Not confirmed', 'U' => 'Unsubscribed', 'B' => 'Bounced')); ?>
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e ('Test subscriber', 'newsletter'); ?>
+                            <th><?php _e('Language', 'newsletter'); ?></th>
+                            <td>
+                                <?php $controls->language(); ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><?php _e('Test subscriber', 'newsletter'); ?>
                                 <br><?php $controls->help('https://www.thenewsletterplugin.com/documentation/subscribers#test-subscribers') ?></th>
                             <td>
                                 <?php $controls->yesno('test'); ?>
@@ -183,8 +189,8 @@ function percentValue($value, $total) {
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th><?php _e ('Name', 'newsletter'); ?></th>
-                                <th><?php _e ('Value', 'newsletter'); ?></th>
+                                <th><?php _e('Name', 'newsletter'); ?></th>
+                                <th><?php _e('Value', 'newsletter'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -231,21 +237,21 @@ function percentValue($value, $total) {
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e ('IP address', 'newsletter'); ?></th>
+                            <th><?php _e('IP address', 'newsletter'); ?></th>
                             <td>
                                 <?php $controls->value('ip'); ?>
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e ('Secret token', 'newsletter'); ?></th>
+                            <th><?php _e('Secret token', 'newsletter'); ?></th>
                             <td>
                                 <?php $controls->text('token', 50); ?>
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e ('Profile URL', 'newsletter'); ?></th>
+                            <th><?php _e('Profile URL', 'newsletter'); ?></th>
                             <td>
-                                <?php $profile_url = NewsletterProfile::instance()->get_profile_url($user)  ?>
+                                <?php $profile_url = NewsletterProfile::instance()->get_profile_url($user) ?>
                                 <a href='<?php echo $profile_url ?>' target="_blank"><?php echo $profile_url ?></a>
                             </td>
                         </tr>
@@ -264,63 +270,64 @@ function percentValue($value, $total) {
                     }
                     ?>
                 </div>
-                
+
                 <div id="tabs-history" class="tnp-tab">
                     <?php
                     $logs = $wpdb->get_results($wpdb->prepare("select * from {$wpdb->prefix}newsletter_user_logs where user_id=%d order by id desc", $id));
                     ?>
                     <?php if (empty($logs)) { ?>
-                    <p>No logs available</p>
+                        <p>No logs available</p>
                     <?php } else { ?>
-                    <p>Only public lists are recorded.</p>
-                    <table class="widefat" style="width: auto">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Source</th>
-                                <th>IP</th>
-                                <th>Lists</th>
-                            </tr>
-                            
-                        <tbody>
-                            <?php foreach ($logs as $log) { ?>
-                            <?php
-                                $data = json_decode($log->data, ARRAY_A);
-                                if (isset($data['new'])) $data = $data['new'];
-                            ?>
-                            <tr>
-                                <td><?php echo $controls->print_date($log->created)?></td>
-                                <td><?php echo esc_html($log->source)?></td>
-                                <td><?php echo esc_html($log->ip)?></td>
-                                <td>
+                        <p>Only public lists are recorded.</p>
+                        <table class="widefat" style="width: auto">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Source</th>
+                                    <th>IP</th>
+                                    <th>Lists</th>
+                                </tr>
+
+                            <tbody>
+                                <?php foreach ($logs as $log) { ?>
                                     <?php
-                                    if (is_array($data)) {
-                                    foreach ($data as $key=>$value) {
-                                        echo esc_html(str_replace('_', ' ', $key)), ': ', esc_html($value) . '<br>';
-                                    }
-                                    }
+                                    $data = json_decode($log->data, ARRAY_A);
+                                    if (isset($data['new']))
+                                        $data = $data['new'];
                                     ?>
-                                </td>
-                            </tr>
-                            <?php } ?>
-                        </tbody>
-                        
-                    </table>
-                    <?php } ?>
-                    
-                    
+                                    <tr>
+                                        <td><?php echo $controls->print_date($log->created) ?></td>
+                                        <td><?php echo esc_html($log->source) ?></td>
+                                        <td><?php echo esc_html($log->ip) ?></td>
+                                        <td>
+                                            <?php
+                                            if (is_array($data)) {
+                                                foreach ($data as $key => $value) {
+                                                    echo esc_html(str_replace('_', ' ', $key)), ': ', esc_html($value) . '<br>';
+                                                }
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+    <?php } ?>
+                            </tbody>
+
+                        </table>
+<?php } ?>
+
+
                 </div>
 
             </div>
 
             <p>
                 <?php $controls->button_save(); ?>
-                <?php $controls->button_delete(); ?>
+<?php $controls->button_delete(); ?>
             </p>
 
         </form>
     </div>
 
-    <?php include NEWSLETTER_DIR . '/tnp-footer.php'; ?>
+<?php include NEWSLETTER_DIR . '/tnp-footer.php'; ?>
 
 </div>

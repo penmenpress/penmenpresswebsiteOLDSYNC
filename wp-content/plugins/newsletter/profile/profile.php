@@ -189,8 +189,9 @@ class NewsletterProfile extends NewsletterModule {
 
     function get_profile_form($user) {
         // Do not pay attention to option name here, it's a compatibility problem
-        $options = NewsletterSubscription::instance()->options_profile;
-        $options_lists = NewsletterSubscription::instance()->options_lists;
+        
+        $language = $this->get_user_language($user);
+        $options = NewsletterSubscription::instance()->get_options('profile', $language);
 
         $buffer = '';
 
@@ -263,7 +264,7 @@ class NewsletterProfile extends NewsletterModule {
         }
 
         // Lists
-        $lists = $this->get_lists_for_profile();
+        $lists = $this->get_lists_for_profile($language);
         $tmp = '';
         foreach ($lists as $list) {
 
@@ -446,10 +447,11 @@ class NewsletterProfile extends NewsletterModule {
 
     // Patch to avoid conflicts with the "newsletter_profile" option of the subscription module
     // TODO: Fix it
-    public function get_prefix($sub = '') {
-        if (empty($sub))
+    public function get_prefix($sub = '', $language='') {
+        if (empty($sub)) {
             $sub = 'main';
-        return parent::get_prefix($sub);
+        }
+        return parent::get_prefix($sub, $language);
     }
 
 }

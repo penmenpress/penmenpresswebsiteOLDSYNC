@@ -1,7 +1,7 @@
 <?php
 
 $options = array(
-    'header_logo' => '',
+    'header_logo' => array('id'=>0),
     'header_title' => get_bloginfo('name'),
     'header_sub' => get_bloginfo('description'),
     'footer_title' => '',

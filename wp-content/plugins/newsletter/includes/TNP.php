@@ -65,18 +65,7 @@ class TNP {
 
                     // A second subscription always require confirmation otherwise anywan can change other users' data
                     $user->status = 'S';
-
-                    $prefix = 'confirmation_';
-
-                    if (empty($options[$prefix . 'disabled'])) {
-
-                        $message = $options[$prefix . 'message'];
-                        // TODO: This is always empty!
-                        //$message_text = $options[$prefix . 'message_text'];
-                        $subject = $options[$prefix . 'subject'];
-                        $message = $subscription->add_microdata($message);
-                        $newsletter->mail($user->email, $newsletter->replace($subject, $user), $newsletter->replace($message, $user));
-                    }
+                    $subscription->send_activation_email($user);
 
                     return $user;
                 }
@@ -126,7 +115,6 @@ class TNP {
         
         $user = TNP::add_subscriber($params);
 
-
         if (is_wp_error($user)) {
             return ($user);
         }
@@ -142,21 +130,9 @@ class TNP {
             return $user;
         }
 
-        $prefix = ($user->status == 'C') ? 'confirmed_' : 'confirmation_';
-
-        if (empty($options[$prefix . 'disabled'])) {
-            $message = $options[$prefix . 'message'];
-
-            if ($user->status == 'S') {
-                $message = $subscription->add_microdata($message);
-            }
-
-            // TODO: This is always empty!
-            //$message_text = $options[$prefix . 'message_text'];
-            $subject = $options[$prefix . 'subject'];
-
-            $newsletter->mail($user->email, $newsletter->replace($subject, $user), $newsletter->replace($message, $user));
-        }
+        $message_type = ($user->status == 'C') ? 'confirmed' : 'confirmation';
+        $subscription->send_message($message_type, $user);
+        
         return $user;
     }
 

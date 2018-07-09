@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated
 Requires at least: 3.4.0
 Tested up to: 4.9.6
-Stable tag: 5.5.2
+Stable tag: 5.5.4
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -18,7 +18,7 @@ The Newsletter Plugin provides all the technical tools needed to achieve GDPR co
 we're continuously working to improve them and to give support even for specific 
 use cases.
 
-The plugin does not collect users’ own subscribers data, nor it has any access to those data: 
+The plugin does not collect users' own subscribers data, nor it has any access to those data: 
 hence, we are not a data processor, so a data processing agreement is not needed.
 
 Anyway if you configure the plugin to use external services (usually an external mail
@@ -28,7 +28,9 @@ delivery service) you should check with that service if some sort of agreement i
 
 * **Unlimited subscribers** with statistics 
 * **Unlimited newsletter** with tracking
+* Multilist ready with list combinations targeting (all in, at least one, exclusions, ...)
 * Subscription spam check with domain/ip black lists, Akismet, captcha
+* **Delivery speed** fine control (from 12 emails per hour to as much as your blog can manage)
 * [GDPR ready](https://www.thenewsletterplugin.com/documentation/gdpr-compliancy) 
 * **Responsive email Drag & Drop composer**
 * Customizable **subscription widget**, **page** or **custom form**
@@ -38,10 +40,11 @@ delivery service) you should check with that service if some sort of agreement i
 * PHP API and REST API for coders and integrations
 * SMTP-Ready 
 * Customizable Themes
-* Newsletter with Html and Text message versions 
-* All messages are **fully translatable** from Admin Panel (no .po/.mo)
+* All messages are **fully translatable** from administration panels (no .po/.mo file to edit)
 * Diagnostics Panel to check your blog mailing capability 
-* **Compatible with Postman, WP Mail SMTP, Easy WP SMTP, Easy SMTP Mail, WP Mail Bank**
+* **Compatible with every SMTP plugin**: Postman, WP Mail SMTP, Easy WP SMTP, Easy SMTP Mail, WP Mail Bank, ...
+* Subscribers massive **import** from file
+* Newsletter with Html and Text message versions 
 
 = Integration with WordPress registration =
 
@@ -49,7 +52,7 @@ delivery service) you should check with that service if some sort of agreement i
 * Auto confirmation on first login
 * Imports already registered users
 
-= Free Extension =
+= Free Extensions =
 
 Find and install them from the Extensions panel in your blog.
 
@@ -71,7 +74,9 @@ our **premium, professional Extensions**! Let us introduce just two of them : )
 
 = Support =
 
-We provide support for our plugin on [Wordpress.org forums](https://wordpress.org/support/plugin/newsletter) and through our official [forum here](https://www.thenewsletterplugin.com/forums), but only Premium Users with an active license have access to one-to-one support via our [ticketing system](https://www.thenewsletterplugin.com/support-ticket). 
+We provide support for our plugin on [Wordpress.org forums](https://wordpress.org/support/plugin/newsletter) and through our [official forum](https://www.thenewsletterplugin.com/forums).
+
+Premium Users with an active license have access to one-to-one support via our [ticketing system](https://www.thenewsletterplugin.com/support-ticket). 
 
 = Follow Us =
 
@@ -101,6 +106,16 @@ Thank you, The Newsletter Team
 3. The Reports extension
 
 == Changelog ==
+
+= 5.5.4 =
+
+* WPML integration. [Read our integration page](https://www.thenewsletterplugin.com/documentation/multilanguage)
+
+= 5.5.3 =
+
+* Updated tinyMCE for Edge compatibility
+* Debug mode notification
+* Fix debug notice on profile page
 
 = 5.5.2 =
 

@@ -30,6 +30,18 @@
             <div id="giphy-preview"></div>
         </td>
     </tr>
+    <tr>
+        <th><?php _e('Background', 'newsletter') ?></th>
+        <td>
+            <?php $controls->block_background() ?>
+        </td>
+    </tr>
+    <tr>
+        <th><?php _e('Padding', 'newsletter') ?></th>
+        <td>
+            <?php $controls->block_padding() ?>
+        </td>
+    </tr>
 </table>
 
 <script type="text/javascript">

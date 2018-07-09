@@ -72,7 +72,7 @@ $warning |= empty($status_options['mail']);
                         <small><?php _e('Profile the subscribers for a better targeting', 'newsletter') ?></small></a>
                 </li>
                 <li>
-                    <a href="?page=newsletter_subscription_unsubscription"><i class="fa fa-sign-out"></i> <?php _e('Unsubscription', 'newsletter') ?>
+                    <a href="?page=newsletter_unsubscription_index"><i class="fa fa-sign-out"></i> <?php _e('Unsubscription', 'newsletter') ?>
                         <small><?php _e('How to give the last goodbye (or avoid it!)', 'newsletter') ?></small></a>
                 </li>
 

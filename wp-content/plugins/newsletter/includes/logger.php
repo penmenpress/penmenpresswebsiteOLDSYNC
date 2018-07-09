@@ -43,7 +43,7 @@ class NewsletterLogger {
     function log($text, $level = self::ERROR) {
         global $current_user;
         
-        if ($this->level < $level) return;
+        if ($level != self::FATAL && $this->level < $level) return;
         
         if ($current_user) {
             $user_id = $current_user->ID;
@@ -74,10 +74,6 @@ class NewsletterLogger {
         if ($res === false) {
             $this->level = self::NONE;
         }
-    }
-    
-    function get_user_id() {
-        
     }
 
     function error($text) {

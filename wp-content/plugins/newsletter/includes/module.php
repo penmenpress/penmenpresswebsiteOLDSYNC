@@ -24,7 +24,8 @@ abstract class TNP_List {
  * @property string $name The subscriber name or first name
  * @property string $surname The subscriber last name
  * @property string $status The subscriber status
- * */
+ * @property string $language The subscriber language code 2 chars lowercase
+ */
 abstract class TNP_User {
 
     const STATUS_CONFIRMED = 'C';
@@ -212,17 +213,26 @@ class NewsletterModule {
      * @param string $sub
      * @return string The prefix for names
      */
-    function get_prefix($sub = '') {
-        return $this->prefix . (!empty($sub) ? '_' : '') . $sub;
+    function get_prefix($sub = '', $language = '') {
+        return $this->prefix . (!empty($sub) ? '_' : '') . $sub . (!empty($language) ? '_' : '') . $language;
     }
 
     /**
      * Returns the options of a module, if not found an empty array.
      */
-    function get_options($sub = '') {
-        $options = get_option($this->get_prefix($sub), array());
+    function get_options($sub = '', $language = '') {
+        $options = get_option($this->get_prefix($sub, $language), array());
+        // Protection against scarmled database...
         if (!is_array($options)) {
-            return array();
+            $options = array();
+        }
+        if ($language) {
+            $main_options = get_option($this->get_prefix($sub));
+            // Protection against scarmled database...
+            if (!is_array($main_options))
+                $main_options = array();
+            //$options = array_merge($main_options, array_filter($options));
+            $options = array_merge($main_options, $options);
         }
         return $options;
     }
@@ -258,9 +268,9 @@ class NewsletterModule {
      * @param array $options
      * @param string $sub
      */
-    function save_options($options, $sub = '', $autoload = null) {
-        update_option($this->get_prefix($sub), $options, $autoload);
-        if (empty($sub)) {
+    function save_options($options, $sub = '', $autoload = null, $language = '') {
+        update_option($this->get_prefix($sub, $language), $options, $autoload);
+        if (empty($sub) && empty($language)) {
             $this->options = $options;
             if (isset($this->themes) && isset($options['theme'])) {
                 $this->themes->save_options($options['theme'], $options);
@@ -275,11 +285,11 @@ class NewsletterModule {
         }
     }
 
-    function merge_options($options, $sub = '') {
+    function merge_options($options, $sub = '', $language = '') {
         if (!is_array($options))
             $options = array();
-        $old_options = $this->get_options($sub);
-        $this->save_options(array_merge($old_options, $options), $sub);
+        $old_options = $this->get_options($sub, $language);
+        $this->save_options(array_merge($old_options, $options), $sub, null, $language);
     }
 
     function backup_options($sub) {
@@ -612,10 +622,13 @@ class NewsletterModule {
         
     }
 
-    function add_menu_page($page, $title) {
+    function add_menu_page($page, $title, $capability = '') {
         global $newsletter;
         $name = 'newsletter_' . $this->module . '_' . $page;
-        add_submenu_page('newsletter_main_index', $title, $title, ($newsletter->options['editor'] == 1) ? 'manage_categories' : 'manage_options', $name, array($this, 'menu_page'));
+        if (empty($capability)) {
+            $capability = ($newsletter->options['editor'] == 1) ? 'manage_categories' : 'manage_options';
+        }
+        add_submenu_page('newsletter_main_index', $title, $title, $capability, $name, array($this, 'menu_page'));
     }
 
     function add_admin_page($page, $title) {
@@ -929,14 +942,14 @@ class NewsletterModule {
      * 
      * @return TNP_List[]
      */
-    function get_lists() {
-        static $lists = null;
-        if (is_array($lists)) {
-            return $lists;
+    function get_lists($language = '') {
+        static $lists = array();
+        if (isset($lists[$language])) {
+            return $lists[$language];
         }
 
-        $lists = array();
-        $data = NewsletterSubscription::instance()->options_lists;
+        $lists[$language] = array();
+        $data = NewsletterSubscription::instance()->get_options('lists', $language);
         for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
             if (empty($data['list_' . $i])) {
                 continue;
@@ -947,30 +960,30 @@ class NewsletterModule {
             $list->forced = !empty($data['list_' . $i . '_forced']);
             $list->status = (int) $data['list_' . $i . '_status'];
             $list->checked = !empty($data['list_' . $i . '_checked']);
-            $lists[] = $list;
+            $lists[$language][] = $list;
         }
-        return $lists;
+        return $lists[$language];
     }
 
     /**
      * 
      * @return TNP_List[]
      */
-    function get_lists_public() {
-        static $lists = null;
-        if (is_array($lists)) {
-            return $lists;
+    function get_lists_public($language = '') {
+        static $lists = array();
+        if (isset($lists[$language])) {
+            return $lists[$language];
         }
 
-        $lists = array();
-        $all = $this->get_lists();
+        $lists[$language] = array();
+        $all = $this->get_lists($language);
         foreach ($all as $list) {
             if ($list->status == TNP_List::STATUS_PRIVATE) {
                 continue;
             }
-            $lists[] = $list;
+            $lists[$language][] = $list;
         }
-        return $lists;
+        return $lists[$language];
     }
 
     /**
@@ -978,21 +991,21 @@ class NewsletterModule {
      * 
      * @return TNP_List[]
      */
-    function get_lists_for_subscription() {
-        static $lists = null;
-        if (is_array($lists)) {
-            return $lists;
+    function get_lists_for_subscription($language = '') {
+        static $lists = array();
+        if (isset($lists[$language])) {
+            return $lists[$language];
         }
 
-        $lists = array();
-        $all = $this->get_lists();
+        $lists[$language] = array();
+        $all = $this->get_lists($language);
         foreach ($all as $list) {
             if ($list->status != TNP_List::STATUS_PUBLIC || $list->forced) {
                 continue;
             }
-            $lists[] = $list;
+            $lists[$language][] = $list;
         }
-        return $lists;
+        return $lists[$language];
     }
 
     /**
@@ -1000,21 +1013,21 @@ class NewsletterModule {
      * 
      * @return TNP_List[]
      */
-    function get_lists_for_profile() {
-        static $lists = null;
-        if (is_array($lists)) {
-            return $lists;
+    function get_lists_for_profile($language = '') {
+        static $lists = array();
+        if (isset($lists[$language])) {
+            return $lists[$language];
         }
 
-        $lists = array();
-        $all = $this->get_lists();
+        $lists[$language] = array();
+        $all = $this->get_lists($language);
         foreach ($all as $list) {
             if ($list->status == TNP_List::STATUS_PRIVATE || $list->status == TNP_List::STATUS_HIDDEN) {
                 continue;
             }
-            $lists[] = $list;
+            $lists[$language][] = $list;
         }
-        return $lists;
+        return $lists[$language];
     }
 
     /**
@@ -1023,12 +1036,12 @@ class NewsletterModule {
      * @param int $id
      * @return TNP_List
      */
-    function get_list($id) {
+    function get_list($id, $language = '') {
         $id = (int) $id;
         if (!$id) {
             return null;
         }
-        $data = NewsletterSubscription::instance()->options_lists;
+        $data = NewsletterSubscription::instance()->get_options('lists', $language);
         $list = new stdClass();
         $list->name = $data['list_' . $id];
         $list->id = $id;
@@ -1148,11 +1161,13 @@ class NewsletterModule {
      */
     function build_message_url($url = '', $message_key = '', $user = null, $email = null, $alert = '') {
         $params = 'nm=' . urlencode($message_key);
-
+        $language = '';
         if ($user) {
-            if (!is_object($user))
+            if (!is_object($user)) {
                 $user = $this->get_user($user);
+            }
             $params .= '&nk=' . urlencode($this->get_user_key($user));
+            $language = $this->get_user_language($user->language);
         }
 
         if ($email) {
@@ -1167,14 +1182,14 @@ class NewsletterModule {
         }
 
         if (empty($url)) {
-            $url = Newsletter::instance()->get_newsletter_page_url();
+            $url = Newsletter::instance()->get_newsletter_page_url($language);
         }
 
         return self::add_qs($url, $params, false);
     }
 
     function build_action_url($action, $user = null, $email = null) {
-        $url = $this->get_home_url() . '?na=' . urlencode($action);
+        $url = $this->add_qs($this->get_home_url(), 'na=' . urlencode($action));
         if ($user) {
             $url .= '&nk=' . urlencode($this->get_user_key($user));
         }
@@ -1321,6 +1336,18 @@ class NewsletterModule {
     function get_user_by_wp_user_id($wp_user_id, $format = OBJECT) {
         return $this->store->get_single_by_field(NEWSLETTER_USERS_TABLE, 'wp_user_id', $wp_user_id, $format);
     }
+    
+    /**
+     * Returns the user language IF there is a supported mutilanguage plugin installed.
+     * @param TNP_User $user
+     * @return string Language code or empty
+     */
+    function get_user_language($user) {
+        if ($user && $this->is_multilanguage()) {
+            return $user->language;
+        }
+        return '';
+    }
 
     /**
      * Replaces every possible Newsletter tag ({...}) in a piece of text or HTML.
@@ -1445,11 +1472,6 @@ class NewsletterModule {
 
             $text = $this->replace_url($text, 'SUBSCRIPTION_CONFIRM_URL', $home_url . '?na=c&nk=' . $nk);
             $text = $this->replace_url($text, 'ACTIVATION_URL', $home_url . '?na=c&nk=' . $nk);
-
-            $text = $this->replace_url($text, 'UNSUBSCRIPTION_CONFIRM_URL', $home_url . '?na=uc&nk=' . $nk . ($nek ? '&nek=' . $nek : ''));
-            $text = $this->replace_url($text, 'UNSUBSCRIPTION_URL', $home_url . '?na=u&nk=' . $nk . ($nek ? '&nek=' . $nek : ''));
-
-            $text = $this->replace_url($text, 'REACTIVATE_URL', $home_url . '?na=reactivate&nk=' . $nk . ($nek ? '&nek=' . $nek : ''));
 
             // Obsolete.
             $text = $this->replace_url($text, 'FOLLOWUP_SUBSCRIPTION_URL', self::add_qs($base, 'nm=fs' . $id_token));
@@ -1685,6 +1707,72 @@ class NewsletterModule {
             $url = home_url('/');
         }
         return $url;
+    }
+
+    function get_current_language() {
+        if (class_exists('SitePress')) {
+            $current_language = apply_filters('wpml_current_language', '');
+            if ($current_language == 'all') {
+                $current_language = '';
+            }
+            return $current_language;
+        }
+        if (function_exists('pll_current_language')) {
+            return pll_current_language();
+        }
+        return '';
+    }
+
+    function get_default_language() {
+        if (class_exists('SitePress')) {
+            return $current_language = apply_filters('wpml_current_language', '');
+        }
+        if (function_exists('pll_default_language')) {
+            return pll_default_language();
+        }
+        return '';
+    }
+
+    function is_all_languages() {
+        return $this->get_current_language() == '';
+    }
+
+    function is_default_language() {
+        return $this->get_current_language() == $this->get_default_language();
+    }
+
+    function switch_language($language) {
+        if (class_exists('SitePress')) {
+            if (empty($language)) $language = 'all';
+            do_action('wpml_switch_language', $language);
+            return;
+        }
+    }
+
+    function is_multilanguage() {
+        return class_exists('SitePress') || function_exists('pll_default_language');
+    }
+
+    function get_posts($filters = array(), $language = '') {
+        $current_language = $this->get_current_language();
+
+        // Language switch for WPML
+        if ($language) {
+            if (class_exists('SitePress')) {
+                $this->switch_language($language);
+                $filters['suppress_filters'] = false;
+            }
+            if (class_exists('Polylang')) {
+                $filters['lang'] = $language;
+            }
+        }
+        $posts = get_posts($filters);
+        if ($language) {
+            if (class_exists('SitePress')) {
+                $this->switch_language($current_language);
+            }
+        }
+        return $posts;
     }
 
 }

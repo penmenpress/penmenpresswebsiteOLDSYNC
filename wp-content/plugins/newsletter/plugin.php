@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.5.2
+  Version: 5.5.4
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -14,7 +14,7 @@
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.5.2');
+define('NEWSLETTER_VERSION', '5.5.4');
 
 global $newsletter, $wpdb;
 
@@ -124,7 +124,7 @@ class Newsletter extends NewsletterModule {
 
         // Here because the upgrade is called by the parent constructor and uses the scheduler
         add_filter('cron_schedules', array($this, 'hook_cron_schedules'), 1000);
-        parent::__construct('main', '1.4.9', null, array('info', 'smtp'));
+        parent::__construct('main', '1.5.0', null, array('info', 'smtp'));
 
         $max = $this->options['scheduler_max'];
         if (!is_numeric($max)) {
@@ -227,6 +227,7 @@ class Newsletter extends NewsletterModule {
 
         $sql = "CREATE TABLE `" . $wpdb->prefix . "newsletter_emails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `language` varchar(10) NOT NULL DEFAULT '',
   `subject` varchar(255) NOT NULL DEFAULT '',
   `message` longtext,
   `subject2` varchar(255) NOT NULL DEFAULT '',
@@ -325,14 +326,14 @@ class Newsletter extends NewsletterModule {
 
         $this->add_menu_page('index', 'Dashboard');
         $this->add_menu_page('welcome', 'Welcome');
-        $this->add_menu_page('main', 'Settings and More');
+        $this->add_menu_page('main', 'Settings and More', 'manage_options');
 
 
         $this->add_admin_page('smtp', 'SMTP');
-        $this->add_admin_page('status', 'Status');
+        $this->add_admin_page('status', 'Status', 'manage_options');
         $this->add_admin_page('info', 'Company info');
-        $this->add_admin_page('diagnostic', 'Diagnostic');
-        $this->add_admin_page('startup', 'Quick Startup');
+        //$this->add_admin_page('diagnostic', 'Diagnostic');
+        //$this->add_admin_page('startup', 'Quick Startup');
     }
 
     function add_extensions_menu() {
@@ -351,7 +352,6 @@ class Newsletter extends NewsletterModule {
         global $cache_stop, $hyper_cache_stop, $wpdb;
 
         if (isset($this->options['debug']) && $this->options['debug'] == 1) {
-            error_reporting(E_ALL | E_NOTICE);
             ini_set('log_errors', 1);
             ini_set('error_log', WP_CONTENT_DIR . '/logs/newsletter/php-' . date('Y-m') . '-' . get_option('newsletter_logger_secret') . '.txt');
         }
@@ -391,6 +391,8 @@ class Newsletter extends NewsletterModule {
         } else {
             add_action('wp_enqueue_scripts', array($this, 'hook_wp_enqueue_scripts'));
         }
+        
+        //add_filter('site_transient_update_plugins', array($this, 'hook_site_transient_update_plugins'));
 
         if (empty($this->action)) {
             return;
@@ -416,10 +418,34 @@ class Newsletter extends NewsletterModule {
             die();
         }
     }
+    
+//    function hook_site_transient_update_plugins($value) {
+//        //return null;
+//        //var_dump($value);
+//        //die('xxx');
+//        if (!isset($value->response['newsletter/plugin.php'])) {
+//         $value->response['newsletter/plugin.php'] = $value->no_update['newsletter/plugin.php'];   
+//        }
+//        
+//        // Add caching
+//        $response = wp_remote_get('http://plugins.svn.wordpress.org/newsletter/');
+//        $body = wp_remote_retrieve_body($response);
+//        
+//        $x = strpos($body, 'Revision');
+//        $x += 9;
+//        $y = strpos($body, ':', $x);
+//        $version = substr($body, $x, $y-$x);
+//        $value->checked['newsletter/plugin.php'] = $version;
+//        $value->response['newsletter/plugin.php']->new_version = $version;
+//        $value->response['newsletter/plugin.php']->package = 'https://downloads.wordpress.org/plugin/newsletter.zip';
+//        
+//        return $value;
+//
+//    }
 
     function hook_admin_notices() {
         // Check of Newsletter dedicated page
-        if ($this->options['page']) {
+        if (!empty($this->options['page'])) {
             if (get_post_status($this->options['page']) !== 'publish') {
                 echo '<div class="notice notice-error"><p>The Newsletter dedicated page is not published. <a href="', site_url('/wp-admin/post.php') . '?post=', $this->options['page'], '&action=edit"><strong>Edit the page</strong></a> or <a href="admin.php?page=newsletter_main_main"><strong>review the main settings</strong></a>.</p></div>';
             } else {
@@ -431,16 +457,22 @@ class Newsletter extends NewsletterModule {
             }
         }
         
+        if (isset($this->options['debug']) && $this->options['debug'] == 1) {
+            echo '<div class="notice notice-warning"><p>The Newsletter plugin is in <strong>debug mode</strong>. When done change it on Newsletter <a href="admin.php?page=newsletter_main_main"><strong>main settings</strong></a>. Do not keep the debug mode active on production sites.</p></div>';
+        }
+        
         $x = wp_next_scheduled('newsletter');
         if ($x === false) {
             echo '<div class="notice notice-error"><p>The Newsletter delivery engine is off (it should never be off). Deactivate and reactivate the Newsletter plugin.</p></div>';
         } else if (time() - $x > 900) {
             echo '<div class="notice notice-error"><p>The WP scheduler doesn\'t seem to be running correctly for Newsletter. <a href="https://www.thenewsletterplugin.com/documentation/newsletter-delivery-engine#cron" target="_blank"><strong>Read this page to solve the problem</strong></a>.</p></div>';
         } else {
-            $cron_data = get_option('newsletter_diagnostic_cron_data');
-            if ($cron_data && $cron_data['mean'] > 500) {
-                echo '<div class="notice notice-error"><p>The WP scheduler doesn\'t seem to be triggered enough often for Newsletter. <a href="https://www.thenewsletterplugin.com/documentation/newsletter-delivery-engine#cron" target="_blank"><strong>Read this page to solve the problem</strong></a>.</p></div>';
-            }
+//            if (empty($this->options['disable_cron_notice'])) {
+//                $cron_data = get_option('newsletter_diagnostic_cron_data');
+//                if ($cron_data && $cron_data['mean'] > 500) {
+//                    echo '<div class="notice notice-error"><p>The WP scheduler doesn\'t seem to be triggered enough often for Newsletter. <a href="https://www.thenewsletterplugin.com/documentation/newsletter-delivery-engine#cron" target="_blank"><strong>Read this page to solve the problem</strong></a> or disable this notice on <a href="admin.php?page=newsletter_main_main"><strong>main settings</strong></a>.</p></div>';
+//                }
+//            }
         }
     }
 
@@ -606,9 +638,6 @@ class Newsletter extends NewsletterModule {
             // Before try to send, check the limits.
             if (!$test && $this->limits_exceeded()) {
                 $result = false;
-                if ($this->the_mailer != null) {
-                    $this->the_mailer->flush();
-                }
                 break;
             }
 
@@ -654,23 +683,23 @@ class Newsletter extends NewsletterModule {
             $this->email_limit--;
             $count++;
         }
+        
+        
         if ($this->the_mailer != null) {
-            $this->logger->debug('Flushing');
-            $result = $this->the_mailer->flush();
-            if (is_wp_error($result)) {
-                //$this->logger->debug($result);
-                /* @var $result WP_Error */
-                $wp_error_data = $result->get_error_data();
-                if (is_array($wp_error_data)) {
-                    foreach ($wp_error_data as &$item) {
-                        if (!isset($item['email'])) {
-                            continue;
-                        }
-                        $this->save_sent($item['email'], $email, 1, $item['error']);
-                    }
+            $this->logger->debug('Flushing and checking errors');
+            $this->the_mailer->flush();
+            if (method_exists($this->the_mailer, 'get_errors')) {
+                $errors = $this->the_mailer->get_errors();
+                foreach ($errors as $error) {
+                    $this->logger->debug('Error on email ' . $error['email']);
+                    $this->save_sent($error['email'], $email, 1, $error['message']);
                 }
-            } else {
-                $this->logger->debug('No errors');
+            
+            }
+            
+            $this->logger->debug('Clearing errors');
+            if (method_exists($this->the_mailer, 'get_errors')) {
+                $this->the_mailer->clear_errors();
             }
         }
 
@@ -692,23 +721,25 @@ class Newsletter extends NewsletterModule {
         global $wpdb;
         //$this->logger->debug('Saving sent data');
         $user_id = 0;
-        if (is_numeric($user))
+        if (is_numeric($user)) {
             $user_id = $user;
-        else if (is_array($user) && isset($user['id']))
+        } else if (is_array($user) && isset($user['id'])) {
             $user_id = $user['id'];
-        else if (is_object($user) && isset($user->id))
+        } else if (is_object($user) && isset($user->id)) {
             $user_id = $user->id;
-        else if (is_string($user)) {
+        } else if (is_string($user)) {
             // is an email
             $user = $this->get_user($user);
-            if ($user)
+            if ($user) {
                 $user_id = $user->id;
+            }
         }
 
         $email_id = $this->to_int_id($email);
 
-        if (!$user_id)
+        if (!$user_id) {
             return;
+        }
         //$this->logger->debug('Query');
         $wpdb->query($wpdb->prepare("insert into " . $wpdb->prefix . 'newsletter_sent (user_id, email_id, time, status, error) values (%d, %d, %d, %d, %s) on duplicate key update time=%d, status=%d, error=%s', $user_id, $email_id, time(), $status, $error, time(), $status, $error));
     }
@@ -1203,16 +1234,25 @@ class Newsletter extends NewsletterModule {
      * @return string
      */
     var $newsletter_page_url = false;
-    function get_newsletter_page_url() {
-
-        if (!$this->newsletter_page_url) {
+    function get_newsletter_page_url($language = '') {
+        
+        // TODO: Reintroduce the cache
+        //if (!$this->newsletter_page_url) {
             if (!empty($this->options['page'])) {
                 $this->newsletter_page_url = get_permalink($this->options['page']);
+                if ($language && $this->newsletter_page_url) {
+                    if (class_exists('SitePress')) {
+                        $this->newsletter_page_url = apply_filters('wpml_permalink', $this->newsletter_page_url , $language);
+                    }
+                    if (function_exists('pll_get_post')) {
+                        $this->newsletter_page_url = get_permalink(pll_get_post($this->options['page']));
+                    }
+                }
             }
             if (!$this->newsletter_page_url) {
                 $this->newsletter_page_url = self::get_home_url() . '?na=m';
             }
-        }
+        //}
         return $this->newsletter_page_url;
     }
 
@@ -1221,6 +1261,7 @@ class Newsletter extends NewsletterModule {
 $newsletter = Newsletter::instance();
 
 require_once NEWSLETTER_DIR . '/subscription/subscription.php';
+require_once NEWSLETTER_DIR . '/unsubscription/unsubscription.php';
 require_once NEWSLETTER_DIR . '/profile/profile.php';
 require_once NEWSLETTER_DIR . '/emails/emails.php';
 require_once NEWSLETTER_DIR . '/users/users.php';

@@ -19,7 +19,7 @@ class NewsletterUsers extends NewsletterModule {
     }
 
     function __construct() {
-        parent::__construct('users', '1.2.3');
+        parent::__construct('users', '1.2.4');
         add_action('init', array($this, 'hook_init'));
     }
 
@@ -53,6 +53,7 @@ class NewsletterUsers extends NewsletterModule {
   `name` varchar(100) NOT NULL DEFAULT '',
   `email` varchar(100) NOT NULL DEFAULT '',
   `token` varchar(50) NOT NULL DEFAULT '',
+  `language` varchar(10) NOT NULL DEFAULT '',
   `status` varchar(1) NOT NULL DEFAULT 'S',
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `profile` mediumtext,

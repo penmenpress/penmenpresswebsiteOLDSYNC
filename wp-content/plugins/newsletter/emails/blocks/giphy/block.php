@@ -15,12 +15,14 @@ $default_options = array(
     'block_background'=>'#ffffff',
     'font_family'=>$font_family,
     'font_size'=>13,
-    'color'=>'#999999'
+    'color'=>'#999999',
+    'block_padding_top'=>15,
+    'block_padding_bottom'=>15,
+    'block_padding_left'=>0,
+    'block_padding_right'=>0
 );
 
 $options = array_merge($default_options, $options);
-$options['block_padding_top'] = '15px';
-$options['block_padding_bottom'] = '15px';
 
 ?>
 

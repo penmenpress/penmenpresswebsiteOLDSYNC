@@ -161,6 +161,7 @@
     background-color: #fff;
     padding: 10px;
     margin: 15px 0; 
+    font-size: 1.2em;
 }
 
 .tnp-warning {
@@ -168,6 +169,7 @@
     background-color: #fff;
     padding: 10px;
     margin: 15px 0; 
+    font-size: 1.2em;
 }
 
 .tnp-message {
@@ -1163,7 +1165,8 @@ span.wp-media-buttons-icon:before {
 }
 
 .notice a {
-    color: #000 !important;
+    color: #27AE60 !important;
+    text-decoration: underline!important;
 }
 
 .tnp-chart {

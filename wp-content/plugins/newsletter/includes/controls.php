@@ -374,7 +374,7 @@ class NewsletterControls {
         }
         $this->messages .= __('Saved.', 'newsletter');
     }
-    
+
     function add_message_deleted() {
         if (!empty($this->messages)) {
             $this->messages .= '<br><br>';
@@ -387,7 +387,7 @@ class NewsletterControls {
             $this->messages .= '<br><br>';
         }
         $this->messages .= __('Options reset.', 'newsletter');
-    }    
+    }
 
     function add_message_done() {
         if (!empty($this->messages)) {
@@ -539,11 +539,26 @@ class NewsletterControls {
         $this->select($name, $options);
     }
 
-    function page($name = 'page', $first = null) {
-        $pages = get_pages();
+    function page($name = 'page', $first = null, $language = '') {
+        $args = array(
+            'post_type'=>'page',
+            'posts_per_page' => 1000,
+            'offset' => 0,
+            'orderby' => 'post_title',
+            'post_status' => 'any',
+            'suppress_filters' => true
+                );
+
+        $pages = get_posts($args);
+        //$pages = get_pages();
         $options = array();
         foreach ($pages as $page) {
-            $options[$page->ID] = $page->post_title;
+            /* @var $page WP_Post */
+            $label = $page->post_title;
+            if ($page->post_status != 'publish') {
+                $label .= ' (' . $page->post_status . ')'; 
+            }
+            $options[$page->ID] = $label;
         }
         $this->select($name, $options, $first);
     }
@@ -749,7 +764,6 @@ class NewsletterControls {
     function button_save($function = null) {
         $this->button_primary('save', '<i class="fa fa-save"></i> ' . __('Save', 'newsletter'), $function);
     }
-   
 
     function button_reset($data = '') {
         echo '<button class="button-secondary" onclick="this.form.btn.value=\'' . esc_attr($data) . '\';this.form.act.value=\'reset\';if (!confirm(\'';
@@ -1431,6 +1445,22 @@ class NewsletterControls {
         echo $output;
     }
 
+    function language($name = 'language') {
+        if (!class_exists('SitePress')) {
+            echo __('Install WPML for multilangue support', 'newsletter');
+            return;
+        }
+
+        $languages = apply_filters('wpml_active_languages', null);
+        $language_options = array('' => 'All');
+        foreach ($languages as $language) {
+            $language_options[$language['language_code']] = $language['translated_name'];
+        }
+
+
+        $this->select('language', $language_options);
+    }
+
     /**
      * Prints a formatted date using the formats and timezone of WP, including the current date and time and the
      * time left to the passed time.
@@ -1512,6 +1542,21 @@ class NewsletterControls {
             return esc_html($text);
         $sub = mb_substr($text, 0, $size);
         echo '<span title="', esc_attr($text), '">', esc_html($sub), '...</span>';
+    }
+
+    function block_background($name = 'block_background') {
+        $this->color($name);
+    }
+
+    function block_padding($name = 'block_padding') {
+        $this->text($name . '_top', 5);
+        echo 'px (top)<br>';
+        $this->text($name . '_right', 5);
+        echo 'px (right)<br>';
+        $this->text($name . '_bottom', 5);
+        echo 'px (bottom)<br>';
+        $this->text($name . '_left', 5);
+        echo 'px (left)<br>';
     }
 
 }

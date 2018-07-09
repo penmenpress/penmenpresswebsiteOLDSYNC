@@ -19,6 +19,8 @@ $options = array(
     'css'=>'',
     'css_disabled'=>0,
     'ip'=>'',
+    'page'=>0,
+    'disable_cron_notice'=>0,
     
     'header_logo' => '',
     'header_title' => get_bloginfo('name'),

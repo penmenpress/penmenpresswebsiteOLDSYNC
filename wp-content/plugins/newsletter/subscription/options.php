@@ -5,8 +5,16 @@ defined('ABSPATH') || exit;
 $controls = new NewsletterControls();
 $module = NewsletterSubscription::instance();
 
+$current_language = $module->get_current_language();
+
+$is_all_languages = $module->is_all_languages();
+
+if (!$is_all_languages) {
+    $controls->warnings[] = 'You are configuring the language <strong>' . $current_language . '</strong>. Switch to "all languages" to see every options.';
+}
+
 // TODO: Remove and use the $module->options.
-$options = get_option('newsletter', array());
+$options = $module->get_options('', $current_language);
 
 if ($controls->is_action()) {
     if ($controls->is_action('save')) {
@@ -50,7 +58,7 @@ if ($controls->is_action()) {
         $controls->data['confirmed_url'] = trim($controls->data['confirmed_url']);
         $controls->data['confirmation_url'] = trim($controls->data['confirmation_url']);
 
-        $module->merge_options($controls->data);
+        $module->save_options($controls->data, '', null, $current_language);
         $controls->add_message_saved();
     }
 
@@ -86,7 +94,7 @@ if ($controls->is_action()) {
             $controls->errors = 'There are no test subscribers. Read more about test subscribers <a href="https://www.thenewsletterplugin.com/plugins/newsletter/subscribers-module#test" target="_blank">here</a>.';
         } else {
             $addresses = array();
-            foreach ($users as &$user) {
+            foreach ($users as $user) {
                 $addresses[] = $user->email;
                 $res = $module->mail($user->email, $module->replace($module->options['confirmed_subject']), $module->replace($module->options['confirmed_message'], $user));
                 if (!$res) {
@@ -100,7 +108,7 @@ if ($controls->is_action()) {
         }
     }
 } else {
-    $controls->data = get_option('newsletter', array());
+    $controls->data = $module->get_options('', $current_language);
 }
 
 ?>
@@ -117,6 +125,7 @@ if ($controls->is_action()) {
     </div>
 
     <div id="tnp-body">
+        
 
         <form method="post" action="">
             <?php $controls->init(); ?>
@@ -129,7 +138,9 @@ if ($controls->is_action()) {
                 </ul>
 
                 <div id="tabs-general">
+                    <?php if ($is_all_languages) { ?>
                     <table class="form-table">
+                        
                         <tr>
                             <th><?php _e('Opt In', 'newsletter') ?></th>
                             <td>
@@ -160,6 +171,10 @@ if ($controls->is_action()) {
                             </td>
                         </tr>
                     </table>
+                    <?php } else { ?>
+                    <p>Switch to your main language to manage these options.</p>
+                    <?php } ?>
+                    
                 </div>
 
 

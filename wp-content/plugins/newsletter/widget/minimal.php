@@ -14,6 +14,7 @@ class NewsletterWidgetMinimal extends WP_Widget {
     function widget($args, $instance) {
 
         $newsletter = Newsletter::instance();
+        $current_language = $newsletter->get_current_language();
 
         extract($args);
 
@@ -32,7 +33,7 @@ class NewsletterWidgetMinimal extends WP_Widget {
             $instance['button'] = 'Subscribe';
         }
 
-        $options_profile = get_option('newsletter_profile');
+        $options_profile = NewsletterSubscription::instance()->get_options('profile', $current_language);
 
 
         $form = '<div class="tnp tnp-widget-minimal">';
@@ -63,9 +64,10 @@ class NewsletterWidgetMinimal extends WP_Widget {
         if (!is_array($instance)) {
             $instance = array();
         }
-        $profile_options = NewsletterSubscription::instance()->get_options('profile');
+        $newsletter = Newsletter::instance();
+        $current_language = $newsletter->get_current_language();
+        $profile_options = NewsletterSubscription::instance()->get_options('profile', $current_language);
         $instance = array_merge(array('title' => '', 'text' => '', 'button' => $profile_options['subscribe'], 'nl' => array()), $instance);
-        $options_profile = get_option('newsletter_profile');
         if (!is_array($instance['nl'])) {
             $instance['nl'] = array();
         }

@@ -54,16 +54,3 @@ $options['confirmed_message'] =
 
 $options['confirmed_tracking'] = '';
         
-// Unsubscription process
-
-$options['unsubscription_text'] = '<p>' . __('Please confirm you want to unsubscribe <a href="{unsubscription_confirm_url}">clicking here</a>.', 'newsletter') . '</p>';
-$options['unsubscription_error_text'] = '<p>' . __("Subscriber not found, it probably has already been removed. No further actions are required.", 'newsletter') . '</p>';
-
-// When you finally loosed your subscriber
-$options['unsubscribed_text'] = "<p>" . __('Your subscription has been deleted. If that was an error you can <a href="{reactivate_url}">subscribe again here</a>.', 'newsletter') . "</p>";
-
-$options['unsubscribed_subject'] = __("Goodbye", 'newsletter');
-
-$options['unsubscribed_message'] = '<p>' . __('This message confirms that you have unsubscribed from our newsletter. Thank you.') . '</p>';
-
-$options['reactivated_text'] = '<p>' . __('Your subscription has been reactivated.') . '</p>';

@@ -20,7 +20,9 @@ $defaults = array(
     'categories' => '',
     'tags' => '',
     'block_background' => '#ffffff',
-    'layout' => 'one'
+    'layout' => 'one',
+    'language' => '',
+    'button_color' => '#256F9C'
 );
 
 $options = array_merge($defaults, $options);
@@ -36,10 +38,11 @@ if (!empty($options['tags'])) {
     $filters['tag'] = $options['tags'];
 }
 
-$posts = get_posts($filters);
+$posts = Newsletter::instance()->get_posts($filters, $options['language']);
+
+$button_color = $options['button_color'];
 
 $alternative = plugins_url('newsletter') . '/emails/blocks/posts/images/blank.png';
-
 ?>
 
 <?php if ($options['layout'] == 'one') { ?>
@@ -47,21 +50,21 @@ $alternative = plugins_url('newsletter') . '/emails/blocks/posts/images/blank.pn
         .posts-title {
             padding: 0 0 10px 0; 
             font-size: 25px; 
-            font-family: <?php echo $font_family?>; 
+            font-family: <?php echo $font_family ?>; 
             font-weight: normal; 
             color: #333333;
         }
         .posts-post-date {
             padding: 0 0 5px 25px; 
             font-size: 13px; 
-            font-family: <?php echo $font_family?>; 
+            font-family: <?php echo $font_family ?>; 
             font-weight: normal; 
             color: #aaaaaa;
         }
         .posts-post-title {
             padding: 0 0 5px 25px; 
             font-size: 22px; 
-            font-family: <?php echo $font_family?>; 
+            font-family: <?php echo $font_family ?>; 
             font-weight: normal; 
             color: #333333;
         }
@@ -84,7 +87,7 @@ $alternative = plugins_url('newsletter') . '/emails/blocks/posts/images/blank.pn
         <?php foreach ($posts AS $post) { ?>
 
             <tr>
-                <td valign="top" style="padding: 40px 0 0 0;" class="mobile-hide tnpc-row-edit" data-type="image">
+                <td valign="top" style="padding: 40px 0 0 0;" class="mobile-hide">
                     <a href="<?php echo tnp_post_permalink($post) ?>" target="_blank">
                         <img src="<?php echo tnp_post_thumbnail_src($post, array(105, 105, true), $alternative) ?>" width="105" height="105" border="0" style="display: block; font-family: Arial; color: #666666; font-size: 14px; width: 105px!important; height: 105px!important;">
                     </a>
@@ -92,11 +95,13 @@ $alternative = plugins_url('newsletter') . '/emails/blocks/posts/images/blank.pn
                 <td style="padding: 40px 0 0 0;" class="no-padding">
                     <!-- ARTICLE -->
                     <table border="0" cellspacing="0" cellpadding="0" width="100%">
-                        <tr>
-                            <td align="left" inline-class="posts-post-date" class="padding-meta">
-                                <?php echo tnp_post_date($post) ?>
-                            </td>
-                        </tr>
+                        <?php if (!empty($options['show_date'])) { ?>
+                            <tr>
+                                <td align="left" inline-class="posts-post-date" class="padding-meta">
+                                    <?php echo tnp_post_date($post) ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
                         <tr>
                             <td align="left" inline-class="posts-post-title" class="padding-copy tnpc-row-edit" data-type="title">
                                 <?php echo tnp_post_title($post) ?>
@@ -119,7 +124,7 @@ $alternative = plugins_url('newsletter') . '/emails/blocks/posts/images/blank.pn
                                                         <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
                                                             <tr>
                                                                 <td align="center">
-                                                                    <a href="<?php echo tnp_post_permalink($post) ?>" target="_blank" style="font-size: 15px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #256F9C; border-top: 10px solid #256F9C; border-bottom: 10px solid #256F9C; border-left: 20px solid #256F9C; border-right: 20px solid #256F9C; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button tnpc-row-edit" data-type="link"><?php echo $options['read_more'] ?></a>
+                                                                    <a href="<?php echo tnp_post_permalink($post) ?>" target="_blank" style="font-size: 15px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: <?php echo $button_color?>; border-top: 10px solid <?php echo $button_color?>; border-bottom: 10px solid <?php echo $button_color?>; border-left: 20px solid <?php echo $button_color?>; border-right: 20px solid <?php echo $button_color?>; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button tnpc-row-edit" data-type="link"><?php echo $options['read_more'] ?></a>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -147,26 +152,26 @@ $alternative = plugins_url('newsletter') . '/emails/blocks/posts/images/blank.pn
         .posts-title {
             font-size: 25px; 
             line-height: 30px; 
-            font-family: <?php echo $font_family?>; 
+            font-family: <?php echo $font_family ?>; 
             color: #333333;
         }
         .post-subtitle {
             padding: 20px 0 20px 0; 
             font-size: 16px; 
             line-height: 25px; 
-            font-family: <?php echo $font_family?>; 
+            font-family: <?php echo $font_family ?>; 
             color: #666666;
         }
         .posts-post-title {
             padding: 15px 0 0 0; 
-            font-family: <?php echo $font_family?>; 
+            font-family: <?php echo $font_family ?>; 
             color: #333333; 
             font-size: 20px;
             line-height: 25px; 
         }
         .posts-post-excerpt {
             padding: 5px 0 0 0; 
-            font-family: <?php echo $font_family?>; 
+            font-family: <?php echo $font_family ?>; 
             color: #666666; 
             font-size: 14px; 
             line-height: 20px;

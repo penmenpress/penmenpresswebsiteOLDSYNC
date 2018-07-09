@@ -1,49 +1,34 @@
 <?php
-if (!defined('ABSPATH'))
-    exit;
+defined('ABSPATH') || exit;
 
 @include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
-$module = NewsletterSubscription::instance();
-$defaults = $module->get_default_options();
+$module = NewsletterUnsubscription::instance();
+
+$current_language = $module->get_current_language();
+
+$is_all_languages = $module->is_all_languages();
+
+if (!$is_all_languages) {
+    $controls->warnings[] = 'You are configuring the language <strong>' . $current_language . '</strong>. Switch to "all languages" to see every options.';
+}
 
 if (!$controls->is_action()) {
-    $controls->data = $module->get_options();
+    $controls->data = $module->get_options('', $current_language);
 } else {
     if ($controls->is_action('save')) {
-        $controls->data['unsubscription_text'] = NewsletterModule::clean_url_tags($controls->data['unsubscription_text']);
-        $controls->data['unsubscribed_text'] = NewsletterModule::clean_url_tags($controls->data['unsubscribed_text']);
-        $controls->data['unsubscribed_message'] = NewsletterModule::clean_url_tags($controls->data['unsubscribed_message']);
+        //$controls->data['unsubscription_text'] = NewsletterModule::clean_url_tags($controls->data['unsubscription_text']);
+        //$controls->data['unsubscribed_text'] = NewsletterModule::clean_url_tags($controls->data['unsubscribed_text']);
+        //$controls->data['unsubscribed_message'] = NewsletterModule::clean_url_tags($controls->data['unsubscribed_message']);
 
-        if (empty($controls->data['unsubscription_text'])) {
-            $controls->data['unsubscription_text'] = $defaults['unsubscription_text'];
-        }
-        if (empty($controls->data['unsubscribed_text'])) {
-            $controls->data['unsubscribed_text'] = $defaults['unsubscribed_text'];
-        }
-        if (empty($controls->data['unsubscribed_message'])) {
-            $controls->data['unsubscribed_message'] = $defaults['unsubscribed_message'];
-        }
-        if (empty($controls->data['unsubscribed_subject'])) {
-            $controls->data['unsubscribed_subject'] = $defaults['unsubscribed_subject'];
-        }
-        if (empty($controls->data['unsubscription_error_text'])) {
-            $controls->data['unsubscription_error_text'] = $defaults['unsubscription_error_text'];
-        }
-
-        $module->merge_options($controls->data);
-        $controls->data = $module->get_options();
+        $module->save_options($controls->data, '', null, $current_language);
+        $controls->data = $module->get_options('', $current_language);
         $controls->add_message_saved();
     }
 
     if ($controls->is_action('reset')) {
-        $controls->data['unsubscription_text'] = $defaults['unsubscription_text'];
-        $controls->data['unsubscribed_text'] = $defaults['unsubscribed_text'];
-        $controls->data['unsubscribed_subject'] = $defaults['unsubscribed_subject'];
-        $controls->data['unsubscribed_message'] = $defaults['unsubscribed_message'];
-        $controls->data['unsubscription_error_text'] = $defaults['unsubscription_error_text'];
-        $module->merge_options($controls->data);
-        $controls->data = $module->get_options();
+        // On reset we ignore the current language
+        $controls->data = $module->reset_options();
     }
 }
 ?>
@@ -78,7 +63,7 @@ if (!$controls->is_action()) {
                         <tr>
                             <th><?php _e('Cancellation message', 'newsletter') ?></th>
                             <td>
-                                <?php $controls->wp_editor('unsubscription_text', array('editor_height'=>250)); ?>
+                                <?php $controls->wp_editor('unsubscribe_text', array('editor_height'=>250)); ?>
                                 <p class="description">
                                 </p>
                             </td>
@@ -103,9 +88,9 @@ if (!$controls->is_action()) {
                             </td>
                         </tr>
                         <tr>
-                            <th>Unsubscription error</th>
+                            <th><?php _e('On error', 'newsletter')?></th>
                             <td>
-                                <?php $controls->wp_editor('unsubscription_error_text', array('editor_height'=>250)); ?>
+                                <?php $controls->wp_editor('error_text', array('editor_height'=>150)); ?>
                                 <p class="description">
                                    
                                 </p>

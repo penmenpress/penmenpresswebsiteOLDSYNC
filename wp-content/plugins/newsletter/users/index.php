@@ -25,17 +25,15 @@ if ($controls->is_action()) {
 }
 
 if ($controls->is_action('resend')) {
-    $user = NewsletterUsers::instance()->get_user($controls->button_data);
-    $opts = get_option('newsletter');
-    NewsletterSubscription::instance()->mail($user->email, $module->replace($opts['confirmation_subject'], $user), $module->replace($opts['confirmation_message'], $user));
-    $controls->messages = 'Activation email resent to ' . $user->email;
+    $user = $module->get_user($controls->button_data);
+    NewsletterSubscription::instance()->send_message('confirmation', $user, true);
+    $controls->messages = __('Activation email sent.', 'newsletter');
 }
 
 if ($controls->is_action('resend_welcome')) {
-    $user = NewsletterUsers::instance()->get_user($controls->button_data);
-    $opts = get_option('newsletter');
-    NewsletterSubscription::instance()->mail($user->email, $module->replace($opts['confirmed_subject'], $user), $module->replace($opts['confirmed_message'], $user));
-    $controls->messages = 'Welcome email resent.';
+    $user = $module->get_user($controls->button_data);
+    NewsletterSubscription::instance()->send_message('confirmed', $user, true);
+    $controls->messages = __('Welcome email sent.', 'newsletter');
 }
 
 if ($controls->is_action('remove')) {
