@@ -136,7 +136,9 @@ class BWGViewGalleryBox {
       'enable_image_pinterest' => $enable_image_pinterest,
       'enable_image_tumblr' => $enable_image_tumblr,
       'watermark_type' => $watermark_type,
-      'slideshow_effect_duration' => $slideshow_effect_duration
+      'slideshow_effect_duration' => $slideshow_effect_duration,
+      'popup_enable_captcha' => $popup_enable_captcha,
+      'popup_enable_email' => $popup_enable_email,
     );
     if ($watermark_type != 'none') {
       $params_array['watermark_link'] = $watermark_link;

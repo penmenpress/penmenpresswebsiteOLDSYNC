@@ -3,7 +3,7 @@ Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
 Tested up to: 4.9 
-Stable tag: 1.4.14
+Stable tag: 1.4.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -278,6 +278,12 @@ Choose whether to display random or the first/last specific number of images.
 
 
 == Changelog ==
+
+= 1.4.15 =
+* Fixed: Titles in mosaic view after load more.   
+* Fixed: JS error on slideshow view.    
+* Fixed: Slideshow on IE11.   
+* Fixed: Captcha dose not appear after submit.    
 
 = 1.4.14 =
 * Fixed: Conflict with IE 11 version.   

@@ -221,6 +221,7 @@ function spider_ajax_save(form_id) {
       jQuery(".bwg_comments").mCustomScrollbar({scrollInertia: 150});
       /* Bind comment container close function to close button. */
       jQuery(".bwg_comments_close_btn").click(bwg_comment);
+      bwg_captcha_refresh('bwg_captcha');
     }
   });
   return false;
