@@ -1709,7 +1709,21 @@ class NewsletterModule {
         return $url;
     }
 
-    function get_current_language() {
+    /**
+     * Return the current language code. Optionally, if a user is passed and it has a language
+     * the user language is returned.
+     * If there is no language available, an empty string is returned.
+     * 
+     * @param TNP_User $user
+     * @return string The language code
+     */
+    function get_current_language($user = null) {
+        // TODO: Check if the blog is multilanguage?
+        
+        if ($user && $user->language) {
+            return $user->language;
+        }
+        
         if (class_exists('SitePress')) {
             $current_language = apply_filters('wpml_current_language', '');
             if ($current_language == 'all') {

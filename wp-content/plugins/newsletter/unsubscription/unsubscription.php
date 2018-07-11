@@ -26,7 +26,7 @@ class NewsletterUnsubscription extends NewsletterModule {
 
     function hook_init() {
         add_filter('newsletter_replace', array($this, 'hook_newsletter_replace'), 10, 3);
-        add_filter('newsletter_page_text', array($this, 'hook_newsletter_page_text'), 10, 2);
+        add_filter('newsletter_page_text', array($this, 'hook_newsletter_page_text'), 10, 3);
     }
 
     function hook_wp_loaded() {
@@ -102,9 +102,9 @@ class NewsletterUnsubscription extends NewsletterModule {
             $wpdb->update(NEWSLETTER_USERS_TABLE, array('unsub_email_id' => (int) $email_id, 'unsub_time' => time()), array('id' => $user->id));
         }
 
-        $this->send_message('unsubscribed', $user);
+        NewsletterSubscription::instance()->send_message('unsubscribed', $user);
 
-        $this->notify_admin($user, 'Newsletter unsubscription');
+        NewsletterSubscription::instance()->notify_admin($user, 'Newsletter unsubscription');
 
         return $user;
     }
@@ -137,18 +137,20 @@ class NewsletterUnsubscription extends NewsletterModule {
         return $text;
     }
 
-    function hook_newsletter_page_text($text, $key) {
+    function hook_newsletter_page_text($text, $key, $user) {
+       
+        $options = $this->get_options('', $this->get_current_language($user));
         if ($key == 'unsubscribe') {
-            return $this->options['unsubscribe_text'];
+            return $options['unsubscribe_text'];
         }
         if ($key == 'unsubscribed') {
-            return $this->options['unsubscribed_text'];
+            return $options['unsubscribed_text'];
         }
         if ($key == 'reactivated') {
-            return $this->options['reactivated_text'];
+            return $options['reactivated_text'];
         }
         if ($key == 'unsubscription_error') {
-            return $this->options['error_text'];
+            return $options['error_text'];
         }
         return $text;
     }
