@@ -333,6 +333,7 @@ return array(
     'WeDevs\\PM\\Common\\Models\\Board' => $baseDir . '/src/Common/Models/Board.php',
     'WeDevs\\PM\\Common\\Models\\Boardable' => $baseDir . '/src/Common/Models/Boardable.php',
     'WeDevs\\PM\\Common\\Models\\Meta' => $baseDir . '/src/Common/Models/Meta.php',
+    'WeDevs\\PM\\Common\\Traits\\Assignee_Filter' => $baseDir . '/src/Common/Traits/Assignee_Filter.php',
     'WeDevs\\PM\\Common\\Traits\\File_Attachment' => $baseDir . '/src/Common/Traits/File_Attachment.php',
     'WeDevs\\PM\\Common\\Traits\\Model_Events' => $baseDir . '/src/Common/Traits/Model_Events.php',
     'WeDevs\\PM\\Common\\Traits\\Request_Filter' => $baseDir . '/src/Common/Traits/Request_Filter.php',

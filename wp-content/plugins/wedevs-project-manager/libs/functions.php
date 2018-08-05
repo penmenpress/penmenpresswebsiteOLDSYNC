@@ -1,6 +1,11 @@
 <?php
 
 use WeDevs\PM\Core\Textdomain\Textdomain;
+use WeDevs\PM\Core\Notifications\Email;
+use League\Fractal;
+use League\Fractal\Resource\Item as Item;
+use WeDevs\PM\Task\Transformers\Task_Transformer;
+use WeDevs\PM\Task\Models\Task;
 
 function pm_get_text( $key ) {
     return Textdomain::get_text( $key);
@@ -64,8 +69,8 @@ function format_date( $date ) {
     $timezone    = get_wp_timezone();
 
     return [
-        'date'      => $date ? $date->format( $date_format ) : null,
-        'time'      => $date ? $date->format( $time_format ) : null,
+        'date'      => $date ? $date->format( 'Y-m-d H:i:s' ) : null,
+        'time'      => $date ? $date->format( 'Y-m-d H:i:s' ) : null,
         'timezone'  => tzcode_to_tzstring( $timezone ),
         'timestamp' => $date ? strtotime( $date ) : null
     ];
@@ -221,8 +226,12 @@ function pm_get_response( $resource, $extra = [] ) {
     return array_merge( $extra, $response );
 }
 
-function pmpr($data) {
-    echo '<pre>'; print_r($data); '</pre>';
+function pmpr() {
+    $args = func_get_args();
+
+    foreach ( $args as $arg ) {
+        echo '<pre>'; print_r( $arg ); '</pre>';
+    }
 }
 
 function pm_default_co_caps() {
@@ -567,5 +576,50 @@ function pm_filter_content_url( $content ) {
     $content = apply_filters( 'pm_get_content_url', $content );
     
     return $content;
+}
+
+function pm_get_user_url( $user_id = false ) {
+    $user_id = $user_id ? $user_id : get_current_user_id();
+
+    $pm_base  = Email::getInstance()->pm_link();
+    $user_url = $pm_base . '#/my-tasks/' . $user_id;
+
+    return $user_url;
+}
+
+function pm_get_task_url( $project_id, $list_id, $task_id ) {
+
+    $pm_base  = Email::getInstance()->pm_link();
+    $task_url = $pm_base . '#/projects/' . $project_id . '/task-lists/' . $list_id . '/tasks/' . $task_id;
+
+    return $task_url;
+}
+
+function pm_get_task( $task_id ) {
+    $task = Task::with('task_lists')
+        ->where( 'id', $task_id )
+        ->first();
+    
+    if ( $task == NULL ) {
+        return pm_get_response( null,  [
+            'message' => pm_get_text('success_messages.no_element')
+        ] );
+    }
+
+    $resource = new Item( $task, new Task_Transformer );
+
+    return pm_get_response( $resource );
+}
+
+function pm_get_file_download_url( $project_id, $user_id, $file_id ) {
+    return get_rest_url() . 'pm/v2/projects/' . $project_id . '/files/' . $file_id . '/users/' . $user_id . '/download';
+}
+
+function pm_get_list_url( $project_id, $list_id ) {
+
+    $pm_base  = Email::getInstance()->pm_link();
+    $list_url = $pm_base . '#/projects/' . $project_id . '/task-lists/' . $list_id;
+
+    return $list_url;
 }
 

@@ -116,7 +116,7 @@ class Task_List_Transformer extends TransformerAbstract {
 
         $tasks = $item->tasks();
         $tasks = apply_filters( 'pm_task_query', $tasks,  $item->project_id, $item );
-        $tasks =  $tasks->orderBy( pm_tb_prefix() . 'pm_boardables.order', 'DESC' )
+        $tasks =  $tasks->orderBy( pm_tb_prefix() . 'pm_boardables.order', 'ASC' )
             ->paginate( 15, ['*'], 'page', $page );
 
         return $this->make_paginated_tasks( $tasks );
@@ -136,7 +136,10 @@ class Task_List_Transformer extends TransformerAbstract {
                 ->where( 'status', 1 );
 
         $tasks = apply_filters( 'pm_complete_task_query', $tasks,  $item->project_id, $item );
-        $tasks =  $tasks->orderBy( pm_tb_prefix() . 'pm_boardables.order', 'DESC' )
+        if ( $per_page == '-1' ) {
+            $per_page = $tasks->count();
+        }
+        $tasks =  $tasks->orderBy( pm_tb_prefix() . 'pm_boardables.order', 'ASC' )
             ->paginate( $per_page );
 
         return $this->make_paginated_tasks( $tasks );
@@ -154,7 +157,12 @@ class Task_List_Transformer extends TransformerAbstract {
         $tasks = $item->tasks()
             ->where( 'status', 0 );
         $tasks = apply_filters( 'pm_incomplete_task_query', $tasks,  $item->project_id, $item );
-        $tasks = $tasks->orderBy( pm_tb_prefix() . 'pm_boardables.order', 'DESC' )
+        
+        if ( $per_page == '-1' ) {
+            $per_page = $tasks->count();
+        }
+        
+        $tasks = $tasks->orderBy( pm_tb_prefix() . 'pm_boardables.order', 'ASC' )
             ->paginate( $per_page );
         return $this->make_paginated_tasks( $tasks );
     }
