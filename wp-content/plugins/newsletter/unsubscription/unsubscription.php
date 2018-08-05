@@ -31,6 +31,7 @@ class NewsletterUnsubscription extends NewsletterModule {
 
     function hook_wp_loaded() {
         global $wpdb;
+        //error_reporting(E_STRICT | E_ALL | E_NOTICE);
 
         switch (Newsletter::instance()->action) {
             case 'u':
@@ -65,9 +66,10 @@ class NewsletterUnsubscription extends NewsletterModule {
             case 'reactivate':
                 if ($this->antibot_form_check()) {
                     $user = $this->reactivate();
-                    $this->show_message('reactivated', $user);
+                    $url = $this->build_message_url(null, 'reactivated', $user);
+                    wp_redirect($url);
                 } else {
-                    $this->request_to_antibot_form('Unsubscribe');
+                    $this->request_to_antibot_form('Reactivate');
                 }
                 die();
 
@@ -82,14 +84,12 @@ class NewsletterUnsubscription extends NewsletterModule {
      */
     function unsubscribe() {
         $user = $this->get_user_from_request(true);
-
-        if ($user->status == 'U') {
+        
+        if ($user->status == TNP_User::STATUS_UNSUBSCRIBED) {
             return $user;
         }
 
-        $this->set_user_status($user, TNP_User::STATUS_UNSUBSCRIBED);
-
-        $user = $this->get_user($user);
+        $user = $this->set_user_status($user, TNP_User::STATUS_UNSUBSCRIBED);
 
         $this->add_user_log($user, 'unsubscribe');
 
@@ -102,12 +102,24 @@ class NewsletterUnsubscription extends NewsletterModule {
             $wpdb->update(NEWSLETTER_USERS_TABLE, array('unsub_email_id' => (int) $email_id, 'unsub_time' => time()), array('id' => $user->id));
         }
 
-        NewsletterSubscription::instance()->send_message('unsubscribed', $user);
+        $this->send_unsubscribed_email($user);
 
         NewsletterSubscription::instance()->notify_admin($user, 'Newsletter unsubscription');
 
         return $user;
     }
+    
+    function send_unsubscribed_email($user, $force = false) {
+        $options = $this->get_options('', $this->get_user_language($user));
+        if (!$force && !empty($options['unsubscribed_disabled'])) {
+            return true;
+        }
+
+        $message = $options['unsubscribed_message'];
+        $subject = $options['unsubscribed_subject'];
+
+        return NewsletterSubscription::instance()->mail($user->email, $this->replace($subject, $user), $this->replace($message, $user));
+    }    
 
     /**
      * Reactivate the subscriber extracted from the request setting his status 
@@ -137,8 +149,10 @@ class NewsletterUnsubscription extends NewsletterModule {
         return $text;
     }
 
-    function hook_newsletter_page_text($text, $key, $user) {
+    function hook_newsletter_page_text($text, $key, $user = null) {
        
+        if (!$user) return $text;
+        
         $options = $this->get_options('', $this->get_current_language($user));
         if ($key == 'unsubscribe') {
             return $options['unsubscribe_text'];
