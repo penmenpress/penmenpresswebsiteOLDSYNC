@@ -26,14 +26,11 @@ if ( ! class_exists('TagGroups_Base') ) {
 
       if ( ! defined( 'TAG_GROUPS_VERSION') ){
 
-        define( 'TAG_GROUPS_VERSION', $this->get_version_from_plugin_data( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/tag-groups.php' ) );
+        define( 'TAG_GROUPS_VERSION', TagGroups_Base::get_version_from_plugin_data( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/tag-groups.php' ) );
 
       }
 
       $this->check_preconditions();
-
-      // save new version
-      update_option( 'tag_group_base_version', TAG_GROUPS_VERSION );
 
       $this->register_actions();
 
@@ -47,7 +44,7 @@ if ( ! class_exists('TagGroups_Base') ) {
     * @param string $path Absolute path of this plugin
     * @return void
     */
-    private function get_version_from_plugin_data( $path )
+    public static function get_version_from_plugin_data( $path )
     {
 
       if ( ! function_exists('get_plugin_data') ){
@@ -73,6 +70,9 @@ if ( ! class_exists('TagGroups_Base') ) {
 
     /**
     *   Registers all required actions with WP
+    *
+    * @param void
+    * @return void
     */
     private function register_actions() {
 
@@ -85,9 +85,13 @@ if ( ! class_exists('TagGroups_Base') ) {
         // backend stuff
         add_action( 'admin_init', array( 'TagGroups_Admin', 'admin_init' ) );
 
+        add_action( 'admin_init', array( 'TagGroups_Base', 'check_old_premium' ) );
+
         add_action( 'admin_menu', array( 'TagGroups_Admin', 'register_menus' ) );
 
         add_action( 'admin_enqueue_scripts', array( 'TagGroups_Admin', 'add_admin_js_css' ) );
+
+        add_action( 'admin_notices', array( 'TagGroups_Admin_Notice', 'display' ) );
 
       } else {
 
@@ -96,20 +100,25 @@ if ( ! class_exists('TagGroups_Base') ) {
 
         add_action( 'init', array( 'TagGroups_Shortcode', 'widget_hook' ) );
 
-        TagGroups_Shortcode::register();
-
       }
 
+      // Register shortcodes also for admin so that we can remove them with strip_shortcodes in Ajax call
+      TagGroups_Shortcode::register();
 
       /**
       * REST API
       */
       TagGroups_REST_API::register();
 
+
     }
+
 
     /**
     * Check if WordPress meets the minimum version
+    *
+    * @param void
+    * @return void
     */
     private function check_preconditions() {
 
@@ -118,14 +127,37 @@ if ( ! class_exists('TagGroups_Base') ) {
       // Check the minimum WP version
       if ( version_compare( $wp_version, TAG_GROUPS_MINIMUM_VERSION_WP , '<' ) ) {
 
-        error_log( 'Insufficient WordPress version for Tag Groups plugin.' );
+        error_log( '[Tag Groups] Insufficient WordPress version for Tag Groups plugin.' );
 
-        update_option( 'tag_group_admin_notice', array(
-          'type' => 'error',
-          'content' => sprintf( __( 'The plugin %1$s requires WordPress %2$s to function properly.', 'tag-groups'), '<b>Tag Groups</b>', TAG_GROUPS_MINIMUM_VERSION_WP ) .
-          __( 'Please upgrade WordPress and then try again.', 'tag-groups' )
-        ));
-        add_action('admin_notices', array('TagGroups_Base','admin_notice') );
+        TagGroups_Admin_Notice::add( 'error', sprintf( __( 'The plugin %1$s requires WordPress %2$s to function properly.', 'tag-groups'), '<b>Tag Groups</b>', TAG_GROUPS_MINIMUM_VERSION_WP ) .
+        __( 'Please upgrade WordPress and then try again.', 'tag-groups' ) );
+
+        return;
+
+      }
+
+    }
+
+
+    /**
+    * Check if we don't have any old Tag Groups Premium
+    *
+    * @param void
+    * @return void
+    */
+    public static function check_old_premium() {
+
+      // Check the minimum WP version
+      if (
+        defined( 'TAG_GROUPS_VERSION' ) &&
+        defined( 'TAG_GROUPS_PREMIUM_VERSION' ) &&
+        version_compare( TAG_GROUPS_VERSION, '0.38' , '>' ) &&
+        version_compare( TAG_GROUPS_PREMIUM_VERSION, '1.12' , '<' )
+      ) {
+
+        error_log( '[Tag Groups Premium] Incompatible versions of Tag Groups and Tag Groups Premium.' );
+
+        TagGroups_Admin_Notice::add( 'info', sprintf( __( 'Your version of Tag Groups Premium is out of date and will not work with this version of Tag Groups. Please <a %s>update Tag Groups Premium</a>.', 'tag-groups'), 'href="https://documentation.chattymango.com/documentation/tag-groups-premium/maintenance-and-troubleshooting/updating-tag-groups-premium/" target="_blank"' ), '<b>Tag Groups</b>' );
 
         return;
 
@@ -142,6 +174,14 @@ if ( ! class_exists('TagGroups_Base') ) {
     * @return void
     */
     static function on_activation() {
+
+      if ( ! defined( 'TAG_GROUPS_VERSION') ){
+
+        define( 'TAG_GROUPS_VERSION', TagGroups_Base::get_version_from_plugin_data( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/tag-groups.php' ) );
+
+        update_option( 'tag_group_base_version', TAG_GROUPS_VERSION );
+
+      }
 
       /*
       * Taxonomy should not be empty
@@ -165,6 +205,16 @@ if ( ! class_exists('TagGroups_Base') ) {
       if ( '' == get_option( 'tag_group_theme', '' )  ) {
 
         update_option( 'tag_group_theme', TAG_GROUPS_STANDARD_THEME );
+
+      }
+
+
+      /**
+      * Register time of first use
+      */
+      if ( ! get_option( 'tag_group_base_first_activation_time', false ) ) {
+
+        update_option( 'tag_group_base_first_activation_time', time() );
 
       }
 
@@ -195,7 +245,7 @@ if ( ! class_exists('TagGroups_Base') ) {
 
         if ( defined( 'WP_DEBUG') && WP_DEBUG ) {
 
-          error_log( 'Tag Groups: Deleted deprecated options' );
+          error_log( '[Tag Groups] Deleted deprecated options' );
 
         }
 
@@ -212,12 +262,41 @@ if ( ! class_exists('TagGroups_Base') ) {
       }
 
 
+      if ( get_option( 'tag_group_onboarding', false ) === false ) {
+
+        /*
+        * Seems to be a first-time user - display some help
+        */
+        $onboarding_link =  admin_url( 'admin.php?page=tag-groups-settings-first-steps' );
+
+        if ( defined( 'TAG_GROUPS_PREMIUM_VERSION' ) ) {
+
+          $plugin_name = 'Tag Groups Premium';
+
+        } else {
+
+          $plugin_name = 'Tag Groups';
+
+        }
+
+        TagGroups_Admin_Notice::add(
+          'info',
+          '<h3>' . sprintf( __( 'Thank you for installing %s!', 'tag-groups' ), $plugin_name ) . '</h3>' .
+          '<p>' . sprintf( __( 'Click <a %s>here</a> to get some help on how to get started.', 'tag-groups' ), 'href="' . $onboarding_link . '"') . '</p>'
+        );
+
+        update_option( 'tag_group_onboarding', 1 );
+
+      }
+
     }
 
 
     /**
     * Adds js and css to frontend
     *
+    *
+    * @param void
     * @return void
     */
     static function add_js_css() {
@@ -288,7 +367,7 @@ if ( ! class_exists('TagGroups_Base') ) {
 
                 } catch ( ErrorException $e ) {
 
-                  error_log( 'Error searching ' . WP_CONTENT_DIR . '/uploads/' . $theme );
+                  error_log( '[Tag Groups] Error searching ' . WP_CONTENT_DIR . '/uploads/' . $theme );
 
                 }
 
@@ -346,10 +425,14 @@ if ( ! class_exists('TagGroups_Base') ) {
         /**
         * Checks if an admin notice is pending and, if necessary, display it
         *
+        * @deprecated since 0.38.9; use class TagGroups_Admin_Notice
+        *
         * @param void
         * @return void
         */
         static function admin_notice() {
+
+          error_log( '[Tag Groups] Deprecated: TagGroups_Base::admin_notice()' );
 
           $notice = get_option( 'tag_group_admin_notice', array() );
 
@@ -366,16 +449,6 @@ if ( ! class_exists('TagGroups_Base') ) {
           }
 
 
-          if ( get_option( 'tag_group_onboarding', false ) === false ) {
-
-            /*
-            * Seems to be a first-time user - display some help
-            */
-            self::display_onboarding_message();
-
-            update_option( 'tag_group_onboarding', 1 );
-
-          }
         }
 
 
@@ -383,6 +456,8 @@ if ( ! class_exists('TagGroups_Base') ) {
         * Displays the message for first-time users
         *
         * Not to be triggered by on_activation so that localization can work
+        *
+        * @deprecated 0.38.9
         *
         * @param void
         * @return void

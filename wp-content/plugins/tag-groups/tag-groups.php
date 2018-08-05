@@ -5,7 +5,7 @@ Plugin URI: https://chattymango.com/tag-groups/
 Description: Assign tags to groups and display them in a tabbed tag cloud
 Author: Chatty Mango
 Author URI: https://chattymango.com/about/
-Version: 0.38.8
+Version: 0.39.2
 License: GNU GENERAL PUBLIC LICENSE, Version 3
 Text Domain: tag-groups
 Domain Path: /languages
@@ -68,27 +68,15 @@ if ( ! defined( 'TAG_GROUPS_PLUGIN_BASENAME' ) ) {
 }
 
 
+/*
+* Require all classes of this plugin
+*/
+foreach ( glob( dirname( __FILE__ ) . '/include/*.php') as $filename ) {
 
+    require_once $filename;
 
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.base.php' );
+}
 
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.admin.php' );
-
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.shortcode.php' );
-
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.feed.php' );
-
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.cache.php' );
-
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.options.php' );
-
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.group.php' );
-
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.term.php' );
-
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.taxonomy.php' );
-
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/include/class.rest_api.php' );
 
 /**
 * add Gutenberg functionality
@@ -112,12 +100,12 @@ if ( ! function_exists( 'tag_groups_init' ) ) {
     // URL must be defined after WP has finished loading its settings
     if ( ! defined( 'TAG_GROUPS_PLUGIN_URL' ) ){
 
-    define ( "TAG_GROUPS_PLUGIN_URL", plugins_url( '', __FILE__ ) );
+      define ( "TAG_GROUPS_PLUGIN_URL", plugins_url( '', __FILE__ ) );
 
-    // start all initializations, registration of hooks, housekeeping, menus, ...
-    $tagGroups_Base_instance = new TagGroups_Base();
+      // start all initializations, registration of hooks, housekeeping, menus, ...
+      $tagGroups_Base_instance = new TagGroups_Base();
 
-}
+    }
 
   }
 

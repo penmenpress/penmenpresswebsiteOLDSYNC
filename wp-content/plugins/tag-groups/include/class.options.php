@@ -47,6 +47,7 @@ if ( ! class_exists('TagGroups_Options') ) {
         $option_names['tag_group_onboarding'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => false );
         $option_names['tag_groups_per_page'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
         $option_names['tag_group_base_version'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
+        $option_names['tag_group_base_first_activation_time'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
 
 
         /**
@@ -79,6 +80,13 @@ if ( ! class_exists('TagGroups_Options') ) {
         $option_names['tag_group_display_groups_under_posts_title'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
         $option_names['tag_group_display_groups_under_posts_priority'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
         $option_names['tag_group_premium_version'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_premium_first_activation_time'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_display_groups_under_posts_separator'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_dpf_template'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_add_product_tags_to_attributes'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_display_groups_under_products_separator'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        $option_names['tag_group_remove_the_product_tags'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
+        
 
         // should be last:
         $option_names['tag_group_reset_when_uninstall'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );

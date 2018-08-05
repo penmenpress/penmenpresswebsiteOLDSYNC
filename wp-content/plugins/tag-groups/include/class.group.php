@@ -397,6 +397,7 @@ if ( ! class_exists('TagGroups_Group') ) {
           return $terms;
 
         }
+        
       }
 
       /**
@@ -951,7 +952,7 @@ if ( ! class_exists('TagGroups_Group') ) {
 
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 
-          error_log( 'Tag Groups: Error retrieving terms in get_info().' );
+          error_log( '[Tag Groups] Error retrieving terms in get_info().' );
 
         }
 
@@ -1009,7 +1010,7 @@ if ( ! class_exists('TagGroups_Group') ) {
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 
-              error_log( 'Tag Groups: Error retrieving terms in get_info().' );
+              error_log( '[Tag Groups] Error retrieving terms in get_info().' );
 
             }
 
@@ -1046,6 +1047,7 @@ if ( ! class_exists('TagGroups_Group') ) {
       $result = array();
 
       foreach ( $this->term_groups as $term_group ) {
+
         if ( isset( $this->positions[ $term_group ] ) && isset( $this->labels[ $term_group ] ) ) { // allow unassigned
 
           $result[ $this->positions[ $term_group ] ] = array(
@@ -1055,6 +1057,7 @@ if ( ! class_exists('TagGroups_Group') ) {
           );
 
         }
+
       }
 
       /**
