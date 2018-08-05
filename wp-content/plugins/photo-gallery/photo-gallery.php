@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.4.15
+ * Version: 1.4.16
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/pricing/
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,8 +81,8 @@ final class BWG {
     $this->plugin_dir = WP_PLUGIN_DIR . "/" . plugin_basename(dirname(__FILE__));
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.4.15';
-    $this->db_version = '1.4.15';
+    $this->plugin_version = '1.4.16';
+    $this->db_version = '1.4.16';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
 
@@ -182,9 +182,10 @@ final class BWG {
 
     add_filter('widget_tag_cloud_args', array($this, 'tag_cloud_widget_args'));
 
-    add_filter('cron_schedules', array($this, 'autoupdate_interval'));
-
-    add_action('bwg_schedule_event_hook', array($this, 'social_galleries'));
+    if ( $this->is_pro ) {
+      add_filter('cron_schedules', array( $this, 'autoupdate_interval' ));
+      add_action('bwg_schedule_event_hook', array( $this, 'social_galleries' ));
+    }
 
 	  // Check add-ons versions.
     if ( $this->is_pro ) {
@@ -988,8 +989,10 @@ final class BWG {
    * Activate.
    */
   public function activate() {
-    delete_transient('bwg_update_check');
-    wp_schedule_event(time(), 'bwg_autoupdate_interval', 'bwg_schedule_event_hook');
+    if ( $this->is_pro ) {
+      delete_transient('bwg_update_check');
+      wp_schedule_event(time(), 'bwg_autoupdate_interval', 'bwg_schedule_event_hook');
+    }
     $version = get_option('wd_bwg_version');
     $new_version = $this->db_version;
     if ($version && version_compare($version, $new_version, '<')) {

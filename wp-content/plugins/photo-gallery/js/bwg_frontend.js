@@ -862,14 +862,15 @@ function bwg_change_image_lightbox(current_key, key, data, from_effect) {
             jQuery(".bwg_image_title").html(jQuery('<span style="display: block;" />').html(data[key]["alt"]).text());
             jQuery(".bwg_image_description").html(jQuery('<span style="display: block;" />').html(data[key]["description"]).text());
             /*jQuery(".bwg_image_info").removeAttr("style");*/
-          /* Set active thumbnail.*/
-
-          jQuery(".bwg_filmstrip_thumbnail").removeClass("bwg_thumb_active").addClass("bwg_thumb_deactive");
-          jQuery("#bwg_filmstrip_thumbnail_" + key).removeClass("bwg_thumb_deactive").addClass("bwg_thumb_active");
+            /* Set active thumbnail.*/
+            jQuery(".bwg_filmstrip_thumbnail").removeClass("bwg_thumb_active").addClass("bwg_thumb_deactive");
+            jQuery("#bwg_filmstrip_thumbnail_" + key).removeClass("bwg_thumb_deactive").addClass("bwg_thumb_active");
+            jQuery(".bwg_image_info").css("opacity", 1);
             if (data[key]["alt"].trim() == "") {
-                if (data[key]["description"].trim() == "") {
-                    jQuery(".bwg_image_info").css("background", "none");
-                }
+              if (data[key]["description"].trim() == "") {
+                jQuery(".bwg_image_info").css("background", "none");
+                jQuery(".bwg_image_info").css("opacity", 0);
+              }
             }
             if (jQuery(".bwg_image_info_container1").css("display") != 'none') {
                 jQuery(".bwg_image_info_container1").css("display", "table-cell");

@@ -1308,7 +1308,7 @@ class BWGViewGalleryBox {
         <div class="bwg_image_info_container1">
           <div class="bwg_image_info_container2">
             <span class="bwg_image_info_spun">
-              <div class="bwg_image_info" <?php if(trim($current_image_alt) == '' && trim($current_image_description) == '') { echo 'style="background:none;"'; } ?>>
+              <div class="bwg_image_info" <?php if(trim($current_image_alt) == '' && trim($current_image_description) == '') { echo 'style="opacity: 0;"'; } ?>>
                 <div class="bwg_image_title"><?php echo html_entity_decode($current_image_alt); ?></div>
                 <div class="bwg_image_description"><?php echo html_entity_decode($current_image_description); ?></div>
               </div>
