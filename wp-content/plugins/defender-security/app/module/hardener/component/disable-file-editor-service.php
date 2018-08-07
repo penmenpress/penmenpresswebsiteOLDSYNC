@@ -29,7 +29,7 @@ class Disable_File_Editor_Service extends Rule_Service implements IRule_Service 
 		$config_path = $this->retrieveWPConfigPath();
 		if ( ! is_writeable( $config_path ) ) {
 			return new \WP_Error( Error_Code::NOT_WRITEABLE,
-				sprintf( __( "The file %s is not writeable", "defender-security" ), $config_path ) );
+				sprintf( __( "The file %s is not writable", "defender-security" ), $config_path ) );
 		}
 		$config = file( $config_path );
 		$line   = $this->findLine( $config );
@@ -63,7 +63,7 @@ class Disable_File_Editor_Service extends Rule_Service implements IRule_Service 
 		$config_path = $this->retrieveWPConfigPath();
 		if ( ! is_writeable( $config_path ) ) {
 			return new \WP_Error( Error_Code::NOT_WRITEABLE,
-				sprintf( __( "The file %s is not writeable", "defender-security" ), $config_path ) );
+				sprintf( __( "The file %s is not writable", "defender-security" ), $config_path ) );
 		}
 		$config = file( $config_path );
 		$line   = $this->findLine( $config );

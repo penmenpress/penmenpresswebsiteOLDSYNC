@@ -7,7 +7,7 @@ Contributors: WPMUDEV
 Tags: Security, Security Tweaks, Hardening, IP lockout, Monitoring, Blacklist, Site Protection, Hacked, Security Scan
 Requires at least: 4.6
 Tested up to: 4.9.7
-Stable tag: 1.9
+Stable tag: 1.9.1
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Protect WordPress from hackers with security tweaks, code scans, 2-Step Verification, IP lockouts, and monitoring.
@@ -121,6 +121,13 @@ Hackers and bot attacks are not the only threat to your site.  No matter what se
 
 
 == Changelog ==
+
+= 1.9.1 =
+- Fix: Mask Login Area description text is misleading
+- Fix: wp-admin link of sub-sites in networks link to wrong admin URL
+- Fix: Prevent Information Disclosure & Prevent PHP Execution show false error message when first applied
+- Fix: Dashboard reporting section mis-alignment
+- Other minor enhancements and fixes
 
 = 1.9 =
 - New: Ability to edit default two-factor authentication email notifications

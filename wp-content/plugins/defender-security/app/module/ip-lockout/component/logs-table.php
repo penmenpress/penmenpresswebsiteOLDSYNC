@@ -178,7 +178,7 @@ class Logs_Table extends \WP_List_Table {
                                     </div>
                                     <div class="column is-4">
                                         <strong>
-											<?php _e( "Ip Address", "defender-security" ) ?>
+											<?php _e( "IP Address", "defender-security" ) ?>
                                         </strong>
                                         <input name="ip_address" type="text"
                                                placeholder="<?php esc_attr_e( "Enter an IP address", "defender-security" ) ?>">

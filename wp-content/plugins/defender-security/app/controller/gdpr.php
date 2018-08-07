@@ -19,7 +19,6 @@ class GDPR extends Controller {
 		$content    .= '<p>' . __( "This site may be using WPMU DEV third-party cloud storage to store backups of its audit logs where personal information is collected.", "defender-security" ) . '</p>';
 		$content    .= '<p><strong>' . __( "Additional data", "defender-security" ) . '</strong></p>';
 		$content    .= '<p>' . __( "This site creates and stores an activity log that capture the IP address, username, email address and tracks user activity (like when a user makes a comment). Information will be stored locally for 30 days and remotely for 1 year. Information on remote logs cannot be cleared for security purposes.", "defender-security" ) . '</p>';
-
 		return $content;
 	}
 }

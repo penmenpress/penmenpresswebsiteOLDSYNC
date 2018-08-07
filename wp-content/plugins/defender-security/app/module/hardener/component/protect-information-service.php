@@ -43,7 +43,7 @@ class Protect_Information_Service extends Rule_Service implements IRule_Service 
 		}
 		if ( ! is_writeable( $htPath ) ) {
 			return new \WP_Error( Error_Code::NOT_WRITEABLE,
-				sprintf( __( "The file %s is not writeable", "defender-security" ), $htPath ) );
+				sprintf( __( "The file %s is not writable", "defender-security" ), $htPath ) );
 		}
 		$htConfig       = file( $htPath );
 		$rules    		= $this->apache_rule();
@@ -66,7 +66,7 @@ class Protect_Information_Service extends Rule_Service implements IRule_Service 
 			$htPath = ABSPATH . '.htaccess';
 			if ( ! is_writeable( $htPath ) ) {
 				return new \WP_Error( Error_Code::NOT_WRITEABLE,
-					sprintf( __( "The file %s is not writeable", "defender-security" ), $htPath ) );
+					sprintf( __( "The file %s is not writable", "defender-security" ), $htPath ) );
 			}
 			$htConfig = file_get_contents( $htPath );
 			$rules    = $this->apache_rule();

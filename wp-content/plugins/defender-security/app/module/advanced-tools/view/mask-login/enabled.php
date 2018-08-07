@@ -6,7 +6,7 @@
     </div>
     <div class="box-content issues-box-content">
         <form method="post" id="ad-mask-settings-frm" class="advanced-settings-frm">
-            <p class="line"><?php _e( "Change your default wp-admin and wp-content login URL.", "defender-security" ) ?></p>
+            <p class="line"><?php _e( "Change your default WordPress login URL to hide your login area from hackers and bots.", "defender-security" ) ?></p>
 			<?php if ( isset( wp_defender()->global['compatibility'] ) ): ?>
                 <div class="well well-error with-cap">
                     <i class="def-icon icon-warning icon-yellow "></i>
@@ -32,7 +32,7 @@
                 <div class="column is-one-third">
                     <label><?php _e( "Masking URLs", "defender-security" ) ?></label>
                     <span class="sub">
-                        <?php _e( "Choose the new URL slug where users of your website will now navigate to to log in, register or administrate.", "defender-security" ) ?>
+                        <?php _e( "Choose the new URL slug where users of your website will now navigate to log in or register.", "defender-security" ) ?>
                     </span>
                 </div>
                 <div class="column">
@@ -46,7 +46,7 @@
                 <div class="column is-one-third">
                     <label><?php _e( "Redirect traffic", "defender-security" ) ?></label>
                     <span class="sub">
-                        <?php _e( "With this feature you can send visitors and bots who try to visit the default Wordpress login URLs to a separate URL to avoid 404s.", "defender-security" ) ?>
+                        <?php _e( "With this feature you can send visitors and bots who try to visit the default WordPress login URLs to a separate URL to avoid 404s.", "defender-security" ) ?>
                     </span>
                 </div>
                 <div class="column">

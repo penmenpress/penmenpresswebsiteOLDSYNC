@@ -14,7 +14,7 @@
 						<?php _e( "Blacklist", "defender-security" ) ?>
                     </label>
                     <span class="sub">
-						<?php _e( "Any IP addresses you list here will be completely blocked from accessing our website, including admins.", "defender-security" ) ?>
+						<?php _e( "Any IP addresses you list here will be completely blocked from accessing your website, including admins.", "defender-security" ) ?>
 					</span>
                 </div>
                 <div class="column">

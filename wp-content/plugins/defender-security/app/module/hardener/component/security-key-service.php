@@ -45,7 +45,7 @@ class Security_Key_Service extends Rule_Service implements IRule_Service {
 		//check if can write
 		if ( ! is_writeable( $config_path ) ) {
 			return new \WP_Error( Error_Code::NOT_WRITEABLE,
-				sprintf( __( "The file %s is not writeable", "defender-security" ), $config_path ) );
+				sprintf( __( "The file %s is not writable", "defender-security" ), $config_path ) );
 		}
 
 		return $this->generateSalt( $config_path );

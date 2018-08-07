@@ -88,7 +88,7 @@ class Scan extends Behavior {
 				<?php
 				if ( $this->countAll == 0 ): ?>
 					<span class="def-tag tag-success">
-				<?php else: 
+				<?php else:
 					?>
 					<span class="def-tag tag-error">
 				<?php endif;
@@ -195,8 +195,8 @@ class Scan extends Behavior {
 		ob_start();
 		?>
         <div class="line">
-			<?php _e( "Scan your website for file changes, vulnerabilities and injected code and get and
-        get notified about anything suspicious.", "defender-security" ) ?>
+			<?php _e( "Scan your website for file changes, vulnerabilities and injected code and get
+        notified about anything suspicious.", "defender-security" ) ?>
         </div>
         <form id="start-a-scan" method="post" class="scan-frm">
 			<?php
