@@ -66,6 +66,8 @@ class NewsletterSubscription extends NewsletterModule {
 
         wp_enqueue_script('newsletter-subscription', plugins_url('newsletter') . '/subscription/validate.js', array(), NEWSLETTER_VERSION, true);
 
+        $options = $this->get_options('profile', $this->get_current_language());
+        
         $data = array();
         $data['messages'] = array();
         if (isset($options['email_error'])) {

@@ -84,11 +84,12 @@ class NewsletterUnsubscription extends NewsletterModule {
      */
     function unsubscribe() {
         $user = $this->get_user_from_request(true);
-        
+
         if ($user->status == TNP_User::STATUS_UNSUBSCRIBED) {
             return $user;
         }
 
+        $user = $this->refresh_user_token($user);
         $user = $this->set_user_status($user, TNP_User::STATUS_UNSUBSCRIBED);
 
         $this->add_user_log($user, 'unsubscribe');
@@ -108,7 +109,7 @@ class NewsletterUnsubscription extends NewsletterModule {
 
         return $user;
     }
-    
+
     function send_unsubscribed_email($user, $force = false) {
         $options = $this->get_options('', $this->get_user_language($user));
         if (!$force && !empty($options['unsubscribed_disabled'])) {
@@ -119,7 +120,7 @@ class NewsletterUnsubscription extends NewsletterModule {
         $subject = $options['unsubscribed_subject'];
 
         return NewsletterSubscription::instance()->mail($user->email, $this->replace($subject, $user), $this->replace($message, $user));
-    }    
+    }
 
     /**
      * Reactivate the subscriber extracted from the request setting his status 
@@ -150,17 +151,24 @@ class NewsletterUnsubscription extends NewsletterModule {
     }
 
     function hook_newsletter_page_text($text, $key, $user = null) {
-       
-        if (!$user) return $text;
-        
+
         $options = $this->get_options('', $this->get_current_language($user));
         if ($key == 'unsubscribe') {
-            return $options['unsubscribe_text'];
+            if (!$user) {
+                return 'Subscriber not found.';
+            }
+            return $options['error_text'];
         }
         if ($key == 'unsubscribed') {
+            if (!$user) {
+                return $options['error_text'];
+            }
             return $options['unsubscribed_text'];
         }
         if ($key == 'reactivated') {
+            if (!$user) {
+                return $options['error_text'];
+            }
             return $options['reactivated_text'];
         }
         if ($key == 'unsubscription_error') {

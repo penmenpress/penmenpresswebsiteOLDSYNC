@@ -1302,6 +1302,22 @@ class NewsletterModule {
 
         return $this->get_user($user);
     }
+    
+    /**
+     * 
+     * @global wpdb $wpdb
+     * @param TNP_User $user
+     * @return TNP_User
+     */
+    function refresh_user_token($user) {
+        global $wpdb;
+
+        $token = $this->get_token();
+        
+        $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set token=%s where id=%d limit 1", $token, $user->id));
+
+        return $this->get_user($user);
+    }    
 
     /**
      * Create a log entry with the meaningful user data. 

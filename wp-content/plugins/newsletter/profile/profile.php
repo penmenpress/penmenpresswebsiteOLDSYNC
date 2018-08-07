@@ -102,8 +102,18 @@ class NewsletterProfile extends NewsletterModule {
         return $text;
     }
 
+    /**
+     * 
+     * @param type $text
+     * @param type $key
+     * @param TNP_User $user
+     * @return string
+     */
     function hook_newsletter_page_text($text, $key, $user) {
         if ($key == 'profile') {
+            if (!$user || $user->status == TNP_User::STATUS_UNSUBSCRIBED) {
+                return 'Subscriber not found.';
+            }
             $options = $this->get_options('main', $this->get_current_language($user));
             return $options['text'];
         }
