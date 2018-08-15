@@ -3,7 +3,7 @@ Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
 Tested up to: 4.9 
-Stable tag: 1.4.16
+Stable tag: 1.4.17
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,7 +11,7 @@ Photo Gallery is a powerful gallery plugin with a list of advanced options for c
 
 == Description ==
 
-https://www.youtube.com/watch?v=3u0O9ZdVsGc
+https://www.youtube.com/watch?v=VDKtGHAJVpc
 
 = Useful Links: =  
 [Special Offer for all Premium Plugins](https://10web.io/pricing/) 
@@ -278,7 +278,10 @@ Choose whether to display random or the first/last specific number of images.
 
 
 == Changelog ==
-  
+
+= 1.4.17 =
+* Bug on widgets added with SiteOrigin builder old versions    
+
 = 1.4.16 =
 * Fixed: Disable cron functionality in free version.    
 * Fixed: Title/description container visibility in lightbox.   

@@ -91,3 +91,10 @@ class WidgetTagsController_bwg extends WP_Widget {
 		return $instance;
 	}
 }
+
+/**
+ * Class BWGControllerWidgetTags
+ *
+ * Allow to work old widgets registered with this name of class added with SiteOrigin builder.
+ */
+class BWGControllerWidgetTags extends WidgetTagsController_bwg {}

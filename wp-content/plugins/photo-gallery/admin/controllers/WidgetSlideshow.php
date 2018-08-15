@@ -106,3 +106,10 @@ class WidgetSlideshowController_bwg extends WP_Widget {
 		return $instance;
 	}
 }
+
+/**
+ * Class BWGControllerWidgetSlideshow
+ *
+ * Allow to work old widgets registered with this name of class added with SiteOrigin builder.
+ */
+class BWGControllerWidgetSlideshow extends WidgetSlideshowController_bwg {}
