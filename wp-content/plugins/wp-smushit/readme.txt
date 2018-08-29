@@ -1,13 +1,13 @@
 === Smush Image Compression and Optimization ===
 Plugin Name: Smush Image Compression and Optimization
-Version: 2.8.0.1
+Version: 2.8.1
 Author: WPMU DEV
 Author URI: https://premium.wpmudev.org/
 Contributors: WPMUDEV, alexdunae
 Tags: image, resize, optimize, optimise, compress, performance, optimisation, optimise JPG, photo, pictures, optimizer, Smush WordPress Compression, Smush.it
 Requires at least: 4.6
 Tested up to: 4.9.8
-Stable tag: 2.8.0.1
+Stable tag: 2.8.1
 Requires PHP: 5.2.4
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -163,6 +163,21 @@ Yahoo's Smush.it API is gone forever. So WPMU DEV built our own free API that is
 
 
 == Changelog ==
+
+= 2.8.1 =
+
+* New: Directory Smush UI/UX
+* New: Directory Smush updated library
+* New: Directory Smush ability to select multiple directories
+* New: Directory Smush ability to deselect certain images in directories
+* New: Integration with Gutenberg image block
+* Enhance: Bulk Smush UI
+* Enhance: Update GDPR policy text
+* Enhance: Do not auto resize animated GIF images to preserve animation
+* Enhance: Performance improvements, remove duplicate queries
+* Fixed: Stats reset for Smushed directories when selecting Super-smush option
+* Fixed: Pro status cached bug
+* Fixed: Quick setup modal missing image dimensions for image resize option
 
 = 2.8.0.1 =
 
