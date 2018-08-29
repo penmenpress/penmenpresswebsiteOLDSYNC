@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: MH Magazine lite v2.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-18 06:46+0000\n"
-"PO-Revision-Date: 2018-07-13 09:23+0200\n"
+"PO-Revision-Date: 2018-08-20 10:27+0200\n"
 "Last-Translator: Michael <info@mhthemes.com>\n"
 "Language-Team: Portuguese (Brazil)\n"
 "Language: pt_BR\n"
@@ -118,7 +118,7 @@ msgstr "Pesquisar"
 # @ mh-magazine-lite
 #: 404.php:22 content-none.php:25
 msgid "Recent Articles"
-msgstr ""
+msgstr "Artigos Recentes"
 
 #: content-none.php:4
 msgid "Nothing found"
@@ -215,8 +215,8 @@ msgstr "Mais artigos escritos por %s"
 #, php-format
 msgid "%s Article"
 msgid_plural "%s Articles"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%s Artigo"
+msgstr[1] "%s Artigos"
 
 # @ mh-magazine-lite
 #: footer.php:5
@@ -226,7 +226,7 @@ msgstr ""
 
 #. Name of the template
 msgid "Full Width"
-msgstr ""
+msgstr "Largura Total"
 
 #. Name of the template
 msgid "Homepage"
@@ -247,7 +247,7 @@ msgstr ""
 #: includes/mh-custom-functions.php:91
 #, php-format
 msgid "Articles by %s"
-msgstr ""
+msgstr "Artigos de %s"
 
 # @ mh-magazine-lite
 #: includes/mh-custom-functions.php:186 includes/mh-custom-functions.php:191
@@ -438,13 +438,13 @@ msgstr ""
 #: includes/mh-customizer.php:102 includes/mh-customizer.php:103
 #: includes/mh-customizer.php:127
 msgid "Enable"
-msgstr ""
+msgstr "Habilitar"
 
 # @ mh-magazine-lite
 #: includes/mh-customizer.php:102 includes/mh-customizer.php:103
 #: includes/mh-customizer.php:128
 msgid "Disable"
-msgstr ""
+msgstr "Desabilitar"
 
 # @ mh-magazine-lite
 #: includes/mh-customizer.php:103
