@@ -170,6 +170,9 @@ class NewsletterSubscription extends NewsletterModule {
         if (stripos($text, 'http://') !== false || stripos($text, 'https://') !== false) {
             return true;
         }
+        if (stripos($text, 'www.') !== false) {
+            return true;
+        }
         return false;
     }
 

@@ -157,7 +157,7 @@ class NewsletterUnsubscription extends NewsletterModule {
             if (!$user) {
                 return 'Subscriber not found.';
             }
-            return $options['error_text'];
+            return $options['unsubscribe_text'];
         }
         if ($key == 'unsubscribed') {
             if (!$user) {
