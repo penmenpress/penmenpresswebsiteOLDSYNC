@@ -28,7 +28,11 @@ class PP_TermsInterceptor {
 		
 		if ( $terms ) {
 			global $pp_current_user;
-		
+			
+			$args = array();
+			if ( $this->skip_filtering( (array) $taxonomy, $args ) )
+				return $terms;
+
 			if ( defined( 'PP_GET_TERMS_SHORTCUT' ) && ! did_action( 'wp_head' ) )  // experimental theme-specific workaround
 				return $terms;
 		
@@ -60,7 +64,7 @@ class PP_TermsInterceptor {
 		if ( ! empty( $args['pp_no_filter'] ) || $this->no_filter || apply_filters( 'pp_terms_skip_filtering', false, $taxonomies, $args ) )
 			return true;
 			
-		if ( 'id=>parent' == $args['fields'] ) // internal storage of {$taxonomy}_children
+		if ( ! empty( $args['fields'] ) && ( 'id=>parent' == $args['fields'] ) ) // internal storage of {$taxonomy}_children
 			return true;
 		
 		if ( ! empty( $args['object_ids'] ) && empty( $args['required_operation'] ) )  // WP 4.7 pushes wp_get_object_terms call through get_terms()
@@ -68,6 +72,10 @@ class PP_TermsInterceptor {
 		
 		// Kriesi Enfold theme conflict on "More Posts" query
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && in_array( $_REQUEST['action'], apply_filters( 'pp_unfiltered_ajax_termcount', array( 'avia_ajax_masonry_more' ) ) ) )
+			return true;
+		
+		// Prevent term reading exceptions from filtering Gutenberg term assignment checkbox visibility
+		if ( ! defined( 'PPCE_VERSION' ) && ! empty( $_SERVER['HTTP_REFERER'] ) && strpos( $_SERVER['HTTP_REFERER'], 'wp-admin/post' ) )
 			return true;
 	}
 	
@@ -96,7 +104,7 @@ class PP_TermsInterceptor {
 			require_once( dirname(__FILE__).'/terms-interceptor-counts_pp.php' );	// adds get_terms filter to adjust post counts based on current user's access and pad_counts setting
 			$clauses = PP_TermCountInterceptor::flt_terms_clauses( $clauses, $args );
 		}
-		
+
 		if ( empty($args['required_operation']) ) {
 			$args['required_operation'] = apply_filters( 'pp_get_terms_operation', pp_is_front() ? 'read' : 'assign', $taxonomies, $args );
 		}

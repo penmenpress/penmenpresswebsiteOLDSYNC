@@ -6,6 +6,7 @@ add_action('manage_users_custom_column', array('PP_AdminUsers', 'flt_users_custo
 add_filter( 'manage_users_sortable_columns', array( 'PP_AdminUsers', 'flt_users_columns_sortable' ) );
 
 add_filter('pre_user_query', array('PP_AdminUsers', 'flt_user_query_exceptions' ) );
+add_filter('query', array('PP_AdminUsers', 'flt_user_query' ) );
 
 add_action( 'restrict_manage_users', array('PP_AdminUsers', 'bulk_groups_ui' ) );
 
@@ -254,6 +255,16 @@ class PP_AdminUsers {
 		}
 	}
 	
+	public static function flt_user_query( $query ) {
+		// invalid user count due to redundant joined usermeta rows; no WP_User_Query filter effective when fields arg is 'all_with_meta'
+	
+		global $wpdb;
+		if ( 0 === strpos( $query, "SELECT SQL_CALC_FOUND_ROWS $wpdb->users.ID FROM" ) )
+			$query = str_replace( "$wpdb->users.ID FROM", "DISTINCT $wpdb->users.ID FROM", $query );
+
+		return $query;
+	}
+
 	public static function flt_user_query_exceptions( $query_obj ) {
 		if ( isset( $_REQUEST['orderby'] ) && 'pp_group' == $_REQUEST['orderby'] ) {
 			global $wpdb;

@@ -5,7 +5,7 @@ Tags: restrict, access, permissions, cms, user, private, category, pages, privac
 License: GPLv3
 Requires at least: 3.4
 Tested up to: 4.9.6
-Stable tag: 2.4.4
+Stable tag: 2.4.5
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
@@ -49,6 +49,13 @@ Pro [extensions](http://presspermit.com/extensions) are [available](http://press
 Initial production release
 
 == Changelog ==
+
+= 2.4.5 - 21 Aug 2018 =
+* Fixed : Gutenberg - post update failure
+* Fixed : Gutenberg - restrictive category reading exceptions caused white screen on post creation by restricted author
+* Fixed : Wrong items count on wp-admin Users screen if redundant usermeta records are stored
+* Fixed : PP_GET_PAGES_LEGACY_FILTER did not fully restore previous get_pages() filtering
+* Change : Restore default get_pages() filtering of Page Parent dropdown in wp-admin for Administrators, unless PP_GET_PAGES_LIMIT_ADMIN_FILTERING is defined;
 
 = 2.4.4 - 14 Jun 2018 =
 * Fixed : Page Association exceptions were not applied to parent selection dropdown on Edit Page screen (since 2.4.2)

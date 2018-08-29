@@ -227,6 +227,9 @@ class PP_Ancestry {
 		$args = wp_parse_args( $args, $defaults );
 		extract($args, EXTR_SKIP);
 
+		// This function is only valid for arrays of post or term objects
+		if ( ! is_object( current( $items ) ) ) return $items;
+
 		if ( 'ID' == $col_id ) {
 			if ( ( $child_of && ! defined( 'PPC_FORCE_PAGE_REMAP' ) ) || defined( 'PPC_NO_PAGE_REMAP' ) )
 				$remap_parents = false;
