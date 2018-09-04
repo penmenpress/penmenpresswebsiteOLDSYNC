@@ -819,8 +819,8 @@ class NewsletterSubscription extends NewsletterModule {
      * @global type $newsletter
      * @return type
      */
-    function mail($to, $subject, $message) {
-        $options_template = $this->get_options('template');
+    function mail($to, $subject, $message, $language = '') {
+        $options_template = $this->get_options('template', $language);
 
         $template = trim($options_template['template']);
         if (empty($template) || strpos($template, '{message}') === false) {
@@ -909,7 +909,7 @@ class NewsletterSubscription extends NewsletterModule {
         }
         $subject = $options[$type . '_subject'];
 
-        return $this->mail($user->email, $this->replace($subject, $user), $this->replace($message, $user));
+        return $this->mail($user->email, $this->replace($subject, $user), $this->replace($message, $user), $this->get_user_language($user));
     }
 
     /**
