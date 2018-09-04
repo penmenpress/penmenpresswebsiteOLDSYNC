@@ -37,11 +37,21 @@ if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
   if ( $tag_group_reset_when_uninstall && ! $tag_group_premium_version ) {
 
-    require_once( dirname( __FILE__ ) . '/include/class.options.php' );
+    require_once dirname( __FILE__ ) . '/include/class.options.php';
 
     $tagGroups_options = new TagGroups_Options();
 
     $option_names = $tagGroups_options->get_option_names();
+
+    if ( isset( $option_names[ 'tag_group_group_languages' ] ) ) {
+
+      foreach ( $option_names[ 'tag_group_group_languages' ] as $language ) {
+
+        delete_option( 'term_group_labels_' . $language );
+
+      }
+      
+    }
 
     foreach ( $option_names as $key => $value ) {
 
@@ -63,7 +73,7 @@ if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
     foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( WP_CONTENT_DIR . '/tag-groups/cache/' ) ) as $file) {
 
       // filter out "." and ".."
-      if ($file->isDir()) continue;
+      if ( $file->isDir() ) continue;
 
       @unlink( $file->getPathname() );
 
@@ -102,7 +112,7 @@ if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
     foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( WP_CONTENT_DIR . '/chatty-mango/cache/' ) ) as $file) {
 
       // filter out "." and ".."
-      if ($file->isDir()) continue;
+      if ( $file->isDir() ) continue;
 
       @unlink( $file->getPathname() );
 

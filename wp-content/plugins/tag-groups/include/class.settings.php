@@ -145,7 +145,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
     public static function settings_page_home()
     {
 
-      $tag_group_taxonomy = get_option( 'tag_group_taxonomy', array('post_tag') );
+      $tag_group_taxonomy = TagGroups_Taxonomy::get_enabled_taxonomies(); //get_option( 'tag_group_taxonomy', array('post_tag') );
 
       self::add_header();
 
@@ -161,15 +161,42 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
       $absolute_first_activation_time = ( $tag_group_base_first_activation_time < $tag_group_premium_first_activation_time ) ? $tag_group_base_first_activation_time : $tag_group_premium_first_activation_time;
 
+      $html .= self::get_setting_help();
+
+
+      $alerts = array();
+
       if ( time() - $absolute_first_activation_time < 60*60*24*7 || $group_count < 2 ) {
 
-        $html .= '<p>' . sprintf( __( 'See the <a %s>First Steps</a> for some basic instructions on how to get started.', 'tag-groups' ), 'href="' . menu_page_url( 'tag-groups-settings-first-steps', false ) . '"' ) . '</p>';
+        $alerts[] = sprintf( __( 'See the <a %s>First Steps</a> for some basic instructions on how to get started.', 'tag-groups' ), 'href="' . menu_page_url( 'tag-groups-settings-first-steps', false ) . '"' );
 
       }
 
-      $html .= self::get_setting_help();
 
-      $html .= '<h2>' . __( 'Active Taxonomies', 'tag-groups' ) . '</h2>
+      if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+
+        $alerts[] = __( 'We detected WPML. Your tag group names are translatable.', 'tag-groups' );
+
+      }
+
+      $alerts = apply_filters( 'tag_groups_settings_alerts', $alerts );
+
+      if ( ! empty( $alerts ) ) {
+
+        $html .= '<div style="background-color:#FFF; margin:10px 0 20px; padding:5px 0; float:left; width:100%;">
+        <ul style="list-style-type:disc; margin-left:25px;">
+        <li>' .
+
+        implode( '</li><li>', $alerts ) .
+
+        '</li>
+        </ul>
+        </div>';
+
+      }
+
+      $html .= '<div style="float:left;">
+      <h2>' . __( 'Active Taxonomies', 'tag-groups' ) . '</h2>
       <table class="widefat fixed striped">';
 
       foreach ( $tag_group_taxonomy as $taxonomy ) {
@@ -185,6 +212,11 @@ if ( ! class_exists('TagGroups_Settings') ) {
           'fields' => 'count'
         ) );
 
+        if ( is_object( $term_count ) ) {
+
+          continue;
+
+        }
 
         $html .= '<tr><td><div class="tg_admin_accordion"><h4>' . TagGroups_Taxonomy::get_name_from_slug( $taxonomy ) . ' ('. $taxonomy . ')</h4>
         <div style="display:none;">';
@@ -192,9 +224,17 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
         if ( $group_count < 100 && $term_count < 10000 ) {
 
-          $html .= '<h4>' . __( 'Group Statistics', 'tag-groups' ) . '</h4>';
+          $html .= '<h4>' . __( 'Group Statistics', 'tag-groups' );
 
-          $html .= TagGroups_Shortcode::tag_groups_info( array( 'taxonomy' => $taxonomy, 'group_id' => 'all', 'html_class' => 'widefat fixed striped' ) );
+          if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+
+            $html .= ' (' . __( 'for the selected language', 'tag-groups' ) . ')';
+
+          }
+
+          $html .= '</h4>';
+
+          $html .= TagGroups_Shortcode_Info::tag_groups_info( array( 'taxonomy' => $taxonomy, 'group_id' => 'all', 'html_class' => 'widefat fixed striped' ) );
 
         } else {
 
@@ -208,6 +248,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
       $html .= '</table>';
 
+      $html .= '</div>';
 
       $html .= '
       <!-- begin Tag Groups plugin -->
@@ -981,7 +1022,18 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
           $html .= '<table class="widefat fixed">';
 
-          $html .= '<tr><td>PHP Version</td><td>' . phpversion() . '</td></tr>';
+          $phpversion = phpversion();
+
+          $php_upgrade_text = '';
+
+          if ( version_compare( $phpversion, '7.0.0', '<' ) ) {
+
+            $php_upgrade_text = sprintf( ' <a href="%s" target="_blank">%s</a>', 'https://wordpress.org/support/upgrade-php/', '<span class="dashicons dashicons-warning"></span>' );
+
+          }
+
+          $html .= '<tr><td>PHP Version</td><td>' . $phpversion . $php_upgrade_text . '</td></tr>';
+
           $html .= '<tr><td>PHP Memory Limit</td><td>' . ini_get('memory_limit') . '</td></tr>';
 
           $html .= '</table></div>';
@@ -1221,7 +1273,9 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
             case 'licenses':
 
-            $html .= '<p>' . sprintf( __( 'This plugin uses css and images by <a %s>jQuery UI</a>.', 'tag-groups' ), 'href="http://jqueryui.com/" target="_blank"') . '</p>
+            $html .=
+            '<p>' . sprintf( __( 'Tag Groups (free) is provided under the terms of the <a %s>GNU GENERAL PUBLIC LICENSE, Version 3</a>.', 'tag-groups' ), 'href="http://www.gnu.org/licenses/gpl.html" target="_blank"') . '</p>
+            <p>' . sprintf( __( 'This plugin uses css and images by <a %s>jQuery UI</a>.', 'tag-groups' ), 'href="https://jqueryui.com/" target="_blank"') . '</p>
             <p>' . sprintf( __( 'jQuery plugin <a %1$s>SumoSelect</a>: <a %2$s>MIT License</a>. Copyright (c) 2016 Hemant Negi', 'tag-groups' ), 'href="https://github.com/HemantNegi/jquery.sumoselect"', 'href="http://www.opensource.org/licenses/mit-license.php" target="_blank"') . '</p>
             <p>' . sprintf( __( 'React JS plugin <a %1$s>React-Select</a>: <a %2$s>MIT License</a>. Copyright (c) 2018 Jed Watson', 'tag-groups' ), 'href="https://github.com/JedWatson/react-select"', 'href="http://www.opensource.org/licenses/mit-license.php" target="_blank"') . '</p>';
 
@@ -1483,23 +1537,6 @@ if ( ! class_exists('TagGroups_Settings') ) {
               }
 
               TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.' ) );
-
-              break;
-
-
-              case 'wpml':
-
-              $group = new TagGroups_Group();
-
-              $data = $group->get_all_term_group_label();
-
-              foreach ( $data as $term_group => $label ) {
-
-                TagGroups_Admin::register_string_wpml( 'Group Label ID ' . $term_group, $label );
-
-              }
-
-              TagGroups_Admin_Notice::add( 'success', __( 'All labels were registered.' ) );
 
               break;
 
@@ -1781,7 +1818,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
               if ( ! function_exists( 'wp_handle_upload' ) ) {
 
-                require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                require_once ABSPATH . 'wp-admin/includes/file.php';
 
               }
 
@@ -1999,6 +2036,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
                   __( 'tag cloud', 'tag-groups' ),
                   __( 'group info', 'tag-groups' ),
                   __( 'sidebar widget', 'tag-groups' ),
+                  'Gutenberg',
                 ),
               ),
               'themes'  => array(
@@ -2054,8 +2092,11 @@ if ( ! class_exists('TagGroups_Settings') ) {
                   __( 'help', 'tag-groups' ),
                   __( 'problem', 'tag-groups' ),
                   __( 'troubleshooting', 'tag-groups' ),
+                  'Gutenberg',
                   'CSS',
                   'style',
+                  'PHP',
+                  'API'
                 ),
               ),
               'support'  => array(
@@ -2092,20 +2133,21 @@ if ( ! class_exists('TagGroups_Settings') ) {
                   'WooCommerce'
                 ),
               ),
-              'about'  => array(
+              'info'  => array(
                 'title' => __( 'Info', 'tag-groups' ),
                 'page' => 'tag-groups-settings-about' ,
                 'keywords'  => array(
                   __( 'author', 'tag-groups' ),
                   __( 'version', 'tag-groups' ),
                   __( 'contact', 'tag-groups' ),
+                  __( 'about', 'tag-groups' ),
                 ),
               ),
               'licenses'  => array(
                 'title' => __( 'Licenses', 'tag-groups' ),
                 'page' => 'tag-groups-settings-about' ,
                 'keywords'  => array(
-                  __( 'Licenses', 'tag-groups' ),
+                  __( 'Credits', 'tag-groups' ),
                 ),
               ),
               'news'  => array(
@@ -2145,13 +2187,13 @@ if ( ! class_exists('TagGroups_Settings') ) {
           public static function get_setting_help()
           {
 
-            $html = '<div style="margin:20px 0;clear:both;float:left;width:100%">';
+            $html = '<div id="tg_setting_help_search">';
 
-            $html .= '<div style="float:right;" title="' . __( 'Search and get direct links to setting pages. Hint: Type *, space or \'all\' to show all.', 'tag-groups' ) . '"><span class="dashicons dashicons-search" style="font-size:25px; margin:0 5px;"></span><input id="tg_setting_help_search_field" placeholder="' . __( 'Search for settings', 'tag-groups' ) . '" autocomplete="off"></div>
-            <div id="tg_setting_help_search_results" style="display:none;clear:both;">
+            $html .= '<div style="float:right;" title="' . __( 'Search and get direct links to setting pages. Hint: Type *, space or \'all\' to show all.', 'tag-groups' ) . '"><span class="dashicons dashicons-search tg_setting_help_search_icon"></span><input id="tg_setting_help_search_field" placeholder="' . __( 'Search for settings', 'tag-groups' ) . '" autocomplete="off"></div>
+            <div id="tg_setting_help_search_results" style="display:none;">
             <h2>' . __( 'Search Results', 'tag-groups' ) . '</h2>';
 
-            $html .= '<div style="margin:10px 0;padding:10px;background-color:rgb(249, 249, 249);" class="chatty-mango-settings-columns">';
+            $html .= '<div class="chatty-mango-settings-columns tg_setting_help_search_results_inner">';
 
             $html .= '<h4 id="tg_setting_help_nothing_found" style="display:none">' . __( 'Nothing found', 'tag-groups' ) . '</h4>';
 
@@ -2185,15 +2227,14 @@ if ( ! class_exists('TagGroups_Settings') ) {
                   if (searchText==="' . __( 'all', 'tag-groups') . '" || searchText==="*" || searchText===" ") {
                     jQuery(".tg_settings_topic").removeClass("tg_hide");
                   } else {
-                  jQuery(".tg_settings_topic")
-                  .addClass("tg_hide")
-                  .filter(function(index){
-                    var keywords = jQuery(this).attr("data-keywords");
-                    console.log(keywords.indexOf(searchText));
-                    return keywords.indexOf(searchText) > -1;
-                  })
-                  .removeClass("tg_hide");
-                }
+                    jQuery(".tg_settings_topic")
+                    .addClass("tg_hide")
+                    .filter(function(index){
+                      var keywords = jQuery(this).attr("data-keywords");
+                      return keywords.indexOf(searchText) > -1;
+                    })
+                    .removeClass("tg_hide");
+                  }
                   if (jQuery(".tg_settings_topic:not(.tg_hide)").length === 0 ){
                     jQuery("#tg_setting_help_nothing_found").slideDown();
                   } else {

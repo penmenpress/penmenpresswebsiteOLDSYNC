@@ -43,6 +43,8 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       add_action( 'create_term', array( 'TagGroups_Admin', 'update_edit_term_group' ) );
 
+      add_action( 'create_term', array( 'TagGroups_Admin', 'copy_term_group' ), 20 );
+
       add_action( 'edit_term', array( 'TagGroups_Admin', 'update_edit_term_group' ) );
 
       add_action( 'delete_term', array( 'TagGroups_Admin', 'update_post_meta' ), 10, 2 );
@@ -610,8 +612,13 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
           if ( isset( $sendback ) ) {
 
+            // remove filter that destroys WPML's "&lang="
+            remove_all_filters( 'wp_redirect' );
+
             // escaping $sendback
             wp_redirect( esc_url_raw( $sendback ) );
+
+            exit;
 
           }
 
@@ -675,6 +682,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
         wp_redirect( esc_url_raw( $sendback ) );
 
         exit();
+
       }
 
       $pagenum = $wp_list_table->get_pagenum();
@@ -948,8 +956,8 @@ if ( ! class_exists('TagGroups_Admin') ) {
     * Get the $_POSTed value after saving a tag/term and save it in the table
     *
     * @global int $tg_update_edit_term_group_called
-    * @param type $term_id
-    * @return type
+    * @param int $term_id
+    * @return void
     */
     public static function update_edit_term_group( $term_id )
     {
@@ -965,9 +973,8 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       $screen = get_current_screen();
 
-
       // $_POST['term-group'] won't be submitted if multi select is empty
-      if ( ! isset( $_POST['term-group'] ) && empty( $_POST['tag-groups-nonce'] ) ) {
+      if ( ! isset( $_POST['term-group'] ) ) {
 
         return;
 
@@ -975,7 +982,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       $tag_group_taxonomy = get_option( 'tag_group_taxonomy', array('post_tag') );
 
-      if ( is_object( $screen ) && (!in_array( $screen->taxonomy, $tag_group_taxonomy ) ) && (! isset( $_POST['new-tag-created'] )) ) {
+      if ( is_object( $screen ) && ( ! in_array( $screen->taxonomy, $tag_group_taxonomy ) ) && ( ! isset( $_POST['new-tag-created'] ) ) ) {
 
         return;
 
@@ -983,9 +990,10 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       $tg_update_edit_term_group_called = true;
 
-      if ( ! isset( $_POST['tag-groups-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-nonce'], 'tag-groups-nonce' ) ) {
+      if ( empty( $_POST['tag-groups-nonce'] ) || ! wp_verify_nonce( $_POST['tag-groups-nonce'], 'tag-groups-nonce' ) ) {
 
         die( "Security check" );
+
       }
 
       $term_id = (int) $term_id;
@@ -993,7 +1001,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
       $term = new TagGroups_Term( $term_id );
 
 
-      if ( isset( $_POST['term-group'] ) ) {
+      if ( ! empty( $_POST['term-group'] ) ) {
 
         if ( is_array( $_POST['term-group'] ) ) {
 
@@ -1005,55 +1013,175 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
         }
 
-        // $_POSTed value can be string or array of strings
-        $term->set_group( $term_group );
-
-        $term->save();
+        $term->set_group( $term_group )->save();
 
       } else {
 
-        $term->set_group( 0 );
-
-        $term->save();
+        $term->set_group( 0 )->save();
 
       }
 
-      if ( isset( $_POST['name'] ) && ( $_POST['name'] != '' ) ) { // allow zeros
-
-        $args['name'] = stripslashes( sanitize_text_field( $_POST['name'] ) );
-
-      }
-
-      if ( isset( $_POST['slug'] ) ) { // allow empty values
-
-        $args['slug'] = sanitize_title( $_POST['slug'] );
-
-      }
-
-      if ( isset( $_POST['description'] ) ) { // allow empty values
-
-        if ( get_option( 'tag_group_html_description', 0 ) ) {
-
-          $args['description'] = $_POST['description'];
-
-        } else {
-
-          $args['description'] = stripslashes( sanitize_text_field( $_POST['description'] ) );
-
-        }
-      }
-
-      if ( isset( $_POST['parent'] ) && ($_POST['parent'] != '') ) {
-
-        $args['parent'] = (int) $_POST['parent'] ;
-
-      }
-
+      /**
+      *   If necessary we also save default WP term properties.
+      *   Make sure we have a taxonomy
+      */
       if ( isset( $_POST['tag-groups-taxonomy'] ) ) {
 
-        $category = stripslashes( sanitize_title( $_POST['tag-groups-taxonomy'] ) );
+        $taxonomy = sanitize_title( $_POST['tag-groups-taxonomy'] );
 
-        wp_update_term( $term_id, $category, $args );
+        $args = array();
+
+        /**
+        * Save the tag name
+        */
+        if ( isset( $_POST['name'] ) && ( $_POST['name'] != '' ) ) { // allow zeros
+
+          $args['name'] = stripslashes( sanitize_text_field( $_POST['name'] ) );
+
+        }
+
+        /**
+        * Save the tag slug
+        */
+        if ( isset( $_POST['slug'] ) ) { // allow empty values
+
+          $args['slug'] = sanitize_title( $_POST['slug'] );
+
+        }
+
+        /**
+        * Save the tag description
+        */
+        if ( isset( $_POST['description'] ) ) { // allow empty values
+
+          /**
+          * Check if the settings require us to omit sanitization
+          */
+          if ( get_option( 'tag_group_html_description', 0 ) ) {
+
+            $args['description'] = $_POST['description'];
+
+          } else {
+
+            $args['description'] = stripslashes( sanitize_text_field( $_POST['description'] ) );
+
+          }
+
+        }
+
+        /**
+        * Save the parent
+        */
+        if ( isset( $_POST['parent'] ) && ($_POST['parent'] != '') ) {
+
+          $args['parent'] = (int) $_POST['parent'] ;
+
+        }
+
+        wp_update_term( $term_id, $taxonomy, $args );
+
+      }
+
+    }
+
+
+    /**
+    * WPML: Check if we need to copy group info to the translation
+    *
+    * Copy the groups of an original term to its translation if a translation is saved
+    *
+    * @param type $term_id
+    * @return type
+    */
+    public static function copy_term_group( $term_id ) {
+
+      /**
+      * Check if WPML is available
+      */
+      $default_language_code = apply_filters( 'wpml_default_language', null );
+
+      if ( ! isset( $default_language_code ) ) {
+
+        return;
+
+      }
+
+
+      /**
+      * Check if the new tag has no group set or groups set to unassigned
+      */
+      $term = new TagGroups_Term( $term_id );
+
+      $translated_term_groups = $term->get_groups();
+
+      if ( ! empty( $translated_term_groups ) && $translated_term_groups != array( 0 ) ) {
+
+        return;
+
+      }
+
+
+      /**
+      *   edit-tags.php form
+      */
+      if (
+        isset( $_POST['icl_tax_post_tag_language'] )
+        && $_POST['icl_tax_post_tag_language'] != $default_language_code
+      ) {
+
+        if ( ! empty( $_POST['icl_translation_of'] ) ) {
+          // translated from the default language
+
+          $original_term_id = $_POST['icl_translation_of'];
+
+        } elseif ( ! empty( $_POST['icl_trid'] ) ) {
+          // translated from another translated language
+
+          $translations = apply_filters( 'wpml_get_element_translations', null, $_POST['icl_trid'] );
+
+          if ( isset( $translations[ $default_language_code ]->element_id ) ) {
+
+            $original_term_id = $translations[ $default_language_code ]->element_id;
+
+          }
+
+        }
+
+      }
+
+
+      /**
+      *   taxonomy-translation.php form
+      */
+      elseif (
+        isset( $_POST['term_language_code'] )
+        && $_POST['term_language_code'] != $default_language_code
+        && ! empty( $_POST['trid'] )
+      ) {
+
+        $translations = apply_filters( 'wpml_get_element_translations', null, $_POST['trid'] );
+
+        if ( isset( $translations[ $default_language_code ]->element_id ) ) {
+
+          $original_term_id = $translations[ $default_language_code ]->element_id;
+
+        }
+
+      }
+
+
+      if ( isset( $original_term_id ) ) {
+
+        $tg_original_term = new TagGroups_Term( $original_term_id );
+
+        $original_term_groups = $tg_original_term->get_groups();
+
+        if ( ! empty( $original_term_groups) ) {
+
+          $term->set_group( $original_term_groups )->save();
+
+        }
+
       }
 
     }
@@ -1072,12 +1200,15 @@ if ( ! class_exists('TagGroups_Admin') ) {
       $screen = get_current_screen();
 
       if ( is_object( $screen ) && ( ! in_array( $screen->taxonomy, $tag_group_taxonomy ) ) ) {
+
         return;
+
       }
 
       $show_filter_tags = get_option( 'tag_group_show_filter_tags', 1 );
 
       $group = new TagGroups_Group();
+
       $data = $group->get_all_with_position_as_key();
 
       /*
@@ -1399,6 +1530,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
         if ( WP_DEBUG ) {
           error_log('[Tag Groups] Preloaded feed into cache.');
         }
+
       }
 
       if ( wp_doing_ajax() ) {
@@ -1410,6 +1542,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
         die();
 
       }
+
     }
 
 
@@ -1671,6 +1804,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
           exit();
 
           break;
+
         }
 
         $number_of_term_groups = $group->get_number_of_term_groups() - 1; // "not assigned" won't be displayed
@@ -1810,6 +1944,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
           $taxonomy_link = reset( $taxonomies );
 
         }
+
       }
 
 
@@ -1821,6 +1956,20 @@ if ( ! class_exists('TagGroups_Admin') ) {
         $post_type_link = $post_type;
 
       }
+
+      /**
+      * In case we use the WPML plugin: consider the language
+      */
+      if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+
+        $wpml_piece = '&lang=' . (string) ICL_LANGUAGE_CODE;
+
+      } else {
+
+        $wpml_piece = '';
+
+      }
+
 
       $items_per_page = self::get_items_per_page();
 
@@ -1931,13 +2080,21 @@ if ( ! class_exists('TagGroups_Admin') ) {
         $protocol = isset( $_SERVER['HTTPS'] ) ? 'https://' : 'http://';
         echo admin_url( 'admin-ajax.php', $protocol );
         ?>", "postsurl": "<?php
+
         if ( ! empty( $post_type_link ) ) {
-          echo admin_url( 'edit.php?post_type=' . $post_type_link, $protocol );
+
+          echo admin_url( 'edit.php?post_type=' . $post_type_link . $wpml_piece, $protocol );
+
         }
+
         ?>", "tagsurl": "<?php
+
         if ( ! empty( $taxonomy_link ) ) {
-          echo admin_url( 'edit-tags.php?taxonomy=' . $taxonomy_link, $protocol );
+
+          echo admin_url( 'edit-tags.php?taxonomy=' . $taxonomy_link . $wpml_piece, $protocol );
+
         }
+
         ?>", "items_per_page": "<?php echo $items_per_page ?>"};
         var data = {
           taxonomy: <?php echo json_encode( $taxonomies ) ?>
@@ -2111,6 +2268,8 @@ if ( ! class_exists('TagGroups_Admin') ) {
       /**
       * Makes sure that WPML knows about the tag group label that can have different language versions.
       *
+      * @deprecated
+      *
       * @param string $name
       * @param string $value
       */
@@ -2128,6 +2287,8 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       /**
       * Asks WPML to forget about $name
+      *
+      * @deprecated
       *
       * @param string $name
       */

@@ -48,7 +48,7 @@ if ( ! class_exists('TagGroups_Options') ) {
         $option_names['tag_groups_per_page'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
         $option_names['tag_group_base_version'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
         $option_names['tag_group_base_first_activation_time'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
-
+        $option_names['tag_group_group_languages'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );
 
         /**
         * Deprecated after 0.36
@@ -86,7 +86,7 @@ if ( ! class_exists('TagGroups_Options') ) {
         $option_names['tag_group_add_product_tags_to_attributes'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
         $option_names['tag_group_display_groups_under_products_separator'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
         $option_names['tag_group_remove_the_product_tags'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PREMIUM_PLUGIN, 'export' => true );
-        
+
 
         // should be last:
         $option_names['tag_group_reset_when_uninstall'] = array( 'origin' => TagGroups_Options::TAG_GROUPS_PLUGIN, 'export' => true );

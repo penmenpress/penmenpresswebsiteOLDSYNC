@@ -173,3 +173,25 @@ License: GNU GENERAL PUBLIC LICENSE, Version 3
 .tg_social_media_admin span {
   font-size: 2em;
 }
+
+.tg_setting_help_search_results_inner {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: rgb(249, 249, 249);
+}
+
+#tg_setting_help_search {
+  margin: 20px 0;
+  clear: both;
+  float: left;
+  width: 100%
+}
+
+#tg_setting_help_search_results {
+  clear: both;
+}
+
+.tg_setting_help_search_icon {
+  font-size: 25px;
+  margin: 0 5px;
+}

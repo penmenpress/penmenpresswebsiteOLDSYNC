@@ -3,11 +3,11 @@ Contributors: camthor
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FD5ZU4EEBGSC8
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
-Tested up to: 4.9.7
-Stable tag: 0.39.2
+Tested up to: 4.9.8
+Stable tag: 0.40.0
 Requires PHP: 5.4
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3
+License URI: http://www.gnu.org/licenses/gpl.html
 
 == Description ==
 
@@ -95,6 +95,10 @@ This problem might appear when updating from a version before 0.33 to this or a 
 
 Please use a text widget and insert the shortcode.
 
+= Does this plugin support tags for pages? =
+
+No. Although it might work (with additional 3rd-party pluings), it is not an officially supported feature.
+
 = I need the plugin for a very special purpose - can you help? =
 
 Please check first if the [premium plugin](https://chattymango.com/tag-groups-premium/?pk_campaign=tg&pk_kwd=readme "Tag Groups Premium") can help. If not, you can ask for [support here](https://wordpress.org/support/plugin/tag-groups).
@@ -118,6 +122,23 @@ No, unfortunately it isn't. But, nevertheless, I'm glad you asked! You are warml
 This plugin does not collect or process any personal user data.
 
 == Changelog ==
+
+= 0.40.0 =
+
+FEATURES
+
+* Compatibility with WPML: Group names can now be translated.
+
+BUG FIXES
+
+* Fixed wrong entry in help search index.
+* Fixed wrong HTML structure in settings.
+
+OTHER
+
+* Enhanced keyword search on settings home.
+* Some refactoring and removed old WPML function calls.
+* Encouragement in system information to upgrade PHP if using an outdated version.
 
 = 0.39.2 =
 

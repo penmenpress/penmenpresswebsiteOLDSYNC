@@ -51,7 +51,7 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
     /**
     * Constructor
     *
-    * @param int|object $term term_id
+    * @param int|object $term term
     * @return object $this|boolean false if error occured during loading
     *
     */
@@ -86,8 +86,8 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
 
       }
 
-
       return $this;
+
     }
 
 
@@ -95,62 +95,76 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
     * Loads relevant data from the database
     *
     * @param void
-    * @return object $this|boolean false if error
+    * @return object|boolean $this or false on error
     */
     public function load() {
 
-      if ( ! empty( $this->term_id ) ) {
-
-        if ( empty( $this->taxonomy ) || empty( $this->name ) || empty( $this->slug ) ) {
-          /**
-          * We need to fill the properties from the WP term object.
-          */
-
-          $term = get_term( $this->term_id );
-
-          /**
-          * Check if term exists.
-          */
-          if ( is_object( $term ) ) {
-
-            $this->taxonomy = $term->taxonomy;
-
-            $this->name = $term->name;
-
-            $this->slug = $term->slug;
-
-            $this->groups = array( $term->term_group );
-
-          }
-
-        }
-
-        /**
-        * Try to load from premium plugin
-        */
-        if ( class_exists( 'TagGroups_Premium_Term' ) ) {
-
-          $groups = TagGroups_Premium_Term::load( $this->term_id );
-
-          if ( is_array( $groups ) ) {
-            /**
-            * success
-            */
-            $this->groups = $groups;
-
-            return $this;
-
-          }
-
-        }
-
-        return $this;
-
-      } else {
+      if ( empty( $this->term_id ) ) {
 
         return false;
 
       }
+
+      if ( empty( $this->groups ) || empty( $this->taxonomy ) || empty( $this->name ) || empty( $this->slug ) ) {
+        /**
+        * We need to fill the properties from the WP term object.
+        */
+
+        /**
+        * Some plugins hook into get_term but forget to forward term_group
+        */
+        remove_all_filters( 'get_term' );
+
+        if ( ! empty( $this->taxonomy ) ) {
+
+          remove_all_filters( 'get_' . $this->taxonomy );
+
+        }
+
+        $term = get_term( $this->term_id );
+
+        /**
+        * Check if term exists.
+        */
+        if ( is_object( $term ) ) {
+
+          $this->taxonomy = $term->taxonomy;
+
+          $this->name = $term->name;
+
+          $this->slug = $term->slug;
+
+          $this->groups = array( $term->term_group );
+
+        }
+
+      }
+
+      /**
+      * Try to load from premium plugin
+      */
+      if ( class_exists( 'TagGroups_Premium_Term' ) ) {
+
+        $groups = TagGroups_Premium_Term::load( $this->term_id );
+
+        if ( is_array( $groups ) ) {
+          /**
+          * success
+          */
+          $this->groups = $groups;
+
+          return $this;
+
+        } else {
+
+          return false;
+
+        }
+
+      }
+
+      return $this;
+
     }
 
 
@@ -183,6 +197,7 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
           unset( $term_groups[ $index_not_assigned ] );
 
         }
+
       }
 
       /**
@@ -241,7 +256,7 @@ if ( ! class_exists( 'TagGroups_Term' ) ) {
 
       } else {
 
-        return $this->groups;
+        return (int) $this->groups;
 
       }
 

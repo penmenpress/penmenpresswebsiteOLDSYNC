@@ -5,7 +5,7 @@ Plugin URI: https://chattymango.com/tag-groups/
 Description: Assign tags to groups and display them in a tabbed tag cloud
 Author: Chatty Mango
 Author URI: https://chattymango.com/about/
-Version: 0.39.2
+Version: 0.40.0
 License: GNU GENERAL PUBLIC LICENSE, Version 3
 Text Domain: tag-groups
 Domain Path: /languages
@@ -77,11 +77,17 @@ foreach ( glob( dirname( __FILE__ ) . '/include/*.php') as $filename ) {
 
 }
 
+foreach ( glob( dirname( __FILE__ ) . '/include/shortcodes/*.php') as $filename ) {
+
+    require_once $filename;
+
+}
+
 
 /**
 * add Gutenberg functionality
 */
-require_once( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/src/init.php' );
+require_once TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/src/init.php';
 
 
 if ( ! function_exists( 'tag_groups_init' ) ) {
@@ -130,7 +136,7 @@ if ( ! function_exists( 'tag_groups_cloud') ) {
   */
   function tag_groups_cloud( $atts = array(), $return_array = false ) {
 
-    return TagGroups_Shortcode::tag_groups_cloud( $atts, $return_array );
+    return TagGroups_Shortcode_Tabs::tag_groups_cloud( $atts, $return_array );
 
   }
 
@@ -148,7 +154,7 @@ if ( ! function_exists( 'tag_groups_accordion') ) {
   */
   function tag_groups_accordion( $atts = array() ) {
 
-    return TagGroups_Shortcode::tag_groups_accordion( $atts );
+    return TagGroups_Shortcode_Accordion::tag_groups_accordion( $atts );
 
   }
 

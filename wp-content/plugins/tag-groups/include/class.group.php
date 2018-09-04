@@ -110,7 +110,33 @@ if ( ! class_exists('TagGroups_Group') ) {
 
         $this->positions = get_option( 'term_group_positions', array() );
 
-        $this->labels = get_option( 'term_group_labels', array() );
+        $this->labels = get_option( self::get_tag_group_label_option_name(), array() );
+
+        if ( empty( $this->labels ) ) {
+
+          /**
+          * This language has not yet been saved. We return the default language.
+          */
+          $this->labels = get_option( 'term_group_labels', array() );
+
+        } elseif ( self::is_wpml_translated_language() ) {
+
+          /**
+          * Check for untranslated names
+          */
+          $default_language_labels = get_option( 'term_group_labels', array() );
+
+          foreach ( $default_language_labels as $group_id => $default_language_label ) {
+
+            if ( ! isset( $this->labels[ $group_id ] ) ) {
+
+              $this->labels[ $group_id ] = $default_language_label;
+
+            }
+
+          }
+
+        }
 
         // sanity check
         if ( count( $this->term_groups ) != count( $this->positions ) ) {
@@ -126,6 +152,7 @@ if ( ! class_exists('TagGroups_Group') ) {
       }
 
       return $this;
+
     }
 
 
@@ -179,9 +206,38 @@ if ( ! class_exists('TagGroups_Group') ) {
 
       update_option( 'term_group_positions', $this->positions );
 
-      update_option( 'term_group_labels', $this->labels );
+      update_option( self::get_tag_group_label_option_name(), $this->labels );
 
+      /**
+      * If we save translated groups, make sure we have untranslated ones. If not, give them the translations.
+      */
+      if ( self::is_wpml_translated_language() ) {
 
+        $default_language_labels = get_option( 'term_group_labels', array() );
+
+        $changed = false;
+
+        foreach ( $this->labels as $group_id => $group_label ) {
+
+          if ( ! isset( $default_language_labels[ $group_id ] ) ) {
+
+            $default_language_labels[ $group_id ] = $group_label;
+
+            $changed = true;
+
+          }
+
+        }
+
+        if ( $changed ) {
+
+          update_option( 'term_group_labels', $default_language_labels );
+
+        }
+
+      }
+
+      // TODO: remove this part
       $version = get_option( 'tag_group_base_version', '0' );
 
       if ( -1 == version_compare( $version, '0.35' ) ) {
@@ -208,7 +264,6 @@ if ( ! class_exists('TagGroups_Group') ) {
         ksort( $tag_group_ids );
 
         ksort( $tag_group_labels );
-
 
         update_option( 'tag_group_labels', array_values( $tag_group_labels ) );
 
@@ -328,7 +383,7 @@ if ( ! class_exists('TagGroups_Group') ) {
 
 
     /**
-    * undocumented function summary
+    * adds a new group and saves it
     *
     *
     * @param int $position position of the new group
@@ -354,9 +409,10 @@ if ( ! class_exists('TagGroups_Group') ) {
 
       $this->save();
 
-      TagGroups_Admin::register_string_wpml( 'Group Label ID ' . $this->term_group, $label );
+      // TagGroups_Admin::register_string_wpml( 'Group Label ID ' . $this->term_group, $label );
 
       return $this;
+
     }
 
 
@@ -397,7 +453,7 @@ if ( ! class_exists('TagGroups_Group') ) {
           return $terms;
 
         }
-        
+
       }
 
       /**
@@ -579,13 +635,14 @@ if ( ! class_exists('TagGroups_Group') ) {
 
       $this->remove_terms();
 
-      TagGroups_Admin::unregister_string_wpml( 'Group Label ID ' . $this->term_group );
+      // TagGroups_Admin::unregister_string_wpml( 'Group Label ID ' . $this->term_group );
 
       $this->save();
 
       do_action( 'term_group_deleted' );
 
       return $this;
+
     }
 
 
@@ -793,13 +850,13 @@ if ( ! class_exists('TagGroups_Group') ) {
 
       }
 
-      TagGroups_Admin::unregister_string_wpml( 'Group Label ID ' . $this->term_group );
+      // TagGroups_Admin::unregister_string_wpml( 'Group Label ID ' . $this->term_group );
 
       $this->set_label( $label );
 
       $this->save();
 
-      TagGroups_Admin::register_string_wpml( 'Group Label ID ' . $this->term_group, $this->labels );
+      // TagGroups_Admin::register_string_wpml( 'Group Label ID ' . $this->term_group, $this->labels );
 
       return $this;
     }
@@ -840,13 +897,13 @@ if ( ! class_exists('TagGroups_Group') ) {
       */
       $search_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies( $taxonomies );
 
-      if ( class_exists('TagGroups_Premium_Group') ) {
+      if ( class_exists( 'TagGroups_Premium_Group' ) ) {
 
         return TagGroups_Premium_Group::get_group_terms( $term_group, $search_taxonomies, false, 'count' );
 
       } else {
 
-        $terms = get_terms( array('hide_empty' => false, 'taxonomy' => $search_taxonomies ) );
+        $terms = get_terms( array( 'hide_empty' => false, 'taxonomy' => $search_taxonomies ) );
 
         $number = 0;
 
@@ -859,6 +916,7 @@ if ( ! class_exists('TagGroups_Group') ) {
             $number++;
 
           }
+          
         }
 
       }
@@ -1187,6 +1245,69 @@ if ( ! class_exists('TagGroups_Group') ) {
       $this->positions = array_flip( $positions_flipped );
 
       return $this;
+
+    }
+
+
+    /**
+    * Check for WPML and use the correct option name
+    *
+    * @param void
+    * @return string
+    */
+    public static function get_tag_group_label_option_name()
+    {
+
+      if ( ! defined( 'ICL_LANGUAGE_CODE' ) || ! self::is_wpml_translated_language() ) {
+
+        return 'term_group_labels';
+
+      }
+
+      $language = (string) ICL_LANGUAGE_CODE;
+
+      /**
+      * Make sure we can delete this option during uninstallation
+      */
+      $tag_group_group_languages = get_option( 'tag_group_group_languages', array() );
+
+      if ( ! in_array( $language, $tag_group_group_languages ) ) {
+
+        $tag_group_group_languages[] = $language;
+
+        update_option( 'tag_group_group_languages', $tag_group_group_languages );
+
+      }
+
+      return 'term_group_labels_' . $language;
+
+    }
+
+
+    /**
+    * Returns true if WPML is installed and we are not using the default language.
+    *
+    * @param void
+    * @return boolean
+    */
+    public static function is_wpml_translated_language()
+    {
+
+      if ( ! defined( 'ICL_LANGUAGE_CODE' ) ) {
+
+        return false;
+
+      }
+
+      $default_language = apply_filters( 'wpml_default_language', NULL );
+
+      if ( $default_language == ICL_LANGUAGE_CODE ) {
+
+        return false;
+
+      }
+
+      return true;
 
     }
 
