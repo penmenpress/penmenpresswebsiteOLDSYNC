@@ -135,9 +135,6 @@ if (match('/simple-ads-manager[\/]+sam-ajax-loader\.php/', request.path) and mat
 if (match('/gwolle\-gb[\/]+frontend[\/]+captcha[\/]+ajaxresponse\.php/', request.path) and match('/.*/', request.queryString.abspath)):
 	block(id=17, category='rfi', description='Gwolle Guestbook <= 1.5.3 - Remote File Inclusion', whitelist=0)
 
-if (match('/\/wp\-admin[\/]+admin\-ajax\.php/i', request.path) and ((currentUserIsNot('administrator', server.empty) and md5Equals('9074dbf9b7e456eb88fbc7230567f54b', request.body.action, request.queryString.action)) or (currentUserIsNot('administrator', server.empty) and currentUserIsNot('editor', server.empty) and currentUserIsNot('author', server.empty) and currentUserIsNot('contributor', server.empty) and (md5Equals('49e2f0e45d9672ef2125965277c49344', request.body.action, request.queryString.action) or md5Equals('32d93c4d8c0a9367f2da487238b141cc', request.body.action, request.queryString.action))))):
-	block(id=19, category='sde', description='Yoast Wordpress SEO <= 3.1.2 - Sensitive Data Exposure')
-
 if (match('/\/wp\-admin[\/]+admin\-ajax\.php/i', request.path) and md5Equals('5c9fefc9f24ecfd74addc2eaff8481fc', request.body.action, request.queryString.action) and (currentUserIsNot('administrator', server.empty) and currentUserIsNot('editor', server.empty) and currentUserIsNot('author', server.empty) and currentUserIsNot('contributor', server.empty))):
 	block(id=20, category='auth-bypass', description='WordPress Core <= 4.5.0 - Authentication Bypass')
 
