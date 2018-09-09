@@ -2,8 +2,8 @@
 Contributors: maxfoundry, AlanP57
 Tags: WordPress media library folders, media library folders, organize media library
 Requires at least: 4.0
-Tested up to: 4.9.6
-Stable tag: 4.2.4
+Tested up to: 4.9.8
+Stable tag: 4.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,12 @@ To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup menu
 
 
 == Changelog ==
+= 4.2.5 =
+* Added check for thumbnail size data during move operation
+* Localized for translation text display via Java Script
+* Update the Dutch translation
+* Updated the Upgrade to Pro page
+
 = 4.2.4 =
 * Updated the list of folders to skip when scanning or syncing the uploads directory
 

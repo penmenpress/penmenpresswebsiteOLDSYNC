@@ -3,7 +3,7 @@
 Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.2.4
+Version: 4.2.5
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -40,7 +40,7 @@ class MaxGalleriaMediaLib {
 
 	public function set_global_constants() {	
 		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_KEY', 'maxgalleria_media_library_version');
-		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.4');
+		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.5');
 		define('MAXGALLERIA_MEDIA_LIBRARY_IGNORE_NOTICE', 'maxgalleria_media_library_ignore_notice');
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME);
@@ -125,8 +125,8 @@ class MaxGalleriaMediaLib {
       update_user_meta( $current_user_id, MAXGALLERIA_MLP_REVIEW_NOTICE, $review_date );      
     }
 				
-//    if ( ! wp_next_scheduled( 'new_folder_check' ) )
-//      wp_schedule_event( time(), 'daily', 'new_folder_check' );
+    if ( ! wp_next_scheduled( 'new_folder_check' ) )
+      wp_schedule_event( time(), 'daily', 'new_folder_check' );
     
 	}
 			
@@ -239,6 +239,12 @@ class MaxGalleriaMediaLib {
 
         wp_localize_script( 'loader-folders', 'mgmlp_ajax', 
               array( 'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                     'confirm_file_delete' => __('Are you sure you want to delete the selected files?', 'maxgalleria-media-library' ),
+                     'nothing_selected' => __('No items were selected.', 'maxgalleria-media-library' ),
+                     'no_images_selected' => __('No images were selected.', 'maxgalleria-media-library' ),
+                     'no_quotes' => __('Folder names cannot contain single or double quotes.', 'maxgalleria-media-library' ),
+                     'no_spaces' => __('Folder names cannot contain spaces.', 'maxgalleria-media-library' ),
+                     'valid_file_name' => __('Please enter a valid file name with no spaces.', 'maxgalleria-media-library' ),
                      'nonce'=> wp_create_nonce(MAXGALLERIA_MEDIA_LIBRARY_NONCE))
                    ); 
 
@@ -296,7 +302,7 @@ class MaxGalleriaMediaLib {
     add_action('wp_ajax_nopriv_mgmlp_move_copy', array($this, 'mgmlp_move_copy'));
     add_action('wp_ajax_mgmlp_move_copy', array($this, 'mgmlp_move_copy'));		
         
-    //add_action( 'new_folder_check', array($this,'admin_check_for_new_folders'));
+    add_action( 'new_folder_check', array($this,'admin_check_for_new_folders'));
     
     add_action( 'add_attachment', array($this,'add_attachment_to_folder'));
     
@@ -393,42 +399,34 @@ class MaxGalleriaMediaLib {
   // need to add a record to the mgmlp_folders table
   public function add_attachment_to_folder ($post_id) {
     
-    $folder_id = $this->get_default_folder();
+    $folder_id = $this->get_default_folder($post_id); //for non pro version
     if($folder_id !== false) {
       $this->add_new_folder_parent($post_id, $folder_id);
     }  
   }
-  
-  public function get_default_folder() {
+    
+  public function get_parent_by_name($sub_folder) {
+    
     global $wpdb;
-    		
-		if( get_option('uploads_use_yearmonth_folders') === false)
-			return $this->uploads_folder_ID;
-
-    $base_url = $this->upload_dir['baseurl'];
-    $year_month = date("m");    
-    $year = date("Y");    
-    //$guid = $base_url . '/' . $year . '/' . $year_month;
-    $relative_dir = $year . '/' . $year_month;
     
-    if($this->is_windows())
-      $relative_dir = str_replace('\\', '/', $relative_dir);      
+    $sql = "SELECT post_id FROM {$wpdb->prefix}postmeta where meta_key = '_wp_attached_file' and `meta_value` = '$sub_folder'";
     
-    //$sql = "select ID from $wpdb->prefix" . "posts where guid = '$guid'";
-		$sql = "SELECT ID FROM {$wpdb->prefix}posts
-LEFT JOIN {$wpdb->prefix}postmeta AS pm ON pm.post_id = ID
-WHERE pm.meta_value = '$relative_dir' 
-and pm.meta_key = '_wp_attached_file'";
-
-    $row = $wpdb->get_row($sql);
-    if($row) {
-      return $row->ID;
+    return $wpdb->get_var($sql);
+}
+  
+  
+  public function get_default_folder($post_id) {
+    
+    $attached_file = get_post_meta($post_id, '_wp_attached_file', true);
+    $folder_path = dirname($attached_file);
+    $upload_folder_id = get_option(MAXGALLERIA_MEDIA_LIBRARY_UPLOAD_FOLDER_ID);
+    
+    if($folder_path == '.') {
+      $folder_id = $upload_folder_id;
+    } else {
+      $folder_id = $this->get_parent_by_name($folder_path);      
     }
-    else {
-			$this->write_log( __('This folder was not found: ','maxgalleria-media-library') . $relative_dir);			
-      return false;
-    }
-    
+    return $folder_id;
   }
 
   public function register_mgmlp_post_type() {
@@ -1685,6 +1683,7 @@ order by folder_id";
 		
 	}
   
+  
   public function new_folder_check() {
     
     $currnet_date_time = date('Y-m-d H:i:s');
@@ -1702,7 +1701,7 @@ order by folder_id";
     //error_log("Last check: " . $folder_check_seconds . " : " . "Current time: " .  $currnet_date_time_seconds);
     
     if($folder_check_seconds < $currnet_date_time_seconds) {
-      //error_log("checking folders $currnet_date_time");
+      error_log("checking folders $currnet_date_time");
       $this->admin_check_for_new_folders(true);
 			update_option('mlf-folder-check', $currnet_date_time, true);
     }		
@@ -1748,6 +1747,7 @@ order by folder_id";
 		jQuery("#scanning-message").hide();		
 		jQuery("#ajaxloadernav").show();		
     jQuery('#folder-tree').jstree({ 'core' : {
+        'multiple' : false,
 				'data' : folders,
 				'check_callback' : true
 			},
@@ -3515,17 +3515,17 @@ and meta_key = '_wp_attached_file'";
           <div class="width-50">
             <ul>
               <li><span>Add images to your posts and pages</span></li>
-              <li><span>Jetpack and the Wordpress Gallery Integration</span></li>
               <li><span>Organize Nextgen Galleries</span></li>
               <li><span>Supports Advanced Custom Fields</span></li>
+              <li><span>File Name View Mode</span></li>
             </ul>
           </div>
           <div class="width-50">
             <ul>
-              <li><span>File Name View Mode</span></li>
               <li><span>Multisite Supported</span></li>
               <li><span>Add Images to WooCommerce Product Gallery</span></li>							
               <li><span>Category Interchangability with Enhanced Media Library</span></li>							
+              <!--<li><span>Jetpack and the Wordpress Gallery Integration</span></li>-->
             </ul>
           </div>
           <div class="mlf-clearfix"></div>
@@ -3538,7 +3538,7 @@ and meta_key = '_wp_attached_file'";
   <div class="section price-section">
     <div class="container">
       <div class="prices">
-        <h3>$29</h3>
+        <h3>$39</h3>
         <div class="descr">
           <img src="<?php echo MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_URL ?>/images/icons/benefits.png" class=" img-responsive" alt="ico">
           <p>
@@ -4923,28 +4923,34 @@ AND meta_key = '_wp_attached_file'";
                 $image_path = str_replace('.', '*.', $image_path );
                 $metadata = wp_get_attachment_metadata($copy_id);                               
                 $path_to_thumbnails = pathinfo($image_path, PATHINFO_DIRNAME);
+                
+                //error_log(print_r($metadata, true));
+                
+                if(isset($metadata['sizes'])) {
                   
-                foreach($metadata['sizes'] as $source_path) {
-                  $thumbnail_file = $path_to_thumbnails . DIRECTORY_SEPARATOR . $source_path['file'];
-                  $thumbnail_destination = $destination_path . DIRECTORY_SEPARATOR . $source_path['file'];
-                  rename($thumbnail_file, $thumbnail_destination);
+                  foreach($metadata['sizes'] as $source_path) {
+                    $thumbnail_file = $path_to_thumbnails . DIRECTORY_SEPARATOR . $source_path['file'];
+                    $thumbnail_destination = $destination_path . DIRECTORY_SEPARATOR . $source_path['file'];
+                    rename($thumbnail_file, $thumbnail_destination);
 
-                  // check current theme customizer settings for the fileg
-                  // and update if found
-                  $update_theme_mods = false;
-                  $move_source_url = $this->get_file_url_for_copy($source_path);
-                  $move_thumbnail_url = $this->get_file_url_for_copy($thumbnail_destination);
-                  $key = array_search ($move_source_url, $this->theme_mods);
-                  if($key !== false ) {
-                    set_theme_mod( $key, $move_thumbnail_url);
-                    $update_theme_mods = true;                      
-                  }
-                  if($update_theme_mods) {
-                    $theme_mods = get_theme_mods();
-                    $this->theme_mods = json_decode(json_encode($theme_mods), true);
+                    // check current theme customizer settings for the fileg
+                    // and update if found
                     $update_theme_mods = false;
+                    $move_source_url = $this->get_file_url_for_copy($source_path);
+                    $move_thumbnail_url = $this->get_file_url_for_copy($thumbnail_destination);
+                    $key = array_search ($move_source_url, $this->theme_mods);
+                    if($key !== false ) {
+                      set_theme_mod( $key, $move_thumbnail_url);
+                      $update_theme_mods = true;                      
+                    }
+                    if($update_theme_mods) {
+                      $theme_mods = get_theme_mods();
+                      $this->theme_mods = json_decode(json_encode($theme_mods), true);
+                      $update_theme_mods = false;
+                    }
+
                   }
-                    
+                  
                 }
                 
                 $destination_url = $this->get_file_url($destination_name);

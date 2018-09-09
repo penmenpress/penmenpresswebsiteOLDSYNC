@@ -12,17 +12,17 @@ jQuery(document).ready(function(){
       var new_folder_name = jQuery('#new-folder-name').val();
       
       if(new_folder_name.indexOf(' ') >= 0) {
-        alert('Folder names cannot contain spaces.');
+        alert(mgmlp_ajax.no_spaces);
         return false;
       }       
 			
       if(new_folder_name.indexOf('"') >= 0) {
-        alert('Folder names cannot contain single or double quotes.');
+        alert(mgmlp_ajax.no_quotes);
         return false;
       } 
 			
       if(new_folder_name.indexOf("'") >= 0) {
-        alert('Folder names cannot contain single or double quotes.');
+        alert(mgmlp_ajax.no_quotes);
         return false;
       } 
 						
@@ -193,10 +193,10 @@ jQuery(document).ready(function(){
         });
 								        
         if(delete_ids.length === 0) {
-          alert('No items were selected.');
+          alert(mgmlp_ajax.nothing_selected);
           return false;
         }
-        if(confirm("Are you sure you want to delete the selected files?")) {
+        if(confirm(mgmlp_ajax.confirm_file_delete)) {
           var serial_delete_ids = JSON.stringify(delete_ids.join());
           jQuery("#ajaxloader").show();
           jQuery.ajax({
@@ -330,7 +330,7 @@ jQuery(document).ready(function(){
 					}
 				});  
 			} else {
-				alert("No images were selected.")
+				alert(mgmlp_ajax.no_images_selected);
 			}
     });	
     
@@ -354,7 +354,7 @@ jQuery(document).ready(function(){
       });
       
       if(new_file_name.indexOf(' ') >= 0 || new_file_name === '' ) {
-        alert('Please enter a valid file name with no spaces.');
+        alert(mgmlp_ajax.valid_file_name);
         return false;
       }       
       
