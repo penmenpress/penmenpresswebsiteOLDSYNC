@@ -38,7 +38,6 @@ class BWGModelSite {
         $row = new stdClass();
         $row->id = 0;
         $row->name = '';
-
       }
     }
 

@@ -122,7 +122,7 @@ class WidgetView_bwg {
 		<p id="p_galleries" style="display:<?php echo ($instance['type'] == "gallery") ? "" : "none" ?>;">
 		  <label for="<?php echo $id_gallery_id; ?>"><?php _e('Galleries:', BWG()->prefix); ?></label><br>
 		  <select name="<?php echo $name_gallery_id; ?>" id="<?php echo $id_gallery_id; ?>" class="widefat">
-			<option value="0"><?php _e('Select', BWG()->prefix); ?></option>
+			<option value="0"><?php _e('All images', BWG()->prefix); ?></option>
 			<?php
 			foreach ($gallery_rows as $gallery_row) {
 			  ?>

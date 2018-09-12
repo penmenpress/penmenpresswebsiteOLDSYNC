@@ -443,7 +443,7 @@ class BWGControllerSite {
       if( !empty($gallery_row) && isset($gallery_row->published) && $gallery_row->published == 0 ) {
         return;
       }
-      if ( (empty($gallery_row) && $params['type'] == '' && $params["tag"] == 0) || ( !empty($params['from']) && $params['from'] == 'widget' && $gallery_row->id == 0) ) {
+      if ( empty($gallery_row) && $params['type'] == '' && $params["tag"] == 0 ) {
         echo WDWLibrary::message(__('There is no gallery selected or the gallery was deleted.', BWG()->prefix), 'wd_error');
         return;
       }
