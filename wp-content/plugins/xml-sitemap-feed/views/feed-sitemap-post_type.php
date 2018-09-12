@@ -22,7 +22,7 @@ if ( !empty($image) ) {
 echo '<?xml version="1.0" encoding="' . get_bloginfo('charset') . '"?>
 <?xml-stylesheet type="text/xsl" href="' . plugins_url('views/styles/sitemap.xsl',XMLSF_BASENAME) . '?ver=' . XMLSF_VERSION . '"?>
 '; ?>
-<?php xmlsf_get_generator(); ?>
+<?php xmlsf_generator(); ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
 <?php echo $image_xmlns; ?>
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -40,14 +40,11 @@ if ( have_posts() ) :
 
 	// check if page is in the exclusion list (like front page or post meta)
 	// or if we are not dealing with an external URL :: Thanks to Francois Deschenes :)
-	if ( !empty(
-			apply_filters(
-				'xmlsf_excluded',
-				get_post_meta( $post->ID, '_xmlsf_exclude', true ),
-				$post->ID
-			)
-		 ) || !xmlsf_is_allowed_domain( get_permalink() ) ) {
-
+	if ( apply_filters(
+			'xmlsf_excluded',
+			get_post_meta( $post->ID, '_xmlsf_exclude', true ),
+			$post->ID
+		 ) || xmlsf_is_allowed_domain( get_permalink() ) === false ) {
 		continue;
 	}
 
@@ -55,8 +52,10 @@ if ( have_posts() ) :
 	?>
 	<url>
 		<loc><?php echo esc_url( get_permalink() ); ?></loc>
-		<?php xmlsf_the_priority(); ?>
-		<?php xmlsf_the_lastmod(); ?>
+		<priority><?php echo xmlsf_get_priority(); ?></priority>
+<?php if ( $lastmod = xmlsf_get_lastmod() ) { ?>
+		<lastmod><?php echo $lastmod; ?></lastmod>
+<?php } ?>
 <?php
 	if ( !empty($image) ) :
 		foreach ( xmlsf_get_images() as $image ) {
@@ -97,4 +96,4 @@ if ( !$have_posts ) :
 <?php
 endif;
 ?></urlset>
-<?php xmlsf_get_usage(); ?>
+<?php xmlsf_usage(); ?>

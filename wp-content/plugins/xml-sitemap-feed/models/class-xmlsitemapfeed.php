@@ -144,7 +144,7 @@ class XMLSitemapFeed {
 					),
 					'page' => array(
 						'active' => '1',
-						'priority' => '0.3',
+						'priority' => '0.5',
 						'dynamic_priority' => '',
 						'tags' => array(
 							'image' => 'attached'
@@ -166,13 +166,7 @@ class XMLSitemapFeed {
 				'robots' => '',
 				'urls' => '',
 				'custom_sitemaps' => '',
-				'domains' => '',
-				'news_tags' => array(
-					'name' => '',
-					'post_type' => array('post'),
-					'categories' => '',
-					'image' => 'featured'
-				)
+				'domains' => ''
 			);
 
 			$post_types = apply_filters( 'xmlsf_post_types', get_post_types(array('public'=>true,'_builtin'=>false),'names') );
@@ -182,7 +176,7 @@ class XMLSitemapFeed {
 				foreach ( $post_types as $name )
 					$this->defaults['post_types'][$name] = array(
 						//'name' => $name,
-						'active' => '1',
+						'active' => '',
 						'archive' => '',
 						'priority' => '0.5',
 						'dynamic_priority' => '',
@@ -234,6 +228,21 @@ class XMLSitemapFeed {
 		}
 		return $this->plain_permalinks;
 	}
+
+	/**
+	 * Get scheme
+	 * @return string
+	 */
+	public function blog_language() {
+		if ( $this->blog_language === null ) {
+			// get site language for default language
+			$this->blog_language = xmlsf_parse_language_string( get_bloginfo('language') );
+		}
+
+		return $this->blog_language;
+	}
+
+
 
 	/**
 	 * Get scheme

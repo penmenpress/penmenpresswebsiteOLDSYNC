@@ -247,7 +247,7 @@ class XMLSF_Admin_Controller
 			return;
 
 		// _xmlsf_priority
-		if ( isset($_POST['xmlsf_priority']) && is_numeric($_POST['xmlsf_priority']) ) {
+		if ( isset($_POST['xmlsf_priority']) ) {
 			update_post_meta($post_id, '_xmlsf_priority', XMLSF_Admin_Sitemap_Sanitize::priority($_POST['xmlsf_priority']) );
 		} else {
 			delete_post_meta($post_id, '_xmlsf_priority');
@@ -287,9 +287,6 @@ class XMLSF_Admin_Controller
 
 		delete_option( 'xmlsf_static_files' );
 		delete_option( 'xmlsf_pong' );
-
-		//delete_option( 'xmlsf_version' );
-		//xmlsf_maybe_upgrade();
 
 		add_action( 'admin_notices', array('XMLSF_Admin_Notices','clear_settings_admin_notice') );
 	}
@@ -385,7 +382,7 @@ class XMLSF_Admin_Controller
 		$home_path = trailingslashit( get_home_path() );
 		$sitemaps = get_option( 'xmlsf_sitemaps' );
 		$check_for = is_array($sitemaps) ? $sitemaps : array();
-		if ( !empty( get_option('xmlsf_robots') ) ) {
+		if ( get_option('xmlsf_robots') ) {
 			$check_for['robots'] = 'robots.txt';
 		}
 
@@ -396,7 +393,7 @@ class XMLSF_Admin_Controller
 		}
 
 		if ( $update ) {
-			if ( !empty(self::$static_files) ) {
+			if ( !empty( self::$static_files ) ) {
 				update_option( 'xmlsf_static_files', self::$static_files, false );
 			} else {
 				delete_option( 'xmlsf_static_files' );

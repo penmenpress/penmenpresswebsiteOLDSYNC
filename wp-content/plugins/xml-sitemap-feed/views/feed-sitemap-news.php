@@ -23,7 +23,7 @@ if ( !empty($options['image']) ) {
 echo '<?xml version="1.0" encoding="' . get_bloginfo('charset') . '"?>
 <?xml-stylesheet type="text/xsl" href="' . plugins_url('views/styles/sitemap-news.xsl',XMLSF_BASENAME) . '?ver=' . XMLSF_VERSION . '"?>
 '; ?>
-<?php xmlsf_get_generator(); ?>
+<?php xmlsf_generator(); ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
 	xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
 <?php echo $image_xmlns; ?>
@@ -44,8 +44,11 @@ if ( have_posts() ) :
 
 	// check if we are not dealing with an external URL :: Thanks to Francois Deschenes :)
 	// or if post meta says "exclude me please"
-
-	if ( !empty( get_post_meta( $post->ID, '_xmlsf_news_exclude', true ) ) || !xmlsf_is_allowed_domain( get_permalink() ) )
+	if ( apply_filters(
+		 	'xmlsf_news_excluded',
+		 	get_post_meta( $post->ID, '_xmlsf_news_exclude', true ),
+		 	$post->ID
+		 ) || xmlsf_is_allowed_domain( get_permalink() ) === false )
 		continue;
 
 	$have_posts = true;
@@ -61,7 +64,7 @@ if ( have_posts() ) :
 						echo apply_filters( 'the_title_xmlsitemap', XMLSF_GOOGLE_NEWS_NAME );
 					else
 						echo apply_filters( 'the_title_xmlsitemap', get_bloginfo('name') ); ?></news:name>
-				<?php echo xmlsf_the_news_language($post->ID); ?>
+				<news:language><?php echo xmlsf_get_language($post->ID); ?></news:language>
 			</news:publication>
 			<news:publication_date><?php
 				echo mysql2date('Y-m-d\TH:i:s+00:00', $post->post_date_gmt, false); ?></news:publication_date>
@@ -108,4 +111,4 @@ if ( !$have_posts ) :
 <?php
 endif;
 ?></urlset>
-<?php xmlsf_get_usage(); ?>
+<?php xmlsf_usage(); ?>
