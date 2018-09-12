@@ -199,10 +199,10 @@ class Core_Result extends Behavior {
                                         <span><?php _e( "This will permanently remove the selected file/folder. Are you sure you want to continue?", "defender-security" ) ?></span>
                                         <div>
                                             <button type="submit" class="button button-small button-grey">
-		                                        <?php _e( "Yes", "defender-security" ) ?>
+												<?php _e( "Yes", "defender-security" ) ?>
                                             </button>
                                             <button type="button" class="button button-small button-secondary">
-		                                        <?php _e( "No", "defender-security" ) ?>
+												<?php _e( "No", "defender-security" ) ?>
                                             </button>
                                         </div>
                                     </div>
@@ -345,7 +345,10 @@ class Core_Result extends Behavior {
 
 		$left_lines  = explode( "\n", $left_string );
 		$right_lines = explode( "\n", $right_string );
-		$text_diff   = new \Text_Diff( $left_lines, $right_lines );
+		$text_diff   = new \Text_Diff( 'auto', array(
+			$right_lines,
+			$left_lines
+		) );
 		$renderer    = new \Text_Diff_Renderer_inline();
 
 		return $renderer->render( $text_diff );

@@ -1,5 +1,5 @@
 <div class="rule closed" id="disable-file-editor">
-    <div class="rule-title">
+    <div class="rule-title" role="link" tabindex="0">
 		<?php if ( $controller->check() == false ): ?>
             <i class="def-icon icon-warning" aria-hidden="true"></i>
 		<?php else: ?>
@@ -25,7 +25,7 @@
                     <button class="button button-small button-grey"
                             type="submit"><?php _e( "Revert", "defender-security" ) ?></button>
                 </form>
-			<?php else: 
+			<?php else:
                 $servers        = \WP_Defender\Behavior\Utils::instance()->serverTypes();
                 $setting        = \WP_Defender\Module\Hardener\Model\Settings::instance();
 				$setting->active_server = \WP_Defender\Behavior\Utils::instance()->determineServer( true );
@@ -74,7 +74,7 @@
 					} else {
 						$wp_content     = str_replace( $_SERVER['DOCUMENT_ROOT'], '', WP_CONTENT_DIR );
 					}
-                    
+
                     $rules = "# Turn off directory indexing
 autoindex off;
 

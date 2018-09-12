@@ -1,5 +1,5 @@
 <div class="rule closed" id="login-duration">
-    <div class="rule-title">
+    <div class="rule-title" role="link" tabindex="0">
 		<?php if ( $controller->check() == false ): ?>
             <i class="def-icon icon-warning" aria-hidden="true"></i>
 		<?php else: ?>
@@ -20,7 +20,7 @@
                 $setting = \WP_Defender\Module\Hardener\Model\Settings::instance();
 
                 if ( $controller->check() ):
-                    ?> 
+                    ?>
                     <p class="line"><?php esc_attr_e( sprintf( __('Login Duration is locked down. Current duration is %d days', "defender-security" ), $controller->getService()->getDuration() ) ); ?></p>
                     <form method="post" class="hardener-frm rule-process">
                         <?php $controller->createNonceField(); ?>
@@ -29,8 +29,8 @@
                         <button class="button button-small button-grey" type="submit"><?php _e( "Revert", "defender-security" ) ?></button>
                     </form>
                     <?php
-                else: 
-                    ?>  
+                else:
+                    ?>
                         <div class="line">
                             <p><?php _e( "Please change the number of days a user can stay logged in", "defender-security" ) ?></p>
                         </div>

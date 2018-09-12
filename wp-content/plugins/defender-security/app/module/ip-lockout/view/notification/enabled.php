@@ -24,7 +24,7 @@
                                    id="toggle_login_protection"/>
                             <label class="toggle-label" for="toggle_login_protection"></label>
                         </span>
-                    <label><?php esc_html_e( "Login Protection Lockout", "defender-security" ) ?></label>
+                    <label for="toggle_login_protection" role="checkbox" aria-checked="<?php echo $settings->login_lockout_notification?'true':'false';?>"><?php esc_html_e( "Login Protection Lockout", "defender-security" ) ?></label>
                     <span class="sub inpos">
                         <?php esc_html_e( "When a user or IP is locked out for trying to access your login area.", "defender-security" ) ?>
                     </span>
@@ -38,7 +38,7 @@
                                    class="toggle-checkbox" id="toggle_404_detection"/>
                             <label class="toggle-label" for="toggle_404_detection"></label>
                         </span>
-                    <label>
+                    <label for="toggle_404_detection" role="checkbox" aria-checked="<?php echo $settings->ip_lockout_notification?'true':'false';?>">
 						<?php esc_html_e( "404 Detection Lockout", "defender-security" ) ?>
                     </label>
                     <span class="sub inpos"><?php esc_html_e( "When a user or IP is locked out for repeated hits on non-existent files.", "defender-security" ) ?></span>
@@ -76,7 +76,7 @@
                                    id="cooldown_enabled"/>
                             <label class="toggle-label" for="cooldown_enabled"></label>
                         </span>
-                    <label><?php _e( "Limit email notifications for repeat lockouts", "defender-security" ) ?></label>
+                    <label for="cooldown_enabled" role="checkbox" aria-checked="<?php echo $settings->cooldown_enabled?'true':'false';?>"><?php _e( "Limit email notifications for repeat lockouts", "defender-security" ) ?></label>
                     <div class="well well-white schedule-box">
                         <label><strong><?php _e( "Threshold", "defender-security" ) ?></strong>
                             - <?php _e( "The number of lockouts before we turn off emails", "defender-security" ) ?>

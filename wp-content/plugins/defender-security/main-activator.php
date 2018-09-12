@@ -11,7 +11,7 @@ class WD_Main_Activator {
 		add_action( 'init', array( &$this, 'init' ) );
 		add_action( 'wp_loaded', array( &$this, 'maybeShowNotice' ) );
 		add_action( 'wp_ajax_hideDefenderNotice', array( &$this, 'hideNotice' ) );
-		add_action( 'activated_plugin', array( &$this, 'redirectToDefender' ) );
+		//add_action( 'activated_plugin', array( &$this, 'redirectToDefender' ) );
 	}
 
 	/**
@@ -57,7 +57,6 @@ class WD_Main_Activator {
 			\Hammer\Base\Container::instance()->set( 'audit', new \WP_Defender\Module\Audit() );
 			\Hammer\Base\Container::instance()->set( 'lockout', new \WP_Defender\Module\IP_Lockout() );
 			\Hammer\Base\Container::instance()->set( 'advanced_tool', new \WP_Defender\Module\Advanced_Tools() );
-			\Hammer\Base\Container::instance()->set( 'gdpr', new \WP_Defender\Controller\GDPR() );
 			//no need to set debug
 			require_once $this->wp_defender->getPluginPath() . 'free-dashboard/module.php';
 			add_filter( 'wdev-email-message-' . plugin_basename( __FILE__ ), array( &$this, 'defenderAdsMessage' ) );

@@ -1,5 +1,5 @@
 <div class="rule closed" id="disable-file-editor">
-    <div class="rule-title">
+    <div class="rule-title" role="link" tabindex="0">
 		<?php if ( $controller->check() == false ): ?>
             <i class="def-icon icon-warning" aria-hidden="true"></i>
 		<?php else: ?>
@@ -16,7 +16,7 @@
 			<?php _e( "How to fix", "defender-security" ) ?>
         </h3>
         <div class="well">
-			<?php 
+			<?php
             $setting = \WP_Defender\Module\Hardener\Model\Settings::instance();
 
             if ( $controller->check() ): ?>
@@ -51,9 +51,9 @@
                     <button class="button button-small button-grey"
                             type="submit"><?php _e( "Revert", "defender-security" ) ?></button>
                 </form>
-			<?php else: 
+			<?php else:
                 $servers = \WP_Defender\Behavior\Utils::instance()->serverTypes();
-                
+
                 if ( DIRECTORY_SEPARATOR == '\\' ) {
                     //Windows
                     $wp_includes    = str_replace( ABSPATH, '', WPINC );
@@ -70,7 +70,7 @@
                 } else if ( $is_iis7 ) {
                     $setting->active_server = 'iis-7';
                 }
-                
+
             ?>
                 <div class="columns">
                     <div class="column is-one-third">
@@ -134,7 +134,7 @@ location ~* ^$wp_content/.*\.php$ {
 }
 ";
                     ?>
-                    
+
                     <p><?php esc_html_e( "For NGINX servers:", "defender-security" ) ?></p>
                     <ol>
                         <li>
@@ -176,9 +176,9 @@ location ~* ^$wp_content/.*\.php$ {
                         <button class="button float-r"
                                 type="submit" ><?php _e( "Add web.config file", "defender-security" ) ?></button>
                     </form>
-                    
-                </div>		
-                <?php $controller->showIgnoreForm(); 
+
+                </div>
+                <?php $controller->showIgnoreForm();
                 $prevent_php_style = "style='display:none'";
                 if ( in_array( $setting->active_server, array( 'apache', 'litespeed', 'nginx' ) ) ) {
                     $prevent_php_style = "style='display:block'";

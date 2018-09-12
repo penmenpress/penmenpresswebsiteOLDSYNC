@@ -17,10 +17,10 @@ class Widget extends Behavior {
             <div class="box-title">
                 <span class="span-icon hardener-icon" aria-hidden="true"></span>
                 <h3><?php _e( "Security Tweaks", "defender-security" ) ?>
-					<?php 
+					<?php
                     $hardener_issues = count( Settings::instance()->issues );
                     if ( $hardener_issues ): ?>
-                        <span class="def-tag tag-yellow" 
+                        <span class="def-tag tag-yellow"
                         tooltip="<?php esc_attr_e( sprintf( __('You have %d security tweak(s) needing attention.', "defender-security" ), $hardener_issues ) ); ?>">
                         <?php
                         echo $hardener_issues ?>

@@ -2494,6 +2494,11 @@
       text-transform: uppercase; }
     .wp-defender .advanced-tools .at-line .well.well-yellow a:hover {
       opacity: 1; }
+  .wp-defender .advanced-tools .well.well-white label {
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline; }
   .wp-defender .toggle-row {
     display: none; }
   @media screen and (min-width: 769px) and (max-width: 979px) {

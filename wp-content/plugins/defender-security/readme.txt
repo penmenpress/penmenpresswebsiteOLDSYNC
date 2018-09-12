@@ -1,13 +1,13 @@
 === Defender Security, Monitoring, and Hack Protection ===
 Plugin Name: Defender Security, Monitoring, and Hack Protection
-Version: 1.9
+Version: 2.0
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV
 Tags: Security, Security Tweaks, Hardening, IP lockout, Monitoring, Blacklist, Site Protection, Hacked, Security Scan
 Requires at least: 4.6
 Tested up to: 4.9.7
-Stable tag: 1.9.1
+Stable tag: 2.0
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Protect WordPress from hackers with security tweaks, code scans, 2-Step Verification, IP lockouts, and monitoring.
@@ -121,6 +121,17 @@ Hackers and bot attacks are not the only threat to your site.  No matter what se
 
 
 == Changelog ==
+
+= 2.0 =
+- New: added tweak “Disable XML-RPC”
+- Improvement: Two factor authentication can now be force enabled by role.
+- Improvement: Masking URL description.
+- Fix: Compatibility with Appointments+ login when Mask Login is enabled.
+- Fix: /login/ will be blocked instead of redirecting to right login URL
+- Fix: new site registration email login URL will now show right Login URL instead of the original one when Mask URL is enabled.
+- Fix: Accessibility issue when activating 2FA.
+- Changes: Show Admin Pointer on initial Defender activation, and removing the redirect behavior.
+- Other minor enhancements and fixes
 
 = 1.9.1 =
 - Fix: Mask Login Area description text is misleading

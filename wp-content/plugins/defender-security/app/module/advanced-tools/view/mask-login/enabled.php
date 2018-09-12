@@ -30,16 +30,16 @@
 			<?php wp_nonce_field( 'saveATMaskLoginSettings' ) ?>
             <div class="columns">
                 <div class="column is-one-third">
-                    <label><?php _e( "Masking URLs", "defender-security" ) ?></label>
+                    <label><?php _e( "Masking URL", "defender-security" ) ?></label>
                     <span class="sub">
-                        <?php _e( "Choose the new URL slug where users of your website will now navigate to log in or register.", "defender-security" ) ?>
+                        <?php _e( 'Choose a new slug where users of your website will now login instead of visiting /wp-login.', "defender-security" ) ?>
                     </span>
                 </div>
                 <div class="column">
-                    <span class="form-help"><?php _e( "You can specify any URLs. For security reasons, less obvious URLs are recommended as they are harder for bots to guess.", "defender-security" ) ?></span>
-                    <span class="form-help"><strong><?php _e( "New Login URL", "defender-security" ) ?></strong></span>
-                    <input type="text" class="tl block" name="maskUrl" value="<?php echo $settings->maskUrl ?>"/>
-                    <span class="form-help-s"><?php printf( __( "Users will login at <strong>%s</strong>", "defender-security" ), get_site_url() . '/' . $settings->maskUrl ) ?></span>
+                    <span class="form-help"><?php _e( "You can choose any slug you like using alphanumeric characters and '-'s only. For security reasons, less obvious slugs are recommended as they are harder for bots to guess.", "defender-security" ) ?></span>
+                    <span class="form-help"><strong><?php _e( 'New Login Slug', "defender-security" ) ?></strong></span>
+                    <input type="text" class="tl block" name="maskUrl" value="<?php echo $settings->maskUrl ?>" placeholder="<?php _e( 'I.e. dashboard', "defender-security" ); ?>"/>
+                    <span class="form-help-s"><?php printf( __( "Users will login at <strong>%s</strong>. Note: Registration and Password Reset emails have hardcoded URLs in them. We will update them automatically to match your new login URL.", "defender-security" ), get_site_url() . '/' . $settings->maskUrl ) ?></span>
                 </div>
             </div>
             <div class="columns">
