@@ -3,7 +3,7 @@
 Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.2.5
+Version: 4.2.6
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -40,7 +40,7 @@ class MaxGalleriaMediaLib {
 
 	public function set_global_constants() {	
 		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_KEY', 'maxgalleria_media_library_version');
-		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.5');
+		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.6');
 		define('MAXGALLERIA_MEDIA_LIBRARY_IGNORE_NOTICE', 'maxgalleria_media_library_ignore_notice');
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME);
@@ -3538,7 +3538,7 @@ and meta_key = '_wp_attached_file'";
   <div class="section price-section">
     <div class="container">
       <div class="prices">
-        <h3>$39</h3>
+        <h3>$29</h3>
         <div class="descr">
           <img src="<?php echo MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_URL ?>/images/icons/benefits.png" class=" img-responsive" alt="ico">
           <p>

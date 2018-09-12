@@ -3,7 +3,7 @@ Contributors: maxfoundry, AlanP57
 Tags: WordPress media library folders, media library folders, organize media library
 Requires at least: 4.0
 Tested up to: 4.9.8
-Stable tag: 4.2.5
+Stable tag: 4.2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,7 +37,7 @@ MLF adds to and works with the functionality of WordPress Media Library. It does
 * Select and add images to your posts and pages from the editor through MLFs integration
 * Organize your [media library folders](https://maxgalleria.com/downloads/media-library-plus-pro/?utm_source=wordpress&utm_medium=mlf&utm_content=mlf&utm_campaign=repo) with categories
 * [Enhanced Media Library and Media Library Folders Pro categories](https://maxgalleria.com/using-wordpress-media-categories/) are interchangeable
-* Create new MaxGalleria, The WordPress Gallery, Jetpack Template Galleries and NextGEN Galleries directly from your MLF folders
+* Create new MaxGalleria and NextGEN Galleries directly from your MLF folders
 * Supports Advanced Custom Fields
 * Use File Name View Mode for finding images in very large folders
 * Add images to a WooCommerce product gallery
@@ -167,6 +167,9 @@ To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup menu
 
 
 == Changelog ==
+= 4.2.6 =
+* Updated the Upgrade to Pro page
+
 = 4.2.5 =
 * Added check for thumbnail size data during move operation
 * Localized for translation text display via Java Script
