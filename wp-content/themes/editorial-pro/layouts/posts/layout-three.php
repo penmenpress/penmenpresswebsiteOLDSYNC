@@ -80,11 +80,11 @@ $post_id = get_the_ID();
 						<?php 
 							if( has_post_thumbnail() ) {
 								the_post_thumbnail( 'editorial-single-large' );
-						?> <p>
-						<?php
-							echo apply_filters( 'the_post_thumbnail_caption', get_the_post_thumbnail_caption( $post ) );
-							?>
-									</p> <?php
+						?> <?php if (get_post(get_post_thumbnail_id())->post_excerpt) { // search for if the image has caption added on it ?>
+    <span class="featured-image-caption">
+        <?php echo wp_kses_post(get_post(get_post_thumbnail_id())->post_excerpt); // displays the image caption ?>
+    </span>
+<?php } ?> <?php
 							} else {
 								$image_src = editorial_pro_image_fallback( 'editorial-single-large' );
 								$image_path = '<img src="'. $image_src[0] .'"/>';
