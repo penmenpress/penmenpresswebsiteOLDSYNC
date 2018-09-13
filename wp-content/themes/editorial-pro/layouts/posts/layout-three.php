@@ -80,6 +80,11 @@ $post_id = get_the_ID();
 						<?php 
 							if( has_post_thumbnail() ) {
 								the_post_thumbnail( 'editorial-single-large' );
+								
+								<?php
+							echo apply_filters( 'the_post_thumbnail_caption', get_the_post_thumbnail_caption( $post ) );
+							?>
+						
 							} else {
 								$image_src = editorial_pro_image_fallback( 'editorial-single-large' );
 								$image_path = '<img src="'. $image_src[0] .'"/>';
