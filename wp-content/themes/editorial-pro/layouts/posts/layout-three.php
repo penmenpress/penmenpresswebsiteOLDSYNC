@@ -82,7 +82,7 @@ $post_id = get_the_ID();
 								the_post_thumbnail( 'editorial-single-large' );
 						?> <p>
 						<?php
-							echo apply_filters( 'the_post_thumbnail_caption', get_the_post_thumbnail_caption( $post ) );
+							
 							?>
 									</p> <?php
 							} else {
