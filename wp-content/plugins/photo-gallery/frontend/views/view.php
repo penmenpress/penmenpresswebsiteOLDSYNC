@@ -4,9 +4,6 @@ class BWGViewSite {
   public function container($params = array(), $bwg = 0, $content = '') {
     if ( !WDWLibrary::elementor_is_active() && BWG()->options->use_inline_stiles_and_scripts ) {
       wp_enqueue_style(BWG()->prefix . '_frontend');
-      if ( isset($params['id']) ) {
-        wp_print_styles('bwg_googlefonts' . $params['id']);
-      }
       if ( (isset($params['show_tag_box']) && $params['show_tag_box'])
         || (isset($params['show_sort_images']) && $params['show_sort_images'])
         || $params['album_view_type'] == 'album' ) {

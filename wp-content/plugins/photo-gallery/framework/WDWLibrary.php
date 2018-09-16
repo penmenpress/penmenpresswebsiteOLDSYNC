@@ -821,6 +821,47 @@ class WDWLibrary {
     return false;
   }
 
+  /**
+   * Get google fonts used in themes and options.
+   *
+   * @return string
+   */
+  public static function get_all_used_google_fonts() {
+    global $wpdb;
+
+    $url = '';
+    $google_array = array();
+    $google_fonts = self::get_google_fonts();
+    $theme = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'bwg_theme', 'OBJECT_K');
+
+    if ( $theme ) {
+      foreach ( $theme as $row ) {
+        if ( isset($row->options) ) {
+          $options = json_decode($row->options);
+          foreach ( $options as $option ) {
+            $is_google_fonts = in_array((string) $option, $google_fonts) ? TRUE : FALSE;
+            if ( TRUE == $is_google_fonts ) {
+              $google_array[$option] = $option;
+            }
+          }
+        }
+      }
+    }
+
+    if ( TRUE == in_array(BWG()->options->watermark_font, $google_fonts) ) {
+      $google_array[BWG()->options->watermark_font] = BWG()->options->watermark_font;
+    }
+
+    if ( !empty($google_array) ) {
+      $query = implode("|", str_replace(' ', '+', $google_array));
+
+      $url = 'https://fonts.googleapis.com/css?family=' . $query;
+      $url .= '&subset=greek,latin,greek-ext,vietnamese,cyrillic-ext,latin-ext,cyrillic';
+    }
+
+    return $url;
+  }
+
   public static function get_used_google_fonts($theme = null, $shortcode = null) {
     global $wpdb;
 
@@ -884,22 +925,24 @@ class WDWLibrary {
     }
 
     // Register style for widget
-    if ($theme) {
-      foreach ($theme as $row) {
-        if (isset($row->options)) {
+    if ( $theme ) {
+      foreach ( $theme as $row ) {
+        if ( isset($row->options) ) {
           $options = json_decode($row->options);
-          foreach ($options as $option) {
-            $is_google_fonts = (in_array((string)$option, $google_fonts)) ? true : false;
-            if (true == $is_google_fonts) {
+          foreach ( $options as $option ) {
+            $is_google_fonts = (in_array((string) $option, $google_fonts)) ? TRUE : FALSE;
+            if ( TRUE == $is_google_fonts ) {
               $google_array[$option] = $option;
             }
           }
         }
       }
     }
-    if (true == in_array(BWG()->options->watermark_font, $google_fonts)) {
+
+    if ( TRUE == in_array(BWG()->options->watermark_font, $google_fonts) ) {
       $google_array[BWG()->options->watermark_font] = BWG()->options->watermark_font;
     }
+
     if ( !empty($google_array) ) {
       $query = implode("|", str_replace(' ', '+', $google_array));
 
