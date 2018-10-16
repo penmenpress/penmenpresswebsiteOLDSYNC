@@ -830,7 +830,7 @@ class EF_Custom_Status extends EF_Module {
 		if ( is_numeric( $name ) )
 			$_REQUEST['form-errors']['name'] = __( 'Please enter a valid, non-numeric name for the status.', 'edit-flow' );
 		// Check that the status name doesn't exceed 20 chars
-		if ( strlen( $name ) > 20 )
+		if ( strlen( $name ) > 30 )
 			$_REQUEST['form-errors']['name'] = __( 'Status name cannot exceed 20 characters. Please try a shorter name.', 'edit-flow' );
 		// Check to make sure the status doesn't already exist as another term because otherwise we'd get a weird slug
 		$term_exists = term_exists( sanitize_title( $name ) );
