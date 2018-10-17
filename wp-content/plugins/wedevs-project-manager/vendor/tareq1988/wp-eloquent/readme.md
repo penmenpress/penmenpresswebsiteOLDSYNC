@@ -57,7 +57,7 @@ You can use custom tables of the WordPress databases to create models:
 
 
 		/**
-		 * Columns that can be edited - IE not primary key and timestamps if being uses
+		 * Columns that can be edited - IE not primary key or timestamps if being used
 		 */
 		protected $fillable = [
 			'city',
@@ -170,8 +170,8 @@ var_dump(Post::type('page')->status('publish')->get()->toArray()); // get pages 
 
 
 ## Minimum Requirement
- - PHP 5.3.0
- - WordPress 3.6+
+ - PHP 5.6.4+
+ - WordPress 4.0+
 
 ## Author
-[Tareq Hasan](http://tareq.wedevs.com)
+[Tareq Hasan](https://tareq.co)

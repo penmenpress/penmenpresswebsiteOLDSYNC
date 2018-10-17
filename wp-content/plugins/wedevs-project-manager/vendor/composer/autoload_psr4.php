@@ -11,12 +11,12 @@ return array(
     'WeDevs\\ORM\\' => array($vendorDir . '/tareq1988/wp-eloquent/src'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Component\\Translation\\' => array($vendorDir . '/symfony/translation'),
-    'Stringy\\' => array($vendorDir . '/danielstjules/stringy/src'),
     'League\\Fractal\\' => array($vendorDir . '/league/fractal/src'),
     'Illuminate\\Support\\' => array($vendorDir . '/illuminate/support'),
     'Illuminate\\Pagination\\' => array($vendorDir . '/illuminate/pagination'),
     'Illuminate\\Database\\' => array($vendorDir . '/illuminate/database'),
     'Illuminate\\Contracts\\' => array($vendorDir . '/illuminate/contracts'),
     'Illuminate\\Container\\' => array($vendorDir . '/illuminate/container'),
+    'AppSero\\' => array($vendorDir . '/appsero/client/src'),
     '' => array($vendorDir . '/nesbot/carbon/src'),
 );

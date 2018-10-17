@@ -7,6 +7,7 @@ use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Arr;
 
 class Database implements ConnectionInterface
 {
@@ -19,6 +20,13 @@ class Database implements ConnectionInterface
      * @var int
      */
     public $transactionCount = 0;
+
+    /**
+     * The database connection configuration options.
+     *
+     * @var array
+     */
+    protected $config = [];
 
     /**
      * Initializes the Database class
@@ -43,7 +51,20 @@ class Database implements ConnectionInterface
     {
         global $wpdb;
 
+        $this->config = [
+            'name' => 'wp-eloquent-mysql2',
+        ];
         $this->db = $wpdb;
+    }
+
+    /**
+     * Get the database connection name.
+     *
+     * @return string|null
+     */
+    public function getName()
+    {
+        return $this->getConfig('name');
     }
 
     /**
@@ -81,11 +102,12 @@ class Database implements ConnectionInterface
      *
      * @param  string $query
      * @param  array $bindings
+     * @param  bool $useReadPdo
      * @throws QueryException
      *
      * @return mixed
      */
-    public function selectOne($query, $bindings = array())
+    public function selectOne($query, $bindings = [], $useReadPdo = true)
     {
         $query = $this->bind_params($query, $bindings);
 
@@ -102,11 +124,12 @@ class Database implements ConnectionInterface
      *
      * @param  string $query
      * @param  array $bindings
+     * @param  bool $useReadPdo
      * @throws QueryException
      *
      * @return array
      */
-    public function select($query, $bindings = array())
+    public function select($query, $bindings = [], $useReadPdo = true)
     {
         $query = $this->bind_params($query, $bindings);
 
@@ -116,6 +139,20 @@ class Database implements ConnectionInterface
             throw new QueryException($query, $bindings, new \Exception($this->db->last_error));
 
         return $result;
+    }
+
+    /**
+     * Run a select statement against the database and returns a generator.
+     * TODO: Implement cursor and all the related sub-methods.
+     *
+     * @param  string  $query
+     * @param  array  $bindings
+     * @param  bool  $useReadPdo
+     * @return \Generator
+     */
+    public function cursor($query, $bindings = [], $useReadPdo = true)
+    {
+
     }
 
     /**
@@ -294,12 +331,13 @@ class Database implements ConnectionInterface
      * Execute a Closure within a transaction.
      *
      * @param  \Closure $callback
+     * @param  int  $attempts
      *
      * @return mixed
      *
      * @throws \Exception
      */
-    public function transaction(\Closure $callback)
+    public function transaction(\Closure $callback, $attempts = 1)
     {
         $this->beginTransaction();
         try {
@@ -320,7 +358,7 @@ class Database implements ConnectionInterface
     public function beginTransaction()
     {
         $transaction = $this->unprepared("START TRANSACTION;");
-        if ($transaction) {
+        if (false !== $transaction) {
             $this->transactionCount++;
         }
     }
@@ -336,7 +374,7 @@ class Database implements ConnectionInterface
             return;
         }
         $transaction = $this->unprepared("COMMIT;");
-        if ($transaction) {
+        if (false !== $transaction) {
             $this->transactionCount--;
         }
     }
@@ -352,7 +390,7 @@ class Database implements ConnectionInterface
             return;
         }
         $transaction = $this->unprepared("ROLLBACK;");
-        if ($transaction) {
+        if (false !== $transaction) {
             $this->transactionCount--;
         }
     }
@@ -409,5 +447,16 @@ class Database implements ConnectionInterface
     public function lastInsertId($args)
     {
         return $this->db->insert_id;
+    }
+
+    /**
+     * Get an option from the configuration options.
+     *
+     * @param  string|null  $option
+     * @return mixed
+     */
+    public function getConfig($option = null)
+    {
+        return Arr::get($this->config, $option);
     }
 }
