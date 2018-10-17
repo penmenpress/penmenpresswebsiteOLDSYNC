@@ -9,13 +9,13 @@ function bwg_addons_display() {
       'icon'        => '',
       'image'       => BWG()->plugin_url . '/addons/images/ecommerce.png',
     ),  
-    'photo-gallery-facebook'   => array(
+/*    'photo-gallery-facebook'   => array(
       'name'        => __('Photo Gallery Facebook', BWG()->prefix),
       'url'         => 'https://10web.io/plugins/wordpress-photo-gallery/',
       'description' => __('Photo Gallery Facebook is an add-on, which helps to display Facebook photos and videos within Photo Gallery plugin. You can create Facebook-only galleries, embed individual images and videos or include Facebook albums within mixed type albums.', BWG()->prefix),
       'icon'        => '',
       'image'       => BWG()->plugin_url . '/addons/images/facebook.png',
-    ),
+    ),*/
     'ngitopg'   => array(
       'name'        => __('NextGen Gallery Import to Photo Gallery', BWG()->prefix),
       'url'         => 'https://10web.io/plugins/wordpress-photo-gallery/',

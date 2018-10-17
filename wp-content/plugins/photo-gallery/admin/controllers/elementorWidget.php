@@ -34,7 +34,7 @@ class BWGElementor extends \Elementor\Widget_Base {
    * @return array Widget categories.
    */
   public function get_categories() {
-    return [ 'basic' ];
+    return [ 'tenweb-widgets' ];
   }
 
   /**

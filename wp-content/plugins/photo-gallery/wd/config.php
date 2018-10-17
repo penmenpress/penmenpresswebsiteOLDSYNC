@@ -3,7 +3,7 @@
         exit;
     }
 
-    class TenWebConfig {
+    class TenWebLibConfig {
         public static $instance; 
 
         public $prefix = null;          

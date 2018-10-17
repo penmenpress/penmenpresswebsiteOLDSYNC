@@ -4,12 +4,19 @@
  * Class GalleriesView_bwg
  */
 class GalleriesView_bwg extends AdminView_bwg {
+
+  public function __construct() {
+    wp_enqueue_script(BWG()->prefix . '_jquery.ui.touch-punch.min');
+    parent::__construct();
+  }
+
   /**
    * Display page.
    *
    * @param $params
    */
   public function display( $params = array() ) {
+    wp_enqueue_script(BWG()->prefix . '_jquery.ui.touch-punch.min');
     ob_start();
     echo $this->body($params);
     $form_attr = array(
@@ -313,9 +320,12 @@ class GalleriesView_bwg extends AdminView_bwg {
                         <option value="instagram" <?php echo(($params['gallery_type'] == 'instagram') ? 'selected="selected"' : ''); ?>>
                           <?php _e('Instagram only', BWG()->prefix); ?>
                         </option>
+                        <?php
+                        if ( has_action('init_display_facebook_gallery_options_bwg') && $current_id != 0 ) { ?>
                         <option value="facebook" <?php echo(($params['gallery_type'] == 'facebook') ? 'selected="selected"' : ''); ?>>
                           <?php _e('Facebook', BWG()->prefix); ?>
                         </option>
+                        <?php } ?>
                       </select>
                       <input type="text" id="gallery_type_old" name="gallery_type_old" value="<?php echo $row->gallery_type; ?>" style='display:none;' />
 					  <?php if ( empty($params['rows'][0]) ) { ?>
@@ -393,7 +403,7 @@ class GalleriesView_bwg extends AdminView_bwg {
       } ?>" type="button" onclick="jQuery('.opacity_add_embed').show(); jQuery('#add_embed_help').hide(); return false;" value="<?php _e('Embed Media', BWG()->prefix); ?>" />
       <input id="show_bulk_embed" class="button button-secondary button-large" title="<?php _e('Social Bulk Embed', BWG()->prefix); ?>" style="<?php if ( $params['gallery_type'] != '' ) {
         echo 'display:none';
-      } ?>" type="button" onclick="jQuery('.opacity_bulk_embed').show(); return false;" value="<?php _e('Social Bulk Embed', BWG()->prefix); ?>" />
+      } ?>" type="button" onclick="<?php echo (!BWG()->is_pro ? 'alert(\'' . addslashes(__('This option is disabled in free version.', BWG()->prefix)) . '\');' : 'jQuery(\'.opacity_bulk_embed\').show();'); ?> return false;" value="<?php _e('Social Bulk Embed', BWG()->prefix); ?>" />
       <?php
       if ( is_plugin_active('image-optimizer-wd/io-wd.php') && !empty($params['rows']) ) {
         ?><a href="<?php echo add_query_arg(array('page' => 'iowd_settings', 'target' => 'wd_gallery'), admin_url('admin.php')); ?>" class="button button-primary button-large" target="_blank"><?php _e("Optimize Images", BWG()->prefix); ?></a><?php
@@ -502,13 +512,6 @@ class GalleriesView_bwg extends AdminView_bwg {
     </div>
     <!-- Edit from bulk block -->
     <div id="add_desc" class="opacity_image_desc bwg_image_desc">
-      <div class="edit_cont_buttons">
-        <input class="button button-primary button-large" type="button" onclick="spider_set_input_value('ajax_task', 'image_edit');
-                                                                                 spider_ajax_save('bwg_gallery');
-                                                                                 jQuery('.opacity_image_desc').hide();
-                                                                                 return false;" value="<?php _e('Update', BWG()->prefix); ?>" />
-        <input class="button button-secondary button-large" type="button" onclick="jQuery('.opacity_image_desc').hide(); return false;" value="<?php echo __('Cancel', BWG()->prefix); ?>" />
-      </div>
       <div>
         <span class="bwg_popup_label">
           <?php _e('Alt/Title: ', BWG()->prefix); ?>
@@ -526,6 +529,14 @@ class GalleriesView_bwg extends AdminView_bwg {
           <?php _e('Description: ', BWG()->prefix); ?>
         </span>
         <textarea class="bwg_popup_input" type="text" id="desc" name="desc"></textarea>
+      </div>
+      <br>
+      <div class="edit_cont_buttons">
+        <input class="button button-primary button-large" type="button" onclick="spider_set_input_value('ajax_task', 'image_edit');
+                                                                                 spider_ajax_save('bwg_gallery');
+                                                                                 jQuery('.opacity_image_desc').hide();
+                                                                                 return false;" value="<?php _e('Update', BWG()->prefix); ?>" />
+        <input class="button button-secondary button-large" type="button" onclick="jQuery('.opacity_image_desc').hide(); return false;" value="<?php echo __('Cancel', BWG()->prefix); ?>" />
       </div>
     </div>
     <div class="ajax-msg wd-hide">
@@ -660,7 +671,7 @@ class GalleriesView_bwg extends AdminView_bwg {
                   <?php echo $row->filename; ?>
                   <i class="wd-info dashicons dashicons-info" data-id="wd-info-<?php echo $row->id; ?>"></i>
                   <div id="wd-info-<?php echo $row->id; ?>" class="wd-hide">
-                    <p><?php echo __("Date modified", BWG()->prefix) . ': ' . ($temp ? $row->date : date("d F Y, H:i", strtotime($row->date))); ?></p>
+                    <p><?php echo __("Date", BWG()->prefix) . ': ' . ($temp ? $row->date : date("d F Y, H:i", strtotime($row->date))); ?></p>
                     <p><?php echo __("Resolution", BWG()->prefix) . ': ' . $row->resolution; ?></p>
                     <p><?php echo __("Size", BWG()->prefix) . ': ' . $row->size; ?></p>
                     <p><?php echo __("Type", BWG()->prefix) . ': ' . $row->filetype; ?></p>
@@ -707,10 +718,6 @@ class GalleriesView_bwg extends AdminView_bwg {
               ?>
             </td>
             <td data-colname="<?php _e('Redirect URL', BWG()->prefix); ?>" class="redirect_cont">
-              <i class="wd-info dashicons dashicons-info" data-id="wd-info-redirect"></i>
-              <div id="wd-info-redirect" class="wd-hide">
-                <p>Enter a URL to redirect users as they click on image thumbnails.</p>
-              </div>
               <textarea rows="4" onkeypress="prevent_new_line(event)" class="bwg_redirect_url" id="redirect_url_<?php echo $row->id; ?>" name="redirect_url_<?php echo $row->id; ?>"><?php echo $row->redirect_url; ?></textarea>
             </td>
             <td data-colname="<?php _e('Tags', BWG()->prefix); ?>">

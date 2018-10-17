@@ -107,13 +107,13 @@ function spider_destroypopup(duration) {
       jQuery(".bwg_spider_popup_loading").css({display: "none"});
       jQuery(".spider_popup_overlay").css({display: "none"});
       jQuery(document).off("keydown");
-      if (bwg_overflow_initial_value) {
+      if ( bwg_overflow_initial_value !== false ) {
         jQuery("html").css("overflow", bwg_overflow_initial_value);
       }
-      if (bwg_overflow_x_initial_value) {
+      if ( bwg_overflow_x_initial_value !== false ) {
         jQuery("html").css("overflow-x", bwg_overflow_x_initial_value);
       }
-      if (bwg_overflow_y_initial_value) {
+      if ( bwg_overflow_y_initial_value !== false ) {
         jQuery("html").css("overflow-y", bwg_overflow_y_initial_value);
       }
     }, 20);
@@ -278,7 +278,7 @@ function spider_form_submit(event, form_id) {
 /* Check if required field is empty. */
 function spider_check_required(id, name) {
   if (jQuery('#' + id).val() == '') {
-    alert(name + '* ' + bwg_objectL10n.bwg_field_required);
+    alert(name + ' ' + bwg_objectL10n.bwg_field_required);
     jQuery('#' + id).attr('style', 'border-color: #FF0000;');
     jQuery('#' + id).focus();
     return true;

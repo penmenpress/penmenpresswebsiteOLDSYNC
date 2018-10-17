@@ -23,7 +23,7 @@ function bwg_shortcode_ready() {
       width_window = jQuery(window).width() + 17;
       height_window = jQuery(window).height();
       ed.addCommand('mcebwg_mce', function () {
-        if ( jQuery(".bwg-shortcode-btn:visible").length ) {
+        if ( jQuery(".bwg-shortcode-btn:visible").length == 1 ) {
           jQuery('.bwg-shortcode-btn:visible').trigger('click');
           return;
         }

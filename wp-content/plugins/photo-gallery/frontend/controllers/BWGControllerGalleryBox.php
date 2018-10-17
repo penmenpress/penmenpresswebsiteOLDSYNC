@@ -114,7 +114,7 @@ class BWGControllerGalleryBox {
 				'mail' => $email,
 				'comment' => $comment,
 				'url' => '',
-				'date' => date('Y-m-d H:i'),
+				'date' => date('Y-m-d H:i:s'),
 				'published' => $published,
 			), array(
 				'%d',

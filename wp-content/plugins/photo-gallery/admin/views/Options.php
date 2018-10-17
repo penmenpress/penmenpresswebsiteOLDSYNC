@@ -514,20 +514,16 @@ class OptionsView_bwg extends AdminView_bwg {
                     </div>
                     <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
                   </div>
+                  <?php if ( has_action('init_display_facebook_options_bwg') ) { ?>
                   <div class="wd-box-content wd-width-50">
                     <div class="wd-box-title">
                       <strong><?php _e('Facebook', BWG()->prefix); ?></strong>
                     </div>
                     <?php
-                    if ( has_action('init_display_facebook_options_bwg') ) {
                       do_action('init_display_facebook_options_bwg', $row );
-                    }
-                    else {
-                      $link = '<a href="https://10web.io/plugins/wordpress-photo-gallery/" target="_blank">' . __('Photo Gallery Facebook Integration', BWG()->prefix) . '</a>';
-                      echo '<div class="error inline"><p>' . sprintf(__("Please install %s add-on to use this feature.", BWG()->prefix), $link) . '</p></div>';
-                    }
                     ?>
                   </div>
+                  <?php } ?>
                 </div>
               </div>
             </div>
@@ -1029,6 +1025,7 @@ class OptionsView_bwg extends AdminView_bwg {
 
   public static function gallery_options($row) {
     $effects = self::get_effects();
+	  $zipArchiveClass = ( class_exists('ZipArchive') ) ? TRUE : FALSE;
     ?>
       <div id="thumbnails_options" class="gallery_options wd-box-content wd-width-100 bwg-flex-wrap">
         <div class="wd-box-content wd-width-33">
@@ -1203,11 +1200,16 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="gallery_download" id="gallery_download_1" value="1" <?php if ($row->gallery_download) echo 'checked="checked"'; ?> /><label for="gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="gallery_download" id="gallery_download_0" value="0" <?php if (!$row->gallery_download) echo 'checked="checked"'; ?> /><label for="gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="gallery_download" id="gallery_download_1" value="1" <?php if ($row->gallery_download) echo 'checked="checked"'; ?> /><label for="gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="gallery_download" id="gallery_download_0" value="0" <?php if (!$row->gallery_download) echo 'checked="checked"'; ?> /><label for="gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
               <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+              <?php
+              if ( !$zipArchiveClass) {
+                echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+              }
+              ?>
             </div>
           </div>
           <?php
@@ -1393,7 +1395,7 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>
           <div class="wd-box-content wd-width-100 bwg-vertical-block-masonry">
             <div class="wd-group">
-              <label class="wd-label"><?php _e('Show image title in Vertical Masonry', BWG()->prefix); ?></label>
+              <label class="wd-label"><?php _e('Show image title', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input type="radio" name="masonry_image_title" id="masonry_image_title_0" value="hover" <?php if ($row->masonry_image_title == "hover") echo 'checked="checked"'; ?> /><label for="masonry_image_title_0" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label>
                 <input type="radio" name="masonry_image_title" id="masonry_image_title_1" value="show" <?php if ($row->masonry_image_title == "show") echo 'checked="checked"'; ?> /><label for="masonry_image_title_1" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label>
@@ -1404,12 +1406,12 @@ class OptionsView_bwg extends AdminView_bwg {
           </div>		  
           <div class="wd-box-content wd-width-100 bwg-vertical-block-masonry" id="tr_show_masonry_thumb_description">
             <div class="wd-group">
-              <label class="wd-label"><?php _e('Show image descriptions in Vertical Masonry', BWG()->prefix); ?></label>
+              <label class="wd-label"><?php _e('Show image descriptions', BWG()->prefix); ?></label>
               <div class="bwg-flex">
                 <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="show_masonry_thumb_description" id="masonry_thumb_desc_1" value="1" <?php if ($row->show_masonry_thumb_description) echo 'checked="checked"'; ?> /><label for="masonry_thumb_desc_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
                 <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="show_masonry_thumb_description" id="masonry_thumb_desc_0" value="0" <?php if (!$row->show_masonry_thumb_description) echo 'checked="checked"'; ?> /><label for="masonry_thumb_desc_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
-              <p class="description"><?php _e('Enable this setting to display descriptions under images in Vertical Masonry view.', BWG()->prefix); ?></p>
+              <p class="description"><?php _e('Enable this setting to display descriptions under images.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
             </div>
           </div>
@@ -1427,11 +1429,16 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="masonry_gallery_download" id="masonry_gallery_download_1" value="1" <?php if ($row->masonry_gallery_download) echo 'checked="checked"'; ?> /><label for="masonry_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="masonry_gallery_download" id="masonry_gallery_download_0" value="0" <?php if (!$row->masonry_gallery_download) echo 'checked="checked"'; ?> /><label for="masonry_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="masonry_gallery_download" id="masonry_gallery_download_1" value="1" <?php if ($row->masonry_gallery_download) echo 'checked="checked"'; ?> /><label for="masonry_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="masonry_gallery_download" id="masonry_gallery_download_0" value="0" <?php if (!$row->masonry_gallery_download) echo 'checked="checked"'; ?> /><label for="masonry_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
               <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+              <?php
+              if ( !$zipArchiveClass) {
+                echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+              }
+              ?>
             </div>
           </div>
           <?php
@@ -1646,12 +1653,17 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="mosaic_gallery_download" id="mosaic_gallery_download_1" value="1" <?php if ($row->mosaic_gallery_download) echo 'checked="checked"'; ?> /><label for="mosaic_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="mosaic_gallery_download" id="mosaic_gallery_download_0" value="0" <?php if (!$row->mosaic_gallery_download) echo 'checked="checked"'; ?> /><label for="mosaic_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="mosaic_gallery_download" id="mosaic_gallery_download_1" value="1" <?php if ($row->mosaic_gallery_download) echo 'checked="checked"'; ?> /><label for="mosaic_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="mosaic_gallery_download" id="mosaic_gallery_download_0" value="0" <?php if (!$row->mosaic_gallery_download) echo 'checked="checked"'; ?> /><label for="mosaic_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
               <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
-            </div>
+              <?php
+              if ( !$zipArchiveClass) {
+                echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+              }
+              ?>
+			      </div>
           </div>
           <?php
           if (function_exists('BWGEC')) {
@@ -1916,11 +1928,16 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="slideshow_gallery_download" id="slideshow_gallery_download_1" value="1" <?php if ($row->slideshow_gallery_download) echo 'checked="checked"'; ?> /><label for="slideshow_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="slideshow_gallery_download" id="slideshow_gallery_download_0" value="0" <?php if (!$row->slideshow_gallery_download) echo 'checked="checked"'; ?> /><label for="slideshow_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="slideshow_gallery_download" id="slideshow_gallery_download_1" value="1" <?php if ($row->slideshow_gallery_download) echo 'checked="checked"'; ?> /><label for="slideshow_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="slideshow_gallery_download" id="slideshow_gallery_download_0" value="0" <?php if (!$row->slideshow_gallery_download) echo 'checked="checked"'; ?> /><label for="slideshow_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
               <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+			        <?php
+              if ( !$zipArchiveClass) {
+                echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+              }
+              ?>
             </div>
           </div>
         </div>
@@ -2053,11 +2070,16 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="image_browser_gallery_download" id="image_browser_gallery_download_1" value="1" <?php if ($row->image_browser_gallery_download) echo 'checked="checked"'; ?> /><label for="image_browser_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="image_browser_gallery_download" id="image_browser_gallery_download_0" value="0" <?php if (!$row->image_browser_gallery_download) echo 'checked="checked"'; ?> /><label for="image_browser_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="image_browser_gallery_download" id="image_browser_gallery_download_1" value="1" <?php if ($row->image_browser_gallery_download) echo 'checked="checked"'; ?> /><label for="image_browser_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="image_browser_gallery_download" id="image_browser_gallery_download_0" value="0" <?php if (!$row->image_browser_gallery_download) echo 'checked="checked"'; ?> /><label for="image_browser_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
               <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+              <?php
+              if ( !$zipArchiveClass) {
+                echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+              }
+              ?>
             </div>
           </div>
         </div>
@@ -2229,11 +2251,16 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_gallery_download" id="blog_style_gallery_download_1" value="1" <?php if ($row->blog_style_gallery_download) echo 'checked="checked"'; ?> /><label for="blog_style_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_gallery_download" id="blog_style_gallery_download_0" value="0" <?php if (!$row->blog_style_gallery_download) echo 'checked="checked"'; ?> /><label for="blog_style_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="blog_style_gallery_download" id="blog_style_gallery_download_1" value="1" <?php if ($row->blog_style_gallery_download) echo 'checked="checked"'; ?> /><label for="blog_style_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="blog_style_gallery_download" id="blog_style_gallery_download_0" value="0" <?php if (!$row->blog_style_gallery_download) echo 'checked="checked"'; ?> /><label for="blog_style_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
               <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+			        <?php
+              if ( !$zipArchiveClass) {
+                echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+              }
+              ?>
             </div>
           </div>
         </div>
@@ -2378,11 +2405,16 @@ class OptionsView_bwg extends AdminView_bwg {
                 <div class="wd-group">
                   <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
-                    <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="carousel_gallery_download" id="carousel_gallery_download_1" value="1" <?php if ($row->carousel_gallery_download) echo 'checked="checked"'; ?> /><label for="carousel_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                    <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="carousel_gallery_download" id="carousel_gallery_download_0" value="0" <?php if (!$row->carousel_gallery_download) echo 'checked="checked"'; ?> /><label for="carousel_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                    <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="carousel_gallery_download" id="carousel_gallery_download_1" value="1" <?php if ($row->carousel_gallery_download) echo 'checked="checked"'; ?> /><label for="carousel_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                    <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="carousel_gallery_download" id="carousel_gallery_download_0" value="0" <?php if (!$row->carousel_gallery_download) echo 'checked="checked"'; ?> /><label for="carousel_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
                   </div>
                   <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
                   <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+                  <?php
+                  if ( !$zipArchiveClass) {
+                    echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+                  }
+                  ?>
                 </div>
               </div>
             </div>
@@ -2391,6 +2423,7 @@ class OptionsView_bwg extends AdminView_bwg {
   }
 
   public static function gallery_group_options($row) {
+    $zipArchiveClass = ( class_exists('ZipArchive') ) ? TRUE : FALSE;
     ?>
       <div id="album_compact_preview_options" class="album_options wd-box-content wd-width-100 bwg-flex-wrap">
         <div class="wd-box-content wd-width-33">
@@ -2639,11 +2672,16 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="album_gallery_download" id="album_gallery_download_1" value="1" <?php if ($row->album_gallery_download) echo 'checked="checked"'; ?> /><label for="album_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="album_gallery_download" id="album_gallery_download_0" value="0" <?php if (!$row->album_gallery_download) echo 'checked="checked"'; ?> /><label for="album_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="album_gallery_download" id="album_gallery_download_1" value="1" <?php if ($row->album_gallery_download) echo 'checked="checked"'; ?> /><label for="album_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="album_gallery_download" id="album_gallery_download_0" value="0" <?php if (!$row->album_gallery_download) echo 'checked="checked"'; ?> /><label for="album_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
               <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+			        <?php
+              if ( !$zipArchiveClass) {
+                echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+              }
+              ?>
             </div>
           </div>
           <?php
@@ -2845,11 +2883,16 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="album_masonry_gallery_download" id="album_masonry_gallery_download_1" value="1" <?php if ($row->album_masonry_gallery_download) echo 'checked="checked"'; ?> /><label for="album_masonry_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="album_masonry_gallery_download" id="album_masonry_gallery_download_0" value="0" <?php if (!$row->album_masonry_gallery_download) echo 'checked="checked"'; ?> /><label for="album_masonry_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="album_masonry_gallery_download" id="album_masonry_gallery_download_1" value="1" <?php if ($row->album_masonry_gallery_download) echo 'checked="checked"'; ?> /><label for="album_masonry_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="album_masonry_gallery_download" id="album_masonry_gallery_download_0" value="0" <?php if (!$row->album_masonry_gallery_download) echo 'checked="checked"'; ?> /><label for="album_masonry_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
               <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+			        <?php
+              if ( !$zipArchiveClass) {
+                echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+              }
+              ?>
             </div>
           </div>
           <?php
@@ -3116,11 +3159,16 @@ class OptionsView_bwg extends AdminView_bwg {
               <div class="wd-group">
                 <label class="wd-label"><?php _e('Enable bulk download button', BWG()->prefix); ?></label>
                 <div class="bwg-flex">
-                  <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="album_extended_gallery_download" id="album_extended_gallery_download_1" value="1" <?php if ($row->album_extended_gallery_download) echo 'checked="checked"'; ?> /><label for="album_extended_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                  <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="album_extended_gallery_download" id="album_extended_gallery_download_0" value="0" <?php if (!$row->album_extended_gallery_download) echo 'checked="checked"'; ?> /><label for="album_extended_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                  <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="album_extended_gallery_download" id="album_extended_gallery_download_1" value="1" <?php if ($row->album_extended_gallery_download) echo 'checked="checked"'; ?> /><label for="album_extended_gallery_download_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                  <input <?php echo ( !$zipArchiveClass ) ? 'disabled="disabled"' : ( ( BWG()->is_pro ) ? '' : 'disabled="disabled"' ); ?> type="radio" name="album_extended_gallery_download" id="album_extended_gallery_download_0" value="0" <?php if (!$row->album_extended_gallery_download) echo 'checked="checked"'; ?> /><label for="album_extended_gallery_download_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
                 </div>
                 <p class="description"><?php _e('Activate this setting to let users download all images of your gallery with a click.', BWG()->prefix); ?></p>
                 <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+                <?php
+                  if ( !$zipArchiveClass) {
+                  echo WDWLibrary::message_id(0, __('Photo Gallery Export will not work correctly, as ZipArchive PHP extension is disabled on your website. Please contact your hosting provider and ask them to enable it.', 'pgi'),'error');
+                  }
+                ?>
               </div>
             </div>
             <?php

@@ -124,7 +124,6 @@ class FilemanagerView {
               <span id="search_by_name" class="ctrl_bar_btn">
                 <input type="search" placeholder="Search" class="ctrl_bar_btn search_by_name">
               </span>
-
             </div>
           </div>
           <div id="path">
@@ -223,6 +222,7 @@ class FilemanagerView {
                            fileIso="<?php echo isset( $file[ 'iso' ] ) ? $file[ 'iso' ] : ''; ?>"
                            fileOrientation="<?php echo isset( $file[ 'orientation' ] ) ? $file[ 'orientation' ] : ''; ?>"
                            fileCopyright="<?php echo isset( $file[ 'copyright' ] ) ? $file[ 'copyright' ] : ''; ?>"
+                           fileTags='<?php echo isset( $file[ 'tags' ] ) ? $file[ 'tags' ] : ''; ?>'
                            onmouseover="onFileMOver(event, this);"
                            onmouseout="onFileMOut(event, this);"
                            onclick="onFileClick(event, this);"

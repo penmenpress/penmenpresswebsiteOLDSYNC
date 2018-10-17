@@ -1677,6 +1677,7 @@ class WDWLibrary {
       'shutter_speed' => 0,
       'title' => '',
       'orientation' => 0,
+      'tags' => '',
     );
     if ( is_callable( 'iptcparse' ) ) {
       getimagesize( $file, $info );
@@ -1684,8 +1685,12 @@ class WDWLibrary {
         $iptc = iptcparse( $info['APP13'] );
         if ( ! empty( $iptc['2#105'][0] ) ) {
           $meta['title'] = trim( $iptc['2#105'][0] );
-        } elseif ( ! empty( $iptc['2#005'][0] ) ) {
+        }
+        elseif ( ! empty( $iptc['2#005'][0] ) ) {
           $meta['title'] = trim( $iptc['2#005'][0] );
+        }
+        if ( ! empty( $iptc['2#025'] ) ) {
+          $meta['tags'] = json_encode($iptc['2#025']);
         }
         if ( ! empty( $iptc['2#120'][0] ) ) {
           $caption = trim( $iptc['2#120'][0] );
@@ -2756,7 +2761,16 @@ class WDWLibrary {
   }
 
   public static function unique_number() {
-	  return mt_rand();
+    $use_random_number = ( WDWLibrary::elementor_is_active() ) ? TRUE : FALSE;
+    if ($use_random_number) {
+      return mt_rand();
+    }
+    else {
+      global $bwg;
+      $bwg_unique = $bwg;
+      $bwg++;
+      return $bwg_unique;
+    }
   }
 
   public static function error_message_ids() {

@@ -34,7 +34,7 @@ class WidgetSlideshowView_bwg {
 		$controller_class = 'BWGControllerSite';
 		$view = 'Slideshow';
 		$controller = new $controller_class($view);
-    global $bwg;
+    $bwg = WDWLibrary::unique_number();
     $params = array (
 		  'from' => 'widget',
 		  'gallery_type' => 'slideshow',
@@ -51,7 +51,6 @@ class WidgetSlideshowView_bwg {
 		);
 		$pairs = WDWLibrary::get_shortcode_option_params( $params );
 		$controller->execute($pairs, 1, $bwg);
-    $bwg++;
 		// After widget.
 		echo $after_widget;
 	}

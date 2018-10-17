@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.5.4
+ * Version: 1.5.6
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/pricing/
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,8 +81,8 @@ final class BWG {
     $this->plugin_dir = WP_PLUGIN_DIR . "/" . plugin_basename(dirname(__FILE__));
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.5.4';
-    $this->db_version = '1.5.4';
+    $this->plugin_version = '1.5.6';
+    $this->db_version = '1.5.6';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
 
@@ -102,6 +102,7 @@ final class BWG {
    * Add actions.
    */
   private function add_actions() {
+    add_action('init', array($this, 'init_free_users_lib'), 8);
     add_action('init', array($this, 'init'), 9);
     add_action('admin_menu', array( $this, 'admin_menu' ) );
 
@@ -207,7 +208,7 @@ final class BWG {
 
     add_action('admin_notices', array($this, 'admin_notices'));
 
-	// Privacy policy.
+	  // Privacy policy.
     add_action( 'admin_init', array($this, 'add_privacy_policy_content') );
     // Prevent adding shortcode conflict with some builders.
 
@@ -215,12 +216,29 @@ final class BWG {
 
 	  // Register widget for Elementor builder.
     add_action('elementor/widgets/widgets_registered', array($this, 'register_elementor_widgets'));
+    // Register 10Web category for Elementor widget if 10Web builder doesn't installed.
+    add_action('elementor/elements/categories_registered', array($this, 'register_widget_category'), 1, 1);
   }
 
+  /**
+   * Register widget for Elementor builder.
+   */
   public function register_elementor_widgets() {
     if ( defined('ELEMENTOR_PATH') && class_exists('Elementor\Widget_Base') ) {
       require_once ($this->plugin_dir . '/admin/controllers/elementorWidget.php');
     }
+  }
+
+  /**
+   * Register 10Web category for Elementor widget if 10Web builder doesn't installed.
+   *
+   * @param $elements_manager
+   */
+  public function register_widget_category( $elements_manager ) {
+    $elements_manager->add_category('tenweb-widgets', array(
+      'title' => __('10WEB', 'tenweb-builder'),
+      'icon' => 'fa fa-plug',
+    ));
   }
 
   public function register_block_editor_assets($assets) {
@@ -581,20 +599,14 @@ final class BWG {
 
     if ( !$this->is_pro ) {
       wp_register_style($this->prefix . '_licensing', $this->plugin_url . '/css/bwg_licensing.css', $required_styles, $this->plugin_version);
-      wp_register_style($this->prefix . '_deactivate-css', $this->plugin_url . '/wd/assets/css/deactivate_popup.css', $required_styles, $this->plugin_version);
-      wp_register_script($this->prefix . '-deactivate-popup', $this->plugin_url . '/wd/assets/js/deactivate_popup.js', $required_scripts, $this->plugin_version, true);
-      $admin_data = wp_get_current_user();
-      wp_localize_script( $this->prefix . '-deactivate-popup', 'fmWDDeactivateVars', array(
-        "prefix" => $this->prefix,
-        "deactivate_class" => $this->prefix . '_deactivate_link',
-        "email" => $admin_data->data->user_email,
-        "plugin_wd_url" => "https://10web.io/plugins/wordpress-photo-gallery/",
-      ));
     }
 
     // Roboto font for top bar.
     wp_register_style($this->prefix . '-roboto', 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
     wp_register_style($this->prefix . '-pricing', $this->plugin_url . '/css/pricing.css', array(), $this->plugin_version);
+
+    // For drag and drop on mobiles.
+    wp_register_script($this->prefix . '_jquery.ui.touch-punch.min', $this->plugin_url . '/js/jquery.ui.touch-punch.min.js', array(), '0.2.3');
   }
 
   /**
@@ -686,9 +698,8 @@ final class BWG {
       $controller->execute($params, 1, WDWLibrary::get('bwg', 0));
     }
     else {
-      global $bwg;
+      $bwg = WDWLibrary::unique_number();
       $controller->execute($params, 1, $bwg);
-      $bwg++;
     }
 
     return;
@@ -1318,13 +1329,28 @@ final class BWG {
     load_plugin_textdomain($this->prefix, FALSE, basename(dirname(__FILE__)) . '/languages/backend');
   }
 
+  public function init_free_users_lib() {
+    add_filter('tenweb_free_users_lib_path', array($this, 'tenweb_lib_path'));
+  }
+
+  public function tenweb_lib_path($path) {
+    // The version of WD Lib
+    $version = '1.1.1';
+    if (!isset($path['version']) || version_compare($path['version'], $version) === -1) {
+      $path['version'] = $version;
+      $path['path'] = $this->plugin_dir;
+    }
+    return $path;
+  }
+
   /**
    * Overview.
    */
   public function overview() {
     if (is_admin() && !isset($_REQUEST['ajax'])) {
-      if (!class_exists("TenWeb")) {
-        require_once(BWG()->plugin_dir . '/wd/start.php');
+      if (!class_exists("TenWebLib")) {
+        $plugin_dir = apply_filters('tenweb_free_users_lib_path', array('version' => '1.1.1', 'path' => $this->plugin_dir));
+        require_once($plugin_dir['path'] . '/wd/start.php');
       }
       global $bwg_options;
       $bwg_options = array(
@@ -1558,7 +1584,7 @@ final class BWG {
         "display_overview" => false,
       );
 
-      ten_web_init($bwg_options);
+      ten_web_lib_init($bwg_options);
     }
   }
 

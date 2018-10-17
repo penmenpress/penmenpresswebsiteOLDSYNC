@@ -224,6 +224,7 @@ function submitFiles() {
           fileData['iso'] = wdb_all_files_filtered[i]["iso"];
           fileData['orientation'] = wdb_all_files_filtered[i]["orientation"];
           fileData['copyright'] = wdb_all_files_filtered[i]["copyright"];
+          fileData['tags'] = wdb_all_files_filtered[i]["tags"];
           filesValid.push(fileData);
         }
       }
@@ -252,6 +253,7 @@ function submitFiles() {
         fileData['iso'] = jQuery(file_object).attr("fileIso");
         fileData['orientation'] = jQuery(file_object).attr("fileOrientation");
         fileData['copyright'] = jQuery(file_object).attr("fileCopyright");
+        fileData['tags'] = jQuery(file_object).attr("fileTags");
         filesValid.push(fileData);
       }
     }
@@ -482,9 +484,10 @@ function onFileMOut(event, obj) {
 }
 
 function onFileClick(event, obj) {
+  var isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
   jQuery(".explorer_item").removeClass("explorer_item_select");
   var objName = jQuery(obj).attr("name");
-  if (event.ctrlKey == true || event.metaKey == true) {
+  if (event.ctrlKey == true || event.metaKey == true || isMobile) {
     if (all_files_selected === true) {
       if (filesSelected.indexOf(objName) == -1) {
         var index = no_selected_files.indexOf(objName);
@@ -503,6 +506,7 @@ function onFileClick(event, obj) {
     else {
       filesSelected.splice(filesSelected.indexOf(objName), 1);
       jQuery(obj).removeClass("explorer_item_select");
+      jQuery(obj).removeClass("explorer_item_hover");
     }
   }
   else if (event.shiftKey == true) {
@@ -634,6 +638,7 @@ function ajax_print_images(files, element, view_type, count) {
     var fileIso = corent_file["iso"];
     var fileOrientation = corent_file["orientation"];
     var fileCopyright = corent_file["copyright"];
+    var fileTags = corent_file["tags"];
     var onmouseover = "onFileMOver(event, this);";
     var onmouseout = "onFileMOut(event, this);";
     var onclick = "onFileClick(event, this);";
@@ -673,6 +678,7 @@ function ajax_print_images(files, element, view_type, count) {
       'fileIso="' + fileIso + '" ' +
       'fileOrientation="' + fileOrientation + '" ' +
       'fileCopyright="' + fileCopyright + '" ' +
+      'fileTags="' + fileTags + '" ' +
       'isDir="' + isDir + '" ' +
       'onmouseover="' + onmouseover + '" ' +
       'onmouseout="' + onmouseout + '" ' +
