@@ -147,17 +147,19 @@ class WPMediaFoldersHelper
      * @param string  $destination               Destination folder to move the file to
      * @param boolean $destination_with_filename Does the destination parameter contains also the file name (without extension)
      * @param boolean $delete_folder             Delete the folder containing this file after the process if it's empty
+     * @param boolean $is_wpml_translation      Is this file a wpml translation of another moved file?
      *
      * @return boolean|WP_Error true on success or WP_ERROR
      */
-    public static function moveFile($post_id, $destination, $destination_with_filename = true, $delete_folder = false)
+    public static function moveFile($post_id, $destination, $destination_with_filename = true, $delete_folder = false, $is_wpml_translation = false)
     {
         WP_Filesystem();
         global $wp_filesystem;
+        global $wpdb;
 
         // Sanitize destination path
         $destination = self::sanitizePath($destination);
-        if (!strlen(trim($destination, '/'))) {
+        if ($destination_with_filename && !strlen(trim($destination, '/'))) {
             WP_Media_Folders_Debug::log('Error : destination file empty');
             return new WP_Error('error', __('The file name cannot be empty', 'wp-media-folders'));
         }
@@ -207,8 +209,8 @@ class WPMediaFoldersHelper
         } else {
             $filename = $destination . '/' . pathinfo($related_files['original']['path'], PATHINFO_BASENAME);
         }
-        $related_files['original']['new_path'] = '/' . $filename;
-        $related_files['original']['new_url'] = '/' . $filename;
+        $related_files['original']['new_path'] = '/' . ltrim($filename, '/');
+        $related_files['original']['new_url'] = '/' .  ltrim($filename, '/');
 
         // Retrieve all meta to extract the tumbnails
         $meta = wp_get_attachment_metadata($post_id);
@@ -232,8 +234,8 @@ class WPMediaFoldersHelper
                 } else {
                     $filename = $destination . '/' . $size['file'];
                 }
-                $file['new_path'] = '/' . $filename;
-                $file['new_url'] = '/' . $filename;
+                $file['new_path'] = '/' . ltrim($filename, '/');
+                $file['new_url'] = '/' . ltrim($filename, '/');
 
                 $related_files['thumbnails'][] = $file;
             }
@@ -267,42 +269,48 @@ class WPMediaFoldersHelper
         $new_file = $wp_uploads['basedir'] . $related_files['original']['new_path'];
 
         // Check if source file exists
-        if (!file_exists($original_file) || !is_file($original_file)) {
+        if (file_exists($original_file) && is_file($original_file)) {
+            if (realpath($original_file) !== realpath($new_file)) {
+                // Check is there is already a destination file with this name
+                if (file_exists($new_file)) {
+                    WP_Media_Folders_Debug::log('Error : file is %s already exists', $new_file);
+                    return new WP_Error('error', __('The destination file already exists', 'wp-media-folders'));
+                }
+
+                // Create directory
+                $dir = pathinfo($new_file, PATHINFO_DIRNAME);
+                if (!file_exists($dir)) {
+                    wp_mkdir_p($dir);
+                }
+
+                // Move actual file
+                if (!$wp_filesystem->move(
+                    $original_file,
+                    $new_file
+                )) {
+                    WP_Media_Folders_Debug::log('Error : moving file %s to %s went wrong', $original_file, $new_file);
+                    return new WP_Error('error', __('Error while moving the file', 'wp-media-folders'));
+                }
+                WP_Media_Folders_Debug::log('Info : file moved from %s to %s', $original_file, $new_file);
+            }  elseif (!$is_wpml_translation) {
+                WP_Media_Folders_Debug::log('Error : source and destination file are the same %s', $new_file);
+                return new WP_Error('error', __('Source and destination file are the same', 'wp-media-folders'));
+            }
+
+
+        }  elseif (!$is_wpml_translation) {
             WP_Media_Folders_Debug::log('Error : file %s does not exist', $original_file);
             return new WP_Error('error', __('This file doesn\'t exist', 'wp-media-folders'));
         }
+        // if file is a wpml translation, the file may have already been moved by the calling function
 
-        if (realpath($original_file) === realpath($new_file)) {
-            WP_Media_Folders_Debug::log('Error : source and destination file are the same %s', $new_file);
-            return new WP_Error('error', __('Source and destination file are the same', 'wp-media-folders'));
-        }
 
-        // Check is there is already a destination file with this name
-        if (file_exists($new_file)) {
-            WP_Media_Folders_Debug::log('Error : file is %s already exists', $new_file);
-            return new WP_Error('error', __('The destination file already exists', 'wp-media-folders'));
-        }
-
-        // Create directory
-        $dir = pathinfo($new_file, PATHINFO_DIRNAME);
-        if (!file_exists($dir)) {
-            wp_mkdir_p($dir);
-        }
-
-        // Move actual file
-        if (!$wp_filesystem->move(
-            $original_file,
-            $new_file
-        )) {
-            WP_Media_Folders_Debug::log('Error : moving file %s to %s went wrong', $original_file, $new_file);
-            return new WP_Error('error', __('Error while moving the file', 'wp-media-folders'));
-        }
-        WP_Media_Folders_Debug::log('Info : file moved from %s to %s', $original_file, $new_file);
-
-        // Update file meta
-        if (update_post_meta($post_id, '_wp_attached_file', ltrim($related_files['original']['new_path'], '/')) !== true) {
-            WP_Media_Folders_Debug::log('Error : updating post meta failed %s %s', $post_id, ltrim($related_files['original']['new_path'], '/'));
-            return new WP_Error('error', __('Error while updating post meta', 'wp-media-folders'));
+        // Update file meta (_wp_attached_file)
+        if (ltrim($related_files['original']['path'], '/') !== ltrim($related_files['original']['new_path'], '/')) {
+            if (update_post_meta($post_id, '_wp_attached_file', ltrim($related_files['original']['new_path'], '/')) !== true) {
+                WP_Media_Folders_Debug::log('Error : updating post meta failed %s %s', $post_id, ltrim($related_files['original']['new_path'], '/'));
+                return new WP_Error('error', __('Error while updating post meta', 'wp-media-folders'));
+            }
         }
 
         // Todo update guid via sql query ???
@@ -316,12 +324,13 @@ class WPMediaFoldersHelper
             foreach ($file_type as $file) {
                 $original_file = $wp_uploads['basedir'] . $file['path'];
                 $new_file = $wp_uploads['basedir'] . $file['new_path'];
-                if (!file_exists($original_file)) {
+                if (file_exists($original_file)) {
+                    if (!$wp_filesystem->move($original_file, $new_file)) {
+                        WP_Media_Folders_Debug::log('Error : related file move failed from %s to %s', $original_file, $new_file);
+                        continue;
+                    }
+                } elseif (!$is_wpml_translation) {
                     WP_Media_Folders_Debug::log('Error: related file doesn not exist %s', $original_file);
-                    continue;
-                }
-                if (!$wp_filesystem->move($original_file, $new_file)) {
-                    WP_Media_Folders_Debug::log('Error : related file move failed from %s to %s', $original_file, $new_file);
                     continue;
                 }
 
@@ -330,16 +339,90 @@ class WPMediaFoldersHelper
             }
         }
 
+        // Update thumbnails meta
+        wp_update_attachment_metadata($post_id, $meta);
+
+        // Update wpml translation attachments and thumbnails
+        if (!$is_wpml_translation && function_exists('icl_object_id')) {
+            $post_translations = array();
+
+            $query = 'SELECT * FROM `' . $wpdb->prefix . 'icl_translations` WHERE trid=(SELECT trid FROM `' . $wpdb->prefix . 'icl_translations` WHERE element_type="post_attachment" AND element_id=' . (int)$post_id . ') AND element_id<>' . (int)$post_id;
+            // phpcs:ignore WordPress.WP.PreparedSQL.NotPrepared -- Query escaped previously
+            $post_translations = $wpdb->get_results($query, ARRAY_A);
+
+            foreach ($post_translations as $translation) {
+                $translation_post_meta = get_post_meta($translation['element_id'], '_wp_attached_file', true);
+
+                if ($translation_post_meta === ltrim($related_files['original']['path'], '/')) {
+                    // This is the same exact file
+
+                    // Update _wp_attached_file key
+                    if (update_post_meta($translation['element_id'], '_wp_attached_file', ltrim($related_files['original']['new_path'], '/')) !== true) {
+                        WP_Media_Folders_Debug::log('Error : updating post meta failed %s %s', $translation['element_id'], ltrim($related_files['original']['new_path'], '/'));
+                        continue;
+                    }
+
+                    $translation_meta = wp_get_attachment_metadata($translation['element_id']);
+                    if (isset($translation_meta['file']) && $translation_meta['file'] === ltrim($related_files['original']['path'], '/')) {
+                        $translation_meta['file'] = ltrim($related_files['original']['new_path'], '/');
+                    }
+
+                    // Only basename is saved in the _wp_attachment_metadata sizes col, no need to do anything if we only change the folder
+                    if ($destination_with_filename && isset($translation_meta['sizes']) && is_array($translation_meta['sizes'])) {
+                        // Loop over the sizes of this translation attachment
+                        foreach ($translation_meta['sizes'] as &$size) {
+                            // Loop over the thumbnails already moved to see if this one of them
+                            foreach ($related_files['thumbnails'] as $thumbnail) {
+                                if (pathinfo($thumbnail['path'], PATHINFO_BASENAME) === $size['file'] &&
+                                    pathinfo($translation_post_meta, PATHINFO_DIRNAME) === pathinfo(ltrim($thumbnail['path'], '/'), PATHINFO_DIRNAME)) { // Make this thumbnail is not a thumbnail in another folder
+                                    // Update meta filename
+                                    $size['file'] = pathinfo($thumbnail['new_path'], PATHINFO_BASENAME);
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                    preg_match('/(do_action|apply_filters)\(.*\);/', $match, $hook_matches);
+
+                    wp_update_attachment_metadata($translation['element_id'], $translation_meta);
+                } else {
+                    // This is not the same file but still it has to be in the same folder, lets move all of them (main file, thumbnails, backups)
+                    $new_path = pathinfo($related_files['original']['new_path'], PATHINFO_DIRNAME);
+
+                    self::moveFile($translation['element_id'], $new_path, false, $delete_folder, true);
+
+                    if ($destination_with_filename) {
+                        // At this points backups have been moved but still it has to be renamed in the db
+                        $backup_sizes = get_post_meta($translation['element_id'], '_wp_attachment_backup_sizes', true);
+
+                        if (!empty($backup_sizes) &&
+                            isset($backup_sizes['full-orig']) &&
+                            $backup_sizes['full-orig']['file'] === ltrim($related_files['original']['path'], '/')) {
+                            foreach ($backup_sizes as $backup_name => &$backup_size) {
+                                if ($backup_name === 'full-orig') {
+                                    $backup_size['file'] = ltrim($related_files['original']['new_path'], '/');
+                                } else {
+                                    // Retrieve file extension from thumbnail name
+                                    $extension = explode('.', $backup_size['file']);
+                                    $extension = $extension[count($extension) - 1];
+
+                                    $backup_size['file'] = $destination . '-' . (int)$backup_size['width'] . 'x' . (int)$backup_size['height'] . '.' . $extension;
+                                }
+                            }
+
+                            update_post_meta($translation['element_id'], '_wp_attachment_backup_sizes', $backup_sizes);
+                        }
+                    }
+                }
+            }
+        }
+
         if ($delete_folder) {
             $dir = pathinfo($wp_uploads['basedir'] . '/' . $related_files['original']['path'], PATHINFO_DIRNAME);
             $wp_filesystem->rmdir($dir);
         }
 
-        // Update thumbnails meta
-        wp_update_attachment_metadata($post_id, $meta);
-
         // Replace in database file url
-        global $wpdb;
         $options = get_option('wp-media-folders-options');
 
         if (isset($options['auto_detect_tables'])) {
@@ -366,11 +449,6 @@ class WPMediaFoldersHelper
                 $key = $key->Column_name;
 
                 foreach ($columns as $column => $column_value) {
-                    // ignore attachments specific meta columns as we know there is nothing to replace here
-                    if ($table === $wpdb->prefix . 'postmeta' && ($column === '_wp_attached_file' || $column === '_wp_attachment_metadata')) {
-                        continue;
-                    }
-
                     // Search for serialized strings
                     $query = 'SELECT ' . esc_sql($key) . ',' . esc_sql($column) . ' FROM ' . esc_sql($table). ' WHERE
                         ' . esc_sql($column) . ' REGEXP \'s:[0-9]+:".*(' . esc_sql(preg_quote($wp_uploads['baseurl'] . $done_file['url'])) . '|' . esc_sql(preg_quote($done_file['url'])) . ').*";\'';
@@ -385,14 +463,14 @@ class WPMediaFoldersHelper
                                 // We're sure this is a serialized value, proceed it here
                                 unset($columns[$column]);
                                 // Actually replace string in all available strin array and properties
-                                $unserialized_var = self::replaceStringRecursive($unserialized_var, $wp_uploads['baseurl'] . $done_file['url'], $wp_uploads['baseurl'] . $done_file['new_url']);
                                 $unserialized_var = self::replaceStringRecursive($unserialized_var, $done_file['url'], $done_file['new_url']);
+                                $unserialized_var = self::replaceStringRecursive($unserialized_var, $wp_uploads['baseurl'] . $done_file['url'], $wp_uploads['baseurl'] . $done_file['new_url']);
                                 // Serialize it back
                                 $serialized_var = serialize($unserialized_var);
 
                                 // Update the database with new serialized value
                                 $nb_rows = $wpdb->query($wpdb->prepare(
-                                    'UPDATE ' . esc_sql($table) . ' SET ' . esc_sql($column) . '=%s WHERE ' . esc_sql($key) . '=%s',
+                                    'UPDATE ' . esc_sql($table) . ' SET ' . esc_sql($column) . '=%s WHERE ' . esc_sql($key) . '=%s AND meta_key NOT IN("_wp_attached_file", "_wp_attachment_metadata")',
                                     array($serialized_var, $result[0])
                                 ));
                                 WP_Media_Folders_Debug::log('Update serialized data (%s row affected) : %s', $nb_rows, $query);
@@ -522,6 +600,7 @@ class WPMediaFoldersHelper
     public static function getDbColumns()
     {
         global $wpdb;
+        // phpcs:ignore WordPress.WP.PreparedSQL.NotPrepared -- Nothing to prepare
         return $wpdb->get_results('SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE DATA_TYPE IN ("varchar", "text", "tinytext", "mediumtext", "longtext") AND TABLE_SCHEMA = "'.DB_NAME.'" ORDER BY TABLE_NAME', OBJECT);
     }
 
@@ -554,7 +633,7 @@ class WPMediaFoldersHelper
         return $final_columns;
     }
 
-  /**
+    /**
      * Generate a random string
      *
      * @param integer $length Length of the returned string

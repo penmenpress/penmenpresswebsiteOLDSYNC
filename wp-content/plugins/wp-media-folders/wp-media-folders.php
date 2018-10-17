@@ -4,7 +4,7 @@
   Plugin URI: https://wordpress.org/plugins/wp-media-folders/
   Description: WP media Folders had the ability to rename and move files under real folders
   Author: Damien Barrère
-  Version: 1.1.0
+  Version: 1.1.1
   Text Domain: wp-media-folders
   Domain Path: /languages
   Licence : GNU General Public License version 2 or later; http://www.gnu.org/licenses/gpl-2.0.html
@@ -14,7 +14,7 @@
 // Prohibit direct script loading
 defined('ABSPATH') || die('No direct script access allowed!');
 
-define('WP_MEDIA_FOLDERS_VERSION', '1.1.0');
+define('WP_MEDIA_FOLDERS_VERSION', '1.1.1');
 
 // This functionality is only needed on backend
 if (!is_admin()) {

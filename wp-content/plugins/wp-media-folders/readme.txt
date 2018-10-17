@@ -3,8 +3,8 @@ Contributors: dbarrere
 Tags: media, folder, real media folders, media library, real media library
 Requires at least: 3.5.1
 Requires PHP: 5.4
-Tested up to: 4.9.6
-Stable tag: 1.1.0
+Tested up to: 4.9.8
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,11 @@ Always make sure all the WP Media Folders tasks are finished before editing any 
 
 == Changelog ==
 
+= Version 1.1.1 =
+ * [feature] Compatibility with WPML
+ * [fix] Do not query on attachment metas columns
+ * [fix] Serialized values double replacement
+
 = Version 1.1.0 =
  * [feature] WP Media Folder from Joommunited integration
  * [feature] Use background process to move file and avoid timeout issues
@@ -47,4 +52,3 @@ Always make sure all the WP Media Folders tasks are finished before editing any 
 = Version 1.0.0 =
  * [feature] Initial release
  * [feature] Replace files path from media manager
-
