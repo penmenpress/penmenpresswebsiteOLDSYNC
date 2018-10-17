@@ -1439,8 +1439,7 @@ class NewsletterModule {
 
         if ($user) {
             $nk = $this->get_user_key($user);
-            $options_profile = get_option('newsletter_profile');
-
+            $options_profile = NewsletterSubscription::instance()->get_options('profile', $this->get_user_language($user));
             $text = str_replace('{email}', $user->email, $text);
             $name = apply_filters('newsletter_replace_name', $user->name, $user);
             if (empty($name)) {
@@ -1490,10 +1489,6 @@ class NewsletterModule {
             $id_token = '&amp;ni=' . $user->id . '&amp;nt=' . $user->token;
 
 
-            $options_subscription = NewsletterSubscription::instance()->options;
-
-
-
             $nek = false;
             if ($email) {
                 $nek = $email->id . '-' . $email->token;
@@ -1503,18 +1498,12 @@ class NewsletterModule {
                 $text = $this->replace_url($text, 'EMAIL_URL', $this->build_action_url('v', $user) . '&id=' . $email->id);
             }
 
-
-            //$text = str_replace('{activation_link}', '<a href="{activation_url}">' . $options_subscription['confirmation_label'] . '</a>', $text);
-
-
             $text = $this->replace_url($text, 'SUBSCRIPTION_CONFIRM_URL', $this->build_action_url('c', $user));
             $text = $this->replace_url($text, 'ACTIVATION_URL', $this->build_action_url('v', $user));
 
             // Obsolete.
             $text = $this->replace_url($text, 'FOLLOWUP_SUBSCRIPTION_URL', self::add_qs($base, 'nm=fs' . $id_token));
             $text = $this->replace_url($text, 'FOLLOWUP_UNSUBSCRIPTION_URL', self::add_qs($base, 'nm=fu' . $id_token));
-            $text = $this->replace_url($text, 'FEED_SUBSCRIPTION_URL', self::add_qs($base, 'nm=es' . $id_token));
-            $text = $this->replace_url($text, 'FEED_UNSUBSCRIPTION_URL', self::add_qs($base, 'nm=eu' . $id_token));
 
             $text = $this->replace_url($text, 'UNLOCK_URL', $this->build_action_url('ul', $user));
         } else {

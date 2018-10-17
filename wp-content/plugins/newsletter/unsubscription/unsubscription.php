@@ -31,32 +31,29 @@ class NewsletterUnsubscription extends NewsletterModule {
 
     function hook_wp_loaded() {
         global $wpdb;
-        //error_reporting(E_STRICT | E_ALL | E_NOTICE);
 
         switch (Newsletter::instance()->action) {
             case 'u':
                 $user = $this->get_user_from_request();
                 $email = $this->get_email_from_request();
                 if ($user == null) {
-                    $url = $this->build_message_url(null, 'error_text', $user);
-                    wp_redirect($url);
+                    $url = $this->build_message_url(null, 'unsubscription_error', $user);
                 } else {
                     $url = $this->build_message_url(null, 'unsubscribe', $user);
-                    wp_redirect($url);
                 }
+                wp_redirect($url);
                 die();
                 break;
+                
             case 'uc':
                 if ($this->antibot_form_check()) {
                     $user = $this->unsubscribe();
                     if ($user->status == 'E') {
                         $url = $this->build_message_url(null, 'unsubscription_error', $user);
-                        wp_redirect($url);
                     } else {
                         $url = $this->build_message_url(null, 'unsubscribed', $user);
-                        wp_redirect($url);
                     }
-                    return;
+                    wp_redirect($url);
                 } else {
                     $this->request_to_antibot_form('Unsubscribe');
                 }
@@ -72,7 +69,6 @@ class NewsletterUnsubscription extends NewsletterModule {
                     $this->request_to_antibot_form('Reactivate');
                 }
                 die();
-
                 break;
         }
     }

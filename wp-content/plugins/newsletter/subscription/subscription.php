@@ -1305,6 +1305,8 @@ class NewsletterSubscription extends NewsletterModule {
     function get_privacy_field() {
         $options_profile = $this->get_options('profile', $this->get_current_language());
         $privacy_status = (int) $options_profile['privacy_status'];
+        if (empty($privacy_status)) return false;
+        
         $buffer = '<label>';
         if ($privacy_status === 1) {
             $buffer .= '<input type="checkbox" name="ny" required class="tnp-privacy">&nbsp;';
@@ -1564,14 +1566,13 @@ class NewsletterSubscription extends NewsletterModule {
      * @return string
      */
     function replace_lists($buffer) {
-        $lists = '';
-        for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
-            if ($this->options_profile['list_' . $i . '_status'] != 2)
-                continue;
-            $lists .= '<input type="checkbox" name="nl[]" value="' . $i . '"/>&nbsp;' . $this->options_profile['list_' . $i] . '<br />';
+        $checkboxes = '';
+        $lists = $this->get_lists_for_subscription($this->get_current_language());
+        foreach ($lists as $list) {
+            $checkboxes .= '<input type="checkbox" name="nl[]" value="' . $list->id . '"/>&nbsp;' . $list->name . '<br />';
         }
-        $buffer = str_replace('{lists}', $lists, $buffer);
-        $buffer = str_replace('{preferences}', $lists, $buffer);
+        $buffer = str_replace('{lists}', $checkboxes, $buffer);
+        $buffer = str_replace('{preferences}', $checkboxes, $buffer);
         return $buffer;
     }
 
@@ -1586,13 +1587,11 @@ class NewsletterSubscription extends NewsletterModule {
                 "first name: " . $user->name . "\n" .
                 "last name: " . $user->surname . "\n" .
                 "gender: " . $user->sex . "\n";
-
-        for ($i = 0; $i < NEWSLETTER_LIST_MAX; $i++) {
-            if (empty($this->options_profile['list_' . $i])) {
-                continue;
-            }
-            $field = 'list_' . $i;
-            $message .= $this->options_profile['list_' . $i] . ': ' . (empty($user->$field) ? "NO" : "YES") . "\n";
+        
+        $lists = $this->get_lists();
+        foreach ($lists as $list) {
+            $field = 'list_' . $list->id;
+            $message .= $list->name . ': ' . (empty($user->$field) ? "NO" : "YES") . "\n";
         }
 
         for ($i = 0; $i < NEWSLETTER_PROFILE_MAX; $i++) {
@@ -1602,8 +1601,6 @@ class NewsletterSubscription extends NewsletterModule {
             $field = 'profile_' . $i;
             $message .= $this->options_profile['profile_' . $i] . ': ' . $user->$field . "\n";
         }
-
-
 
         $message .= "token: " . $user->token . "\n" .
                 "status: " . $user->status . "\n";
@@ -1636,9 +1633,12 @@ class NewsletterSubscription extends NewsletterModule {
         $form .= '<input type="hidden" name="nlang" value="' . esc_attr($language) . '">' . "\n";
         $form .= '<input class="tnp-email" type="email" required name="ne" value="" placeholder="' . esc_attr($attrs['placeholder']) . '">';
         $form .= '<input class="tnp-submit" type="submit" value="' . esc_attr($attrs['button']) . '">';
-        if (!empty($this->options_profile['privacy_status'])) {
-            $form .= '<div class="tnp-privacy-field">' . $this->get_privacy_field() . '</div>';
+       
+        $privacy_field = $this->get_privacy_field();
+        if (!empty($privacy_field)) {
+             $form .= '<div class="tnp-privacy-field">' . $privacy_field . '</div>';
         }
+       
         $form .= "</form></div>\n";
 
         return $form;

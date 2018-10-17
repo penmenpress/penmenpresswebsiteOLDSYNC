@@ -157,7 +157,7 @@ $rules = array(0 => __('Optional', 'newsletter'), 1 => __('Required', 'newslette
                                     <tr><th>Label</th><td><?php $controls->text('privacy', 50); ?></td></tr>
                                     <tr><th>Privacy URL</th><td>
                                             <?php if (function_exists('get_privacy_policy_url') && get_privacy_policy_url()) { ?>
-                                                <?php $controls->checkbox('privacy_use_wp_url', __('User WordPress privacy URL', 'newsletter')); ?>
+                                                <?php $controls->checkbox('privacy_use_wp_url', __('Use WordPress privacy URL', 'newsletter')); ?>
                                                 (<a href="<?php echo esc_attr(get_privacy_policy_url()) ?>"><?php echo esc_html(get_privacy_policy_url()) ?></a>)
                                                 <br>OR<br>
                                             <?php } ?>

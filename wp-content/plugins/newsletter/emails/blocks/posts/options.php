@@ -53,9 +53,31 @@
         </td>
     </tr>
     <tr>
+        <th><?php _e('Show image', 'newsletter') ?></th>
+        <td>
+            <?php $controls->yesno('show_image') ?>
+        </td>
+    </tr>
+    <tr>
         <th><?php _e('Show date', 'newsletter') ?></th>
         <td>
             <?php $controls->yesno('show_date') ?>
+        </td>
+    </tr>
+    
+</table>
+
+<table class="form-table">
+    <tr>
+        <th><?php _e('Text font', 'newsletter') ?></th>
+        <td>
+            <?php $controls->css_font_family('font_family'); ?> <?php $controls->css_font_size('font_size'); ?>
+        </td>
+    </tr>
+    <tr>
+        <th><?php _e('Title font', 'newsletter') ?></th>
+        <td>
+            <?php $controls->css_font_family('title_font_family'); ?> <?php $controls->css_font_size('title_font_size'); ?>
         </td>
     </tr>
     <tr>

@@ -1420,7 +1420,7 @@ class NewsletterControls {
      * @param string $name
      */
     function media($name) {
-        if (isset($this->data[$name])) {
+        if (isset($this->data[$name]['id'])) {
             $media_id = (int) $this->data[$name]['id'];
             $media = wp_get_attachment_image_src($media_id, 'medium');
             $media_full = wp_get_attachment_image_src($media_id, 'full');
@@ -1457,7 +1457,7 @@ class NewsletterControls {
 
     function language($name = 'language') {
         if (!class_exists('SitePress')) {
-            echo __('Install WPML for multilangue support', 'newsletter');
+            echo __('Install WPML or Polylang for multilanguage support', 'newsletter');
             return;
         }
 
@@ -1483,14 +1483,14 @@ class NewsletterControls {
      */
     function languages($name = 'languages') {
         if (!$this->is_multilanguage()) {
-            echo __('Install WPML or Polylang for multilangue support', 'newsletter');
+            echo __('Install WPML or Polylang for multilanguage support', 'newsletter');
             return;
         }
 
         $language_options = Newsletter::instance()->get_languages();
 
         if (empty($language_options)) {
-            echo __('Your multilangiage plugin is not supported or there are no languages defined', 'newsletter');
+            echo __('Your multilanguage plugin is not supported or there are no languages defined', 'newsletter');
             return;
         }
 

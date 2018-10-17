@@ -111,10 +111,10 @@ class NewsletterEmails extends NewsletterModule {
             $options['block_background'] = '';
         }
         $style = '';
-            if (isset($options['block_padding_top'])) $style .= 'padding-top: ' . $options['block_padding_top'] . 'px; ';
-            if (isset($options['block_padding_left'])) $style .= 'padding-left: ' . $options['block_padding_left'] . 'px; ';
-            if (isset($options['block_padding_right'])) $style .= 'padding-right: ' . $options['block_padding_right'] . 'px; ';
-            if (isset($options['block_padding_bottom'])) $style .= 'padding-bottom: ' . $options['block_padding_bottom'] . 'px; ';
+            if (isset($options['block_padding_top'])) $style .= 'padding-top: ' . $options['block_padding_top'] . '; ';
+            if (isset($options['block_padding_left'])) $style .= 'padding-left: ' . $options['block_padding_left'] . '; ';
+            if (isset($options['block_padding_right'])) $style .= 'padding-right: ' . $options['block_padding_right'] . '; ';
+            if (isset($options['block_padding_bottom'])) $style .= 'padding-bottom: ' . $options['block_padding_bottom'] . '; ';
             
         // Old block type
         if ($is_old_block) {
@@ -248,7 +248,7 @@ class NewsletterEmails extends NewsletterModule {
                 header('X-Robots-Tag: noindex,nofollow,noarchive');
                 header('Cache-Control: no-cache,no-store,private');
 
-                echo $newsletter->replace($email->message, $user, $email->id);
+                echo $newsletter->replace($email->message, $user, $email);
 
                 die();
                 break;

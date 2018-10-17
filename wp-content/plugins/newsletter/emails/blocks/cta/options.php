@@ -42,6 +42,13 @@
             <?php $controls->css_font_family('font_family') ?>
         </td>
     </tr>
+    
+    <tr>
+        <th>Width</th>
+        <td>
+            <?php $controls->text('width') ?>px
+        </td>
+    </tr>
 
     <tr>
         <th><?php _e('Background', 'newsletter') ?></th>
