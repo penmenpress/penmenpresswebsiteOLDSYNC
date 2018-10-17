@@ -655,6 +655,14 @@ if( defined('PP_ACTIVE') ) {
 				</dd>
 			</dl>
 			
+			<script type="text/javascript">
+			/* <![CDATA[ */
+			jQuery(document).ready( function($) {
+				$('select[name="role"]').val('<?php echo $default;?>');
+			});
+			/* ]]> */
+			</script>
+			
 			<dl>
 				<dt><?php _e('Create New Role', 'capsman-enhanced'); ?></dt>
 				<dd style="text-align:center;">

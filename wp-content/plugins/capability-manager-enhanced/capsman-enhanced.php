@@ -8,14 +8,14 @@
  * @copyright   Copyright (C) 2009, 2010 Jordi Canals; modifications Copyright (C) 2012-2018 Kevin Behrens
  * @license		GNU General Public License version 3
  * @link		http://agapetry.net
- * @version 	1.5.9
+ * @version 	1.5.10
  */
 
 /*
 Plugin Name: Capability Manager Enhanced
 Plugin URI: http://presspermit.com/capability-manager
 Description: Manage WordPress role definitions, per-site or network-wide. Organizes post capabilities by post type and operation.
-Version: 1.5.9
+Version: 1.5.10
 Author: Jordi Canals, Kevin Behrens
 Author URI: http://agapetry.net
 Text Domain: capsman-enhanced
@@ -24,13 +24,16 @@ License: GPLv3
 */
 
 if ( ! defined( 'CAPSMAN_VERSION' ) ) {
-	define( 'CAPSMAN_VERSION', '1.5.9' );
-	define( 'CAPSMAN_ENH_VERSION', '1.5.9' );
+	define( 'CAPSMAN_VERSION', '1.5.10' );
+	define( 'CAPSMAN_ENH_VERSION', '1.5.10' );
 }
 
 if ( cme_is_plugin_active( 'capsman.php' ) ) {
-	$message = __( '<strong>Error:</strong> Capability Manager Extended cannot function because another copy of Capability Manager is active.', 'capsman-enhanced' );
-	add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error fade" style="color: black">' . $message . '</div>\';'));
+	function _cme_conflict_notice() {
+		$message = __( '<strong>Error:</strong> Capability Manager Extended cannot function because another copy of Capability Manager is active.', 'capsman-enhanced' );
+		echo '<div id="message" class="error fade" style="color: black">' . $message . '</div>';
+	}
+	add_action('admin_notices', _cme_conflict_notice() );
 	return;
 } else {
 	define ( 'CME_FILE', __FILE__ );
