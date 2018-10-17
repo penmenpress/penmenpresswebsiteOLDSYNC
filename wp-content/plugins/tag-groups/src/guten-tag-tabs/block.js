@@ -14,6 +14,7 @@ import './style.scss';
 import './editor.scss';
 
 import Select from 'react-select';
+import apiFetch from '@wordpress/api-fetch';
 
 const { __ } = wp.i18n;
 
@@ -185,14 +186,11 @@ class tagGroupsTabbedCloudParameters extends Component {
   */
   getGroupsFromApi() {
     // retrieve the groups
-    jQuery.getJSON(
-      this.groupsEndPoint,
-      ( groups ) => {
-        if ( groups ) {
-          this.setState({ groups });
-        }
+    apiFetch( { path: this.groupsEndPoint } ).then( groups => {
+      if ( groups ) {
+        this.setState({ groups });
       }
-    );
+    });
   }
 
 
@@ -200,15 +198,12 @@ class tagGroupsTabbedCloudParameters extends Component {
   * Loading Taxonomies (own REST API endpoint)
   */
   getTaxonomiesFromApi() {
-    // retrieve the groups
-    jQuery.getJSON(
-      this.taxonomiesEndPoint,
-      ( taxonomies ) => {
-        if ( taxonomies ) {
-          this.setState({ taxonomies });
-        }
+    // retrieve the taxonomies
+    apiFetch( { path: this.taxonomiesEndPoint } ).then( taxonomies => {
+      if ( taxonomies ) {
+        this.setState({ taxonomies });
       }
-    );
+    });
   }
 
 
@@ -216,7 +211,7 @@ class tagGroupsTabbedCloudParameters extends Component {
   * Loading Posts
   */
   getPostsFromApi() {
-    return ( new wp.api.collections.Posts() ).fetch().then(( fullPosts ) => {
+    apiFetch( { path: siteUrl + '/wp-json/wp/v2/posts' } ).then( fullPosts => {
       if ( fullPosts ) {
         let posts = [
           { value: -1, label: __('off') },

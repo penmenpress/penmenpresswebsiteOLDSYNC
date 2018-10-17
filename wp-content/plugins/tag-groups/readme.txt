@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
 Tested up to: 4.9.8
-Stable tag: 0.40.0
+Stable tag: 0.40.1
 Requires PHP: 5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -122,6 +122,12 @@ No, unfortunately it isn't. But, nevertheless, I'm glad you asked! You are warml
 This plugin does not collect or process any personal user data.
 
 == Changelog ==
+
+= 0.40.1 =
+
+OTHER
+
+* Adjustments for changes in Gutenberg API (apiFetch replacing wp.api)
 
 = 0.40.0 =
 
