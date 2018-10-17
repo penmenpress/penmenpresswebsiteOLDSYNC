@@ -5,11 +5,9 @@ class PP_ProfileUI {
 	static function abbreviated_exceptions_ui( $agent_type, $agent_id, $args = array() ) {
 		$defaults = array( 'caption' => '', 'edit_url' => '', 'join_groups' => false, 'class' => 'pp-user-roles', 'new_permissions_link' => false, 'maybe_display_note' => true );
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
-		
-		//static $done = false;
-		//if ( $done ) return;
-		//$done = true;
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		$args['show_link'] = false;
 		$args['force_refresh'] = true;
@@ -31,7 +29,8 @@ class PP_ProfileUI {
 				?>
 				</p>
 				</div>
-			<?php endif;
+			<?php 
+			endif;
 				
 			return;
 		}
@@ -40,7 +39,7 @@ class PP_ProfileUI {
 		<div id='pp_current_exceptions_ui' class='pp-group-box <?php echo $class;?>'>
 		<h3>
 		<?php if ( $edit_url )
-			echo "<a href='$edit_url'>$caption</a>";
+			echo "<a href='{$edit_url}'>{$caption}</a>";
 		else
 			echo $caption;
 		?>
@@ -95,13 +94,16 @@ class PP_ProfileUI {
 	
 	public static function display_ui_user_groups( $include_role_metagroups = false, $args = array() ) {
 		$defaults = array( 'initial_hide' => false, 'selected_only' => false, 'hide_checkboxes' => false, 'force_display' => false, 'edit_membership_link' => false, 'user_id' => false );
-		extract( array_merge( $defaults, $args ), EXTR_SKIP );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		global $pp_current_user;
 		
 		require_once(dirname(__FILE__).'/permissions-ui_pp.php');
 
-		if ( ! is_numeric($user_id) ) {
+		if ( ! is_numeric( $user_id ) ) {
 			global $profileuser;
 			$user_id = ( ! empty($profileuser) ) ? $profileuser->ID : 0;
 		}
@@ -179,7 +181,8 @@ class PP_ProfileUI {
 			$pp_agents_ui = pp_init_agents_ui();
 			$pp_agents_ui->agents_ui( $agent_type, $all_groups, $css_id, $stored_groups, $args);
 			
-			if ( $edit_membership_link || ( ! $all_groups && $force_display ) ) :?>
+			if ( $edit_membership_link || ( ! $all_groups && $force_display ) ) :
+			?>
 				<p>
 				<?php if ( ! $all_groups && $force_display ) :
 				_e( 'This user is not a member of any Permission Groups.', 'pp' );
@@ -194,7 +197,8 @@ class PP_ProfileUI {
 				?>
 				</span>
 				</p>
-			<?php endif;
+			<?php 
+			endif;
 			
 			echo '</div>';
 

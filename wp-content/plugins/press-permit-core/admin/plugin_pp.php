@@ -150,7 +150,7 @@ class PP_Plugin_Status {
 						
 						if ( empty($pp_plugin_page) ) {
 							$message = '<span class="pp_alert">' . esc_html($info->alert) . '</span>';
-							add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error fade" style="color: black">' . $message . '</div>\';'), 5 );
+							ppc_notice( $message );
 						}
 						
 						$did_alerts[$info->slug] = true;

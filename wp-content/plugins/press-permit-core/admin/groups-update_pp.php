@@ -8,11 +8,18 @@ class PP_GroupsUpdate {
 	 * @param int $userID - Identifier of the User to add
 	 **/
 	public static function add_group_user( $group_id, $user_ids, $args = array() ){
-		$defaults = array( 'agent_type' => 'pp_group', 'member_type' => 'member', 'status' => 'active', 'date_limited' => false, 'start_date_gmt' => constant('PP_MIN_DATE_STRING'), 'end_date_gmt' => constant('PP_MAX_DATE_STRING') );
+		$defaults = array( 
+			'agent_type' => 'pp_group', 
+			'member_type' => 'member', 
+			'status' => 'active', 
+			'date_limited' => false, 
+			'start_date_gmt' => constant('PP_MIN_DATE_STRING'), 
+			'end_date_gmt' => constant('PP_MAX_DATE_STRING') 
+		);
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
-		
-		$date_limited = intval($date_limited);
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		global $wpdb;
 		
@@ -23,14 +30,18 @@ class PP_GroupsUpdate {
 		if ( ! pp_get_group( $group_id ) )
 			return;
 		
+		$data = pp_array_subset( $args, array( 'member_type', 'status', 'start_date_gmt', 'end_date_gmt' ) );
+		$data['date_limited'] = intval( $date_limited );
+		$data['group_id'] = $group_id;
+
 		foreach( $user_ids as $user_id ) {
 			if ( ! $user_id )
 				continue;
 		
-			$data = compact( 'group_id', 'user_id', 'member_type', 'status', 'date_limited', 'start_date_gmt', 'end_date_gmt' );
-		
+			$data['user_id'] = $user_id;
+			
 			if ( $already_member = $wpdb->get_col( $wpdb->prepare( "SELECT user_id FROM $members_table WHERE group_id = %d AND user_id = %d", $group_id, $user_id ) ) ) {
-				$data = compact( 'status' );
+				$data = array( 'status' => $status );
 				$wpdb->update( $members_table, $data, array( 'group_id' => $group_id, 'user_id' => $user_id ) );
 			} else {
 				$data['add_date_gmt'] = current_time( 'mysql', 1 );
@@ -44,7 +55,9 @@ class PP_GroupsUpdate {
 	public static function remove_group_user( $group_id, $user_ids, $args = array() ) {
 		$defaults = array( 'agent_type' => 'pp_group', 'member_type' => 'member' );
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		global $wpdb;
 		
@@ -60,7 +73,7 @@ class PP_GroupsUpdate {
 			do_action( 'pp_delete_group_user', $group_id, $user_id, $agent_type );
 	}
 
-	private function _validate_duration_value( $val ) {
+	private static function _validate_duration_value( $val ) {
 		if ( $val < 0 )
 			$val = 0;
 
@@ -73,10 +86,12 @@ class PP_GroupsUpdate {
 	public static function update_group_user( $group_id, $user_ids, $args = array() ) {
 		$defaults = array( 'agent_type' => 'pp_group' );
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		// NOTE: no arg defaults because we only update columns that are explicitly passed
-		if ( ! $cols = array_intersect_key( $args, array_fill_keys( array( 'status', 'date_limited', 'start_date_gmt', 'end_date_gmt' ), true ) ) )
+		if ( ! $cols = pp_array_subset( $args, array( 'status', 'date_limited', 'start_date_gmt', 'end_date_gmt' ) ) )
 			return;
 
 		global $wpdb;
@@ -94,6 +109,8 @@ class PP_GroupsUpdate {
 		if ( isset( $cols['end_date_gmt'] ) )
 			$cols['end_date_gmt'] = self::_validate_duration_value( $cols['end_date_gmt'] );
 
+		$status = ( isset( $cols['status'] ) ) ? $cols['status'] : '';
+
 		$prev = array();
 		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $members_table WHERE group_id = %d $user_clause", $group_id ) );
 		foreach( $results as $row )
@@ -103,7 +120,7 @@ class PP_GroupsUpdate {
 			$wpdb->update( $members_table, $cols, array( 'group_id' => $group_id, 'user_id' => $user_id ) );
 			
 			$_prev = ( isset( $prev[$user_id] ) ) ? $prev[$user_id] : '';
-			do_action( 'pp_update_group_user', $group_id, $user_id, $status, compact( 'date_limited', 'start_date_gmt', 'end_date_gmt' ), $_prev );
+			do_action( 'pp_update_group_user', $group_id, $user_id, $status, $cols, $_prev );
 		}
 	}
 	
@@ -116,17 +133,18 @@ class PP_GroupsUpdate {
 	}
 
 	public static function create_group( $groupdata, $agent_type = 'pp_group' ) {
-		$defaults = array( 'group_name' => '', 'group_description' => '', 'metagroup_type' => '' );
-		extract( array_merge( $defaults, (array) $groupdata ), EXTR_SKIP );
-
 		global $wpdb;
+		
+		$defaults = array( 'group_name' => '', 'group_description' => '', 'metagroup_type' => '' );
+		$groupdata = array_merge( $defaults, (array) $groupdata );
+		$groupdata = array_intersect_key( $groupdata, $defaults );
 
 		$groups_table = apply_filters( 'pp_use_groups_table', $wpdb->pp_groups, $agent_type );
 		
-		if( ! self::group_name_available($group_name, $agent_type) )
+		if( ! self::group_name_available( $groupdata['group_name'], $agent_type ) )
 			return false;
 
-		$wpdb->insert( $groups_table, compact( 'group_name', 'group_description', 'metagroup_type' ) );
+		$wpdb->insert( $groups_table, $groupdata );
 		
 		do_action('pp_created_group', (int) $wpdb->insert_id, $agent_type);
 		
@@ -163,15 +181,18 @@ class PP_GroupsUpdate {
 	 * @return boolean true on successful update
 	 **/
 	public static function update_group ( $group_id, $groupdata, $agent_type = 'pp_group' ) {
-		$defaults = array( 'group_name' => '', 'group_description' => '' );
-		extract( array_merge( $defaults, (array) $groupdata ), EXTR_SKIP );
-
 		global $wpdb;
+		
+		$defaults = array( 'group_name' => '', 'group_description' => '' );
+		$groupdata = array_merge( $defaults, (array) $groupdata );
+		$groupdata = array_intersect_key( $groupdata, $defaults );
+
+		$groupdata['group_description'] = strip_tags( $groupdata['group_description'] );
 
 		$groups_table = apply_filters( 'pp_use_groups_table', $wpdb->pp_groups, $agent_type );
 
 		if ( $prev = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $groups_table WHERE ID = %d", $group_id ) ) ) {
-			if ( ( $prev->group_name != $group_name ) && ! self::group_name_available($group_name, $agent_type) )
+			if ( ( $prev->group_name != $groupdata['group_name'] ) && ! self::group_name_available( $groupdata['group_name'], $agent_type ) )
 				return false;
 
 			// don't allow updating of metagroup name / descript
@@ -179,7 +200,7 @@ class PP_GroupsUpdate {
 				return false;
 		}
 		
-		$wpdb->update( $groups_table, array( 'group_name' => $group_name, 'group_description' => strip_tags($group_description) ), array( 'ID' => $group_id ) );
+		$wpdb->update( $groups_table, $groupdata, array( 'ID' => $group_id ) );
 		
 		return true;
 	}

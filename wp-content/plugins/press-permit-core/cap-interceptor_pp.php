@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2017, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 class PP_CapInterceptor
@@ -35,11 +35,9 @@ class PP_CapInterceptor
 		// This filter will not mess with any caps which are not part of a PP role assignment or exception.
 		add_filter( 'user_has_cap', array(&$this, 'flt_user_has_cap'), 99, 3 );  // apply PP filter last
 
-		if ( defined( 'PP_DISABLE_CAP_CACHE' ) ) {
-			$func = create_function( '$a,$b,$c,$d,$cap_interceptor', '$cap_interceptor->flags["memcache_disabled"]=true;' );
-			add_action( 'pp_has_post_cap_pre', $func, 10, 5 );
-		}
-		
+		if ( defined( 'PP_DISABLE_CAP_CACHE' ) )
+			add_action( 'pp_has_post_cap_pre', array(&$this, 'disable_cap_cache'), 10, 5 );
+
 		/*
 		// As of 4.8, need to impose current_user_can('read_post') on REST view request for a single public post, because WP_REST_Posts_Controller does not
 		if ( ! pp_is_content_administrator() && ! defined( 'PPCE_VERSION' ) ) {
@@ -53,6 +51,10 @@ class PP_CapInterceptor
 		do_action_ref_array( 'pp_cap_interceptor', array(&$this) );
 	}
 	
+	function disable_cap_cache( $a, $b, $c, $d, $cap_interceptor ) {
+		$cap_interceptor->flags["memcache_disabled"] = true;
+	}
+
 	function flt_confirm_rest_readable( $rest_response, $handler, $request ) { // filter 'rest_request_after_callbacks'
 		require_once( dirname(__FILE__).'/rest-non_administrator_pp.php' );
 		return PP_Core_REST::flt_confirm_rest_readable( $rest_response, $handler, $request );
@@ -108,7 +110,7 @@ class PP_CapInterceptor
 				// deal with map_meta_cap() changing 'read_post' requirement to 'edit_post'			
 				$types = get_post_types( array( 'public' => true ), 'object' );
 				foreach( array_keys($types) as $_post_type ) {
-					if ( array_intersect( array_intersect_key( (array) $types[$_post_type]->cap, array_fill_keys( array( 'edit_posts', 'edit_others_posts', 'edit_published_posts', 'edit_private_posts' ), true ) ), $orig_reqd_caps ) ) {
+					if ( array_intersect( pp_array_subset( (array) $types[$_post_type]->cap, array( 'edit_posts', 'edit_others_posts', 'edit_published_posts', 'edit_private_posts' ) ), $orig_reqd_caps ) ) {
 						$orig_cap = 'edit_post';
 						break;
 					}
@@ -165,8 +167,12 @@ class PP_CapInterceptor
 				}
 				
 				if ( $params = apply_filters( 'pp_user_has_cap_params', array(), $orig_reqd_caps, compact( 'item_id', 'orig_cap', 'item_type' ) ) ) {
-					extract( array_diff_key( $params, array_fill_keys( array( 'wp_sitecaps', 'pp_current_user', 'orig_cap', 'orig_reqd_caps' ), true ) ) );  // prevent some vars from being overwritten my extract
-				
+					foreach( array( 'type_caps', 'item_type', 'op', 'item_id', 'required_operation', 'is_post_cap' ) as $_var ) {
+						if ( isset( $params[$_var] ) ) {
+							$$_var = $params[$_var];
+						}
+					}
+					
 					//if ( isset( $params['return_caps'] ) )
 					//	return $params['return_caps'];
 				}
@@ -265,7 +271,12 @@ class PP_CapInterceptor
 						$params['item_id'] = ( $item_id ) ? $item_id : pp_get_post_id();
 
 					$wp_sitecaps = apply_filters( 'pp_user_has_caps', $wp_sitecaps, $orig_reqd_caps, $params );
-					extract( array_diff_key( $params, array_fill_keys( array( 'wp_sitecaps', 'pp_current_user', 'orig_cap', 'orig_reqd_caps' ), true ) ) );
+
+					foreach( array( 'type_caps', 'item_type', 'op', 'item_id', 'required_operation', 'is_post_cap' ) as $_var ) {
+						if ( isset( $params[$_var] ) ) {
+							$$_var = $params[$_var];
+						}
+					}
 				}
 			}
 			
@@ -324,7 +335,11 @@ class PP_CapInterceptor
 		$null_vars = null;
 		$post_cap_args = array( 'post_type' => $post_type, 'post_id' => $post_id, 'user_id' => $args[1], 'required_operation' => $pp_args['required_operation'] );
 		if ( $_vars = apply_filters_ref_array( 'pp_has_post_cap_vars', array( $null_vars, $wp_sitecaps, $pp_reqd_caps, $post_cap_args, $this ) ) ) {
-			extract( array_intersect_key( $_vars, array_fill_keys( array( 'post_type', 'post_id', 'pp_reqd_caps', 'return_caps', 'required_operation' ), 'true' ) ) );
+			foreach( array( 'post_type', 'post_id', 'pp_reqd_caps', 'return_caps', 'required_operation' ) as $var ) {
+				if ( isset( $_vars[$var] ) ) {
+					$$var = $_vars[$var];
+				}
+			}
 		}
 
 		if ( ! empty( $return_caps ) )
@@ -333,8 +348,8 @@ class PP_CapInterceptor
 		if ( ! $post_id || ! in_array( $post_type, pp_get_enabled_post_types() ) )
 			return $wp_sitecaps;
 
-		extract( $pp_args, EXTR_SKIP );
-		
+		$required_operation = $pp_args['required_operation'];
+
 		// Note: At this point, we have a nonzero post_id...
 		do_action_ref_array( 'pp_has_post_cap_pre', array( $pp_reqd_caps, 'post', $post_type, $post_id, $this ) );	// cache clearing / refresh forcing can be applied here
 		

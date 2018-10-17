@@ -4,8 +4,8 @@ Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JWZVF
 Tags: restrict, access, permissions, cms, user, private, category, pages, privacy, capabilities, role, scoper
 License: GPLv3
 Requires at least: 3.4
-Tested up to: 4.9.6
-Stable tag: 2.4.5
+Tested up to: 4.9.8
+Stable tag: 2.5
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
@@ -49,6 +49,11 @@ Pro [extensions](http://presspermit.com/extensions) are [available](http://press
 Initial production release
 
 == Changelog ==
+
+= 2.5 - 28 Sep 2018 =
+* Compat : PHP 7.2 - Eliminated create_function calls
+* Change : WP coding standards - eliminated extract function
+* Change : WP coding standards - php open / close tag placement
 
 = 2.4.5 - 21 Aug 2018 =
 * Fixed : Gutenberg - post update failure

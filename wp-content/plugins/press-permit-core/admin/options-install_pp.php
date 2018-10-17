@@ -243,8 +243,7 @@ class PP_Options_Install {
 			<br />
 			<?php printf( __( "PHP Version: %s", 'pp'), phpversion() );?>
 			<br />
-			<?php
-			if ( empty($activated) && empty($expired) && ! defined( 'PP_FORCE_PPCOM_INFO' ) ) :?>
+			<?php if ( empty($activated) && empty($expired) && ! defined( 'PP_FORCE_PPCOM_INFO' ) ) :?>
 				<div class="pp-settings-caption">
 				<?php
 				$hint = __( 'Periodically query presspermit.com for available extensions. Your version info will be sent.', 'pp' );
@@ -321,7 +320,8 @@ class PP_Options_Install {
 				</tr>
 				<?php endforeach; ?>
 				</table>
-			<?php endif;
+			<?php 
+			endif;
 
 			if ( ! defined( 'CAPSMAN_ENH_VERSION' ) ) {
 				if ( 0 === validate_plugin( 'capability-manager-enhanced/capsman-enhanced.php' ) || 0 === validate_plugin( 'capsman-enhanced/capsman-enhanced.php' ) )
@@ -331,7 +331,8 @@ class PP_Options_Install {
 			}
 			
 			ksort($inactive);
-			if ( $inactive ) :?>
+			if ( $inactive ) :
+			?>
 			<h4><?php $url = ( PP_MULTISITE ) ? 'network/plugins.php/' : 'plugins.php'; printf( __('%1$sInactive Extensions%2$s:', 'pp'), "<a href='$url'>", '</a>');?></h4>
 			<table class="pp-extensions">
 			<?php foreach( array_keys($inactive) as $slug ) :?>
@@ -347,10 +348,12 @@ class PP_Options_Install {
 			</tr>
 			<?php endforeach; ?>
 			</table>
-			<?php endif;
+			<?php 
+			endif;
 			
 			ksort($missing);
-			if ( $missing ) :?>
+			if ( $missing ) :
+			?>
 			<h4><?php _e('Available Pro Extensions:', 'pp');?></h4>
 			<table class="pp-extensions">
 			<?php foreach( array_keys($missing) as $slug ) :
@@ -367,7 +370,8 @@ class PP_Options_Install {
 				}
 			?>
 			<tr>
-			<td><?php 
+			<td>
+			<?php 
 			if ( ! empty($update_info[$slug]) )
 				echo "<a href='http://presspermit.com/extensions/$slug'>" . pp_pretty_slug($slug) . '</a>' . $install_link;
 			else {
@@ -408,7 +412,8 @@ class PP_Options_Install {
 				</ul>
 				<p>
 				<?php printf( __( 'For updated availability, enable the "update info" option above or visit %1$spresspermit.com%2$s.', 'pp'), '<a href="http://presspermit.com/extensions/">', '</a>' );?></p>
-			<?php endif;
+			<?php 
+			endif;
 
 			?>
 			<?php if ( ! empty($ext_info) && pp_get_option( 'display_hints' ) ) : ?>
@@ -417,9 +422,6 @@ class PP_Options_Install {
 			</span></p>
 			<?php endif; ?>
 			
-			<?php
-			
-			?>
 			</td></tr>
 			<?php	
 		endif; // any options accessable in this section
@@ -482,7 +484,8 @@ class PP_Options_Install {
 					<div>
 					<label for="<?php echo $id;?>"><input type="checkbox" id="<?php echo $id;?>" name="support_data[<?php echo $key;?>]" value="1" <?php echo $disabled; checked('1', ! empty($ok[$key]), true);?> /> <?php echo $caption;?></label>
 					</div>
-				<?php endforeach;
+				<?php 
+				endforeach;
 				?>
 				</div>
 				

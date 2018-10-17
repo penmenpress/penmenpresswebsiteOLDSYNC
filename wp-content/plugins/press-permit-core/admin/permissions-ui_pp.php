@@ -5,7 +5,9 @@ class PP_GroupsUI {
 	public static function _draw_member_checklists( $group_id, $agent_type, $args = array() ) {
 		$defaults = array( 'member_types' => array( 'member' ), 'suppress_caption' => false );
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		$captions['member'] = apply_filters( 'pp_group_members_caption', __('Group Members', 'pp') );
 
@@ -23,9 +25,11 @@ class PP_GroupsUI {
 				<span class="<?php echo "$link_class pp-member-type pp-$member_type";?>"><a href="#" class="<?php echo "pp-$member_type";?>"><?php echo $captions[$member_type]; ?></a></span>
 				<?php
 				$i++;
-				if ( $i < count($member_types) ) :?>
+				if ( $i < count( $member_types ) ) :
+				?>
 					<span> | </span>
-				<?php endif;
+				<?php 
+				endif;
 			}
 
 			echo '</h3>';
@@ -51,7 +55,10 @@ class PP_GroupsUI {
 	
 	public static function draw_type_options( $type_objects, $args = array() ) {
 		$defaults = array( 'option_any' => false, 'option_na' => false );
-		extract( array_merge( $defaults, $args ), EXTR_SKIP );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		if ( ! $type_objects ) {
 			//echo "<option>" . __('(none enabled)', 'pp') . '</option>';
@@ -478,7 +485,7 @@ class PP_GroupsUI {
 				if ( ! isset( $args['external'] ) )
 					$args['external'] = array();
 				
-				$post_types = array_intersect_key( $post_types, array_fill_keys( pp_get_enabled_post_types( array( 'layer' => 'exceptions' ) ), true ) );
+				$post_types = pp_array_subset( $post_types, pp_get_enabled_post_types( array( 'layer' => 'exceptions' ) ) );
 				self::_select_exceptions_ui( array_diff_key( $post_types, array_fill_keys( array( 'topic', 'reply' ), true ) ), $taxonomies, $args );
 			}
 			?>
@@ -539,7 +546,9 @@ class PP_GroupsUI {
 
 		$defaults = array( 'read_only' => false, 'caption' => '', 'class' => 'pp-group-roles', 'link' => '', 'agent_type' => '' );
 		$args = array_merge( $defaults, $args );
-		extract( $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		if ( ! $caption )
 			$caption = ( 'user' == $agent_type ) ? sprintf( __('Supplemental Roles %1$s(for user)%2$s', 'pp'), '<small>', '</small>' ) : __('Supplemental Roles', 'pp');
@@ -562,7 +571,7 @@ class PP_GroupsUI {
 		$can_assign = current_user_can('pp_assign_roles') && pp_bulk_roles_enabled();
 		
 		echo '<div style="clear:both;"></div>'
-			. "<div id='pp_current_roles_header' class='pp-group-box $class'>"
+			. "<div id='pp_current_roles_header' class='pp-group-box {$class}'>"
 			. '<h3>';
 
 		if ( $link )
@@ -591,8 +600,6 @@ class PP_GroupsUI {
 			$type_roles[$src_name][$object_type][$role_name] = true;
 		}
 
-		//ksort( $type_roles );
-		
 		foreach( array_keys($type_roles) as $src_name ) {
 			ksort( $type_roles[$src_name] );
 		
@@ -671,7 +678,9 @@ class PP_GroupsUI {
 
 		$defaults = array( 'read_only' => false, 'class' => 'pp-group-roles', 'item_links' => false, 'caption' => '', 'link' => '', 'agent_type' => '' );
 		$args = array_merge( $defaults, $args );
-		extract( $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		if ( ! $exc_results )
 			return;
@@ -763,7 +772,7 @@ class PP_GroupsUI {
 			. '<h3>';
 
 		if ( $link )
-			echo "<a href='$link'>$caption</a>";
+			echo "<a href='{$link}'>{$caption}</a>";
 		else
 			echo $caption;
 
@@ -1010,7 +1019,8 @@ class PP_GroupsUI {
 				if ( ! empty($via_type_obj->hierarchical) ) {
 					$_caption = strtolower($via_type_obj->labels->name);
 					
-					if ( ! empty($any_both) || ! empty($any_child_only) ) :?>
+					if ( ! empty($any_both) || ! empty($any_child_only) ) :
+					?>
 						<div class="pp-current-roles-note">
 
 						<?php 
@@ -1021,7 +1031,8 @@ class PP_GroupsUI {
 							echo '<span>' . sprintf( __('* = assigned for sub-%s only', 'pp'), $_caption ) . '</span>';
 						?>
 						</div>
-					<?php endif;
+					<?php 
+					endif;
 						
 					$show_all_url = esc_url( add_query_arg( 'show_propagated', '1', $_SERVER['REQUEST_URI'] ) );
 					$show_all_link = "&nbsp;&nbsp;<a href='$show_all_url'>";

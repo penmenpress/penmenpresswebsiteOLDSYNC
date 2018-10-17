@@ -10,7 +10,10 @@ class CommentsInterceptor {
 		global $wpdb;
 		
 		$defaults = array( 'query_contexts' => array() );
-		extract( array_merge( $defaults, $args ), EXTR_SKIP );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		$query_contexts[]= 'comments';
 		

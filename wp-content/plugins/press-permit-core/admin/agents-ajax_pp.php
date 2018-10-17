@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2017, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 
@@ -15,13 +15,25 @@ class PP_Agents_Ajax {
 	
 	// output seach textbox & button, results list, "Add All" button
 	function display( $agent_type, $id_suffix, $current_selections = array(), $args = array() ) {
-		$defaults = array( 'agent_id' => 0, 'context' => '',
-		'label_select' => _x( 'Select &gt;', 'user', 'pp'), 'label_unselect' => _x( '&lt; Unselect', 'user', 'pp'), 'label_selections' => __( 'Current Selections:', 'pp' ),
-		'display_stored_selections' => true, 'create_dropdowns' => false, 'width' => '', 'width_current' => '', 'label_headline' => true, 'multi_select' => true, 'use_selection_js' => true,
+		$defaults = array( 
+			'agent_id' => 0, 
+			'context' => '',
+			'label_select' => _x( 'Select &gt;', 'user', 'pp'), 
+			'label_unselect' => _x( '&lt; Unselect', 'user', 'pp'), 
+			'label_selections' => __( 'Current Selections:', 'pp' ),
+			'display_stored_selections' => true, 
+			'create_dropdowns' => false, 
+			'width' => '', 
+			'width_current' => '', 
+			'label_headline' => true, 
+			'multi_select' => true, 
+			'use_selection_js' => true,
 		);
 		
 		$args = apply_filters( 'pp_agents_selection_ui_args', array_merge( $defaults, $args ), $agent_type, $id_suffix );
-		extract( $args, EXTR_SKIP );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		$width = ( $width ) ? "width:{$width}px;" : '';
 		
@@ -76,16 +88,15 @@ class PP_Agents_Ajax {
 			
 			$ilim = ( defined('PP_USER_SEARCH_META_FIELDS') ) ? 6 : 3;
 			
-			for( $i = 0; $i < $ilim; $i++ ) :?>
+			for( $i = 0; $i < $ilim; $i++ ) :
+			?>
 				<div class="pp-user-meta-search" <?php if ( $i > 0 && empty( $_GET["pp_search_user_meta_key_{$i}_{$id_suffix}"] ) ) echo ' style="display:none;"';?>>
 				<select id="pp_search_user_meta_key_<?php echo $i;?>_<?php echo $id_suffix;?>">
 				<option value=""><?php _e( '(user field)', 'pp' );?></option>
-				<?php
-				foreach( $fields as $field => $lbl ) :?>
+				
+				<?php foreach( $fields as $field => $lbl ) :?>
 					<option value="<?php echo $field;?>"><?php echo $lbl;?></option>
-				<?php endforeach;
-
-				?>
+				<?php endforeach;?>
 				</select>
 				&nbsp;
 				<input id="pp_search_user_meta_val_<?php echo $i;?>_<?php echo $id_suffix;?>" type="text" <?php if ( empty( $_GET["pp_search_user_meta_key_{$i}_{$id_suffix}"] ) ) echo 'style="display:none"';?> title="<?php echo $title;?>" size="8" />
@@ -104,8 +115,7 @@ class PP_Agents_Ajax {
 		<?php endif;?>
 		</td>
 		
-		<?php 
-		if( $display_stored_selections ) : ?>
+		<?php if( $display_stored_selections ) : ?>
 			<td style="vertical-align:top" class="pp-members-current">
 			</td>
 		<?php endif; ?>
@@ -119,7 +129,8 @@ class PP_Agents_Ajax {
 		<span id="agent_msg_<?php echo $id_suffix;?>"></span>
 		</td>
 
-		<?php if( $display_stored_selections) : 
+		<?php 
+		if( $display_stored_selections) : 
 			if ( $width_current )
 				$width = "width:{$width_current}px;";
 		?>

@@ -100,9 +100,12 @@ default:
 			$messages[] = '<div id="message" class="updated"><p>' . __('New group created.', 'pp') . '</p></div>';
 			break;
 		}
-	endif; ?>
+	endif; 
+	?>
 
-<?php if ( isset($pp_admin->errors) && is_wp_error( $pp_admin->errors ) ) : ?>
+<?php 
+if ( isset($pp_admin->errors) && is_wp_error( $pp_admin->errors ) ) : 
+?>
 	<div class="error">
 		<ul>
 		<?php
@@ -111,7 +114,8 @@ default:
 		?>
 		</ul>
 	</div>
-<?php endif;
+<?php 
+endif;
 
 if ( ! empty($messages) ) {
 	foreach ( $messages as $msg )

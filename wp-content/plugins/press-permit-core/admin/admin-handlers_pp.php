@@ -10,14 +10,20 @@ if ( ! empty($_POST) ) {
 	|| strpos( $_SERVER['REQUEST_URI'], 'page=pp-group-new' )
 	)
 	{
-		$func = "require_once( '" . dirname(__FILE__) . "/pp-agent-edit-handler.php');";
-		add_action( 'pp_user_init', create_function( '', $func ) );
+		add_action( 'pp_user_init', '_pp_agent_edit_handler' );
 	}
 }
 
 if ( ! empty( $_REQUEST['action'] ) || ! empty($_REQUEST['action2']) || ! empty( $_REQUEST['pp_action'] ) ) {
 	if ( strpos( $_SERVER['REQUEST_URI'], 'page=pp-groups' ) || ( ! empty( $_REQUEST['wp_http_referer'] ) && ( strpos( $_REQUEST['wp_http_referer'], 'page=pp-groups' ) ) ) ) {
-		$func = "require_once( '" . dirname(__FILE__) . "/pp-permits-handler.php');";
-		add_action( 'pp_user_init', create_function( '', $func ) );
+		add_action( 'pp_user_init', '_pp_permits_handler' );
 	}
+}
+
+function _pp_agent_edit_handler() {
+	require_once( dirname(__FILE__) . '/pp-agent-edit-handler.php' );
+}
+
+function _pp_permits_handler() {
+	require_once( dirname(__FILE__) . '/pp-permits-handler.php' );
 }

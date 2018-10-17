@@ -156,11 +156,13 @@ $disabled = ( ! pp_group_type_editable( $agent_type ) || $agent->metagroup_id ) 
 </tr>
 <?php endif;?>
 
-<?php if ( ( 'user' == $agent_type ) && $agent_id ) :
+<?php 
+if ( ( 'user' == $agent_type ) && $agent_id ) :
 	global $wp_roles;
 	$user = new WP_User($agent_id);
 	$primary_role = reset( $user->roles );
-	if ( isset( $wp_roles->role_names[$primary_role] ) ) :?>
+	if ( isset( $wp_roles->role_names[$primary_role] ) ) :
+	?>
 		<tr>
 		<th><label><!-- <label for="user_login"> --><?php echo __('Primary Role:', 'pp'); ?></label></th>
 		<td><?php 
@@ -171,8 +173,10 @@ $disabled = ( ! pp_group_type_editable( $agent_type ) || $agent->metagroup_id ) 
 		?>
 		</td>
 		</tr>
-	<?php endif; ?>
-<?php elseif ($agent_id) : ?>
+		<?php 
+		endif; 
+		?>
+	<?php elseif ($agent_id) : ?>
 <tr>
 	<th><label for="description"><?php echo _pp_('Description:', 'pp'); ?></label></th>
 	<td><input type="text" name="description" id="description" value="<?php echo esc_attr($agent->group_description) ?>" class="regular-text" <?php echo $disabled;?> style="width:95%" /></td>

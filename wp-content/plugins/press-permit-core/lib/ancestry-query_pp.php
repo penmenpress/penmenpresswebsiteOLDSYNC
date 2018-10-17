@@ -3,7 +3,10 @@ function pp_query_descendant_ids( $src_name, $parent_id, $args = array() ) {
 	global $wpdb;
 
 	$defaults = array( 'include_revisions' => false, 'include_attachments' => true, 'post_status' => false, 'append_clause' => '', 'post_types' => array() );
-	extract( array_merge( $defaults, $args ), EXTR_SKIP );
+	$args = array_merge( $defaults, $args );
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = $args[$var];
+	}
 	
 	$descendant_ids = array();
 	$clauses = $append_clause;

@@ -11,7 +11,9 @@ class PP_QueryInterceptorExtra {
 		
 		$defaults = array( 'post_types' => array(), 'source_alias' => '', 'only_append_where' => '' );
 		$args = array_merge( $defaults, $args );
-		extract($args, EXTR_SKIP);
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		global $wpdb, $query_interceptor;
 		

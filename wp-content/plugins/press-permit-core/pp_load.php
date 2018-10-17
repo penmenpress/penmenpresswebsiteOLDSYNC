@@ -4,7 +4,7 @@
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2017, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 
@@ -25,8 +25,7 @@ require_once( "$dir/defaults_ppx.php" );
 require_once( "$dir/db-config_pp.php" );
 
 if ( PP_MULTISITE ) {
-	$func = "require('" . dirname(__FILE__) . "/db-config_pp.php');";
-	add_action( 'switch_blog', create_function( '', $func ) );
+	add_action( 'switch_blog', '_pp_multisite_blog_switch' );
 }
 
 add_action( 'set_current_user', '_pp_act_set_current_user', 99 );
@@ -66,6 +65,10 @@ if ( did_action( 'set_current_user' ) )  // Google Analytics by Yoast load curre
 function _pp_enable_attachment_metacap_workaround() {
 	if ( in_array( 'attachment',  pp_get_enabled_post_types() ) )
 		require_once( dirname(__FILE__).'/media-metacap-workaround_pp.php' );
+}
+
+function _pp_multisite_blog_switch() {
+	require( dirname(__FILE__) . '/db-config_pp.php' );
 }
 
 class PP_Role_Defs {

@@ -123,8 +123,12 @@ class PP_Ancestry {
 	public static function get_page_descendants( $root_page, $args = array() ) {
 		global $wpdb;
 		
-		extract( array_merge( array( 'post_type' => '', 'max_depth' => false, 'pages' => array() ), $args ) );
-		
+		$defaults = array( 'post_type' => '', 'max_depth' => false, 'pages' => array() );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+
 		$num_pages = 0;
 		$descendants = array();
 
@@ -152,8 +156,12 @@ class PP_Ancestry {
 	public static function get_term_descendants( $root_term, $args = array() ) {
 		global $wpdb;
 		
-		extract( array_merge( array( 'taxonomy' => '', 'max_depth' => false, 'terms' => array() ), $args ) );
-		
+		$defaults = array( 'taxonomy' => '', 'max_depth' => false, 'terms' => array() );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+
 		$num_pages = 0;
 		$descendants = array();
 
@@ -225,7 +233,9 @@ class PP_Ancestry {
 		);
 
 		$args = wp_parse_args( $args, $defaults );
-		extract($args, EXTR_SKIP);
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		// This function is only valid for arrays of post or term objects
 		if ( ! is_object( current( $items ) ) ) return $items;

@@ -41,16 +41,8 @@ function pp_admin_init() {
 	if ( ! empty($_POST) || ! empty( $_REQUEST['action'] ) || ! empty($_REQUEST['action2']) || ! empty( $_REQUEST['pp_action'] )  )
 		require_once( dirname(__FILE__).'/admin-handlers_pp.php' );
 
-	// TODO: standardize ajax implementation
-	//if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-		foreach( array( 'item_ui', 'ui', 'exceptions_ui', 'submission', 'term_ui', 'user_ui', 'settings', 'items_metabox' ) as $ajax_type ) {
-			if ( isset( $_REQUEST["pp_ajax_{$ajax_type}"] ) ) {
-				$func = "require_once( '" . dirname(__FILE__) . "/ajax-{$ajax_type}_pp.php' ); exit;";
-				add_action( 'pp_user_init', create_function( '', $func ) );
-			}
-		}
-	//}
-	
+	add_action( 'pp_user_init', '_pp_load_ajax_handler' );
+
 	if ( ! empty($_POST['pp_submit']) || ! empty($_POST['pp_defaults']) || ! empty($_POST['pp_role_usage_defaults']) || ! empty($_REQUEST['pp_refresh_updates']) || ! empty($_REQUEST['pp_renewal']) || ! empty($_REQUEST['pp_upload_config']) || ! empty($_REQUEST['pp_support_forum']) ) {
 		// For 'settings' admin panels, handle updated options right after current_user load (and before pp_init).
 		// By then, check_admin_referer is available, but PP config and WP admin menu has not been loaded yet.
@@ -65,9 +57,19 @@ function pp_admin_init() {
 	}
 }
 
+function _pp_load_ajax_handler() {
+	foreach( array( 'item_ui', 'ui', 'exceptions_ui', 'submission', 'term_ui', 'user_ui', 'settings', 'items_metabox' ) as $ajax_type ) {
+		if ( isset( $_REQUEST["pp_ajax_{$ajax_type}"] ) ) {
+			require_once( dirname(__FILE__) . "/ajax-{$ajax_type}_pp.php" );
+			exit;
+		}
+	}
+}
+
 function _pp_duplicate_extension( $ext_slug, $ext_folder ) {
 	require_once( PPC_ABSPATH.'/lib/error_pp.php' );
-	PP_Error::duplicate_extension( $ext_slug, $ext_folder );
+	$pp_error = new PP_Error();
+	$pp_error->duplicate_extension( $ext_slug, $ext_folder );
 }
 
 function _pp_act_update_watch() {
@@ -123,7 +125,7 @@ function pp_get_op_object( $operation, $post_type = '' ) {
 			array( 'read' => (object) array( 'label' => __('Read'), 'noun_label' => __('Reading', 'pp') ) )
 		);
 
-		$operations = array_intersect_key( $op_captions, array_fill_keys( pp_get_operations(), true ) );
+		$operations = pp_array_subset( $op_captions, pp_get_operations() );
 	}
 
 	$op_obj = ( isset( $operations[$operation] ) ) ? (object) (array) $operations[$operation] : false;  // deference op_obj from static array so type-specific filtering is not memcached
@@ -179,9 +181,12 @@ function _pp_retrieve_admin_groups( $operation = 'manage' ) {
 
 add_filter( 'pp_order_types', '_pp_order_types', 10, 2 );
 function _pp_order_types( $types, $args = array() ) {
-	$defaults = array( 'labels_property' => 'singular_name', 'order_property' => '', 'item_type' => '' );
-	extract( array_merge( $defaults, $args ), EXTR_SKIP );
-	
+	$defaults = array( 'order_property' => '', 'item_type' => '', 'labels_property' => '' );
+	$args = array_merge( $defaults, $args );
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = $args[$var];
+	}
+
 	if ( 'post' == $item_type )
 		$post_types = get_post_types( array(), 'object' );
 	elseif ( 'taxonomy' == $item_type )

@@ -115,15 +115,19 @@ function pp_options( $args = array() ) {
 	echo '<div class="pp-options-wrapper">';
 	$table_class = 'form-table pp-form-table pp-options-table';
 
-	if ( isset($_REQUEST['pp_submit']) ) : ?>
+	if ( isset($_REQUEST['pp_submit']) ) : 
+	?>
 		<div id="message" class="updated"><p>
 		<strong><?php _e('Settings were updated.', 'pp'); ?>&nbsp;</strong>
 		</p></div>
-	<?php elseif ( isset($_REQUEST['pp_defaults']) ) : ?>
+	<?php 
+	elseif ( isset($_REQUEST['pp_defaults']) ) : 
+	?>
 		<div id="message" class="updated"><p>
 		<strong><?php _e('Settings were reset to defaults.', 'pp'); ?>&nbsp;</strong>
 		</p></div>
-	<?php endif;
+	<?php 
+	endif;
 	
 	foreach( array_keys($ui->tab_captions) as $tab ) {
 		$display = ( $default_tab == $tab ) ? '' : 'display:none';

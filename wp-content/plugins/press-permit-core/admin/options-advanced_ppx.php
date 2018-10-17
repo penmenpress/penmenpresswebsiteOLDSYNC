@@ -112,7 +112,8 @@ class PP_Options_Advanced {
 
 		$section = 'file_filtering';
 		
-		if ( $this->enabled || true || PP_MULTISITE ):?>
+		if ( $this->enabled || true || PP_MULTISITE ):
+		?>
 		<tr><th scope="row"><?php echo $ui->section_captions[$tab][$section];?></th><td>
 		<?php
 		if ( defined( 'PPFF_VERSION' ) ) {
@@ -191,7 +192,8 @@ class PP_Options_Advanced {
 				<span class="pp-capabilities-caption">
 				<?php
 				
-				if ( pp_get_option( 'display_hints' ) ) :?>
+				if ( pp_get_option( 'display_hints' ) ) :
+				?>
 					<span class="pp-subtext">
 					<?php
 					if ( ppc_is_plugin_active( 'capsman-enhanced' ) ) {
@@ -261,7 +263,8 @@ class PP_Options_Advanced {
 
 				$pp_caps = apply_filters( 'pp_cap_descriptions', $pp_caps );
 				
-				foreach( $pp_caps as $cap_name => $descript ) :?>
+				foreach( $pp_caps as $cap_name => $descript ) :
+				?>
 				<tr>
 				<td class="cap-name"><?php echo $cap_name;?></td>
 				<td><?php echo $descript;?></td>
@@ -303,7 +306,8 @@ class PP_Options_Advanced {
 				}
 			}
 			
-			if ( $defined_constant_types || ( defined( 'PP_DEBUG' ) && PP_DEBUG ) ) :?>
+			if ( $defined_constant_types || ( defined( 'PP_DEBUG' ) && PP_DEBUG ) ) :
+			?>
 			<tr><td scope="row" colspan="2"><span style="font-weight:bold"><?php echo $ui->section_captions[$tab][$section];?></span>
 			
 			<table id="pp_defined_constants" class="pp_cap_descripts">
@@ -317,7 +321,8 @@ class PP_Options_Advanced {
 				<tbody>
 				
 				<?php
-				foreach( array_keys( $defined_constant_types ) as $const_type ) :?>
+				foreach( array_keys( $defined_constant_types ) as $const_type ) :
+				?>
 					<tr class="const-section">
 					<td>--- <?php echo $pp_constant_types[$const_type];?> ---</td>
 					<td></td>

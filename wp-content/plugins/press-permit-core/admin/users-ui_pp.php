@@ -33,7 +33,7 @@ class PP_AdminUsers {
 			if ( ! $editable_groups = _pp_retrieve_admin_groups() )
 				return;
 			
-			$groups = array_intersect_key( $groups, array_fill_keys( $editable_groups, true ) );
+			$groups = pp_array_subset( $groups, $editable_groups );
 		}
 		?>
 
@@ -142,7 +142,7 @@ class PP_AdminUsers {
 					if ( $group_ids = pp_get_groups_for_user( $id, $agent_type, array( 'cols' => 'id', 'query_user_ids' => array_keys( $wp_list_table->items ) ) ) ) {
 						if ( 'pp_group' == $agent_type ) {
 							if ( ! current_user_can( 'pp_manage_members' ) ) {
-								$group_ids = array_intersect_key( $group_ids, array_fill_keys( _pp_retrieve_admin_groups(), true ) );
+								$group_ids = pp_array_subset( $group_ids, _pp_retrieve_admin_groups() );
 							}
 						}
 						

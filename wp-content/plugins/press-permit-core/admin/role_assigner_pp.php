@@ -13,10 +13,6 @@ class PP_RoleAssigner {
 	// additional arguments recognized by insert_role_assignments():
 	//	is_auto_insertion = false  (if true, skips logging the item as having a manually modified role assignment)
 	public static function assign_roles( $assignments, $agent_type = 'user', $args = array() ) {
-		//$defaults = array();
-		//$args = array_merge($defaults, (array) $args);
-		//extract($args, EXTR_SKIP);
-
 		global $wpdb;
 		$results = $wpdb->get_results( $wpdb->prepare("SELECT agent_id, assignment_id, role_name FROM $wpdb->ppc_roles WHERE agent_type = %s", $agent_type ) );
 
@@ -49,10 +45,6 @@ class PP_RoleAssigner {
 	}
 
 	public static function insert_role_assignments ( $role_name, $agent_type, $agents, $args = array()) {
-		//$defaults = array( );  // auto_insertion arg set for role propagation from parent objects
-		//$args = array_merge( $defaults, (array) $args );
-		//extract($args, EXTR_SKIP);
-
 		if ( ! $agents )
 			return;
 
@@ -106,12 +98,26 @@ class PP_RoleAssigner {
 // additional arguments recognized by self::insert_exceptions():
 //		 is_auto_insertion = false  (if true, skips logging the item as having a manually modified role assignment)
 public static function assign_exceptions( $agents, $agent_type = 'user', $args = array() ) {   // agents[assign_for][agent_id] = has_access 
-	$defaults = array( 'operation' => '', 'mod_type' => '', 'for_item_source' => '', 'for_item_type' => '', 'for_item_status' => '', 
-					   'via_item_source' => '', 'item_id' => 0, 'via_item_type' => '' );
+	$defaults = array( 
+		'operation' => '', 
+		'mod_type' => '', 
+		'for_item_source' => '', 
+		'for_item_type' => '', 
+		'for_item_status' => '', 
+		'via_item_source' => '', 
+		'item_id' => 0, 
+		'via_item_type' => '' 
+	);
 	
 	$args = array_merge($defaults, (array) $args);
-	extract($args, EXTR_SKIP);
-	
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = ( is_string( $args[$var] ) ) ? pp_sanitize_key( $args[$var] ) : $args[$var];
+	}
+
+	$item_id = (int) $args['item_id'];
+	$agent_type = pp_sanitize_key($agent_type);	
+	$for_item_status = ( isset( $args['for_item_status'] ) ) ? pp_sanitize_csv($for_item_status) : '';
+
 	// temp workaround for Revisionary (otherwise lose page-assigned roles on revision approval)
 	if ( ! empty($_REQUEST['page']) && ( 'rvy-revisions' == $_REQUEST['page'] ) ) {
 		return;
@@ -123,21 +129,10 @@ public static function assign_exceptions( $agents, $agent_type = 'user', $args =
 	global $wpdb;
 	
 	if ( ! $via_item_type && ( 'term' == $via_item_source ) ) { 	// separate sets of include/exclude exceptions for each taxonomy
-		if ( $for_item_source == $via_item_source )
+		if ( $for_item_source == $via_item_source ) {
 			$via_item_type = $for_item_type;
-		//else
-		//	return false;
+		}
 	}
-
-	$operation = pp_sanitize_key($operation);
-	$via_item_source = pp_sanitize_key($via_item_source);
-	$for_item_source = pp_sanitize_key($for_item_source);
-	$for_item_type = pp_sanitize_key($for_item_type);
-	$item_id = (int) $item_id;
-	$agent_type = pp_sanitize_key($agent_type);
-	$mod_type = pp_sanitize_key($mod_type);
-	$via_item_type = pp_sanitize_key($via_item_type);
-	$for_item_status = pp_sanitize_csv($for_item_status);
 	
 	$agent_ids = array();
 	foreach( array_keys($agents) as $_assign_for )
@@ -310,7 +305,9 @@ private static function count_hooks( $tag ) {
 public static function insert_exceptions( $mod_type, $operation, $via_item_source, $via_item_type, $for_item_source, $for_item_type, $item_id, $agent_type, $agents, $args ) {	
 	$defaults = array( 'assign_for' => 'item', 'for_item_status' => '', 'inherited_from' => array(), 'is_auto_insertion' => false );  // auto_insertion arg set for propagation from parent objects
 	$args = array_merge($defaults, (array) $args);
-	extract($args, EXTR_SKIP);
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = $args[$var];
+	}
 
 	if ( ! $agents )
 		return;

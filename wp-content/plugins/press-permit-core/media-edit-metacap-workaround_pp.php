@@ -1,8 +1,11 @@
 <?php
-function _ppff_flt_map_media_edit_meta_cap( $caps, $cap, $user_id, $args ) {
-	$extra_args = array_intersect_key( $args, array_fill_keys( array( 'post', 'post_status', 'post_type', 'post_author_id' ), true ) );
-	extract( $extra_args, EXTR_SKIP );
-	
+function _ppff_flt_map_media_edit_meta_cap( $caps, $cap, $user_id, $args ) {	
+	foreach( array( 'post', 'post_status', 'post_type', 'post_author_id' ) as $var ) {
+		if ( isset( $args[$var] ) ) {
+			$$var = $args[$var];
+		}
+	}
+
 	switch ( $cap ) {
 		case 'delete_post':
 		case 'delete_page':

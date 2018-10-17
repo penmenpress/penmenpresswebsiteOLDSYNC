@@ -15,9 +15,12 @@ class PP_ItemExceptionsUI {
 		if ( ! isset( $box['args'] ) )
 			return;
 
-		extract( $box['args'], EXTR_SKIP );  // $op
-		extract( $args, EXTR_SKIP );  // $for_item_source, for_item_type, via_item_source
-		
+		$item_id = ( isset( $args['item_id'] ) ) ? $args['item_id'] : 0;
+		$for_item_type = ( isset( $args['for_item_type'] ) ) ? $args['for_item_type'] : '';
+		$via_item_source = ( isset( $args['via_item_source'] ) ) ? $args['via_item_source'] : '';
+		$via_item_type = ( isset( $args['via_item_type'] ) ) ? $args['via_item_type'] : '';
+		$op = ( isset( $box['args']['op'] ) ) ? $box['args']['op'] : '';
+
 		global $wp_roles, $pp_current_user;
 		
 		$is_draft_post = false;
@@ -138,7 +141,8 @@ class PP_ItemExceptionsUI {
 				</td>
 			<?php else:
 				$colspan = '';	// for html5 compliance
-			endif;?>
+			endif;
+			?>
 			
 			<?php 
 			$any_stored = empty( $current_exceptions[$op][$agent_type] ) ? 0 : count($current_exceptions[$op][$agent_type]); 
@@ -207,12 +211,12 @@ class PP_ItemExceptionsUI {
 			<?php if ( 'wp_role' != $agent_type ) :?>
 				<a class="pp-select-exception-agents" href="#"><?php ( 'user' == $agent_type ) ? _e( 'select users', 'pp' ) : _e( 'select groups', 'pp' );?></a>
 				<a class="pp-close-select-exception-agents" href="#" style="display:none;"><?php _e( 'close', 'pp' );?></a>
-			<?php endif;
+			<?php 
+			endif;
 			if ( pp_group_type_editable( $agent_type ) && pp_has_group_cap( 'pp_create_groups', 0, $agent_type ) ) :
 			?>
 				&nbsp;&bull;&nbsp;<a class="pp-create-exception-agent" href="admin.php?page=pp-group-new" target="_blank"><?php _e( 'create group', 'pp' );?></a>
-			<?php endif;
-			?>
+			<?php endif;?>
 			</td>
 			</tr>
 			</table>

@@ -25,18 +25,21 @@ function pp_register_extension( $slug, $label, $basename, $version, $min_pp_vers
 	
 	if ( ! pp_wp_ver( $min_wp_version ) ) {
 		require_once( dirname(__FILE__) . '/lib/error_pp.php' );
-		$error = PP_Error::old_wp( $label, $min_wp_version );
+		$pp_error = new PP_Error();
+		$error = $pp_error->old_wp( $label, $min_wp_version );
 		$register = false;
 		
 	} elseif ( version_compare( PPC_VERSION, $min_pp_version, '<' ) ) {
 		require_once( dirname(__FILE__) . '/lib/error_pp.php' );
-		$error = PP_Error::old_pp( $label, $min_pp_version );
+		$pp_error = new PP_Error();
+		$error = $pp_error->old_pp( $label, $min_pp_version );
 		$register = false;
 		
 	} elseif( ! empty($pp_min_ext_version[$slug]) && version_compare( $version, $pp_min_ext_version[$slug], '<' ) ) {
 		if ( is_admin() ) {
 			require_once( dirname(__FILE__) . '/lib/error_pp.php' );
-			$error = PP_Error::old_extension( $label, $pp_min_ext_version[$slug] );
+			$pp_error = new PP_Error();
+			$error = $pp_error->old_extension( $label, $pp_min_ext_version[$slug] );
 			// but still register extension so it can be updated!
 			
 		} else {
@@ -174,7 +177,7 @@ function pp_get_group_types( $args = array(), $return = 'name' ) {  // todo: han
 	
 	if ( ! empty( $args['editable'] ) ) {
 		$editable_group_types = apply_filters( 'pp_editable_group_types', array( 'pp_group' ) );
-		return ( 'object' == $return ) ? array_intersect_key( $pp_group_types, array_fill_keys( $editable_group_types, true ) ) : $editable_group_types;
+		return ( 'object' == $return ) ? pp_array_subset( $pp_group_types, $editable_group_types ) : $editable_group_types;
 	} else
 		return ( 'object' == $return ) ? $pp_group_types : array_keys( $pp_group_types );
 }
@@ -351,10 +354,10 @@ function pp_delete_group( $group_id, $agent_type ) {
  *  - metagroup_id
  */
 function pp_get_metagroup( $metagroup_type, $metagroup_id, $args = array() ) {
-	$defaults = array( 'cols' => 'all' );
-	extract( array_merge( $defaults, $args ), EXTR_SKIP );
-	
 	global $wpdb;
+	
+	$defaults = array( 'cols' => 'all' );
+	$args = array_merge( $defaults, $args );
 
 	$site_key = md5( get_option( 'site_url' ) . constant('DB_NAME') . $wpdb->prefix ); // guard against groups table being imported into a different database (with mismatching options table)
 	
@@ -384,7 +387,7 @@ function pp_get_metagroup( $metagroup_type, $metagroup_id, $args = array() ) {
 		}
 	}
 	
-	if ( 'id' == $cols ) {
+	if ( 'id' == $args['cols'] ) {
 		return ( isset($buffered_groups[$key]) ) ? $buffered_groups[$key]->ID : false;
 	} else {
 		return ( isset($buffered_groups[$key]) ) ? $buffered_groups[$key] : false;

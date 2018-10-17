@@ -15,22 +15,34 @@ class PP_ItemExceptionsData {
 			$this->agent_info = array();
 		}
 	
-		$args = array_merge( 
+		$defaults = array_merge( 
 			compact( 'for_item_source', 'item_id' ), 
-			array( 'for_item_type' => '', 'for_item_status' => '', 'via_item_source' => $via_item_source ),
-			$args, 
-			array(
-				'cols' => 'e.agent_type, e.agent_id, e.operation, e.mod_type, i.eitem_id, i.assign_for',
-				'return_raw_results' => true,
-				'inherited_from' => '',
-				'assign_for' => '',
-				'hierarchical' => false,
-			)
+			array( 
+				'for_item_type' => '', 
+				'for_item_status' => '', 
+				'via_item_source' => $via_item_source 
+			) 
 		);
-		
-		$for_item_type = ( isset($args['for_item_type']) ) ? $args['for_item_type'] : $via_item_type;
 
-		extract( $args, EXTR_SKIP );
+		$force_vars = array(
+			'cols' => 'e.agent_type, e.agent_id, e.operation, e.mod_type, i.eitem_id, i.assign_for',
+			'return_raw_results' => true,
+			'inherited_from' => '',
+			'assign_for' => '',
+			'hierarchical' => false,
+		);
+
+		$args = array_merge( $defaults, $args, $force_vars );
+		
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+
+		foreach( array_keys( $force_vars ) as $var ) {
+			$$var = $args[$var];
+		}
+
+		$for_item_type = ( isset($args['for_item_type']) ) ? $args['for_item_type'] : $via_item_type;
 
 		if ( ( 'term' == $via_item_source ) && ! $for_item_type ) {
 			unset( $args['for_item_source'] );
@@ -40,11 +52,13 @@ class PP_ItemExceptionsData {
 		//if ( 'term' == $for_item_source )
 			$args['cols'] .= ', e.for_item_type'; 
 		
-		if ( ! empty($agent_type) )
+		if ( ! empty($agent_type) ) {
+			$agent_type = $agent_type;
 			$agents_by_type = array( $agent_type => array() );  // need this for ajax when an agent type has no current stored
-		else
+		} else {
 			$agents_by_type = array();
-		
+		}
+
 		$exc = ppc_get_exceptions( $args );
 
 		foreach( $exc as $row ) {
@@ -61,8 +75,9 @@ class PP_ItemExceptionsData {
 			$agents_by_type[$agent_type] = array_unique($agents_by_type[$agent_type]);
 			
 			$ids = $agents_by_type[$agent_type];
-			if ( ! empty($agent_id) )
+			if ( ! empty( $agent_id ) ) {
 				$ids = array_merge( $ids, (array) $agent_id );	// ajax passes in specific id(s)
+			}
 
 			if ( 'user' == $agent_type ) {
 				$this->agent_info['user'] = $wpdb->get_results( "SELECT ID, user_login as name, display_name FROM $wpdb->users WHERE ID IN ('" . implode( "','", array_map( 'intval', $ids ) ) . "') ORDER BY user_login", OBJECT_K );
@@ -75,9 +90,9 @@ class PP_ItemExceptionsData {
 		// retrieve info for all WP roles regardless of exception storage
 		$_args = array( 'cols' => "ID, group_name AS name, metagroup_type, metagroup_id" );
 		
-		if( ! empty($agent_id) )	// ajax usage
+		if( ! empty($agent_id) ) {	// ajax usage
 			$_args['ids'] = (array) $agent_id;
-		else {
+		} else {
 			$_where = ( isset($agents_by_type['pp_group']) ) ? "ID IN ('" . implode( "','", $agents_by_type['pp_group'] ) . "')" : "  metagroup_type != 'wp_role'";
 			if ( ! $pp_only_roles = pp_get_option( 'supplemental_role_defs' ) )
 				$pp_only_roles = array();
@@ -145,8 +160,9 @@ class PP_ItemExceptionsData {
 		
 		$agents_clause = ( $agents_clause ) ? pp_implode( ' OR ', $agents_clause ) : '1=1';
 		
-		$_assignment_modes = ( $hierarchical ) ? array( 'item', 'children' ) : array( 'item' );
-		
+		//$_assignment_modes = ( $hierarchical ) ? array( 'item', 'children' ) : array( 'item' );  // this function is not currently used to retrieve propagation records 
+		$_assignment_modes = array( 'item' );
+
 		// Populate only for wp roles, groups and users with stored exceptions.  Will query for additional individual users as needed.
 		foreach( $_assignment_modes as $_assign_for ) {
 			$results = $wpdb->get_results( "SELECT DISTINCT e.agent_type, e.agent_id, e.operation, e.for_item_type FROM $wpdb->ppc_exceptions AS e INNER JOIN $wpdb->ppc_exception_items AS i ON e.exception_id = i.exception_id WHERE $agents_clause AND i.assign_for = '$_assign_for' AND e.mod_type = 'include' $where" );

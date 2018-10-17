@@ -41,7 +41,11 @@ class PP_TermCountInterceptor {
 	}
 	
 	public static function flt_terms_clauses( $clauses, $args ) {
-		extract( $args, EXTR_SKIP );
+		$defaults = array( 'hide_empty' => false, 'hierarchical' => false, 'actual_args' => array() );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		if ( $hide_empty && ( empty($actual_args) || ! $actual_args['hide_empty'] ) && ! $hierarchical ) {	// hide_empty may have been set by flt_get_terms_args()
 			$clauses['where'] .= ' AND tt.count > 0';
@@ -74,6 +78,23 @@ class PP_TermCountInterceptor {
 	}
 
 	public static function flt_get_terms($terms, $taxonomies, $args) {
+		$defaults = array( 
+			'fields' => '', 
+			'hierarchical' => false, 
+			'child_of' => 0,
+			'parent' => 0, 
+			'hide_empty' => false,
+			'number' => 0,
+			'offset' => 0,
+			'include' => false,
+			'exclude' => false,
+			'actual_args' => array() 
+		);
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+		
 		if ( ! is_array($terms) )
 			return $terms;
 		
@@ -84,8 +105,6 @@ class PP_TermCountInterceptor {
 		if ( $terms_interceptor->skip_filtering( $taxonomies, $args ) )
 			return $terms;
 
-		extract( $args, EXTR_SKIP );
-		
 		if ( 'ids' == $fields ) {
 			if ( $terms && is_object($terms[0]) ) {
 				$_terms = array();
@@ -99,8 +118,13 @@ class PP_TermCountInterceptor {
 		}
 		
 		// if some args were forced to prevent core post-processing, restore actual values now
-		if ( ! empty( $args['actual_args'] ) )
-			extract( $args['actual_args'] );
+		if ( ! empty( $args['actual_args'] ) ) {
+			foreach( array_keys( $defaults ) as $var ) {
+				if ( isset( $args['actual_args'][$var] ) ) {
+					$$var = $args['actual_args'][$var];
+				}
+			}
+		}
 
 		if ( 'all' == $fields ) {
 			// buffer term names in case they were filtered previously

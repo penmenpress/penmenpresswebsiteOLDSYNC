@@ -38,14 +38,16 @@ function ppc_early_exit() {
 if ( ! function_exists('ppc_error') ) {
 function ppc_error( $err_slug, $arg2 = '' ) {
 	include_once( dirname(__FILE__).'/error_pp.php');
-	return ( 'old_wp' == $err_slug ) ? PP_Error::old_wp( 'Press Permit Core', $arg2 ) : PP_Error::error_notice( $err_slug );
+	$pp_error = new PP_Error();
+	return ( 'old_wp' == $err_slug ) ? $pp_error->old_wp( 'Press Permit Core', $arg2 ) : $pp_error->error_notice( $err_slug );
 }
 }
 
 if ( ! function_exists('ppc_notice') ) {
-function ppc_notice( $message, $class = 'error fade', $trigger_error = false, $force = false ) {
+function ppc_notice( $message, $class = 'error fade' ) {
 	include_once( dirname(__FILE__).'/error_pp.php');
-	return PP_Error::notice( $message, $class, $trigger_error, $force );
+	$pp_error = new PP_Error();
+	return $pp_error->add_notice( $message, compact( 'class' ) );
 }
 }
 

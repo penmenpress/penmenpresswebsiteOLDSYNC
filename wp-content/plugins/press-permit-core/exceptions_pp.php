@@ -3,7 +3,9 @@ class PP_Exceptions {
 	public static function get_exceptions_clause( $operation, $post_type, $args = array() ) {
 		$defaults = array( 'col_id' => 'ID', 'user' => 0 );
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		if ( ! $user ) {
 			global $pp_current_user;
@@ -32,7 +34,10 @@ class PP_Exceptions {
 	
 	public static function add_exception_clauses( $where, $required_operation, $post_type, $args = array() ) {
 		$defaults = array( 'source_alias' => '', 'apply_term_restrictions' => true, 'append_post_type_clause' => true, 'additions_only' => false );
-		extract( array_merge( $defaults, $args ), EXTR_SKIP );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		global $wpdb, $pp_current_user;
 		
@@ -186,7 +191,12 @@ class PP_Exceptions {
 	public static function add_term_restrictions_clause( $required_operation, $post_type, $src_table, $args = array() ) {		
 		global $wpdb, $pp_current_user;
 		
-		extract( array_merge( array( 'merge_additions' => false, 'exempt_post_types' => array(), 'mod_types' => array( 'include', 'exclude' ) ), $args ), EXTR_SKIP );
+		$defaults = array( 'merge_additions' => false, 'exempt_post_types' => array(), 'mod_types' => array( 'include', 'exclude' ) );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+		
 		$mod_types = (array) $mod_types;
 		
 		$where = '';

@@ -1,14 +1,28 @@
 <?php
 class PP_ItemSave {
 	public static function item_update_process_exceptions( $via_item_source, $for_item_source, $item_id, $args = array() ) {
-		$defaults = array_fill_keys( array( 'is_new', 'set_parent', 'last_parent', 'disallow_manual_entry', 'force_for_item_type' ), false );
+		$defaults = array( 
+			'via_item_type' => '', 
+			'is_new' => false, 
+			'set_parent' => 0, 
+			'last_parent' => 0, 
+			'disallow_manual_entry' => false,
+		);
+
 		$args = apply_filters( 'pp_item_update_process_roles_args', 
-								array_merge( $defaults, array( 'via_item_type' => '', 'for_item_status' => '' ), (array) $args, compact( 'via_item_source', 'for_item_source', 'item_id' ) ), 
+								array_merge( 
+									$defaults, 
+									array( 'for_item_status' => '', 'force_for_item_type' => false ), 
+									(array) $args,
+									compact( 'via_item_source', 'for_item_source', 'item_id' ) ), 
 								$via_item_source, $for_item_source, $item_id 
 							);
 		
-		extract( $args, EXTR_SKIP );
-		
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+
 		if ( $can_assign_roles = current_user_can( 'pp_assign_roles' ) ) {
 			if ( apply_filters( 'pp_disable_exception_edit', false, $via_item_source, $item_id ) )
 				$can_assign_roles = false;
@@ -57,8 +71,12 @@ class PP_ItemSave {
 	
 	public static function inherit_parent_exceptions( $item_id, $args = array() ) {
 		$defaults = array( 'via_item_source' => '', 'via_item_type' => '', 'set_parent' => '', 'last_parent' => '', 'is_new' => true );
-		extract( array_merge( $defaults, $args ), EXTR_SKIP );
-		
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+
+
 		$is_new_term = ( 'term' != $via_item_source ) ? false : ! empty($_REQUEST['action']) && ( 'add-tag' == $_REQUEST['action'] );
 		
 		// don't execute this action handler more than one per post save (may be called directly on pre-save cap check)
@@ -73,7 +91,7 @@ class PP_ItemSave {
 			return;
 		
 		// Inherit exceptions from new parent post/term, but only for new items or if parent is changed
-		if ( isset($set_parent) && ( $set_parent != $last_parent ) || $is_new_term ) {			
+		if ( ( $set_parent != $last_parent ) || $is_new_term ) {			
 			// retain all explicitly selected exceptions
 			global $wpdb;
 			$descendant_ids = pp_get_descendant_ids( $via_item_source, $item_id );
@@ -124,14 +142,13 @@ add_filter( 'pp_do_inherit_parent_exceptions', array( 'PP_ItemSave', 'default_di
 function _pp_clear_exceptions( $via_item_source, $item_id, $args = array() ) {
 	$defaults = array ( 'inherited_only' => false );
 	$args = array_merge( $defaults, (array) $args );
-	extract($args, EXTR_SKIP);
-	
+
 	global $wpdb;
 	
 	if ( ! $item_id )
 		return;
 	
-	$inherited_clause = ( $inherited_only ) ? "AND inherited_from > 0" : '';
+	$inherited_clause = ( $args['inherited_only'] ) ? "AND inherited_from > 0" : '';
 
 	if ( is_array( $item_id ) )
 		$id_clause = "AND i.item_id IN ('" . implode( "','", $item_id ) . "')";
@@ -149,7 +166,9 @@ function _pp_inherit_parent_exceptions( $via_item_source, $item_id, $parent_id, 
 	
 	$defaults = array( 'parent_exceptions' => array(), 'retain_exceptions' => array(), 'force_for_item_type' => '' );
 	$args = array_merge( $defaults, $args );
-	extract( $args, EXTR_SKIP );
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = $args[$var];
+	}
 	
 	if ( ! $parent_exceptions )
 		$parent_exceptions = _pp_get_parent_exceptions( $via_item_source, $item_id, $parent_id ); 
@@ -157,7 +176,7 @@ function _pp_inherit_parent_exceptions( $via_item_source, $item_id, $parent_id, 
 	foreach( $retain_exceptions as $r ) {	// can't just compare exception_id because want to avoid inheriting an include exception if an exclude is manually stored, etc.
 		foreach( $parent_exceptions as $ekey => $e ) {
 			if ( $r->item_id == $item_id
-			&& $r->via_item_source == $e->via_item_source
+			&& $r->via_item_source == $via_item_source
 			&& $r->agent_type == $e->agent_type
 			&& $r->agent_id == $e->agent_id
 			&& $r->for_item_source == $e->for_item_source
@@ -178,7 +197,6 @@ function _pp_inherit_parent_exceptions( $via_item_source, $item_id, $parent_id, 
 			$insert_agents = array( $exc->agent_id => true );
 			$args = array( 'for_item_status' => $exc->for_item_status, 'inherited_from' => array( $exc->agent_id => $exc->eitem_id ) );	
 
-			//$for_item_type = ( $force_for_item_type ) ? $force_for_item_type : $exc->for_item_type;
 			if ( $force_for_item_type )
 				$for_item_type = $force_for_item_type;
 			elseif ( 'post' != $via_item_source )

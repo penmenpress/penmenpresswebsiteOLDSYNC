@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2013, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 
@@ -15,7 +15,10 @@ class PP_AgentsUI {
 	
 	function agents_ui( $agent_type, $all_agents, $id_suffix = '', $item_assignments = array(), $args = array()) {
 		$defaults = array( 'role_name' => '', 'ajax_selection' => false, 'width' => '', 'hide_checkboxes' => false );
-		extract( array_merge( $defaults, $args ), EXTR_SKIP );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		echo '<div class="pp_agents_wrapper">';
 		

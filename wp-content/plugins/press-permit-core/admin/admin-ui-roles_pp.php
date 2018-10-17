@@ -4,7 +4,10 @@ function _ppc_count_assigned_exceptions( $agent_type, $args = array() ) {
 	global $wpdb;
 	
 	$defaults = array( 'query_agent_ids' => false, 'join_groups' => true );
-	extract( array_merge( $defaults, $args ), EXTR_SKIP );
+	$args = array_merge( $defaults, $args );
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = $args[$var];
+	}
 	
 	$item_types = array_merge( pp_get_enabled_post_types(), pp_get_enabled_taxonomies(), pp_get_group_types( array( 'editable' => true ) ) );
 
@@ -22,7 +25,10 @@ function _ppc_count_assigned_exceptions( $agent_type, $args = array() ) {
 		foreach( pp_get_group_types( array(), 'object' ) as $group_type => $gtype_obj ) {
 			global $wpdb;
 			if ( ! empty( $gtype_obj->schema['members'] ) ) {
-				extract( $gtype_obj->schema['members'] );	// members_table, col_group, col_user
+				$sm = $gtype_obj->schema['members'];
+				$members_table = $sm['members_table'];
+				$col_member_group = $sm['col_member_group'];
+				$col_member_user = $sm['col_member_user'];
 			} else {
 				$members_table = $wpdb->pp_group_members;
 				$col_member_group = 'group_id';
@@ -88,7 +94,10 @@ function _ppc_count_assigned_roles( $agent_type, $args = array() ) {
 	global $wpdb;
 	
 	$defaults = array( 'query_agent_ids' => false, 'join_groups' => true );
-	extract( array_merge( $defaults, $args ), EXTR_SKIP );
+	$args = array_merge( $defaults, $args );
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = $args[$var];
+	}
 
 	$count = array();
 	
@@ -138,8 +147,9 @@ function _ppc_list_agent_exceptions( $agent_type, $id, $args = array() ) {
 	
 	$defaults = array( 'query_agent_ids' => array(), 'show_link' => true, 'join_groups' => true, 'force_refresh' => false, 'display_limit' => 3 );
 	$args = array_merge( $defaults, $args );
-	extract( $args, EXTR_SKIP );
-	
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = $args[$var];
+	}
 	if ( empty ( $args['query_agent_ids'] ) )
 		$args['query_agent_ids'] = (array) $id;
 	

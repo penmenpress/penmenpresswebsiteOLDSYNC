@@ -57,7 +57,7 @@ class PP_Hardway
 			'authors' => '', 'parent' => -1, 'exclude_tree' => '',
 			'number' => '', 'offset' => 0,
 			'post_type' => 'page', 'post_status' => 'publish',
-			
+			'append_page' => false,
 			'depth' => 0, 'suppress_filters' => 0,
 			'required_operation' => '', 'alternate_operation' => '',
 		);	// PP arguments added above
@@ -106,7 +106,13 @@ class PP_Hardway
 			return $results;
 		}
 		
-		extract( apply_filters( 'pp_get_pages_args', $r ), EXTR_SKIP );  // PPE filter modifies append_page, exclude_tree
+		if ( $_filtered_vars = apply_filters( 'pp_get_pages_args', $r ) ) {  // PPCE filter modifies append_page, exclude_tree, sort_column
+			foreach( array_keys( $defaults ) as $var ) {
+				if ( isset( $_filtered_vars[$var] ) ) {
+					$$var = $_filtered_vars[$var];
+				}
+			}
+		}
 
 		// workaround for CMS Tree Page View
 		if ( 'ids' == $fields && isset( $args['xsuppress_filters'] ) && ! empty( $args['ignore_sticky_posts'] ) ) {

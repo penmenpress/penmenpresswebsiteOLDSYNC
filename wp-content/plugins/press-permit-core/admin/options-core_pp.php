@@ -84,14 +84,16 @@ class PP_Options_Core {
 		$tab = 'core';
 		
 		$section = 'permissions';								// --- PERMISSIONS SECTION ---
-		if ( ! empty( $ui->form_options[$tab][$section] ) ) :?>
+		if ( ! empty( $ui->form_options[$tab][$section] ) ) :
+		?>
 			<tr><th scope="row"><?php echo $ui->section_captions[$tab][$section];?></th><td>
 			<?php
 			$hint = __( 'If disabled, manually "blocked" posts can be unblocked by Category / Term Exceptions.  Enabling this setting will provide more intuitive behavior, but may require configuration review and testing on prior installations.', 'pp' );
 			$ui->option_checkbox( 'post_blockage_priority', $tab, $section, $hint );
 			?>
 			</td></tr>
-		<?php endif; // any options accessable in this section
+		<?php 
+		endif; // any options accessable in this section
 		
 									// --- FILTERED TAXONOMIES / POST TYPES SECTION ---
 		foreach ( array( 'object' => 'post_types', 'term' => 'taxonomies' ) as $scope => $section ) {
@@ -165,7 +167,8 @@ class PP_Options_Core {
 
 			if ( 'object' == $scope ) {
 				if ( pp_get_option( 'display_hints' ) ) {
-					if ( $types = get_post_types( array( 'public' => true, '_builtin' => false ) ) ) :?>
+					if ( $types = get_post_types( array( 'public' => true, '_builtin' => false ) ) ) :
+					?>
 						<div class="pp-subtext">
 						<?php
 						printf( __('<span class="pp-important">Note</span>: Type-specific capability requirements (i.e. edit_things instead of edit_posts) will be imposed. If PP filters Media or a custom type, non-Administrators <span class="pp-important">will need a corresponding %1$ssupplemental role%2$s for editing</span>. Adding the type-specific capabilities directly to a WP role definition also works.'), "<a href='" . admin_url('?page=pp-groups') . "'>", '</a>');
@@ -181,8 +184,9 @@ class PP_Options_Core {
 								_e( 'To customize bbPress forum permissions, activate your Press Permit Pro support key.', 'pp' );
 							?>
 							</div>
-						<?php endif;?>
-					<?php endif;
+						<?php 
+							endif;
+						endif;
 				}
 				
 				if ( pp_wp_ver( '3.5' ) ) {
@@ -198,17 +202,20 @@ class PP_Options_Core {
 		} // end foreach scope
 		
 		$section = 'front_end';									// --- FRONT END SECTION ---
-		if ( ! empty( $ui->form_options[$tab][$section] ) ) :?>
+		if ( ! empty( $ui->form_options[$tab][$section] ) ) :
+		?>
 			<tr><th scope="row"><?php echo $ui->section_captions[$tab][$section];?></th><td>
 			<?php
 			$hint = __('Remove the "Private:" and "Protected" prefix from Post, Page titles', 'pp');
 			$ui->option_checkbox( 'strip_private_caption', $tab, $section, $hint );
 			?>
 			</td></tr>
-		<?php endif; // any options accessable in this section
+		<?php 
+		endif; // any options accessable in this section
 	
 		$section = 'admin';									// --- BACK END SECTION ---
-		if ( ! empty( $ui->form_options[$tab][$section] ) ) :?>
+		if ( ! empty( $ui->form_options[$tab][$section] ) ) :
+		?>
 			<tr><th scope="row"><?php echo $ui->section_captions[$tab][$section];?></th><td>
 			<?php
 			$listable = defined( 'PP_ADMIN_READONLY_LISTABLE' );
@@ -218,10 +225,12 @@ class PP_Options_Core {
 			$ui->option_checkbox( 'admin_hide_uneditable_posts', $tab, $section, $hint, '', $args );
 			?>
 			</td></tr>
-		<?php endif; // any options accessable in this section
+		<?php 
+		endif; // any options accessable in this section
 
 		$section = 'user_profile';								// --- USER PROFILE SECTION ---
-		if ( ! empty( $ui->form_options[$tab][$section] ) ) : ?>
+		if ( ! empty( $ui->form_options[$tab][$section] ) ) : 
+		?>
 			<tr><th scope="row"><?php echo $ui->section_captions[$tab][$section];?></th><td>
 			<?php
 			$hint = '';
@@ -235,11 +244,12 @@ class PP_Options_Core {
 			?>
 				
 			</td></tr>
-		<?php endif; // any options accessable in this section
-		
+		<?php 
+		endif; // any options accessable in this section
 		
 		$section = 'db_maint';
-		if ( get_option('pp_need_group_index_drop') ) :?>
+		if ( get_option('pp_need_group_index_drop') ) :
+		?>
 			<tr><th scope="row"><?php echo $ui->section_captions[$tab][$section];?></th><td>
 			<?php
 			$hint = '';
@@ -247,7 +257,8 @@ class PP_Options_Core {
 			?>
 
 			</td></tr>
-		<?php endif;
+		<?php 
+		endif;
 		
 	} // end function options_ui()
 }

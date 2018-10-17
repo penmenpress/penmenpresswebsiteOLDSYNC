@@ -11,8 +11,13 @@ $for_item_source = pp_sanitize_key($_GET['pp_src_name']);
 $for_item_type = pp_sanitize_key($_GET['pp_object_type']);
 $role_name = ( isset($_GET['pp_role_name']) ) ? pp_sanitize_csv($_GET['pp_role_name']) : '';
 
-if ( $force_vars = apply_filters( 'pp_ajax_role_ui_vars', array(), compact( 'for_item_source', 'for_item_type', 'role_name' ) ) )
-	extract( $force_vars );
+$filterable_vars = array( 'for_item_source', 'for_item_type', 'role_name' );
+if ( $force_vars = apply_filters( 'pp_ajax_role_ui_vars', array(), compact( $filterable_vars ) ) ) {
+	$_vars = pp_array_subset( $force_vars, $filterable_vars );
+	foreach( array_keys( $_vars ) as $var ) {
+		$$var = $_vars[$var];
+	}
+}
 
 $html = '';
 

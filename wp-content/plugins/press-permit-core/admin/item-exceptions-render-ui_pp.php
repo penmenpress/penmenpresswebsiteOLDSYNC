@@ -54,8 +54,10 @@ class PP_ItemExceptionsRenderUI {
 		
 		$defaults = array( 'reqd_caps' => false, 'hierarchical' => false, 'for_item_type' => '', 'op' => '', 'default_select' => false );
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
-	
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+
 		$assignment_modes = array( 'item' );
 		if ( $hierarchical )
 			$assignment_modes []= 'children';
@@ -158,8 +160,7 @@ foreach( $this->options[$option_set] as $val => $lbl ) :
 <option value='<?php echo "$val'{$this->opt_class[$val]}"; selected( $val, $current_val );?>><?php echo $lbl;?></option>
 <?php endforeach; ?>
 </select>
-<?php
-if ( $disabled ):?>
+<?php if ( $disabled ):?>
 <input type="hidden" name='pp_exceptions<?php echo "[$for_type][$op][$agent_type][$assign_for][$agent_id]";?>' value="<?php echo $current_val;?>" />
 <?php endif;?>
 

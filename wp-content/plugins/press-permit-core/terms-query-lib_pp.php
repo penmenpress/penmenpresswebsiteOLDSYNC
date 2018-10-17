@@ -10,9 +10,11 @@ class PP_TermsQueryLib {
 			return;
 
 		$defaults = array ( 'pad_counts' => true, 'post_type' => '', 'required_operation' => '' );
-		$args = array_merge( $defaults, (array) $args );
-		extract( $args, EXTR_SKIP );
-
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+		
 		$term_items = array();
 
 		if ( $terms ) {

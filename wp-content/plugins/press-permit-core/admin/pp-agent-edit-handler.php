@@ -166,10 +166,8 @@ function _pp_edit_group_roles( $agent_id, $agent_type ) {
 		foreach( $agent_ids as $_agent_id ) {
 			if ( $_agent_id ) {
 				foreach( $_POST['pp_add_role'] as $add_role ) {
-					extract($add_role);
-
-					if ( $attrib_cond )
-						$attrib_cond = ':' . $attrib_cond;
+					$attrib_cond = ( ! empty( $add_role['attrib_cond'] ) ) ? ':' . $add_role['attrib_cond'] : '';
+					$role = ( isset( $add_role['role'] ) ) ? $add_role['role'] : '';
 
 					ppc_assign_roles( array( "{$role}{$attrib_cond}" => array( $_agent_id => true ) ), $agent_type );
 				}
@@ -187,11 +185,13 @@ function _pp_edit_agent_exceptions( $agent_id, $agent_type ) {
 	if ( isset( $_POST['pp_add_exception'] ) ) {
 		// note: group editing capability already verified at this point
 		
-		foreach( $_POST['pp_add_exception'] as $exception ) {
-			$exception = apply_filters( 'pp_add_exception', $exception );
+		foreach( $_POST['pp_add_exception'] as $exc ) {
+			$exc = apply_filters( 'pp_add_exception', $exc );
 			
-			extract($exception);
-			
+			foreach( array( 'mod_type', 'item_id', 'operation', 'attrib_cond', 'via_type', 'for_type', 'for_item', 'for_children' ) as $var ) {
+				$$var = ( isset( $exc[$var] ) ) ? $exc[$var] : '';
+			}
+
 			$args = compact( 'mod_type', 'item_id', 'operation' );
 			$args['for_item_status'] = $attrib_cond;
 			

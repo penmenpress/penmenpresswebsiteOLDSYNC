@@ -3,7 +3,9 @@ class PP_Users {
 	public static function get_users( $args = array() ) {
 		$defaults = array( 'cols' => 'all' );
 		$args = array_merge( $defaults, (array) $args );
-		extract($args, EXTR_SKIP);
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		if ( 'id' == $cols )
 			$qcols = 'ID';

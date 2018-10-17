@@ -85,6 +85,10 @@ function pp_restore_property_array( &$target_arr, $buffer_arr, $id_prop, $buffer
 			$target_arr[$key]->$buffer_prop = $buffer_arr[ $target_arr[$key]->$id_prop ];
 }
 
+function pp_array_subset( $arr, $keys ) {
+	return array_intersect_key( $arr, array_fill_keys( $keys, true ) );
+}
+
 /*  // moved to pp_bootstrap_lib.php to work around conflict with old PP File Filtering extension
 // returns true GMT timestamp
 function pp_time_gmt() {	

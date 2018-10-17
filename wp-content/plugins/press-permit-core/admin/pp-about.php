@@ -24,7 +24,8 @@ $show_pro_info = empty($opt_val[0]) || ! in_array( $opt_val[0], array( 1, -1 ) )
 
 // todo PP Core / Pro explanation if not activated
 
-if ( $show_pro_info ) :?>
+if ( $show_pro_info ) :
+?>
 	<p class="agp-proceed">
 	<?php
 	printf(__( 'Over that last five years, I&apos;ve discovered that WordPress permissions customization is a complex moving target that&apos;s not well-suited to a purely free+consulting model. To ensure commensurate funding for plugin development, documentation and support, I&apos;ve introduced Press Permit Pro. Your purchase provides access and 12 months of updates to a package of extension plugins which provide these and other features:', 'pp' ), '<a href="http://presspermit.com/pp-rs-feature-grid">', '</a>' ); 
@@ -71,7 +72,10 @@ if ( $show_pro_info ) :?>
 	?>
 	</li></ul>
 <?php else : ?>
-	<p><?php printf(__('Although Press Permit&apos;s development was a maniacal hermit-like effort, it was only possible because of the clean and extensible %1$s WordPress code base%2$s developed by hundreds of core contributors.  Thanks for appreciating and supporting my own contributions to this content management landscape.  I hope they will assist you toward resolution and purpose in building excellent websites with a thankful heart toward your own Creator, who IS agap&eacute;.', 'pp'), "<a href='http://codex.wordpress.org/Developer_Documentation' target='_blank'>", '</a>');?>
+	<p>
+	<?php 
+	printf(__('Although Press Permit&apos;s development was a maniacal hermit-like effort, it was only possible because of the clean and extensible %1$s WordPress code base%2$s developed by hundreds of core contributors.  Thanks for appreciating and supporting my own contributions to this content management landscape.  I hope they will assist you toward resolution and purpose in building excellent websites with a thankful heart toward your own Creator, who IS agap&eacute;.', 'pp'), "<a href='http://codex.wordpress.org/Developer_Documentation' target='_blank'>", '</a>');
+	?>
 	</p>
 	
 	<p>

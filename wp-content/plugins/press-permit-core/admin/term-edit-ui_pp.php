@@ -221,9 +221,11 @@ class PP_TermEditUI {
 	}
 	
 	function draw_settings_ui( $term, $box ) {
-		if ( $tx = get_taxonomy( $term->taxonomy ) ) :?>
+		if ( $tx = get_taxonomy( $term->taxonomy ) ) :
+		?>
 			<label for="pp_enable_taxonomy"><input type="checkbox" name="pp_enable_taxonomy" /> <?php printf( __( 'enable custom permissions for %s', 'pp' ), $tx->labels->name );?></label>
-		<?php endif;
+		<?php 
+		endif;
 	}
 	
 	// wrapper function so we don't have to load item_roles_ui class just to register the metabox

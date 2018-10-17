@@ -33,7 +33,8 @@ class PP_PostSave {
 		
 		if ( is_post_type_hierarchical( $post->post_type ) ) {
 			$parent_info = self::get_post_parent_info( $post_id, $post, true );
-			extract( $parent_info, EXTR_SKIP );	// $set_parent, $last_parent
+			$set_parent = ( isset( $parent_info['set_parent'] ) ) ? $parent_info['set_parent'] : false;
+			$last_parent = ( isset( $parent_info['last_parent'] ) ) ? $parent_info['last_parent'] : false;
 
 			if ( is_numeric( $last_parent ) ) // not theoretically necessary, but an easy safeguard to avoid re-inheriting parent roles
 				$is_new = false;
@@ -42,7 +43,7 @@ class PP_PostSave {
 		if ( empty( $_REQUEST['page'] ) || ( 'rvy-revisions' != $_REQUEST['page'] ) ) {
 			usleep(5000); // Work around intermittent failure to propagate exceptions.  Maybe storage of post row is delayed on some db servers.
 			require_once( dirname(__FILE__).'/item-save_pp.php' );
-			PP_ItemSave::item_update_process_exceptions( 'post', 'post', $post_id, compact( 'is_new', 'set_parent', 'last_parent', 'disallow_manual_entry', 'via_item_type' ) );
+			PP_ItemSave::item_update_process_exceptions( 'post', 'post', $post_id, compact( 'is_new', 'set_parent', 'last_parent' ) );
 		}
 	}
 	

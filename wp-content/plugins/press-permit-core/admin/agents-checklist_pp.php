@@ -6,16 +6,18 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2013, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 
 class PP_Agents_Checklist {
 	// for group selection only
 	public static function display( $agents_subset, $agent_type, $all_agents, $name_attrib, $item_assignments, $args ) {
-		$defaults = array( 'eligible_ids' => array(), 'locked_ids' => array(), 'add_group_link' => true, 'show_subset_caption' => true, 'hide_checkboxes' => false );
-		$args = array_merge( $defaults, (array) $args );
-		extract($args, EXTR_SKIP);
+		$defaults = array( 'eligible_ids' => array(), 'locked_ids' => array(), 'show_subset_caption' => true, 'hide_checkboxes' => false );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		$caption_length_limit = ( defined('PP_AGENTS_CAPTION_LIMIT') ) ? PP_AGENTS_CAPTION_LIMIT : 20;
 		$emsize_threshold = ( defined('PP_AGENTS_EMSIZE_THRESHOLD') ) ? PP_AGENTS_EMSIZE_THRESHOLD : 4;

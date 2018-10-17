@@ -14,7 +14,8 @@ pp_load_admin_api();
 class PP_AdminFilters
 {
 	var $last_post_status = array();
-	
+	var $users_to_sync = array();
+
 	function __construct() {
 		global $pagenow;
 
@@ -183,8 +184,17 @@ class PP_AdminFilters
 	}
 
 	function act_schedule_user_sync( $user_id, $role_name = '', $blog_id = '' ) {
-		$func = create_function( '', "PP_AdminFilters::act_sync_wproles('" . $user_id . "');" );
-		add_action( 'shutdown', $func );
+		if ( ! $this->users_to_sync ) {
+			add_action( 'shutdown', array( &$this, 'sync_users' ) );
+		}
+
+		$this->users_to_sync[]= $user_id;
+	}
+
+	function sync_users() {
+		if ( $this->users_to_sync ) {
+			PP_AdminFilters::act_sync_wproles( $this->users_to_sync );
+		}
 	}
 
 	static function act_sync_wproles( $user_ids = '', $role_name = '', $blog_id_arg = '' ) {

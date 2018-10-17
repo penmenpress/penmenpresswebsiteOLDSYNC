@@ -4,7 +4,7 @@
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2017, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 
@@ -17,11 +17,22 @@ class PP_GroupRetrieval {
 	public static function get_pp_groups( $args = array() ) {
 		global $wpdb;
 		
-		$defaults = array( 'agent_type' => 'pp_group', 'cols' => "DISTINCT ID, group_name AS name, group_description, metagroup_type, metagroup_id", 'omit_ids' => array(), 'ids' => array(), 'where' => '', 
-		'join' => '', 'require_meta_types' => array(), 'skip_meta_types' => array(), 'search' => '', 'order_by' => 'group_name'
+		$defaults = array( 
+			'agent_type' => 'pp_group', 
+			'cols' => "DISTINCT ID, group_name AS name, group_description, metagroup_type, metagroup_id", 
+			'omit_ids' => array(), 
+			'ids' => array(), 
+			'where' => '', 
+			'join' => '', 
+			'require_meta_types' => array(), 
+			'skip_meta_types' => array(), 
+			'search' => '', 
+			'order_by' => 'group_name'
 		);
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		$groups_table = apply_filters( 'pp_use_groups_table', $wpdb->pp_groups, $agent_type );
 		
@@ -68,7 +79,10 @@ class PP_GroupRetrieval {
 		global $wpdb;
 		
 		$defaults = array( 'agent_type' => 'pp_group', 'member_type' => 'member', 'status' => 'active', 'maybe_metagroup' => false );
-		extract( array_merge( $defaults, $args ), EXTR_SKIP );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		// If $group_id is an array of group objects, extract IDs into a separate array (@todo: review calling code)
 		if ( is_array($group_id) ) {
@@ -135,13 +149,26 @@ class PP_GroupRetrieval {
 	}
 	
 	public static function get_pp_groups_for_user( $user_id, $args = array() ) {
-		$defaults = array( 'agent_type' => 'pp_group', 'member_type' => 'member', 'status' => 'active', 'cols' => 'all', 'metagroup_type' => null, 'force_refresh' => false, 'query_user_ids' => false, 'wp_roles' => array() );
+		$defaults = array( 
+			'agent_type' => 'pp_group', 
+			'member_type' => 'member', 
+			'status' => 'active', 
+			'cols' => 'all', 
+			'metagroup_type' => null, 
+			'force_refresh' => false, 
+			'query_user_ids' => false, 
+			'wp_roles' => array() 
+		);
 		$args = array_merge( $defaults, $args );
 		
 		if ( is_null( $args['metagroup_type'] ) )
 			unset( $args['metagroup_type'] );
 		
-		extract($args, EXTR_SKIP);
+		foreach( array_keys( $defaults ) as $var ) {
+			if ( isset( $args[$var] ) ) {
+				$$var = $args[$var];
+			}
+		}
 		
 		global $wpdb;
 		
@@ -300,10 +327,8 @@ class PP_GroupRetrieval {
 	public static function get_roles( $agent_type, $agent_id, $args = array() ) {
 		global $wpdb;
 		
-		$defaults = array( 'post_types' => true, 'taxonomies' => true, 'query_agent_ids' => false, 'force_refresh' => false );
-		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
-		
+		$query_agent_ids = ( isset( $args['query_agent_ids'] ) ) ? $args['query_agent_ids'] : false;
+
 		$roles = array();
 
 		$agent_type = pp_sanitize_key($agent_type);
@@ -364,12 +389,28 @@ class PP_GroupRetrieval {
 	}
 	
 	public static function get_exceptions( $args = array() ) {
-		$defaults = array( 'operations' => array(), 'inherited_from' => '', 'for_item_source' => false, 'via_item_source' => false,
-							'assign_for' => 'item', 'for_item_status' => false, 'post_types' => true, 'taxonomies' => true, 'item_id' => false, 
-							'agent_type' => '', 'agent_id' => 0, 'query_agent_ids' => array(), 'ug_clause' => '', 
-							'return_raw_results' => false, 'extra_cols' => array(), 'cols' => array() );
+		$defaults = array( 
+			'operations' => array(), 
+			'inherited_from' => '', 
+			'for_item_source' => false, 
+			'via_item_source' => false,				
+			'assign_for' => 'item', 
+			'for_item_status' => false, 
+			'post_types' => true, 
+			'taxonomies' => true, 
+			'item_id' => false, 
+			'agent_type' => '', 
+			'agent_id' => 0, 
+			'query_agent_ids' => array(), 
+			'ug_clause' => '', 
+			'return_raw_results' => false, 
+			'extra_cols' => array(), 
+			'cols' => array() 
+		);
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		global $wpdb;
 		

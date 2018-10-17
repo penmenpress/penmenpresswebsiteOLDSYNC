@@ -8,7 +8,7 @@ require_once( dirname(__FILE__).'/exceptions_pp.php' );
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2017, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 class PP_QueryInterceptor
@@ -205,13 +205,22 @@ class PP_QueryInterceptor
 	
 	// Filter existing where clause
 	function flt_posts_where( $where, $args = array() ) {
-		$defaults = array( 	'post_types' => array(),		'source_alias' => false,	 		
-							'skip_teaser' => false,			'retain_status' => false,		/*'or_clause' => '',*/
-							'required_operation' => '',		'alternate_required_ops' => false,	'include_trash' => 0,  'query_contexts' => array(),  'force_types' => false,
-						);
+		$defaults = array( 	
+			'post_types' => array(),
+			'source_alias' => false,	 		
+			'skip_teaser' => false,
+			'retain_status' => false,
+			'required_operation' => '',
+			'alternate_required_ops' => false,
+			'include_trash' => 0,
+			'query_contexts' => array(),
+			'force_types' => false,
+		);
 		$args = array_merge( $defaults, (array) $args );
-		extract($args, EXTR_SKIP);
-
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
+		
 		global $wpdb, $pp_current_user;
 
 		//d_echo ("<br /><strong>flt_posts_where input:</strong> $where<br />");
@@ -347,7 +356,10 @@ class PP_QueryInterceptor
 		
 		$clauses = apply_filters( 'pp_construct_posts_request_clauses', $clauses, $args );
 		
-		extract($clauses);
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $clauses[$var];
+		}
+
 		$found_rows = ( $limits ) ? 'SQL_CALC_FOUND_ROWS' : '';
 
 		return "SELECT $found_rows $distinct $fields FROM $wpdb->posts $join WHERE 1=1 $where $groupby $orderby $limits";
@@ -356,10 +368,23 @@ class PP_QueryInterceptor
 	// determines status usage, calls generate_where_clause() for each applicable post_type and appends resulting clauses
 	//
 	function get_posts_where( $args ) {
-		$defaults = array( 	'post_types' => array(),		'source_alias' => false,		'src_table' => '',			'apply_term_restrictions' => true, 		'include_trash' => 0,
-							'required_operation' => '',		'limit_statuses' => false,		'skip_teaser' => false,		'query_contexts' => array(), 			'force_types' => false,		'limit_post_types' => false );
+		$defaults = array(
+			'post_types' => array(),
+			'source_alias' => false,
+			'src_table' => '',
+			'apply_term_restrictions' => true,
+			'include_trash' => 0,
+			'required_operation' => '',
+			'limit_statuses' => false,
+			'skip_teaser' => false,
+			'query_contexts' => array(),
+			'force_types' => false,
+			'limit_post_types' => false
+		);
 		$args = array_merge( $defaults, (array) $args );
-		extract($args, EXTR_SKIP);
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 
 		//d_echo ("<br /><strong>get_posts_where:</strong> <br />");	
 		
@@ -509,7 +534,9 @@ class PP_QueryInterceptor
 					$args['post_type'] = $post_type;
 					$_vars = apply_filters( 'pp_generate_where_clause_force_vars', null, 'post', $args );
 					if ( is_array( $_vars ) ) {
-						extract( $_vars );	// possible @todo: intersect keys as with pp_has_cap_force_vars
+						if ( isset( $_vars['parent_clause'] ) ) {
+							$parent_clause = $_vars['parent_clause'];
+						}
 					}
 
 					if ( ! empty($args['skip_stati_usage_clause']) && ! $limit_statuses && ! array_diff_key( $use_statuses, array_flip($have_site_caps['owner']) ) ) {
@@ -638,7 +665,10 @@ function pp_map_meta_cap( $cap_name, $user_id = 0, $post_id = 0, $args = array()
 		return map_meta_cap( $cap_name, $user_id, $post_id );
 
 	$defaults = array( 'is_author' => false, 'post_type' => '', 'status' => '', 'query_contexts' => array() );
-	extract( array_merge( $defaults, $args ), EXTR_SKIP );
+	$args = array_merge( $defaults, $args );
+	foreach( array_keys( $defaults ) as $var ) {
+		$$var = $args[$var];
+	}
 	
 	global $current_user;
 	

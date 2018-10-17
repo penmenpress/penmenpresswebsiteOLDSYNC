@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  *
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2017, Agapetry Creations LLC
+ * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
  * 
  */
 if ( ! class_exists('PP_User') ) {
@@ -163,10 +163,6 @@ class PP_User extends WP_User {
 	}
 
 	function get_site_roles( $args = array() ) {
-		//$defaults = array( 'force_refresh' => false );
-		//$args = array_merge( $defaults, (array) $args );
-		//extract($args, EXTR_SKIP);
-
 		global $wpdb, $pp_role_defs;
 		
 		$u_g_clause = $this->get_usergroups_clause( 'uro', array( 'context' => 'roles' ) );

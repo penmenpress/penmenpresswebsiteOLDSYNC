@@ -6,7 +6,10 @@ class PP_AdminRoles {
 	// * If a non-Admin user has cap, they are still required to have edit_published and edit_others (if applicable) for the post type
 	public static function can_set_exceptions( $operation, $for_item_type, $args ) {
 		$defaults = array( 'item_id' => 0, 'via_item_source' => 'post', 'via_item_type' => '', 'for_item_source' => 'post' );
-		extract( array_merge( $defaults, $args ), EXTR_SKIP );
+		$args = array_merge( $defaults, $args );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		if ( ! $is_administrator = pp_is_user_administrator() ) {
 			$enabled = ( 'read' == $operation ) ? pp_get_option( 'non_admins_set_read_exceptions' ) : pp_get_option( 'non_admins_set_edit_exceptions' );
@@ -49,7 +52,9 @@ class PP_AdminRoles {
 
 		$defaults = array( 'plural' => false, 'slug_fallback' => true, 'include_warnings' => false );
 		$args = array_merge( $defaults, $args );
-		extract( $args, EXTR_SKIP );
+		foreach( array_keys( $defaults ) as $var ) {
+			$$var = $args[$var];
+		}
 		
 		pp_init_cap_caster();
 		

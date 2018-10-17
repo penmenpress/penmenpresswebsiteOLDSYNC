@@ -100,9 +100,11 @@ class PP_PostEditUI {
 	}
 	
 	function draw_settings_ui( $object, $box ) {
-		if ( $type_obj = get_post_type_object( $object->post_type ) ) :?>
+		if ( $type_obj = get_post_type_object( $object->post_type ) ) :
+		?>
 			<label for="pp_enable_post_type"><input type="checkbox" name="pp_enable_post_type" id="pp_enable_post_type" /> <?php printf( __( 'enable custom permissions for %s', 'pp' ), $type_obj->labels->name );?></label>
-		<?php endif;
+		<?php 
+		endif;
 	}
 	
 	// wrapper function so we don't have to load item_roles_ui class just to register the metabox
@@ -148,7 +150,8 @@ jQuery(document).ready( function($) {
 });
 /* ]]> */
 </script>
-		<?php endif;
+		<?php 
+		endif;
 	} // end function
 
 } // end class
