@@ -1,10 +1,6 @@
 <?php
 /*theme customizer*/
 function elanzalite_customize_register( $wp_customize ) {
-    if (!shortcode_exists( 'themehunk-customizer-elanzalite' ) ):
-        $obj = New Elanzalite_Plugin();
-        $obj->active();
-    endif;
      //  =============================
      //  = Genral Settings     =
      //  =============================

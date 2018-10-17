@@ -57,16 +57,6 @@ function elanzalite_notice_ignore() {
 // plugin install
 
 class Elanzalite_Plugin {
-  function active(){
-    if(!get_option( "thunk_customizer_disable_popup")):
-    add_action('customize_controls_print_styles', array($this,'elanzalite_popup_styles'));
-    add_action('customize_controls_print_footer_scripts',array(__CLASS__,'popup_message'));
-    add_action('wp_ajax_customizer_disable_popup', array(__CLASS__,'customizer_disable_popup'));
-    add_action( 'customize_controls_enqueue_scripts', array($this,'elanzalite_popup_scripts'));
-    endif;
-
-  }
-
 function elanzalite_active_plugin(){
         $plugin_slug = 'themehunk-customizer';
         $active_file_name =  $plugin_slug.'/'.$plugin_slug.'.php';
@@ -100,25 +90,6 @@ function elanzalite_active_plugin(){
                 }
     return '<a href="'.esc_url( $install_url ).'" data-slug="'.esc_attr( $plugin_slug ).'" class="'.esc_attr( $button_class ).'">'.$button_txt.'</a>';
 }
-
-function popup_message() {
-    require get_parent_theme_file_path('/inc/customizer-popup.php');
-} 
-
-function elanzalite_popup_styles() {
-    wp_enqueue_style('elanzalite_customizer_popup', get_template_directory_uri() . '/inc/customizer_popup_styles.css');
-}
-
-function elanzalite_popup_scripts() {
-    wp_enqueue_script( 'elanzalite_customizer_popup', get_template_directory_uri() . '/inc/customizer.js', array("jquery"), '', true  );
-}
-
-
-function customizer_disable_popup(){
-      $value = intval(@$_POST['value']);
-      update_option( "thunk_customizer_disable_popup", $value );
-      die();
-  }
 
 }
 
