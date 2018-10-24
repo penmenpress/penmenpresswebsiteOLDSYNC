@@ -149,7 +149,7 @@ class Jetpack_Widget_Authors extends WP_Widget {
 					echo get_avatar( $author->ID, $instance['avatar_size'], '', true ) . ' ';
 				}
 
-				echo '<strong>' . esc_html( $author->display_name ) . '</strong>';
+				echo '<strong>' . esc_html( $author->first_name ) . '</strong>';
 			}
 
 			if ( 0 == $instance['number'] ) {
