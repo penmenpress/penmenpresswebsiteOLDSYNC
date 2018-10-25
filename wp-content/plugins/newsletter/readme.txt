@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated,mailing list
 Requires at least: 3.4.0
 Tested up to: 4.9.8
-Stable tag: 5.7.1
+Stable tag: 5.7.3
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -12,16 +12,23 @@ Add a real newsletter system to your blog. For free. With unlimited newsletters 
 Newsletter is a **real newsletter system** for your WordPress blog: perfect for list building, you can easily create,
 send and track e-mails, headache-free. It just works out of box!
 
+= Find Us =
+
+Newsletter is a continuously evolving plugin. Stay tuned following us on
+[Facebook](https://www.facebook.com/thenewsletterplugin/) or [Twitter](https://twitter.com/newsletterwp).
+
 = Main Features =
 
 * **Unlimited subscribers** with statistics 
-* **Unlimited newsletter** with tracking
+* **Unlimited newsletters** with tracking
 * **Subscription spam check** with domain/ip black lists, Akismet, captcha
 * **Delivery speed** fine control (from 12 emails per hour to as much as your blog can manage)
+* **Drag and drop composer** with responsive email layout
 * [WPML ready](https://www.thenewsletterplugin.com/documentation/multilanguage)
+* [Polylang ready](https://www.thenewsletterplugin.com/documentation/multilanguage)
+* [Translatepress ready](https://www.thenewsletterplugin.com/documentation/multilanguage)
 * [GDPR ready](https://www.thenewsletterplugin.com/documentation/gdpr-compliancy) 
 * **Multi-list targeting** with list combinations like all in, at least one, not in and so on
-* **Drag and drop composer** with responsive email layout
 * Customizable **subscription widget**, **page** or **custom form**
 * Wordpress User Registration **seamless integration**
 * **Single** And **Double Opt-In** plus privacy checkbox for EU laws compliance
@@ -107,6 +114,18 @@ Thank you, The Newsletter Team
 3. The Reports extension
 
 == Changelog ==
+
+= 5.7.3 =
+
+* Fixed block padding warning
+* Fixed lists display on import panel
+* Fixed lists display on targeting panel when in multilanguage mode
+
+= 5.7.2 =
+
+* Improvements on posts block
+* New hero block layout
+* Transaltepress extension compatibility pack
 
 = 5.7.1 =
 

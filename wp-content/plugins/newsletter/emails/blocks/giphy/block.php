@@ -16,8 +16,8 @@ $default_options = array(
     'font_family'=>$font_family,
     'font_size'=>13,
     'color'=>'#999999',
-    'block_padding_top'=>'15px',
-    'block_padding_bottom'=>'15px',
+    'block_padding_top'=>15,
+    'block_padding_bottom'=>15,
     'block_padding_left'=>0,
     'block_padding_right'=>0
 );

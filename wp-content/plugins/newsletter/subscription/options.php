@@ -169,7 +169,7 @@ if ($controls->is_action()) {
                         </tr>
                     </table>
                     <?php } else { ?>
-                    <p>Switch to your main language to manage these options.</p>
+                    <p>Switch to "All languages" to manage these options.</p>
                     <?php } ?>
                     
                 </div>

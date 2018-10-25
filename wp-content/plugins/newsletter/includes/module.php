@@ -47,6 +47,22 @@ abstract class TNP_Email {
     
 }
 
+/**
+ * @property string $id Theme identifier
+ * @property string $dir Absolute path to the theme folder
+ * @property string $name Theme name
+ **/
+class TNP_Theme {
+    var $dir;
+    var $name;
+    
+    public function get_defaults() {
+        @include $this->dir . '/theme-defaults.php';
+        if (!isset($theme_defaults) || !is_array($theme_defaults)) return array();
+        return $theme_defaults;
+    }
+}
+
 class NewsletterModule {
 
     /**
@@ -1155,8 +1171,8 @@ class NewsletterModule {
     }
 
     /**
-     * Add to a destination url the parameters to identify the user, the email and to show
-     * an alert message, if required. The parameters and them managed by the [newsletter] shortcode.
+     * Add to a destination URL the parameters to identify the user, the email and to show
+     * an alert message, if required. The parameters are then managed by the [newsletter] shortcode.
      * 
      * @param string $url If empty the standard newsletter page URL is used (usually it is empty, but sometime a custom URL has been specified)
      * @param string $message_key The message identifier
@@ -1212,7 +1228,7 @@ class NewsletterModule {
         }
         return $url;
     }
-    
+
     function get_subscribe_url() {
         return $this->build_action_url('s');
     }
@@ -1302,7 +1318,7 @@ class NewsletterModule {
 
         return $this->get_user($user);
     }
-    
+
     /**
      * 
      * @global wpdb $wpdb
@@ -1313,11 +1329,11 @@ class NewsletterModule {
         global $wpdb;
 
         $token = $this->get_token();
-        
+
         $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set token=%s where id=%d limit 1", $token, $user->id));
 
         return $this->get_user($user);
-    }    
+    }
 
     /**
      * Create a log entry with the meaningful user data. 
@@ -1373,7 +1389,7 @@ class NewsletterModule {
     function get_user_by_wp_user_id($wp_user_id, $format = OBJECT) {
         return $this->store->get_single_by_field(NEWSLETTER_USERS_TABLE, 'wp_user_id', $wp_user_id, $format);
     }
-    
+
     /**
      * Returns the user language IF there is a supported mutilanguage plugin installed.
      * @param TNP_User $user
@@ -1734,12 +1750,13 @@ class NewsletterModule {
      * @return string The language code
      */
     function get_current_language($user = null) {
+        global $TRP_LANGUAGE, $current_user;
         // TODO: Check if the blog is multilanguage?
-        
+
         if ($user && $user->language) {
             return $user->language;
         }
-        
+
         if (class_exists('SitePress')) {
             $current_language = apply_filters('wpml_current_language', '');
             if ($current_language == 'all') {
@@ -1750,15 +1767,19 @@ class NewsletterModule {
         if (function_exists('pll_current_language')) {
             return pll_current_language();
         }
-        return '';
+        
+        $current_language = apply_filters('newsletter_current_language', '');
+
+        return $current_language;
     }
 
     function get_default_language() {
         if (class_exists('SitePress')) {
             return $current_language = apply_filters('wpml_current_language', '');
-        }
-        if (function_exists('pll_default_language')) {
+        } else if (function_exists('pll_default_language')) {
             return pll_default_language();
+        } else if (class_exists('TRP_Translate_Press')) {
+            // TODO: Find the default language
         }
         return '';
     }
@@ -1770,45 +1791,49 @@ class NewsletterModule {
     function is_default_language() {
         return $this->get_current_language() == $this->get_default_language();
     }
-    
+
     /**
-     * Returns an array od languages with key the language code and value the language name.
+     * Returns an array of languages with key the language code and value the language name.
      * An empty array is returned if no language is available.
      */
     function get_languages() {
         $language_options = array();
+
         if (class_exists('SitePress')) {
             $languages = apply_filters('wpml_active_languages', null);
             foreach ($languages as $language) {
                 $language_options[$language['language_code']] = $language['translated_name'];
             }
+            return $language_options;
         } else if (function_exists('icl_get_languages')) {
             $languages = icl_get_languages();
-            foreach ($languages as $code=>$language) {
+            foreach ($languages as $code => $language) {
                 $language_options[$code] = $language['native_name'];
             }
-        }
-        
-        return $language_options;
+            return $language_options;
+        } 
+
+        return apply_filters('newsletter_languages', $language_options);
     }
-    
+
     function get_language_label($language) {
         $languages = $this->get_languages();
-        if (isset($languages[$language])) return $languages[$language];
+        if (isset($languages[$language]))
+            return $languages[$language];
         return '';
-        
     }
 
     function switch_language($language) {
         if (class_exists('SitePress')) {
-            if (empty($language)) $language = 'all';
+            if (empty($language))
+                $language = 'all';
             do_action('wpml_switch_language', $language);
             return;
         }
     }
 
     function is_multilanguage() {
-        return class_exists('SitePress') || function_exists('pll_default_language');
+        return class_exists('SitePress') || function_exists('pll_default_language') || class_exists('TRP_Translate_Press');
     }
 
     function get_posts($filters = array(), $language = '') {

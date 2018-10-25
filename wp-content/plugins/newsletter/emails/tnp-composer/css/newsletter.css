@@ -40,7 +40,7 @@ table{border-collapse:collapse !important;}
 
     img[class="img-max"]{
         max-width: 100% !important;
-        width: 100% !important;
+        /*width: 100% !important;*/
         height:auto !important;
     }
 

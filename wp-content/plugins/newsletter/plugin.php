@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.7.1
+  Version: 5.7.3
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -14,7 +14,7 @@
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.7.1');
+define('NEWSLETTER_VERSION', '5.7.3');
 
 global $newsletter, $wpdb;
 
@@ -377,7 +377,7 @@ class Newsletter extends NewsletterModule {
                 wp_enqueue_script('tnp-jquery-vmap-world', 'https://cdnjs.cloudflare.com/ajax/libs/jqvmap/1.5.1/maps/jquery.vmap.world.js', array('tnp-jquery-vmap'));
                 wp_enqueue_style('tnp-jquery-vmap', 'https://cdnjs.cloudflare.com/ajax/libs/jqvmap/1.5.1/jqvmap.min.css');
 
-                wp_register_script('tnp-chart', 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js', array('jquery'));
+                wp_register_script('tnp-chart', 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js', array('jquery'));
 
                 $dismissed = get_option('newsletter_dismissed', array());
 
@@ -418,30 +418,6 @@ class Newsletter extends NewsletterModule {
             die();
         }
     }
-    
-//    function hook_site_transient_update_plugins($value) {
-//        //return null;
-//        //var_dump($value);
-//        //die('xxx');
-//        if (!isset($value->response['newsletter/plugin.php'])) {
-//         $value->response['newsletter/plugin.php'] = $value->no_update['newsletter/plugin.php'];   
-//        }
-//        
-//        // Add caching
-//        $response = wp_remote_get('http://plugins.svn.wordpress.org/newsletter/');
-//        $body = wp_remote_retrieve_body($response);
-//        
-//        $x = strpos($body, 'Revision');
-//        $x += 9;
-//        $y = strpos($body, ':', $x);
-//        $version = substr($body, $x, $y-$x);
-//        $value->checked['newsletter/plugin.php'] = $version;
-//        $value->response['newsletter/plugin.php']->new_version = $version;
-//        $value->response['newsletter/plugin.php']->package = 'https://downloads.wordpress.org/plugin/newsletter.zip';
-//        
-//        return $value;
-//
-//    }
 
     function hook_admin_notices() {
         // Check of Newsletter dedicated page

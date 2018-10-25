@@ -12,8 +12,8 @@
 $default_options = array(
     'color'=>'#dddddd',
     'height'=>1,
-    'block_padding_top'=>'20px',
-    'block_padding_bottom'=>'20px'
+    'block_padding_top'=>20,
+    'block_padding_bottom'=>20
     
 );
 
