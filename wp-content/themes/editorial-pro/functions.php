@@ -209,3 +209,89 @@ require get_template_directory() . '/inc/editorial-dynamic-styles.php';
  * Load demo data importer file
  */
 require get_template_directory() . '/inc/import/mt-importer.php';
+function restrict_edit_custom_status_posts( $allcaps, $cap, $args ) {
+
+    // Bail out if we're not asking to edit a post ...
+    if( 'edit_post' != $args[0]
+        // ... or user is admin
+        || !empty( $allcaps['manage_options'] )
+        // ... or user already cannot edit the post
+        || empty( $allcaps['edit_posts'] ))
+        return $allcaps;
+
+    // Load the post data:
+    $post = get_post( $args[2] );
+
+	if( empty( $allcaps['caneditaftersenttoseceditor']) ){
+    // If post have custom status
+    if( ('send-to-a-and-e' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+	if( ('send-to-abroad' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+	if( ('send-to-news' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+	if( ('send-to-opinion' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+	if( ('send-to-sports' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }}
+	if( empty( $allcaps['caneditaftersenttocopyeditor']) ){
+	if( ('pending-copy-editor' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }}
+	if( empty( $allcaps['caneditaftersenttoeic']) ){
+	if( ('pending-eic-review' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+	if( ('editor-letter-queue' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+	if( ('pending-scheduling' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+		
+			if( ('send-to-club-org' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+		if( ('send-to-april-fools' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }
+	}
+	if( empty( $allcaps['caneditaftersenttolayout']) ){
+	if( ('pending-layout' == $post->post_status ) ) {
+    // Then disallow editing
+    $allcaps["edit_posts"] = FALSE;
+        return $allcaps;
+    }	
+	}
+
+    return $allcaps;
+}
+
+add_filter( 'user_has_cap', restrict_edit_custom_status_posts, 10, 3 );
