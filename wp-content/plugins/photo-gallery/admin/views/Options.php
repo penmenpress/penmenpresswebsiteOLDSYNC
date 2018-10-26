@@ -243,6 +243,16 @@ class OptionsView_bwg extends AdminView_bwg {
               </div>
               <div class="wd-box-content wd-width-100">
                 <div class="wd-group">
+                  <label class="wd-label"><?php _e('Enable Google fonts', BWG()->prefix); ?></label>
+                  <div class="bwg-flex">
+                    <input type="radio" name="enable_google_fonts" id="enable_google_fonts_1" value="1" <?php if ($row->enable_google_fonts) echo 'checked="checked"'; ?> /><label for="enable_google_fonts_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                    <input type="radio" name="enable_google_fonts" id="enable_google_fonts_0" value="0" <?php if (!$row->enable_google_fonts) echo 'checked="checked"'; ?> /><label for="enable_google_fonts_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                  </div>
+                  <p class="description"><?php _e('If this option is disabled, Google fonts will not be included in your pages.', BWG()->prefix); ?></p>
+                </div>
+              </div>
+              <div class="wd-box-content wd-width-100">
+                <div class="wd-group">
                   <label class="wd-label"><?php _e('Enable HTML editor', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
                     <input type="radio" name="enable_wp_editor" id="enable_wp_editor_1" value="1" <?php if ($row->enable_wp_editor) echo 'checked="checked"'; ?> /><label for="enable_wp_editor_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>

@@ -18,6 +18,7 @@ class WD_BWG_Options {
   public $save_ip = 1;
   public $image_right_click = 0;
   public $use_inline_stiles_and_scripts = 0;
+  public $enable_google_fonts = 1;
   public $enable_wp_editor = 0;
   public $enable_seo = 1;
   public $read_metadata = 1;

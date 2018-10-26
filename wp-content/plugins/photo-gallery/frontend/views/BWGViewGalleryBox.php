@@ -97,11 +97,10 @@ class BWGViewGalleryBox {
 
     $image_id = (isset($_POST['image_id']) ? (int) $_POST['image_id'] : $current_image_id);
 
-    $comment_rows = $this->model->get_comment_rows_data($image_id);
-
-    $image_pricelist = $this->model->get_image_pricelist($image_id);
-    $pricelist_id = $image_pricelist ?  $image_pricelist : 0;
-
+    if ( function_exists('BWGEC') && $enable_image_ecommerce == 1 ) {
+      $image_pricelist = $this->model->get_image_pricelist($image_id);
+      $pricelist_id = $image_pricelist ? $image_pricelist : 0;
+    }
     $pricelist_data = $this->model->get_image_pricelists($pricelist_id);
 
     $params_array = array(
@@ -1296,12 +1295,11 @@ class BWGViewGalleryBox {
               <?php
 
           }
-		 if(function_exists('BWGEC') && $enable_image_ecommerce == 1  ){
-		 
-		   ?>				
-				<i title="<?php echo __('Ecommerce', BWG()->prefix); ?>" style="<?php echo $pricelist_id == 0 ? "display:none;": "";?>" class="bwg_ctrl_btn bwg_ecommerce fa fa-shopping-cart" ></i>
-		   <?php
-		  } 
+          if ( function_exists('BWGEC') && $enable_image_ecommerce == 1 ) {
+    		   ?>
+				  <i title="<?php echo __('Ecommerce', BWG()->prefix); ?>" style="<?php echo $pricelist_id == 0 ? "display:none;": "";?>" class="bwg_ctrl_btn bwg_ecommerce fa fa-shopping-cart" ></i>
+		       <?php
+		      }
           ?>
         </div>
         <div class="bwg_toggle_container">
@@ -1484,18 +1482,18 @@ class BWGViewGalleryBox {
             </div>
             <form id="bwg_comment_form" method="post" action="<?php echo $popup_url; ?>">
 				<p><label for="bwg_name"><?php echo __('Name', BWG()->prefix); ?> </label></p>
-				<p><input type="text" name="bwg_name" id="bwg_name" <?php echo ((get_current_user_id() != 0) ? 'readonly="readonly"' : ''); ?>
+				<p><input class="bwg-validate" type="text" name="bwg_name" id="bwg_name" <?php echo ((get_current_user_id() != 0) ? 'readonly="readonly"' : ''); ?>
                         value="<?php echo ((get_current_user_id() != 0) ? get_userdata(get_current_user_id())->display_name : $bwg_name); ?>" />
 				</p>
 				<p><span class="bwg_comment_error bwg_comment_name_error"></span></p>
               <?php if ($popup_enable_email) { ?>
 				<p><label for="bwg_email"><?php echo __('Email', BWG()->prefix); ?> </label></p>
-				<p><input type="text" name="bwg_email" id="bwg_email"
+				<p><input class="bwg-validate" type="text" name="bwg_email" id="bwg_email"
                         value="<?php echo ((get_current_user_id() != 0) ? get_userdata(get_current_user_id())->user_email : $bwg_email); ?>" /></p>
 				<p><span class="bwg_comment_error bwg_comment_email_error"></span></p>
               <?php } ?>
 				<p><label for="bwg_comment"><?php echo __('Comment', BWG()->prefix); ?> </label></p>
-				<p><textarea class="bwg_comment_textarea" name="bwg_comment" id="bwg_comment"></textarea></p>
+				<p><textarea class="bwg-validate bwg_comment_textarea" name="bwg_comment" id="bwg_comment"></textarea></p>
 				<p><span class="bwg_comment_error bwg_comment_textarea_error"></span></p>
               <?php if ( $popup_enable_captcha ) { ?>
 				<p><label for="bwg_captcha_input"><?php echo __('Verification Code', BWG()->prefix); ?></label></p>
@@ -1530,7 +1528,6 @@ class BWGViewGalleryBox {
 			  <p><span class="bwg_comment_error bwg_comment_privacy_policy_error"></span></p>
 			  <?php } ?>
 			  <p>
-
 				<input <?php echo ($privacy_policy_url) ? 'disabled="disabled"' : ''; ?> onclick="bwg_add_comment(); return false;" ontouchend="bwg_add_comment(); return false;" class="bwg_submit <?php echo ($privacy_policy_url) ? 'bwg-submit-disabled' : ''; ?>" type="submit"
 					 name="bwg_submit" id="bwg_submit" value="<?php echo __('Submit', BWG()->prefix); ?>" />
 			  </p>
@@ -1542,8 +1539,9 @@ class BWGViewGalleryBox {
             </form>
           <div id="bwg_added_comments">
             <?php
+            $comment_rows = $this->model->get_comment_rows_data($image_id);
             foreach ( $comment_rows as $comment_row ) {
-				echo $this->html_comments_block($comment_row);
+				      echo $this->html_comments_block($comment_row);
             }
             ?>
           </div>
@@ -1551,14 +1549,14 @@ class BWGViewGalleryBox {
       </div>
     </div>
     <?php }
-		if(function_exists('BWGEC') ){
-			$pricelist = $pricelist_data["pricelist"]; 
-			$download_items = $pricelist_data["download_items"]; 
-			$parameters = $pricelist_data["parameters"]; 
-			$options = $pricelist_data["options"]; 
-			$products_in_cart = $pricelist_data["products_in_cart"]; 
-			$pricelist_sections = $pricelist->sections ? explode("," , $pricelist->sections) : array();
-	?>
+    if ( function_exists('BWGEC') ) {
+      $pricelist = $pricelist_data["pricelist"];
+      $download_items = $pricelist_data["download_items"];
+      $parameters = $pricelist_data["parameters"];
+      $options = $pricelist_data["options"];
+      $products_in_cart = $pricelist_data["products_in_cart"];
+      $pricelist_sections = $pricelist->sections ? explode(",", $pricelist->sections) : array();
+      ?>
 			<div class="bwg_ecommerce_wrap bwg_popup_sidebar_wrap" id="bwg_ecommerce_wrap">
 				<div class="bwg_ecommerce_container bwg_popup_sidebar_container bwg_close">
 					<div id="ecommerce_ajax_loading" style="position:absolute;">

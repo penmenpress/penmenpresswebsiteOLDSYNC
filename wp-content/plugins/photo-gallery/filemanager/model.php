@@ -109,7 +109,6 @@ class FilemanagerModel {
         $file['is_dir'] = FALSE;
         $file['name'] = $file_name;
         $filename = substr($file_name, 0, strrpos($file_name, '.'));
-        $file['alt'] = str_replace("_", " ", $filename);
         $file['filename'] = str_replace("_", " ", $filename);
         $file_extension = explode('.', $file_name);
         $file['type'] = strtolower(end($file_extension));
@@ -132,6 +131,7 @@ class FilemanagerModel {
         $file['iso'] = $exif['iso'];
         $file['orientation'] = $exif['orientation'];
         $file['copyright'] = $exif['copyright'];
+        $file['alt'] = BWG()->options->read_metadata && $exif['title'] ? $exif['title'] : str_replace("_", " ", $filename);
         $file['tags'] = $exif['tags'];
         $files[] = $file;
       }

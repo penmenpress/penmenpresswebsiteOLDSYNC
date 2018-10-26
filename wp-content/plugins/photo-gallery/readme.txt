@@ -3,7 +3,7 @@ Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
 Tested up to: 4.9 
-Stable tag: 1.5.6
+Stable tag: 1.5.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -278,6 +278,14 @@ Choose whether to display random or the first/last specific number of images.
 
 
 == Changelog ==
+
+= 1.5.7 =
+* Fixed: Link in gallery/gallery group description.    
+* Fixed: Compatibility with Elementor tabs.    
+* Fixed: Compatibility with ajax load.    
+* Fixed: Sorting images on gallery edit page before saving gallery.    
+* Added: Disable Google fonts.   
+* Added: Get title from image metadata.  
 
 = 1.5.6 =
 * Fixed: Page scroll doesn't work after closing the lightbox on Edge browser.   

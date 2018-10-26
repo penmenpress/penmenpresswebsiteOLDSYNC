@@ -11,8 +11,56 @@ var bwg_params_ib = [];
 /* Carousel params */
 var bwg_params_carousel = [];
 
+jQuery.fn.extend({
+  hideShow: function (callback) {
+    this.checkForVisiblilityChange(callback);
+    return this;
+  },
+  checkForVisiblilityChange: function (callback) {
+    if (!(this.length >>> 0)) {
+      return undefined;
+    }
+    var elem, i = 0;
+    while ((elem = this[i++])) {
+      var curValue = jQuery(elem).is(":visible");
+      (elem.lastVisibility === undefined) && (elem.lastVisibility = curValue);
+      (curValue !== elem.lastVisibility) && (
+        elem.lastVisibility = curValue,
+        (typeof callback === "function") && (
+          callback.apply(this, [new jQuery.Event('visibilityChanged'), curValue ? "shown" : "hidden"])
+        ),
+          (function (elem, curValue) {
+            setTimeout(function () {
+              jQuery(elem).trigger('visibilityChanged', [curValue ? "shown" : "hidden"])
+            }, 10)
+          })(elem, curValue)
+      )
+    }
+    (function (that, a) {
+      setTimeout(function () {
+        that.checkForVisiblilityChange.apply(that, a);
+      }, 10)
+    })(this, arguments)
+  }
+});
+
+/* Execute on ajax complete.*/
+jQuery(document).ajaxComplete(function () {
+  setTimeout(function () {
+    bwg_main_ready();
+  });
+});
+
 jQuery(document).ready(function () {
-  bwg_main_ready();
+  /* To bind only visible containers.*/
+  jQuery(".bwg_container").each(function() {
+    bwg_main_ready();
+    jQuery(this).hideShow(function(event, visibility) {
+      if ( visibility == 'shown' ) {
+        bwg_main_ready();
+      }
+    });
+  });
 });
 
 function bwg_main_ready(){

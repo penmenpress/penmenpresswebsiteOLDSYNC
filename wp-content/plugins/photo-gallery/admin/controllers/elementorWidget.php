@@ -25,7 +25,7 @@ class BWGElementor extends \Elementor\Widget_Base {
    * @return string Widget icon.
    */
   public function get_icon() {
-    return 'fa fa-camera';
+    return 'fa twbb-photo-gallery twbb-widget-icon';
   }
 
   /**

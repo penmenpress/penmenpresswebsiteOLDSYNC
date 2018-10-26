@@ -52,7 +52,7 @@ div[id^="bwg_container"] .SumoSelect.open > .CaptionCont {
   border: none;
 }
 
-div[id^="bwg_container"] a {
+div[id^="bwg_container"] .bwg-container a {
   border: none;
   box-shadow: none !important;
   outline: none;

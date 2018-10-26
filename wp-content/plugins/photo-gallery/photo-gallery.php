@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.5.6
+ * Version: 1.5.7
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/pricing/
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,8 +81,8 @@ final class BWG {
     $this->plugin_dir = WP_PLUGIN_DIR . "/" . plugin_basename(dirname(__FILE__));
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.5.6';
-    $this->db_version = '1.5.6';
+    $this->plugin_version = '1.5.7';
+    $this->db_version = '1.5.7';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
 
@@ -1244,11 +1244,13 @@ final class BWG {
       'jquery',
     );
 	  // Google fonts.
-    require_once(BWG()->plugin_dir . '/framework/WDWLibrary.php');
-    $google_fonts_link = WDWLibrary::get_all_used_google_fonts();
-    if ( !empty($google_fonts_link) ) {
-      wp_register_style($this->prefix . '_googlefonts', $google_fonts_link, null, null);
-      array_push($required_styles, $this->prefix . '_googlefonts');
+    if (BWG()->options->enable_google_fonts) {
+      require_once(BWG()->plugin_dir . '/framework/WDWLibrary.php');
+      $google_fonts_link = WDWLibrary::get_all_used_google_fonts();
+      if (!empty($google_fonts_link)) {
+        wp_register_style($this->prefix . '_googlefonts', $google_fonts_link, null, null);
+        array_push($required_styles, $this->prefix . '_googlefonts');
+      }
     }
 
     wp_register_script($this->prefix . '_sumoselect', BWG()->front_url . '/js/jquery.sumoselect.min.js', $required_scripts, '3.0.3', true);
@@ -1326,7 +1328,6 @@ final class BWG {
    */
   public function language_load() {
     load_plugin_textdomain($this->prefix, FALSE, basename(dirname(__FILE__)) . '/languages');
-    load_plugin_textdomain($this->prefix, FALSE, basename(dirname(__FILE__)) . '/languages/backend');
   }
 
   public function init_free_users_lib() {

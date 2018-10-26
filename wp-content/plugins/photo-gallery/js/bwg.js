@@ -409,8 +409,8 @@ function bwg_sort_images(sorting) {
   else {
     msg.addClass('wd-hide');
   }
-  spider_set_input_value('task', '');
-  spider_ajax_save('galleries_form');
+  spider_set_input_value('task', 'save');
+  spider_ajax_save('bwg_gallery');
 }
 
 /* Set value by id. */
