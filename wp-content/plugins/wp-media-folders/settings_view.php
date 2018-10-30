@@ -33,7 +33,8 @@ wp_enqueue_script('wp-media-folders-settings', plugins_url(null, __FILE__).'/ass
                 <li>
                     Even if the plugin will try its best to find and replace URLs of files in your database, depending on how other plugins deals with URLs, it may fail
                 </li>
-                <li><strong>Always make backups of your website before any modifications</strong></li>
+                <li>The process of replacing requires strong server performances and the more content you have the more powerful your server has to be</li>
+                <li><strong>Always make backups of your website before any modification</strong></li>
             </ul>
         </p>
         <a id="wpmfs-hide-disclaimer" class="button">I have read the disclaimer, hide it please.</a>

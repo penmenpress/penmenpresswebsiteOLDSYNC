@@ -483,10 +483,10 @@ class WPMediaFoldersHelper
                     $columns_query = array();
 
                     foreach ($columns as $column => $column_value) {
-                        $columns_query[] = '`' . $column . '` = replace(`' . esc_sql($column) . '`, "' . esc_sql($wp_uploads['baseurl'] .  $done_file['url']) . '", "' . esc_sql($wp_uploads['baseurl'] . $done_file['new_url']) . '")';
-
                         // Relative urls
                         $columns_query[] = '`' . $column . '` = replace(`' . esc_sql($column) . '`, "' . esc_sql($done_file['url']) . '", "' . esc_sql($done_file['new_url']) . '")';
+
+                        $columns_query[] = '`' . $column . '` = replace(`' . esc_sql($column) . '`, "' . esc_sql($wp_uploads['baseurl'] .  $done_file['url']) . '", "' . esc_sql($wp_uploads['baseurl'] . $done_file['new_url']) . '")';
                     }
 
                     $query = 'UPDATE `' . esc_sql($table) . '` SET ' . implode(',', $columns_query);
