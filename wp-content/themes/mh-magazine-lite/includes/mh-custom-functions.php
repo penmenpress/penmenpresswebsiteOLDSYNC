@@ -327,7 +327,7 @@ if (!function_exists('mh_magazine_lite_pagination')) {
 if (!function_exists('mh_magazine_lite_paginated_posts')) {
 	function mh_magazine_lite_paginated_posts($content) {
 		if (is_singular() && in_the_loop()) {
-			$content .= wp_link_pages(array('before' => '<div class="pagination mh-clearfix">', 'after' => '</div>', 'link_before' => '<span class="pagelink">', 'link_after' => '</span>', 'nextpagelink' => esc_html__('&raquo;', 'mh-magazine-lite'), 'previouspagelink' => esc_html__('&laquo;', 'mh-magazine-lite'), 'pagelink' => '%', 'echo' => 0));
+			$content .= wp_link_pages(array('before' => '<div class="pagination clear mh-clearfix">', 'after' => '</div>', 'link_before' => '<span class="pagelink">', 'link_after' => '</span>', 'nextpagelink' => esc_html__('&raquo;', 'mh-magazine-lite'), 'previouspagelink' => esc_html__('&laquo;', 'mh-magazine-lite'), 'pagelink' => '%', 'echo' => 0));
 		}
 		return $content;
 	}

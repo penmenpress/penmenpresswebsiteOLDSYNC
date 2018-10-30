@@ -5,7 +5,7 @@ Tags: one-column, two-columns, left-sidebar, right-sidebar, flexible-header, cus
 
 Requires at least: 4.6.0
 Tested up to: 4.9.8
-Stable tag: 2.8.5
+Stable tag: 2.8.6
 License: GPL v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,9 @@ License: Free Public Domain (GPL Compatible)
 Overview: http://demo.mh-themes.com/magazine/credits/
 
 == Changelog ==
+
+= v2.8.6 24-10-2018 =
+* Fixed minor alignment issue with paginated posts
 
 = v2.8.5 11-10-2018 =
 * Added support for Gutenberg editor
