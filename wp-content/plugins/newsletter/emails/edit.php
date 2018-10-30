@@ -234,19 +234,24 @@ if ($controls->is_action('test')) {
     } else {
         $users = NewsletterUsers::instance()->get_test_users();
         if (count($users) == 0) {
-            $controls->messages = '<strong>' . __('There are no test subscribers to send to', 'newsletter') . '</strong>';
+            $controls->errors = '' . __('There are no test subscribers to send to', 'newsletter') . 
+                    '. <a href="https://www.thenewsletterplugin.com/plugins/newsletter/subscribers-module#test" target="_blank"><strong>' . 
+                    __('Read more', 'newsletter') . '</strong></a>.';
         } else {
             Newsletter::instance()->send(Newsletter::instance()->get_email($email_id), $users);
             $controls->messages = __('Test newsletter sent to:', 'newsletter');
-            foreach ($users as &$user) {
+            foreach ($users as $user) {
                 $controls->messages .= ' ' . $user->email;
             }
-            $controls->messages .= '.';
+            $controls->messages .= '.<br>';
+            $controls->messages .= '<a href="https://www.thenewsletterplugin.com/documentation/subscribers#test" target="_blank"><strong>' . 
+                    __('Read more about test subscribers', 'newsletter') . '</strong></a>.<br>';
+            $controls->messages .= '<a href="https://www.thenewsletterplugin.com/documentation/email-sending-issues" target="_blank"><strong>' . __('Read more about delivery issues', 'newsletter') . '</strong></a>.';
         }
 
-        $controls->messages .= '<br>';
-        $controls->messages .= '<a href="https://www.thenewsletterplugin.com/plugins/newsletter/subscribers-module#test" target="_blank">' .
-                __('Read more about test subscribers', 'newsletter') . '</a>.';
+//        $controls->messages .= '<br>';
+//        $controls->messages .= '<a href="https://www.thenewsletterplugin.com/plugins/newsletter/subscribers-module#test" target="_blank">' .
+//                __('Read more about test subscribers', 'newsletter') . '</a>.';
     }
 }
 

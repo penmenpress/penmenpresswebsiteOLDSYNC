@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.7.3
+  Version: 5.7.4
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -14,7 +14,7 @@
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.7.3');
+define('NEWSLETTER_VERSION', '5.7.4');
 
 global $newsletter, $wpdb;
 
@@ -625,9 +625,11 @@ class Newsletter extends NewsletterModule {
             if (!$test) {
                 $wpdb->query("update " . NEWSLETTER_EMAILS_TABLE . " set sent=sent+1, last_id=" . $user->id . " where id=" . $email->id . " limit 1");
             }
+            
+            $user = apply_filters('newsletter_send_user', $user);
 
-            $m = $this->replace($email->message, $user, $email->id);
-            $mt = $this->replace($email->message_text, $user, $email->id);
+            $m = $this->replace($email->message, $user, $email);
+            $mt = $this->replace($email->message_text, $user, $email);
 
             $m = apply_filters('newsletter_message_html', $m, $email, $user);
 
@@ -638,24 +640,14 @@ class Newsletter extends NewsletterModule {
             $s = $this->replace($email->subject, $user);
             $s = apply_filters('newsletter_message_subject', $s, $email, $user);
 
-            if (!empty($user->wp_user_id)) {
-                $this->logger->debug('send> Has wp_user_id: ' . $user->wp_user_id);
-                // TODO: possibly name extraction
-                $wp_user_email = $wpdb->get_var($wpdb->prepare("select user_email from $wpdb->users where id=%d limit 1", $user->wp_user_id));
-                if (!empty($wp_user_email)) {
-                    $user->email = $wp_user_email;
-                    $this->logger->debug('send> Email replaced with: ' . $user->email);
-                } else {
-                    $this->logger->debug('send> This WP user has not an email');
-                }
-            }
-
             $r = $this->mail($user->email, $s, array('html' => $m, 'text' => $mt), $headers, true);
 
             $status = $r ? 0 : 1;
 
-            $this->save_sent($user, $email);
-
+            if (!$test) {
+                $this->save_sent($user, $email);
+            }
+            
             $this->email_limit--;
             $count++;
         }
