@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
 Tested up to: 4.9.8
-Stable tag: 0.40.1
+Stable tag: 0.40.2
 Requires PHP: 5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -123,6 +123,16 @@ This plugin does not collect or process any personal user data.
 
 == Changelog ==
 
+= 0.40.2 =
+
+BUG FIXES
+
+* Fixed an occasional error when Gutenberg is not installed
+
+OTHER
+
+* Get the latest 100 posts to Gutenberg block
+
 = 0.40.1 =
 
 OTHER
@@ -145,30 +155,6 @@ OTHER
 * Enhanced keyword search on settings home.
 * Some refactoring and removed old WPML function calls.
 * Encouragement in system information to upgrade PHP if using an outdated version.
-
-= 0.39.2 =
-
-OTHER
-
-* Search for settings on Tag Groups home menu page.
-
-= 0.39.1 =
-
-BUG FIXES
-
-* Fixed error for elderly server environments.
-
-= 0.39 =
-
-FEATURES
-
-* Improved settings pages with FAQ and debugging options.
-
-OTHER
-
-* Updated links to documentation.
-* Refactoring and fixes that are relevant for the premium plugin.
-* Improved selection of taxonomies.
 
 
 = Older Versions =

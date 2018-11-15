@@ -211,7 +211,7 @@ class tagGroupsTabbedCloudParameters extends Component {
   * Loading Posts
   */
   getPostsFromApi() {
-    apiFetch( { path: siteUrl + '/wp-json/wp/v2/posts' } ).then( fullPosts => {
+    apiFetch( { path: siteUrl + '/wp-json/wp/v2/posts?per_page=100' } ).then( fullPosts => {
       if ( fullPosts ) {
         let posts = [
           { value: -1, label: __('off') },

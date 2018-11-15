@@ -70,10 +70,15 @@ function chatty_mango_tag_groups_editor_assets() {
 		// filemtime( plugin_dir_path( __FILE__ ) . 'editor.css' ) // Version: filemtime — Gets file modification time.
 	);
 
-	wp_add_inline_script(
-		'wp-i18n',
-		'wp.i18n.setLocaleData('.json_encode(gutenberg_get_jed_locale_data('tag-groups')).');'
-	);
+	if ( function_exists( 'gutenberg_get_jed_locale_data' ) ) {
+
+		wp_add_inline_script(
+			'wp-i18n',
+			'wp.i18n.setLocaleData(' . json_encode( gutenberg_get_jed_locale_data('tag-groups') ) . ');'
+		);
+
+	}
+
 } // End function chatty_mango_tag_groups_editor_assets().
 
 // Hook: Editor assets.
