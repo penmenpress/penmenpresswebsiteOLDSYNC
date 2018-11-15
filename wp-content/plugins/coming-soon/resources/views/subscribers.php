@@ -2,7 +2,7 @@
     <div id="seed_csp4_header">
         <h1 style="margin-bottom: 10px;">
             <img style="width:150px;margin-right:10px;margin-bottom: -2px;vertical-align: text-bottom;" src="<?php echo SEED_CSP4_PLUGIN_URL ?>public/images/seedprod-logo.png"> 
-            Coming Soon Page and Maitenance Mode Lite
+            Coming Soon Page and Maintenance Mode Lite
             <span class="seed_csp4_version" style="font-size: 10px;"> Version <?php echo SEED_CSP4_VERSION; ?></span>
         </h1>
         <h2 class="nav-tab-wrapper" style="padding-left:20px">
