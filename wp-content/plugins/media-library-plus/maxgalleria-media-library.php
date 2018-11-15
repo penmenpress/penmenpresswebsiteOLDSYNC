@@ -3,7 +3,7 @@
 Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.2.6
+Version: 4.3.1
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -40,7 +40,7 @@ class MaxGalleriaMediaLib {
 
 	public function set_global_constants() {	
 		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_KEY', 'maxgalleria_media_library_version');
-		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.2.6');
+		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.3.1');
 		define('MAXGALLERIA_MEDIA_LIBRARY_IGNORE_NOTICE', 'maxgalleria_media_library_ignore_notice');
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME);
@@ -185,7 +185,9 @@ class MaxGalleriaMediaLib {
 			doc.setAttribute('data-useragent', navigator.userAgent);
 		</script>
   <?php
-		
+  
+    global $current_screen;
+  		
     if(isset($_REQUEST['page'])) {
       if($_REQUEST['page'] === 'media-library-folders' || 
 				 $_REQUEST['page'] === 'mlp-support' ||
@@ -231,26 +233,29 @@ class MaxGalleriaMediaLib {
  }
   
   public function enqueue_admin_print_scripts() {
-    global $pagenow;
+    global $pagenow, $current_screen;
 		
-		if (in_array($pagenow, array('post.php', 'page.php', 'post-new.php', 'post-edit.php', 'uploads.php', 'admin.php'))) {
-		
-        wp_register_script( 'loader-folders', MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_URL . '/js/mgmlp-loader.js', array( 'jquery' ), '', true );
+    if (isset( $current_screen ) && $current_screen->base != 'all-import_page_pmxi-admin-import' && $current_screen->base != 'pmxi-admin-import') {
+      
+      if (in_array($pagenow, array('post.php', 'page.php', 'post-new.php', 'post-edit.php', 'uploads.php', 'admin.php'))) {
 
-        wp_localize_script( 'loader-folders', 'mgmlp_ajax', 
-              array( 'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                     'confirm_file_delete' => __('Are you sure you want to delete the selected files?', 'maxgalleria-media-library' ),
-                     'nothing_selected' => __('No items were selected.', 'maxgalleria-media-library' ),
-                     'no_images_selected' => __('No images were selected.', 'maxgalleria-media-library' ),
-                     'no_quotes' => __('Folder names cannot contain single or double quotes.', 'maxgalleria-media-library' ),
-                     'no_spaces' => __('Folder names cannot contain spaces.', 'maxgalleria-media-library' ),
-                     'valid_file_name' => __('Please enter a valid file name with no spaces.', 'maxgalleria-media-library' ),
-                     'nonce'=> wp_create_nonce(MAXGALLERIA_MEDIA_LIBRARY_NONCE))
-                   ); 
+          wp_register_script( 'loader-folders', MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_URL . '/js/mgmlp-loader.js', array( 'jquery' ), '', true );
 
-        wp_enqueue_script('loader-folders');
-			
-		}
+          wp_localize_script( 'loader-folders', 'mgmlp_ajax', 
+                array( 'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                       'confirm_file_delete' => __('Are you sure you want to delete the selected files?', 'maxgalleria-media-library' ),
+                       'nothing_selected' => __('No items were selected.', 'maxgalleria-media-library' ),
+                       'no_images_selected' => __('No images were selected.', 'maxgalleria-media-library' ),
+                       'no_quotes' => __('Folder names cannot contain single or double quotes.', 'maxgalleria-media-library' ),
+                       'no_spaces' => __('Folder names cannot contain spaces.', 'maxgalleria-media-library' ),
+                       'valid_file_name' => __('Please enter a valid file name with no spaces.', 'maxgalleria-media-library' ),
+                       'nonce'=> wp_create_nonce(MAXGALLERIA_MEDIA_LIBRARY_NONCE))
+                     ); 
+
+          wp_enqueue_script('loader-folders');
+
+      }
+    }
 //    if(isset($_REQUEST['page'])) {
 //      if($_REQUEST['page'] === 'media-library-folders') {
 //        wp_register_script( 'loader-folders', MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_URL . '/js/mgmlp-loader.js', array( 'jquery' ), '', true );
@@ -1105,7 +1110,7 @@ and pm.meta_key = '_wp_attached_file'";
 	where post_type = 'maxgallery' and post_status = 'publish'
 	and $wpdb->prefix" . "postmeta.meta_key = 'maxgallery_type'
 	and $wpdb->prefix" . "postmeta.meta_value = 'image'
-	order by post_name";
+	order by LOWER(post_name)";
 							//echo $sql;
 							$gallery_list = "";
 							$rows = $wpdb->get_results($sql);
@@ -1357,7 +1362,7 @@ and pm.meta_key = '_wp_attached_file'";
         break;
       
       case '1': //order by name
-        $order_by = 'post_title';
+        $order_by = 'LOWER(post_title)';
         break;      
     }
 		
@@ -1450,7 +1455,7 @@ and pm.meta_key = '_wp_attached_file'";
         break;
       
       case '1': //order by name
-        $order_by = 'attached_file';
+        $order_by = 'LOWER(attached_file)';
         break;      
     }
     
@@ -1504,7 +1509,7 @@ and pm.meta_key = '_wp_attached_file'";
         break;
       
       case '1': //order by name
-        $order_by = 'post_title';
+        $order_by = 'LOWER(post_title)';
         break;      
     }
     
@@ -1764,7 +1769,7 @@ order by folder_id";
  				//'file' : { 'valid_children' : [], 'icon' : 'file' }
 			},
 			'sort' : function(a, b) {
-				return this.get_type(a) === this.get_type(b) ? (this.get_text(a) > this.get_text(b) ? 1 : -1) : (this.get_type(a) >= this.get_type(b) ? 1 : -1);
+				return this.get_type(a).toLowerCase() === this.get_type(b).toLowerCase() ? (this.get_text(a).toLowerCase() > this.get_text(b).toLowerCase() ? 1 : -1) : (this.get_type(a).toLowerCase() >= this.get_type(b).toLowerCase() ? 1 : -1);
 			},			
 				"contextmenu":{
 				  "select_node":false,

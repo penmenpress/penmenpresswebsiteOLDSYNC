@@ -96,6 +96,8 @@
                 <p><?php _e('php_value max_execution_time 300', 'maxgalleria-media-library' ); ?></p>
                 <p><?php _e('Which will raise the maximum execution time to five minutes.', 'maxgalleria-media-library' ); ?></p>
 
+                <h4><?php _e('How to Upload Multiple Files', 'maxgalleria-media-library' ); ?></h4>
+                <p><?php _e('Users can upload multiple files by using drag and drop. When the Add Files button is click it revels the file upload area either single or multiple files can be highlight can be dragged from you computer’s file manager and dropped into the file uploads areas.', 'maxgalleria-media-library' ); ?></p>
                 
               </div>
               

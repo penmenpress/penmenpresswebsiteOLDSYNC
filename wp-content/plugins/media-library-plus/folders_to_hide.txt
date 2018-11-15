@@ -9,6 +9,7 @@ beaver-builder-plugin
 bpfb
 buddypress
 elementor
+et_temp
 events-manager
 galleries
 gppro
@@ -17,9 +18,11 @@ h5p
 html_to_wp
 group-avatars
 group-documents
+ithemes-security
 iw-backup
 js_composer
 magictoolbox_cache
+mailpoet
 maxbuttons
 maxbuttons-pro
 mg-backup
@@ -38,6 +41,7 @@ wordpress-popular-posts
 wpallimport
 wpallexport
 wpcf7_captcha
+wpdiscuz
 wp-clone
 wp-post-to-pdf-cache
 wp-clone
