@@ -20,7 +20,7 @@ class NewsletterProfile extends NewsletterModule {
 
     function __construct() {
         parent::__construct('profile', '1.1.0');
-        add_action('init', array($this, 'hook_init'));
+        add_action('init', array($this, 'hook_init'), 1);
         add_action('wp_loaded', array($this, 'hook_wp_loaded'));
         add_shortcode('newsletter_profile', array($this, 'shortcode_newsletter_profile'));
     }

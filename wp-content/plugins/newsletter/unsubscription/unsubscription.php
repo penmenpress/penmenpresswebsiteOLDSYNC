@@ -20,7 +20,7 @@ class NewsletterUnsubscription extends NewsletterModule {
 
     function __construct() {
         parent::__construct('unsubscription', '1.0.0');
-        add_action('init', array($this, 'hook_init'));
+        add_action('init', array($this, 'hook_init'), 1);
         add_action('wp_loaded', array($this, 'hook_wp_loaded'));
     }
 

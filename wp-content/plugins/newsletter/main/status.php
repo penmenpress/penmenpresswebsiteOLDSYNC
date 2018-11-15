@@ -572,6 +572,21 @@ $options = $module->get_options('status');
                             <?php } ?>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            Alternate cron
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <?php if (defined('ALTERNATE_WP_CRON') && ALTERNATE_WP_CRON) { ?>
+                                Using the alternate cron trigger.
+                            <?php } else { ?>
+
+                            <?php } ?>
+                        </td>
+                    </tr>
 
                     <tr>
                         <td>
