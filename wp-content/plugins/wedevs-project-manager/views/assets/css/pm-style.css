@@ -127,7 +127,7 @@
   border-radius: 3px;
   border-top-right-radius: 0;
   height: 90vh;
-  top: 32px;
+  top: 37px;
   position: relative;
 }
 #wedevs-project-manager .popup-mask .popup-container .popup-body {
@@ -188,7 +188,7 @@
 #wedevs-project-manager .pm-multiselect-top .assign-to {
   font-size: 13px;
   color: #000;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   display: block;
 }
 #wedevs-project-manager .pm-multiselect-top .multiselect__single {
@@ -283,7 +283,7 @@
   position: absolute;
   top: -8px;
   width: 236px;
-  left: 40px;
+  left: 35px;
   z-index: 9999;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   padding: 15px 0;
@@ -317,6 +317,9 @@
   color: #000;
   margin-bottom: 10px;
   display: block;
+}
+#wedevs-project-manager .pm-multiselect .multiselect__placeholder {
+  display: none;
 }
 #wedevs-project-manager .pm-multiselect .multiselect__content-wrapper {
   display: block !important;
@@ -498,11 +501,12 @@
   align-items: center;
   border: 1px solid #DEDEDE;
   border-radius: 3px;
-  font-size: 1vw;
+  font-size: 12px;
   padding: 5px 10px;
   color: #A5ACB1;
 }
-#wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .incomplete .icon-pm-incomplete {
+#wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .incomplete .icon-pm-incomplete,
+#wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .incomplete .pm-spinner {
   margin-right: 8px;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .incomplete:hover {
@@ -517,10 +521,11 @@
   padding: 5px 10px;
   border: 1px solid #7dd322;
   border-radius: 3px;
-  font-size: 1vw;
+  font-size: 12px;
   color: #788383;
 }
-#wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .completed .icon-pm-completed {
+#wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .completed .icon-pm-completed,
+#wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .completed .pm-spinner {
   margin-right: 8px;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .completed:hover {
@@ -530,7 +535,7 @@
   color: #83ed0e !important;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .created-by {
-  font-size: 1vw;
+  font-size: 12px;
   margin-left: auto;
 }
 #wedevs-project-manager #pm-single-task-wrap .task-title-wrap {
@@ -539,10 +544,16 @@
 #wedevs-project-manager #pm-single-task-wrap .task-title-wrap .task-title-text {
   font-size: 18px;
   font-weight: bold;
+  position: relative;
   color: #000000;
 }
 #wedevs-project-manager #pm-single-task-wrap .task-title-wrap .task-title-text .pm-task-title-field {
   width: 100%;
+}
+#wedevs-project-manager #pm-single-task-wrap .task-title-wrap .task-title-text .pm-spinner {
+  position: absolute;
+  top: 6px;
+  right: 4px;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-assigned-user {
   margin-right: 5px;
@@ -559,6 +570,11 @@
 #wedevs-project-manager #pm-single-task-wrap .assigne-users .pm-assigned-user a {
   display: inline-flex;
 }
+#wedevs-project-manager #pm-single-task-wrap .assigne-users #pm-multiselect-single-task {
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
 #wedevs-project-manager #pm-single-task-wrap .assigne-users .icon-pm-user {
   position: relative;
   font-size: 23px;
@@ -570,6 +586,17 @@
   margin-bottom: 20px;
   line-height: 0;
 }
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .pm-action-wrap .pm-task-recurrent {
+  margin-right: 10px;
+}
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .pm-action-wrap .pm-task-recurrent .icon-pm-loop:before {
+  color: #d4d6d6;
+  font-weight: 600;
+  cursor: pointer;
+}
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .pm-action-wrap .pm-task-recurrent .icon-pm-loop:hover:before {
+  color: #000;
+}
 #wedevs-project-manager #pm-single-task-wrap .option-icon-groups .icon-pm-unlock {
   color: #d4d6d6;
   margin-right: 5px;
@@ -578,22 +605,25 @@
 #wedevs-project-manager #pm-single-task-wrap .option-icon-groups .icon-pm-unlock:before {
   vertical-align: middle;
 }
-#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .icon-pm-calendar {
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups #pm-calendar-wrap {
   position: relative;
   display: flex;
   align-content: center;
   cursor: pointer;
 }
-#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .icon-pm-calendar:hover:before {
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups #pm-calendar-wrap:hover:before {
   color: #444;
 }
-#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .icon-pm-calendar .pm-task-date-wrap {
-  background: none;
-  color: #848484;
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups #pm-calendar-wrap .pm-task-date-wrap {
+  display: flex;
+  line-height: 0;
+  align-items: center;
+  padding: 0 3px;
+  margin-left: 3px;
   font-size: 11px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
-#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .icon-pm-calendar .task-date {
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups #pm-calendar-wrap .task-date {
   position: absolute;
   right: -13px;
   top: 23px;
@@ -602,10 +632,10 @@
   border: 1px solid #DDDDDD;
   box-shadow: 0px 6px 20px 0px rgba(214, 214, 214, 0.6);
 }
-#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .icon-pm-calendar .task-date .pm-date-picker-from .ui-datepicker {
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups #pm-calendar-wrap .task-date .pm-date-picker-from .ui-datepicker {
   border: none;
 }
-#wedevs-project-manager #pm-single-task-wrap .option-icon-groups .icon-pm-calendar .task-date .pm-date-picker-to .ui-datepicker {
+#wedevs-project-manager #pm-single-task-wrap .option-icon-groups #pm-calendar-wrap .task-date .pm-date-picker-to .ui-datepicker {
   border: none;
 }
 #wedevs-project-manager #pm-single-task-wrap .option-icon-groups .individual-group-icon,
@@ -651,7 +681,7 @@
 }
 #wedevs-project-manager #pm-single-task-wrap .description-wrap .action-content {
   border: 1px solid #ECECEC;
-  padding: 13px;
+  padding: 5px 10px;
   border-radius: 3px;
 }
 #wedevs-project-manager #pm-single-task-wrap .description-wrap .task-description {
@@ -738,14 +768,29 @@
   right: 30px;
   top: 42px;
 }
-#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .discuss-text {
-  margin-bottom: 5px;
+#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-header {
+  display: flex;
+  justify-content: space-between;
+}
+#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-header .icon-pm-down-arrow {
+  font-size: 7px;
+  cursor: pointer;
+  position: relative;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content {
   border: 1px solid #ECECEC;
   border-radius: 3px;
   padding: 18px;
   background: #FAFAFA;
+}
+#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-header {
+  display: flex;
+  justify-content: space-between;
+}
+#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-header .icon-pm-down-arrow {
+  font-size: 7px;
+  cursor: pointer;
+  position: relative;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-action-arrow {
   position: relative;
@@ -806,28 +851,8 @@
   color: #000;
   margin-left: 6px;
 }
-#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-content-ul .comment-li {
-  margin-bottom: 10px;
-  background: none;
-  border: none;
-  padding: 8px;
-}
-#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-content-ul .comment-li p {
-  margin: 0;
-  padding: 0;
-}
-#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-content-ul .comment-li .comment-li-body {
-  display: flex;
-  justify-content: space-between;
-}
-#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-header {
-  display: flex;
-  justify-content: space-between;
-}
-#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-content .comment-header .icon-pm-down-arrow {
-  font-size: 7px;
-  cursor: pointer;
-  position: relative;
+#wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .discuss-text {
+  margin-bottom: 5px;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .pm-avatar img {
   height: 24px;
@@ -849,12 +874,12 @@
   margin-right: 10px;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .pm-comment-content {
-  margin-left: 8%;
+  margin-left: 41px;
   margin-top: -4px;
   color: #000 !important;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .pm-comment-edit-form {
-  width: 92%;
+  flex: 1;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-field-content {
   padding: 8px 0px 0px 8px;
@@ -863,7 +888,7 @@
   align-self: baseline;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-field-content .comment-field {
-  width: 92%;
+  width: 93%;
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-task-comment-wrap .comment-field-content .comment-field .comment-field-text {
   border: 1px solid #ECECEC;
@@ -913,4 +938,79 @@
 }
 #wedevs-project-manager #pm-single-task-wrap .pm-attachment-items .pm-upload-filelist .pm-uploaded-item .attachment-file .icon-pm-cross:hover:before {
   color: #e897a2;
+}
+#wedevs-project-manager .pm-triangle-top {
+  position: absolute;
+  top: 26px;
+  width: 236px;
+  left: auto;
+  right: -13px;
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  padding: 15px 0;
+  border: 1px solid #DDDDDD;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0px 2px 40px 0px rgba(214, 214, 214, 0.6);
+}
+#wedevs-project-manager .pm-triangle-top::before {
+  border-color: transparent transparent #DDDDDD transparent;
+  position: absolute;
+  border-style: solid;
+  top: -9px;
+  left: auto;
+  content: "";
+  right: 10px;
+  z-index: 9999;
+  border-width: 0px 8px 8px 8px;
+}
+#wedevs-project-manager .pm-triangle-top::after {
+  border-color: transparent transparent #ffffff transparent;
+  position: absolute;
+  border-style: solid;
+  top: -7px;
+  left: auto;
+  right: 10px;
+  content: "";
+  z-index: 9999;
+  border-width: 0 8px 7px 8px;
+}
+#wedevs-project-manager .pm-datepicker-from,
+#wedevs-project-manager .pm-datepicker-to {
+  z-index: 9;
+}
+@media screen and (max-width: 600px) {
+  #wedevs-project-manager .popup-mask .popup-container .close-modal {
+    right: 0px;
+  }
+  #wedevs-project-manager .popup-mask .popup-container .popup-body {
+    padding: 10px;
+    padding-top: 28px;
+  }
+}
+@media screen and (max-width: 480px) {
+  #wedevs-project-manager .popup-mask .popup-container {
+    width: 100%;
+    margin: 0;
+    height: 100vh;
+    top: 0px;
+  }
+  #wedevs-project-manager .popup-mask .popup-container .close-modal {
+    right: 3px;
+  }
+  #wedevs-project-manager .popup-mask .popup-container .popup-body {
+    padding: 10px;
+    padding-top: 28px;
+  }
+  #wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .task-complete-incomplete .incomplete,
+  #wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .task-complete-incomplete .completed {
+    white-space: nowrap;
+  }
+  #wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .created-by {
+    font-size: 10px;
+  }
+  #wedevs-project-manager #pm-single-task-wrap .pm-single-task-header .task-action .icon-pm-more-options {
+    margin-left: 0;
+    padding: 10px 0 10px 10px;
+  }
 }
