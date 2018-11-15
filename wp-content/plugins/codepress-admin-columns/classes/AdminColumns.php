@@ -27,11 +27,6 @@ class AdminColumns extends Plugin {
 	private $api;
 
 	/**
-	 * @var Admin\Addons
-	 */
-	private $addons;
-
-	/**
 	 * @var ListScreen[]
 	 */
 	private $list_screens;
@@ -56,14 +51,10 @@ class AdminColumns extends Plugin {
 	 * @since 1.0
 	 */
 	private function __construct() {
-		// Third Party
 		new ThirdParty\ACF();
 		new ThirdParty\NinjaForms();
 		new ThirdParty\WooCommerce();
 		new ThirdParty\WPML();
-
-		// Init
-		$this->addons = new Admin\Addons();
 
 		$this->api = new API();
 
@@ -85,6 +76,8 @@ class AdminColumns extends Plugin {
 		add_action( 'ac/screen', array( $this, 'init_table_on_screen' ) );
 		add_action( 'ac/screen/quick_edit', array( $this, 'init_table_on_quick_edit' ) );
 		add_action( 'wp_ajax_ac_get_column_value', array( $this, 'table_ajax_value' ) );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'add_global_javascript_var' ), 1 );
 	}
 
 	/**
@@ -153,8 +146,11 @@ class AdminColumns extends Plugin {
 	public function notice_checks() {
 		$checks = array(
 			new Check\Review(),
-			new Check\AddonAvailable(),
 		);
+
+		foreach ( new Integrations() as $integration ) {
+			$checks[] = new Check\AddonAvailable( $integration );
+		}
 
 		foreach ( $checks as $check ) {
 			$check->register();
@@ -179,7 +175,7 @@ class AdminColumns extends Plugin {
 	 * @return string
 	 */
 	public function get_version() {
-		return '3.2.7';
+		return AC_VERSION;
 	}
 
 	/**
@@ -238,14 +234,6 @@ class AdminColumns extends Plugin {
 	}
 
 	/**
-	 * @since 2.2
-	 * @return Admin\Addons Add-ons class instance
-	 */
-	public function addons() {
-		return $this->addons;
-	}
-
-	/**
 	 * @return Table\Screen Returns the screen manager for the list table
 	 */
 	public function table_screen() {
@@ -279,9 +267,13 @@ class AdminColumns extends Plugin {
 
 	/**
 	 * @param ListScreen $list_screen
+	 *
+	 * @return self
 	 */
 	public function register_list_screen( ListScreen $list_screen ) {
 		$this->list_screens[ $list_screen->get_key() ] = $list_screen;
+
+		return $this;
 	}
 
 	/**
@@ -426,6 +418,17 @@ class AdminColumns extends Plugin {
 		_deprecated_function( __METHOD__, '3.2', 'ac_helper()' );
 
 		return ac_helper();
+	}
+
+	/**
+	 * Add a global JS var that ideally contains all AC and ACP API methods
+	 */
+	public function add_global_javascript_var() {
+		?>
+		<script>
+			var AdminColumns = {};
+		</script>
+		<?php
 	}
 
 }
