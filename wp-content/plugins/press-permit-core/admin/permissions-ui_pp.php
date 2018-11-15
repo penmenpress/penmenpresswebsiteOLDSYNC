@@ -153,7 +153,7 @@ class PP_GroupsUI {
 			elseif( true == pp_key_status() )
 				$msg = sprintf( __( 'To assign roles for custom post statuses, %1$sinstall%2$s the PP Custom Post Statuses plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>' );
 			else
-				$msg = sprintf( __( 'To assign roles for custom post statuses, %1$senter%2%s or %3$spurchase%4$s a support key and install the PP Custom Post Statuses plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="http://presspermit.com/purchase">', '</a>' );
+				$msg = sprintf( __( 'To assign roles for custom post statuses, %1$senter%2%s or %3$spurchase%4$s a support key and install the PP Custom Post Statuses plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="https://presspermit.com/purchase">', '</a>' );
 			
 			echo "<div>$msg</div>";
 		}
@@ -166,7 +166,7 @@ class PP_GroupsUI {
 			elseif( true == pp_key_status() )
 				$msg = sprintf( __( 'To assign roles for bbPress forums, %1$sinstall%2$s the PP Compatibility Pack plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>' );
 			else
-				$msg = sprintf( __( 'To assign roles for bbPress forums, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Compatibility Pack plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="http://presspermit.com/purchase">', '</a>' );
+				$msg = sprintf( __( 'To assign roles for bbPress forums, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Compatibility Pack plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="https://presspermit.com/purchase">', '</a>' );
 			
 			echo "<div>$msg</div>";
 		}
@@ -179,7 +179,7 @@ class PP_GroupsUI {
 			elseif( true == pp_key_status() )
 				$msg = sprintf( __( 'To assign Revisionary exceptions, %1$sinstall%2$s the PP Collaborative Editing and PP Compatibility Pack plugins.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>' );
 			else
-				$msg = sprintf( __( 'To assign Revisionary exceptions, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Collaborative Editing and PP Compatibility Pack plugins.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="http://presspermit.com/purchase">', '</a>' );
+				$msg = sprintf( __( 'To assign Revisionary exceptions, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Collaborative Editing and PP Compatibility Pack plugins.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="https://presspermit.com/purchase">', '</a>' );
 			
 			echo "<div>$msg</div>";
 		}
@@ -281,7 +281,7 @@ class PP_GroupsUI {
 			elseif( true == pp_key_status() )
 				$msg = sprintf( __( 'To assign exceptions for editing, parent selection or term assignment, %1$sinstall%2$s the PP Collaborative Editing plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>' );
 			else
-				$msg = sprintf( __( 'To assign exceptions for editing, parent selection or term assignment, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Collaborative Editing plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="http://presspermit.com/purchase">', '</a>' );
+				$msg = sprintf( __( 'To assign exceptions for editing, parent selection or term assignment, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Collaborative Editing plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="https://presspermit.com/purchase">', '</a>' );
 			
 			echo "<div>$msg</div>";
 		}
@@ -294,7 +294,7 @@ class PP_GroupsUI {
 			elseif( true == pp_key_status() )
 				$msg = sprintf( __( 'To assign exceptions for bbPress forums, %1$sinstall%2$s the PP Compatibility Pack plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>' );
 			else
-				$msg = sprintf( __( 'To assign exceptions for bbPress forums, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Compatibility Pack plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="http://presspermit.com/purchase">', '</a>' );
+				$msg = sprintf( __( 'To assign exceptions for bbPress forums, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Compatibility Pack plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="https://presspermit.com/purchase">', '</a>' );
 			
 			echo "<div>$msg</div>";
 		}

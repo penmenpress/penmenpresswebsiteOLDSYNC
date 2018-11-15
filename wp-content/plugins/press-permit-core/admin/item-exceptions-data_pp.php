@@ -18,6 +18,8 @@ class PP_ItemExceptionsData {
 		$defaults = array_merge( 
 			compact( 'for_item_source', 'item_id' ), 
 			array( 
+				'agent_type' => '',
+				'agent_id' => array(),
 				'for_item_type' => '', 
 				'for_item_status' => '', 
 				'via_item_source' => $via_item_source 

@@ -43,7 +43,7 @@ font-size: 1.5em;
 }
 </style>
 
-<div id="pp_features" style="display:none"><div class="pp-logo"><a href="http://presspermit.com"><img src="<?php echo $img_url;?>pp-logo.png" /></a>
+<div id="pp_features" style="display:none"><div class="pp-logo"><a href="https://presspermit.com"><img src="<?php echo $img_url;?>pp-logo.png" /></a>
 
 <ul class="pp-features">
 
@@ -100,15 +100,15 @@ font-size: 1.5em;
 </ul>
 
 <ul class="pro-pplinks" style="display:none">
-<li><a class="pp-screencasts" href="http://presspermit.com/tutorial" target="_blank"><?php _e('Screencasts', 'pp');?></a></li>
+<li><a class="pp-screencasts" href="https://presspermit.com/tutorial" target="_blank"><?php _e('Screencasts', 'pp');?></a></li>
 <li class="spacer">&bull;</li>
-<li><a href="http://presspermit.com/pp-rs-feature-grid" target="_blank"><?php _e('Feature Grid', 'pp');?></a></li>
+<li><a href="https://presspermit.com/pp-rs-feature-grid" target="_blank"><?php _e('Feature Grid', 'pp');?></a></li>
 <li class="spacer">&bull;</li>
-<li><a href="http://presspermit.com/faqs" target="_blank"><?php _e('FAQs', 'pp');?></a></li>
+<li><a href="https://presspermit.com/faqs" target="_blank"><?php _e('FAQs', 'pp');?></a></li>
 <li class="spacer">&bull;</li>
-<li><a href="http://presspermit.com/forums/forum/pre-sale-questions/" target="_blank"><?php _e('Pre-Sale Questions', 'pp');?></a></li>
+<li><a href="https://presspermit.com/forums/forum/pre-sale-questions/" target="_blank"><?php _e('Pre-Sale Questions', 'pp');?></a></li>
 <li class="spacer">&bull;</li>
-<li><a href="http://presspermit.com/purchase/" target="_blank"><?php _e('Purchase', 'pp');?></a></li>
+<li><a href="https://presspermit.com/purchase/" target="_blank"><?php _e('Purchase', 'pp');?></a></li>
 <li class="spacer">&bull;</li>
 <li><a href="#pp-pro-hide"><?php _e('Hide', 'pp');?></a></li>
 </ul>

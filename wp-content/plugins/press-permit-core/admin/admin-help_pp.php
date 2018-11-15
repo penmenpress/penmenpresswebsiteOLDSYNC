@@ -72,14 +72,14 @@ class PP_AdminHelp {
 			} else
 				$id_arg = '';
 			
-			$help .= '<ul><li>' . sprintf(__('%1$s Press Permit Documentation%2$s', 'pp'), "<a href='http://presspermit.com/docs/?pp_topic=$link_section' target='_blank'>", '</a>')
-			. '</li><li>' . sprintf(__('%1$s Press Permit Support Forums%2$s', 'pp'), "<a href='http://presspermit.com/forums/?pp_topic=$link_section' target='_blank'>", '</a>')
+			$help .= '<ul><li>' . sprintf(__('%1$s Press Permit Documentation%2$s', 'pp'), "<a href='https://presspermit.com/docs/?pp_topic=$link_section' target='_blank'>", '</a>')
+			. '</li><li>' . sprintf(__('%1$s Press Permit Support Forums%2$s', 'pp'), "<a href='https://presspermit.com/forums/?pp_topic=$link_section' target='_blank'>", '</a>')
 			. '</li><li>' . sprintf(__('%1$s Press Permit Support Forums (with config data upload) *%2$s', 'pp'), "<a href='admin.php?page=pp-settings&amp;pp_support_forum=1&amp;pp_topic=$link_section{$id_arg}' target='_blank'>", '</a></li>')
 			;
 			
 			$key = pp_get_option( 'support_key' );
 			if ( ! $key || ( 1 != $key[0] ) )
-				$help .= '<li>' . sprintf(__('%1$s Buy a Press Permit Support Key%2$s', 'pp'), "<a href='http://presspermit.com/purchase/'>", '</a></li>');
+				$help .= '<li>' . sprintf(__('%1$s Buy a Press Permit Support Key%2$s', 'pp'), "<a href='https://presspermit.com/purchase/'>", '</a></li>');
 			
 			$help .= '</ul>';
 			

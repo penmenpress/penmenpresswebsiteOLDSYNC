@@ -120,7 +120,7 @@ class PP_Updater {
  * Extensions derived from the WordPress WP_Upgrader & Plugin_Upgrader classes:
  * @see wp-admin/includes/class-wp-upgrader.php
  *
- * @copyright WordPress {@link http://codex.wordpress.org/Copyright_Holders}
+ * @copyright WordPress {@link https://codex.wordpress.org/Copyright_Holders}
  *
  * @author Jonathan Davis
  * @author Kevin Behrens
@@ -163,7 +163,7 @@ class PP_Upgrader extends Plugin_Upgrader {
 		if ( $title ) {
 			$this->strings['up_to_date'] = _pp_( 'The plugin is at the latest version.' );
 			$this->strings['no_package'] = sprintf( _pp_('%s upgrade package not available.','pp'), $title );
-			$this->strings['downloading_package'] = sprintf(_pp_('Downloading update from <span class="code">%s</span>&#8230;'),untrailingslashit('http://presspermit.com/'));
+			$this->strings['downloading_package'] = sprintf(_pp_('Downloading update from <span class="code">%s</span>&#8230;'),untrailingslashit('https://presspermit.com/'));
 			$this->strings['unpack_package'] = _pp_('Unpacking the update&#8230;');
 			$this->strings['deactivate_plugin'] = sprintf( _pp_('Deactivating %s.','pp'), $title );
 			$this->strings['remove_old'] = _pp_('Removing the old version of the plugin&#8230;');
@@ -176,7 +176,7 @@ class PP_Upgrader extends Plugin_Upgrader {
 	function install_pp_strings($plugin) {
 		if ( $title = pp_pretty_slug( $plugin ) ) {
 			$this->strings['no_package'] = _pp_('Install package not available.');
-			$this->strings['downloading_package'] = sprintf(_pp_('Downloading install package from <span class="code">%s</span>&#8230;'),untrailingslashit('http://presspermit.com/'));
+			$this->strings['downloading_package'] = sprintf(_pp_('Downloading install package from <span class="code">%s</span>&#8230;'),untrailingslashit('https://presspermit.com/'));
 			$this->strings['unpack_package'] = _pp_('Unpacking the package&#8230;');
 			$this->strings['installing_package'] = _pp_('Installing the plugin&#8230;');
 			$this->strings['no_files'] = _pp_('The plugin contains no files.');
@@ -297,7 +297,6 @@ class PP_Upgrader_Skin extends Plugin_Upgrader_Skin {
 			return;
 		$this->done_header = true;
 		echo '<div class="wrap press-permit">';
-		echo screen_icon();
 		echo '<h2>' . $this->options['title'] . '</h2>';
 	}
 
@@ -351,7 +350,6 @@ class PP_Installer_Skin extends Plugin_Installer_Skin {
 			return;
 		$this->done_header = true;
 		echo '<div class="wrap press-permit">';
-		echo screen_icon();
 		echo '<h2>' . $this->options['title'] . '</h2>';
 	}
 

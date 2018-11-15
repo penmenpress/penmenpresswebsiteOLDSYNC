@@ -6,7 +6,7 @@ function _pp_post_status_promo() {
 		elseif( true == pp_key_status() )
 			$msg = sprintf( __( 'To define custom privacy statuses, %1$sinstall%2$s the PP Custom Post Statuses plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>' );
 		else
-			$msg = sprintf( __( 'To define custom privacy statuses, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Custom Post Statuses plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="http://presspermit.com/purchase">', '</a>' );
+			$msg = sprintf( __( 'To define custom privacy statuses, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Custom Post Statuses plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="https://presspermit.com/purchase">', '</a>' );
 		
 		?>
 		<script type="text/javascript">
@@ -38,7 +38,7 @@ function _pp_post_status_promo() {
 		if( true == pp_key_status() )
 			$msg = sprintf( __( 'To define custom moderation statuses, %1$sactivate%2$s %3$s.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', $need_exts );
 		else
-			$msg = sprintf( __( 'To define custom moderation statuses, %1$senter%2$s or %3$spurchase%4$s a Press Permit support key. Then install %5$s.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="http://presspermit.com/purchase">', '</a>', $need_exts );
+			$msg = sprintf( __( 'To define custom moderation statuses, %1$senter%2$s or %3$spurchase%4$s a Press Permit support key. Then install %5$s.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="https://presspermit.com/purchase">', '</a>', $need_exts );
 			
 		?>
 		<script type="text/javascript">

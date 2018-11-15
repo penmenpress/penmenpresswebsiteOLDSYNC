@@ -178,7 +178,7 @@ class PP_Agents_Ajax {
 			elseif( true == pp_key_status() )
 				$msg = sprintf( __( 'To set date limits on group membership, %1$sinstall%2$s the PP Membership plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>' );
 			else
-				$msg = sprintf( __( 'To set date limits on group membership, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Membership plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="http://presspermit.com/purchase">', '</a>' );
+				$msg = sprintf( __( 'To set date limits on group membership, %1$senter%2$s or %3$spurchase%4$s a support key and install the PP Membership plugin.', 'pp' ), '<a href="admin.php?page=pp-settings&pp_tab=install">', '</a>', '<a href="https://presspermit.com/purchase">', '</a>' );
 			
 			echo "<div class='pp-ext-promo'>$msg</div>";
 		}

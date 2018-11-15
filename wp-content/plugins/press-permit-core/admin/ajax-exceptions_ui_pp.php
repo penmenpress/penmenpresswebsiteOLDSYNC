@@ -69,7 +69,7 @@ case 'get_mod_options':
 	} else
 		$is_wp_role = false;
 	
-	if ( ( ! $is_wp_role || ! in_array( $group->metagroup_id, array( 'wp_anon', 'wp_all' ) ) || defined( 'PP_ALL_ANON_FULL_EXCEPTIONS' ) ) && ! defined( 'PP_NO_ADDITIONAL_ACCESS' ) )
+	if ( ( ! $is_wp_role || ! in_array( $group->metagroup_id, array( 'wp_anon', 'wp_all' ) ) || ( defined( 'PPFF_VERSION' ) && 'attachment' == $for_type ) || defined( 'PP_ALL_ANON_FULL_EXCEPTIONS' ) ) && ! defined( 'PP_NO_ADDITIONAL_ACCESS' ) )
 		$modes['additional'] = __('Also these:', 'pp');
 	
 	if ( ( 'user' == $agent_type ) || $is_wp_role || ( 'assign' == $operation ) || defined( 'PP_GROUP_RESTRICTIONS' ) ) {

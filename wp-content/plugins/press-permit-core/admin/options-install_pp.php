@@ -140,7 +140,7 @@ class PP_Options_Install {
 						$class = "activating hidden";
 				} elseif ( ! $activated ) {
 					$class = 'activating';
-					$msg = sprintf( __( 'Activate your support key to install Pro extensions and access the member support forums. Available at <a href="%s">presspermit.com</a>.', 'pp' ), 'http://presspermit.com/' . 'purchase/' );
+					$msg = sprintf( __( 'Activate your support key to install Pro extensions and access the member support forums. Available at <a href="%s">presspermit.com</a>.', 'pp' ), 'https://presspermit.com/' . 'purchase/' );
 				} else {
 					$class = "activating hidden";
 					$msg = '';
@@ -166,7 +166,7 @@ class PP_Options_Install {
 
 					<span class="pp-key-refresh">
 					&nbsp;&nbsp;<a href="admin.php?page=pp-settings&amp;pp_refresh_updates=1"><?php _e('refresh status', 'pp');?></a>
-					&nbsp;&bull;&nbsp;&nbsp;<a href="http://presspermit.com/purchase/account" target="_blank"><?php _e('review your key(s)', 'pp');?></a>
+					&nbsp;&bull;&nbsp;&nbsp;<a href="https://presspermit.com/purchase/account" target="_blank"><?php _e('review your key(s)', 'pp');?></a>
 					</span>
 					
 				</span>
@@ -373,7 +373,7 @@ class PP_Options_Install {
 			<td>
 			<?php 
 			if ( ! empty($update_info[$slug]) )
-				echo "<a href='http://presspermit.com/extensions/$slug'>" . pp_pretty_slug($slug) . '</a>' . $install_link;
+				echo "<a href='https://presspermit.com/extensions/$slug'>" . pp_pretty_slug($slug) . '</a>' . $install_link;
 			else {
 				$caption = ucwords( str_replace( '-', ' ', $slug ) );
 				echo '<span class="plugins update-message"><a href="' . pp_plugin_info_url($slug) . '" class="thickbox" title=" ' . $caption . '">' . str_replace( ' ', '&nbsp;', $caption ) . '</a></span>';
@@ -395,7 +395,7 @@ class PP_Options_Install {
 			if ( ! $activated ) {
 				echo '<span class="pp-red">' . __( 'To enable one-click installation and update of extensions, please activate your Press Permit Pro support key above.', 'pp' ) . '<span>';
 			} elseif( ! empty($any_supplemental_key) ) {
-				printf( __( 'Visit %1$spresspermit.com%2$s for further information on obtaining and installing extensions.', 'pp' ), '<a href="http://presspermit.com">', '</a>' );
+				printf( __( 'Visit %1$spresspermit.com%2$s for further information on obtaining and installing extensions.', 'pp' ), '<a href="https://presspermit.com">', '</a>' );
 			}
 			?>
 			</p>
@@ -403,15 +403,15 @@ class PP_Options_Install {
 			<?php elseif ( ! pp_update_info_enabled() ) :?>
 				<p class="pp-feature-list-caption"><strong><?php _e('Press Permit Pro extensions supply:', 'pp' );?></strong></p>
 				<ul class="pp-bullet-list">
-				<li><?php printf( __( '%1$sContent-specific editing permissions, with Edit Flow, Revisionary and Post Forking support%2$s', 'pp' ), '<a href="http://presspermit.com/extensions/pp-collaborative-editing">', '</a>' );?></li>
-				<li><?php printf( __( '%1$sCustom Post Statuses (for visibility or moderation)%2$s', 'pp' ), '<a href="http://presspermit.com/extensions/pp-custom-post-statuses">', '</a>' );?></li>
-				<li><?php printf( __( '%1$sCustomize bbPress forum access%2$s', 'pp' ), '<a href="http://presspermit.com/extensions/pp-compatibility">', '</a>' );?></li>
-				<li><?php printf( __( '%1$sFile URL filtering%2$s', 'pp' ), '<a href="http://presspermit.com/extensions/pp-file-url-filter">', '</a>' );?></li>
-				<li><?php printf( __( '%1$sRole Scoper import script%2$s', 'pp' ), '<a href="http://presspermit.com/extensions/pp-import">', '</a>' );?></li>
-				<li><?php printf( __( '%1$s...and more%2$s', 'pp' ), '<a href="http://presspermit.com/extensions/">', '</a>' );?></li>
+				<li><?php printf( __( '%1$sContent-specific editing permissions, with Edit Flow, Revisionary and Post Forking support%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-collaborative-editing">', '</a>' );?></li>
+				<li><?php printf( __( '%1$sCustom Post Statuses (for visibility or moderation)%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-custom-post-statuses">', '</a>' );?></li>
+				<li><?php printf( __( '%1$sCustomize bbPress forum access%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-compatibility">', '</a>' );?></li>
+				<li><?php printf( __( '%1$sFile URL filtering%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-file-url-filter">', '</a>' );?></li>
+				<li><?php printf( __( '%1$sRole Scoper import script%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-import">', '</a>' );?></li>
+				<li><?php printf( __( '%1$s...and more%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/">', '</a>' );?></li>
 				</ul>
 				<p>
-				<?php printf( __( 'For updated availability, enable the "update info" option above or visit %1$spresspermit.com%2$s.', 'pp'), '<a href="http://presspermit.com/extensions/">', '</a>' );?></p>
+				<?php printf( __( 'For updated availability, enable the "update info" option above or visit %1$spresspermit.com%2$s.', 'pp'), '<a href="https://presspermit.com/extensions/">', '</a>' );?></p>
 			<?php 
 			endif;
 
@@ -435,7 +435,7 @@ class PP_Options_Install {
 			if ( $activated ) {
 				?>
 				<ul class="pp-support-list">
-				<li><a href='http://presspermit.com/docs/' target='pp_doc'><?php _e('Press Permit Documentation', 'pp');?></a></li>
+				<li><a href='https://presspermit.com/docs/' target='pp_doc'><?php _e('Press Permit Documentation', 'pp');?></a></li>
 
 				<li class="pp-support-forum"><a href="admin.php?page=pp-settings&amp;pp_support_forum=1" target="pp_forum"><?php _e('Press Permit Support Forums', 'pp');?></a> <strong>*</strong></li>
 
@@ -506,8 +506,8 @@ class PP_Options_Install {
 				</div>
 	
 				<ul class="pp-support-list pp-bullet-list">
-				<!-- <li><a href='http://presspermit.com/docs/' target='pp_doc'><?php _e('Pro Documentation on presspermit.com', 'pp');?></a></li> -->
-				<li><a href='http://presspermit.com/forums/' target='pp_forum'><?php _e('Pro Support Forums on presspermit.com', 'pp');?></a></li>
+				<!-- <li><a href='https://presspermit.com/docs/' target='pp_doc'><?php _e('Pro Documentation on presspermit.com', 'pp');?></a></li> -->
+				<li><a href='https://presspermit.com/forums/' target='pp_forum'><?php _e('Pro Support Forums on presspermit.com', 'pp');?></a></li>
 				<li><?php _e('Optional uploading of your site configuration to assist troubleshooting', 'pp');?></li>
 				</ul>
 				<?php
@@ -573,7 +573,7 @@ class PP_Options_Install {
 			'activateURL' => wp_nonce_url( admin_url(''), 'wp_ajax_pp_activate_key' ),
 			'deactivateURL' => wp_nonce_url( admin_url(''), 'wp_ajax_pp_deactivate_key' ),
 			'refreshURL' => wp_nonce_url( admin_url(''), 'wp_ajax_pp_refresh_version' ),
-			'activationHelp' => sprintf( __( 'If this is incorrect, <a href="%s">request activation help</a>.', 'pp' ), 'http://presspermit.com/' . 'activation/' ),
+			'activationHelp' => sprintf( __( 'If this is incorrect, <a href="%s">request activation help</a>.', 'pp' ), 'https://presspermit.com/' . 'activation/' ),
 			'supportOptChanged' => __('Please save settings before uploading site configuration.', 'pp'),
 		);
 		

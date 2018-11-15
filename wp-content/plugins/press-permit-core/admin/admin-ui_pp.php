@@ -1,5 +1,5 @@
 <?php
-// menu icons by Jonas Rask: http://www.jonasraskdesign.com/
+// menu icons by Jonas Rask: https://www.jonasraskdesign.com/
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 define ( 'PP_URLPATH', plugins_url( '', PPC_FILE ) );
@@ -289,7 +289,7 @@ class PP_AdminUI
 	
 	function ui_admin_footer() {
 		if ( (false !== strpos($_SERVER['HTTP_USER_AGENT'], 'msie 7') ) )
-			echo '<span style="float:right; margin-left: 2em"><a href="http://presspermit.com/">' . __('Press Permit', 'pp') . '</a> ' . PPC_VERSION . ' | ' . '<a href="http://presspermit.com/forums/">' . _pp_('Support Forums', 'pp') . '</a>&nbsp;</span>';
+			echo '<span style="float:right; margin-left: 2em"><a href="https://presspermit.com/">' . __('Press Permit', 'pp') . '</a> ' . PPC_VERSION . ' | ' . '<a href="https://presspermit.com/forums/">' . _pp_('Support Forums', 'pp') . '</a>&nbsp;</span>';
 	}
 	
 	// support NextGenGallery uploader and other custom jquery calls which WP treats as index.php ( otherwise user_can_access_admin_page() fails )

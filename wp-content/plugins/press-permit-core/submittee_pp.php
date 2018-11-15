@@ -32,7 +32,7 @@ class PP_Submittee {
 			$arr_url = parse_url( $url );
 			$site = urlencode( str_replace( $arr_url['scheme'] . '://', '', $url ) );
 			
-			wp_redirect( 'http://presspermit.com/renewal/?pkg=press-permit-pro&site=' . $site . '&rt=' . $renewal_token );
+			wp_redirect( 'https://presspermit.com/renewal/?pkg=press-permit-pro&site=' . $site . '&rt=' . $renewal_token );
 			exit;
 		}
 	
@@ -47,7 +47,7 @@ class PP_Submittee {
 			
 			if ( ! empty( $_REQUEST['pp_support_forum'] ) ) {
 				//$forum = ( ! empty( $_REQUEST['pp_forum'] ) ) ? sanitize_url($_REQUEST['pp_forum']) : 'pp2-technical-issues';
-				$url = "http://presspermit.com/forums/";
+				$url = "https://presspermit.com/forums/";
 				
 				if ( ! empty( $_REQUEST['pp_topic'] ) )
 					$url = add_query_arg( 'pp_topic', $_REQUEST['pp_topic'], $url );

@@ -4,27 +4,27 @@ Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JWZVF
 Tags: restrict, access, permissions, cms, user, private, category, pages, privacy, capabilities, role, scoper
 License: GPLv3
 Requires at least: 3.4
-Tested up to: 4.9.8
-Stable tag: 2.5
+Tested up to: 5.0
+Stable tag: 2.5.1
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
 == Description ==
 
-[Press Permit](http://presspermit.com) is an advanced content permissions system. It is derived from Role Scoper, but with extensive improvements in versatility, performance and user-friendliness. 
+[Press Permit](https://presspermit.com) is an advanced content permissions system. It is derived from Role Scoper, but with extensive improvements in versatility, performance and user-friendliness. 
 
 Core Features include:
 
   * Permissions model is closely integrated with the WP capability system
-  * Assign supplemental roles and exceptions for custom post types [youtube http://www.youtube.com/watch?v=v7jTkgmjHrw&rel=0&hd=1]
+  * Assign supplemental roles and exceptions for custom post types [youtube https://www.youtube.com/watch?v=v7jTkgmjHrw&rel=0&hd=1]
   
   * For any user, group or WP role, customize reading access by specifying "also these", "not these" or "only these" posts or terms.
-  * Control reading access to specified categories [youtube http://www.youtube.com/watch?v=SMnybRf5neY&rel=0&hd=1] 
+  * Control reading access to specified categories [youtube https://www.youtube.com/watch?v=SMnybRf5neY&rel=0&hd=1] 
 
   * Post and term edit screens get a straightforward and uncluttered UI to "enable" or "block" users, roles or groups
-  * Permission Groups integrate with [Eyes Only User Access Shortcodes](http://wordpress.org/plugins/eyes-only-user-access-shortcode/) for conditional display of content blocks within a post
+  * Permission Groups integrate with [Eyes Only User Access Shortcodes](https://wordpress.org/plugins/eyes-only-user-access-shortcode/) for conditional display of content blocks within a post
 
-Pro [extensions](http://presspermit.com/extensions) are [available](http://presspermit.com/purchase) for [additional access control and features](http://www.youtube.com/playlist?list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3):
+Pro [extensions](https://presspermit.com/extensions) are [available](https://presspermit.com/purchase) for [additional access control and features](https://www.youtube.com/playlist?list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3):
 	
   * Customize editing access for specific posts or terms - [video](https://www.youtube.com/watch?v=0yOEBD8VE9c&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=3)
   * Limit category/term assignment and page parent selection - [video](https://www.youtube.com/watch?v=QqvtxrqLPwY&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=4)
@@ -49,6 +49,11 @@ Pro [extensions](http://presspermit.com/extensions) are [available](http://press
 Initial production release
 
 == Changelog ==
+
+= 2.5.1 - 9 Nov 2018 =
+* Fixed : In Exceptions metaboxes on the Edit Page screen, when a user or group is selected, their "Enabled / Blocked" dropdown was displayed without an identifying label (since 2.5)
+* Change : Pro - Allow the {All} and {Anon} metagroups to be granted Reading Exceptions for specific media items
+* Change : Converted external links to https
 
 = 2.5 - 28 Sep 2018 =
 * Compat : PHP 7.2 - Eliminated create_function calls
@@ -576,36 +581,36 @@ Permissions can be modified from post edit screens, term edit screens, or the pl
 
 = How does Press Permit compare to Capability Manager Enhanced, User Role Editor and other role editor plugins? =
 
-Press Permit's functionality is different from and complementary to a basic role editor / user management plugin.  In terms of permissions, those plugins' primary function is to alter WordPress' definition of the capabilities included in each role.  In other words, they expose lots of knobs for the permissions control which WordPress innately supports. That's a valuable task, and in many cases will be all the role customization you need.  Since WP role definitions are stored in the main WordPress database, they remain even said plugin is deactivated. [Capability Manager Enhanced](http://wordpress.org/plugins/capability-manager-enhanced) is a WordPress role editor designed for integration with Press Permit.
+Press Permit's functionality is different from and complementary to a basic role editor / user management plugin.  In terms of permissions, those plugins' primary function is to alter WordPress' definition of the capabilities included in each role.  In other words, they expose lots of knobs for the permissions control which WordPress innately supports. That's a valuable task, and in many cases will be all the role customization you need.  Since WP role definitions are stored in the main WordPress database, they remain even said plugin is deactivated. [Capability Manager Enhanced](https://wordpress.org/plugins/capability-manager-enhanced) is a WordPress role editor designed for integration with Press Permit.
 
 Press Permit can assist you in turning the site-wide capability knobs for desired post types. But it also supercharges your permissions engine. Press Permit it is particularly useful when you want to customize access to a specific post, category or term.  Extension plugins add collaborative editing control, file filtering and other features which are not otherwise possible. The plugin will work with your WP roles as a starting point, whether customized by a role editor or not.  Users of the PP Collaborative Editing extension can (after activating advanced settings) navigate to Permissions > Settings > Role Usage to see (or modify) how Press Permit is using your WP role definitions. Press Permit's modifications remain only while it stays active.
 
 
 = What extra access control would PP Pro give me? =
 
-For a detailed comparison, see the [RS/PP Feature Grid](http://presspermit.com/pp-rs-feature-grid). Here are some highlights:
+For a detailed comparison, see the [RS/PP Feature Grid](https://presspermit.com/pp-rs-feature-grid). Here are some highlights:
 
-[youtube http://www.youtube.com/watch?v=0yOEBD8VE9c&rel=0&hd=1]
+[youtube https://www.youtube.com/watch?v=0yOEBD8VE9c&rel=0&hd=1]
 Customize editing permissions for specific posts.
 
 &nbsp;
 
-[youtube http://www.youtube.com/watch?v=QqvtxrqLPwY&rel=0&hd=1]
+[youtube https://www.youtube.com/watch?v=QqvtxrqLPwY&rel=0&hd=1]
 Control which categories or terms users can post to.
 
 &nbsp;
 
-[youtube http://www.youtube.com/watch?v=v8VyKP3rIvk&rel=0&hd=1]
+[youtube https://www.youtube.com/watch?v=v8VyKP3rIvk&rel=0&hd=1]
 Define custom post statuses for access-controlled multi-step moderation.
 
 &nbsp;
 
-[youtube http://www.youtube.com/watch?v=eeZ6CBC5kQI&rel=0&hd=1]
+[youtube https://www.youtube.com/watch?v=eeZ6CBC5kQI&rel=0&hd=1]
 Edit Flow integration.
 
 &nbsp;
 
-[youtube http://www.youtube.com/watch?v=kVusrdlgSps&rel=0&hd=1]
+[youtube https://www.youtube.com/watch?v=kVusrdlgSps&rel=0&hd=1]
 Prevent inappropriate "back door" access by direct file url.
 
 &nbsp;
@@ -614,13 +619,13 @@ Prevent inappropriate "back door" access by direct file url.
 
 Moving forward, I do not plan any major development of the Role Scoper code base.  That plugin's compatibility with WordPress versions 3.7 and beyond will depend on the extent of changes related WordPress code.  I will consider consulting requests but will encourage migration to Press Permit - a superior platform with a sustainable funding model.
 
-If you encounter issues with Role Scoper and need to migrate to a different solution, [Press Permit Pro](http://presspermit.com) provides access to an import script which can (for most installations) automate the majority of your RS migration.
+If you encounter issues with Role Scoper and need to migrate to a different solution, [Press Permit Pro](https://presspermit.com) provides access to an import script which can (for most installations) automate the majority of your RS migration.
 
-For a detailed feature comparison, see the [RS/PP Feature Grid](http://presspermit.com/pp-rs-feature-grid).
+For a detailed feature comparison, see the [RS/PP Feature Grid](https://presspermit.com/pp-rs-feature-grid).
 
 = Can I import settings from Role Scoper? =
 
-Yes. [Press Permit Pro](http://presspermit.com) provides access to the PP Import extension.  This script can import the most Role Scoper groups, roles, restrictions and options.  Some manual followup may be required for some configurations.
+Yes. [Press Permit Pro](https://presspermit.com) provides access to the PP Import extension.  This script can import the most Role Scoper groups, roles, restrictions and options.  Some manual followup may be required for some configurations.
 
 = Is Press Permit an out-of-the-box membership solution? =
 
@@ -648,7 +653,7 @@ Press Permit creates and uses the following tables: pp_groups, pp_group_members,
 
 = Support Key Activation =
 
-Installation and updates of pro extensions, supplied directly from presspermit.com, are available for a specified duration after you activate the support key provided with a Press Permit Pro [purchase](http://presspermit.com/purchase). Single-site, 3-site and developer (25 sites) packages are available.
+Installation and updates of pro extensions, supplied directly from presspermit.com, are available for a specified duration after you activate the support key provided with a Press Permit Pro [purchase](https://presspermit.com/purchase). Single-site, 3-site and developer (25 sites) packages are available.
 
 Simply browse to Permissions > Settings > Support, paste in the key indicated on your Order Receipt, and click the Activate button.
 

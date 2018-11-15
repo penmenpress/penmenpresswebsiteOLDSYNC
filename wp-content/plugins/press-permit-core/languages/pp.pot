@@ -2491,7 +2491,7 @@ msgid ""
 msgstr ""
 
 #. URI of the plugin
-msgid "http://presspermit.com"
+msgid "https://presspermit.com"
 msgstr ""
 
 #. Author of the plugin
@@ -2499,5 +2499,5 @@ msgid "Agapetry Creations LLC"
 msgstr ""
 
 #. Author URI of the plugin
-msgid "http://agapetry.com/"
+msgid "https://agapetry.com/"
 msgstr ""

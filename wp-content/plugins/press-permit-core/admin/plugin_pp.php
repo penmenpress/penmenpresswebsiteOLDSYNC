@@ -256,7 +256,7 @@ class PP_Plugin_Status {
 					if ( -1 == $key_status ) {
 						$message = sprintf(__('There is a new version of %1$s, but your support key has expired. You may <a href="%2$s">renew at a discounted rate</a> for Press Permit Pro extension updates and support resources. <a href="%3$s" class="thickbox" title="%4$s">View version %5$s details</a>.','pp'), $plugin_data['Name'], admin_url('admin.php?page=pp-settings&pp_tab=install'), $details_url, esc_attr($plugin_data['Name']), $version_info->new_version);
 					} else {
-						$message = sprintf(__('There is a new version of %1$s, but <a href="%2$s">your support key</a> is not activated. <a href="%3$s">Purchase a Press Permit Pro support key</a> for one-click updates and support resources. <a href="%4$s" class="thickbox" title="%5$s">View version %6$s details</a>.','pp'), $plugin_data['Name'], admin_url('admin.php?page=pp-settings&pp_tab=install'), 'http://presspermit.com/' . 'purchase/', $details_url, esc_attr($plugin_data['Name']), $version_info->new_version);
+						$message = sprintf(__('There is a new version of %1$s, but <a href="%2$s">your support key</a> is not activated. <a href="%3$s">Purchase a Press Permit Pro support key</a> for one-click updates and support resources. <a href="%4$s" class="thickbox" title="%5$s">View version %6$s details</a>.','pp'), $plugin_data['Name'], admin_url('admin.php?page=pp-settings&pp_tab=install'), 'https://presspermit.com/' . 'purchase/', $details_url, esc_attr($plugin_data['Name']), $version_info->new_version);
 					}
 					
 					set_site_transient('ppc_update_info', false);
@@ -285,11 +285,11 @@ class PP_Plugin_Status {
 	}
 	
 	public static function renewal_msg() {
-		return sprintf(__('Your support key has expired.  For support resources and updates to Press Permit Pro extensions, you may <a href="%1$s">renew at a discounted rate</a>.','pp'), admin_url( 'admin.php?page=pp-settings&pp_tab=install' ), 'http://presspermit.com/' . "purchase/" );
+		return sprintf(__('Your support key has expired.  For support resources and updates to Press Permit Pro extensions, you may <a href="%1$s">renew at a discounted rate</a>.','pp'), admin_url( 'admin.php?page=pp-settings&pp_tab=install' ), 'https://presspermit.com/' . "purchase/" );
 	}
 	
 	public static function buy_msg() {
-		return sprintf(__('Activate your <a href="%1$s">support key</a> for Press Permit Pro extensions and support resources.','pp'), admin_url( 'admin.php?page=pp-settings&pp_tab=install' ), 'http://presspermit.com/' . "purchase/" );
+		return sprintf(__('Activate your <a href="%1$s">support key</a> for Press Permit Pro extensions and support resources.','pp'), admin_url( 'admin.php?page=pp-settings&pp_tab=install' ), 'https://presspermit.com/' . "purchase/" );
 	}
 	
 	/**

@@ -170,7 +170,7 @@ class PP_TermsAdmin {
 	?>
 	<script type="text/javascript">
 	/* <![CDATA[ */
-	function updateQueryStringParameterPP(uri, key, value) { <?php /* http://stackoverflow.com/a/6021027 */ ?>
+	function updateQueryStringParameterPP(uri, key, value) { <?php /* https://stackoverflow.com/a/6021027 */ ?>
 	  var re = new RegExp("([?|&])" + key + "=.*?(&|$)", "i");
 	  separator = uri.indexOf('?') !== -1 ? "&" : "?";
 	  if (uri.match(re)) {
