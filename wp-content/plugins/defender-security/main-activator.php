@@ -67,15 +67,15 @@ class WD_Main_Activator {
 				'Defender',
 				'/plugins/defender-security/',
 				/* 4      Email Button CTA */
-				__( 'Get Members!', "defender-security" ),
+				__( 'Get Secure!', "defender-security" ),
 				/* 5  getdrip Plugin param */
-				'WP Defender'
+				'0cecf2890e'
 			);
 		}
 	}
 
 	public function defenderAdsMessage( $message ) {
-		$message = __( "We're happy that you've chosen to install Defender! Are you interested in how to make the most of this plugin? How would you like a quick 5 day email crash course with actionable advice on making your website security bulletproof? Only the info you want, no subscription!", "defender-security" );
+		$message = __( "You're awesome for installing Defender! Are you interested in how to make the most of this plugin? We've collected all the best security resources we know in a single email - just for users of Defender!", "defender-security" );
 
 		return $message;
 	}

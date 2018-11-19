@@ -1,13 +1,13 @@
 === Defender Security, Monitoring, and Hack Protection ===
 Plugin Name: Defender Security, Monitoring, and Hack Protection
-Version: 2.0
+Version: 2.0.1
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV
 Tags: Security, Security Tweaks, Hardening, IP lockout, Monitoring, Blacklist, Site Protection, Hacked, Security Scan
 Requires at least: 4.6
-Tested up to: 4.9.7
-Stable tag: 2.0
+Tested up to: 4.9.8
+Stable tag: 2.0.1
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Protect WordPress from hackers with security tweaks, code scans, 2-Step Verification, IP lockouts, and monitoring.
@@ -64,7 +64,7 @@ Brute force attacks are no match for Defender. Limit login attempts to stop user
 
 = Login Screen Masking =
 
-Defender makes it easy to move your login screen to a custom URL. Not only does login screen masking improve security, it lets you whitelable your login user experience and improves branding. 
+Defender makes it easy to move your login screen to a custom URL. Not only does login screen masking improve security, it lets you white label your login user experience and improves branding. 
 
 = 404 Limiter =
 Defender detects when bots are being used to scan your site for vulnerabilities and shuts them down. The 404 limiter lets you stop the scan by detecting when a user keeps visiting pages that do not exist.
@@ -97,7 +97,7 @@ However, if you'd like extra scanning, audits and monitoring, you can always tak
 Defender is built to add all the best hardening and security tweaks used by the pros without having to become a security expert. This means you get all the most effective and proven protection methods other services provide with fewer settings, on-click hardening and faster setup.
 
 = Is Defender the only step I need to take in securing my WordPress site? =
-Hackers and bot attacks are not the only threat to your site.  No matter what security plugin or service you use, always be prepared with a secure backup stored in a safe location away from your live site. Security does not protect from hosting outages, server errors and accidentally lost or damaged data. We recomend <a href="https://premium.wpmudev.org/project/snapshot/">Snapshot</a>. Defender with scheduled managed backups is the best way to keep your site safe.
+Hackers and bot attacks are not the only threat to your site.  No matter what security plugin or service you use, always be prepared with a secure backup stored in a safe location away from your live site. Security does not protect from hosting outages, server errors and accidentally lost or damaged data. We recommend <a href="https://premium.wpmudev.org/project/snapshot/">Snapshot</a>. Defender with scheduled managed backups is the best way to keep your site safe.
 
 
 
@@ -121,6 +121,13 @@ Hackers and bot attacks are not the only threat to your site.  No matter what se
 
 
 == Changelog ==
+
+= 2.0.1 =
+- Fix: permanent ban on 404 lockouts now sends correct email.
+- Fix: IP lockout logs not showing correct results/order on different pages.
+- Fix: IP lockout logs showing wrong badge for 404 lockouts.
+- Fix: 2FA not working properly when using Sensei plugin.
+- Other minor enhancements and fixes.
 
 = 2.0 =
 - New: added tweak “Disable XML-RPC”
