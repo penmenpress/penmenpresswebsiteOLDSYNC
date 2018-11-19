@@ -71,19 +71,19 @@ class NewsletterSubscription extends NewsletterModule {
         $data = array();
         $data['messages'] = array();
         if (isset($options['email_error'])) {
-            $data['messages']['email_error'] = $this->options_profile['email_error'];
+            $data['messages']['email_error'] = $options['email_error'];
         }
         if (isset($options['name_error'])) {
-            $data['messages']['name_error'] = $this->options_profile['name_error'];
+            $data['messages']['name_error'] = $options['name_error'];
         }
         if (isset($options['surname_error'])) {
-            $data['messages']['surname_error'] = $this->options_profile['surname_error'];
+            $data['messages']['surname_error'] = $options['surname_error'];
         }
         if (isset($options['profile_error'])) {
-            $data['messages']['profile_error'] = $this->options_profile['profile_error'];
+            $data['messages']['profile_error'] = $options['profile_error'];
         }
         if (isset($options['privacy_error'])) {
-            $data['messages']['privacy_error'] = $this->options_profile['privacy_error'];
+            $data['messages']['privacy_error'] = $options['privacy_error'];
         }
         $data['profile_max'] = NEWSLETTER_PROFILE_MAX;
         wp_localize_script('newsletter-subscription', 'newsletter', $data);

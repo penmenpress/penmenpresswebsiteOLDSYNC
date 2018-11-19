@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.7.7
+  Version: 5.7.8
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -14,7 +14,7 @@
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.7.7');
+define('NEWSLETTER_VERSION', '5.7.8');
 
 global $newsletter, $wpdb;
 
@@ -332,12 +332,12 @@ class Newsletter extends NewsletterModule {
         $this->add_admin_page('smtp', 'SMTP');
         $this->add_admin_page('status', 'Status', 'manage_options');
         $this->add_admin_page('info', 'Company info');
-        //$this->add_admin_page('diagnostic', 'Diagnostic');
-        //$this->add_admin_page('startup', 'Quick Startup');
     }
 
     function add_extensions_menu() {
-        $this->add_menu_page('extensions', '<span style="color:#27AE60; font-weight: bold;">Extensions</span>');
+        if (!class_exists('NewsletterExtensions')) {
+            $this->add_menu_page('extensions', '<span style="color:#27AE60; font-weight: bold;">Add-ons</span>');
+        }
     }
 
     /**
@@ -709,7 +709,6 @@ class Newsletter extends NewsletterModule {
         if (!$user_id) {
             return;
         }
-        //$this->logger->debug('Query');
         $wpdb->query($wpdb->prepare("insert into " . $wpdb->prefix . 'newsletter_sent (user_id, email_id, time, status, error) values (%d, %d, %d, %d, %s) on duplicate key update time=%d, status=%d, error=%s', $user_id, $email_id, time(), $status, $error, time(), $status, $error));
     }
 
@@ -1133,12 +1132,11 @@ class Newsletter extends NewsletterModule {
         $plugin->url = '';
         $value->response[$extension->plugin] = $plugin;
 
-        if (defined('NEWSLETTER_LICENSE_KEY')) {
-            $value->response[$extension->plugin]->package = 'http://www.thenewsletterplugin.com/wp-content/plugins/file-commerce-pro/get.php?f=' . $extension->id .
-                    '&k=' . NEWSLETTER_LICENSE_KEY;
-        } else {
-            $value->response[$extension->plugin]->package = 'http://www.thenewsletterplugin.com/wp-content/plugins/file-commerce-pro/get.php?f=' . $extension->id .
-                    '&k=' . Newsletter::instance()->options['contract_key'];
+        $value->response[$extension->plugin]->package = '';
+        
+        if (class_exists('NewsletterExtensions')) {
+            // NO filters here!
+            $value->response[$extension->plugin]->package = NewsletterExtensions::$instance->get_package($extension->id);
         }
 
         return $value;
@@ -1150,7 +1148,7 @@ class Newsletter extends NewsletterModule {
      */
     function getTnpExtensions() {
 
-        $extensions_json = get_transient('tnp_extensions_json');
+        $extensions_json = false; //get_transient('tnp_extensions_json');
 
         if (false === $extensions_json) {
             $url = "http://www.thenewsletterplugin.com/wp-content/extensions.json";
