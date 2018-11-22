@@ -154,11 +154,22 @@ $extension_listing_array = array(
                             'desc'=>'Pop-Up Functionality for AMP in WordPress. Most easiest and the best way to include Pop-Up in AMP.',
                             'img_src'=>AMPFORWP_IMAGE_DIR . '/pwa-icon.png',
                             'price'=>'$39',
-                            'url_link'=>'#',
+                            'url_link'=>'https://ampforwp.com/amp-popup/',
                             'plugin_active_path'=> 'amp-popup/amp-popup.php',
                             'item_name'=>'AMP Popup',
                             'store_url'=>'https://accounts.ampforwp.com',
                             'is_activated'=>(is_plugin_active('amp-popup/amp-popup.php')? 1 : 2),
+                        ),
+                        array(
+                            'name'=>'Page Builder For AMP',
+                            'desc'=>'Page Builder Functionality for AMP in WordPress. Most easiest and the best way to include Page Builder in AMP.',
+                            'img_src'=>AMPFORWP_IMAGE_DIR . '/pwa-icon.png',
+                            'price'=>'Free',
+                            'url_link'=>'http://ampforwp.com/page-builder-compatibility-for-amp/#utm_source=options-panel&utm_medium=extension-tab_pagebuilder-for-amp&utm_campaign=AMP%20Plugin',
+                            'plugin_active_path'=> 'pagebuilder-for-amp/pagebuilder-for-amp.php',
+                            'item_name'=>'Page Builder for AMP',
+                            'store_url'=>'https://accounts.ampforwp.com',
+                            'is_activated'=>(is_plugin_active('pagebuilder-for-amp/pagebuilder-for-amp.php')? 1 : 2),
                         ),
                         array(
                             'name'=>'Call To Action (CTA)',
@@ -195,6 +206,17 @@ $extension_listing_array = array(
                             'item_name'=>'EDD for AMP',
                             'store_url'=>'https://accounts.ampforwp.com',
                             'is_activated'=>(is_plugin_active('edd-for-amp/edd-for-amp.php')? 1 : 2),
+                        ),
+                        array(
+                            'name'=>'Facebook Chat For AMP',
+                            'desc'=>'Facebook Chat for AMP in WordPress. Most easiest and the best way to include Facebook Chat in AMP.',
+                            'img_src'=>AMPFORWP_IMAGE_DIR . '/comments.png',
+                            'price'=>'$19',
+                            'url_link'=>'https://ampforwp.com/facebook-chat-for-amp/',
+                            'plugin_active_path'=> 'facebook-chat-for-amp/facebook-chat-for-amp.php',
+                            'item_name'=>'Facebook Chat For AMP',
+                            'store_url'=>'https://accounts.ampforwp.com',
+                            'is_activated'=>(is_plugin_active('facebook-chat-for-amp/facebook-chat-for-amp.php')? 1 : 2),
                         ),
 
                         array(
@@ -488,7 +510,7 @@ $freepro_listing = '
         <span class="ov"></span>
     </div>
     <div class="fp-cnt">
-            <h1>Upgrade to Pro</h1>
+            <h1>Upgrade to Pro <span>@ 50% off</span></h1>
             <p>Take your AMP to the next level with more beautiful themes, great extensions and more powerful features.</p>
             <a class="buy" href="#upgrade">BUY NOW</a>
     </div>
@@ -655,9 +677,10 @@ $freepro_listing = '
             </div>
             <div class="pri-lst">
                 <div class="pri-tb">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=1&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&discount=BFCM2018&download_id=24570&edd_options[price_id]=1&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>PERSONAL</h5>
-                        <span class="amt"><sup>$</sup>149</span>
+                        <span class="amt strikethrough"><sup>$</sup>149</span>
+                        <span class="amt"><sup>$</sup>74.5</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">1 Site License</span>
                         <span class="e">E-mail support</span>
@@ -667,9 +690,10 @@ $freepro_listing = '
                     </a>
                 </div>
                 <div class="pri-tb rec">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=2&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&discount=BFCM2018&discount=BFCM2018&download_id=24570&edd_options[price_id]=2&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>MULTIPLE</h5>
-                        <span class="amt"><sup>$</sup>199</span>
+                        <span class="amt strikethrough"><sup>$</sup>199</span>
+                        <span class="amt"><sup>$</sup>99.5</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">3 Site License</span>
                         <span class="e">E-mail support</span>
@@ -680,9 +704,10 @@ $freepro_listing = '
                     </a>
                 </div>
                 <div class="pri-tb">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=3&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&discount=BFCM2018&edd_options[price_id]=3&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>WEBMASTER</h5>
-                        <span class="amt"><sup>$</sup>249</span>
+                        <span class="amt strikethrough"><sup>$</sup>249</span>
+                        <span class="amt"><sup>$</sup>124.5</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">10 Site License</span>
                         <span class="e">E-mail support</span>
@@ -692,9 +717,10 @@ $freepro_listing = '
                     </a>
                 </div>
                 <div class="pri-tb">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=4&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&discount=BFCM2018&download_id=24570&edd_options[price_id]=4&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>FREELANCER</h5>
-                        <span class="amt"><sup>$</sup>299</span>
+                        <span class="amt strikethrough"><sup>$</sup>299</span>
+                        <span class="amt"><sup>$</sup>149.5</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">25 Site License</span>
                         <span class="e">E-mail support</span>
@@ -704,9 +730,10 @@ $freepro_listing = '
                     </a>
                 </div>
                 <div class="pri-tb">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=5&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&discount=BFCM2018&edd_options[price_id]=5&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>AGENCY</h5>
-                        <span class="amt"><sup>$</sup>499</span>
+                        <span class="amt strikethrough"><sup>$</sup>499</span>
+                        <span class="amt"><sup>$</sup>249.5</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">Unlimited</span>
                         <span class="e">E-mail support</span>
@@ -4876,7 +4903,7 @@ Redux::setSection( $opt_name, array(
                     'id'       => 'ampforwp-amp-menu',
                     'type'     => 'switch',
                     'title'    => esc_html__('Navigation Menu', 'accelerated-mobile-pages'),
-                    'desc'       => esc_html__( 'Add Menus to your AMP pages by clicking on this <a href="'.trailingslashit(get_admin_url()).'nav-menus.php?action=locations">link</a>' , 'accelerated-mobile-pages'),
+                    'desc'       => esc_html__( 'Add Menus to your AMP pages by clicking on this ', 'accelerated-mobile-pages').'<a href="'.esc_url(trailingslashit(get_admin_url())).'nav-menus.php?action=locations">'.esc_html__('link', 'accelerated-mobile-pages').'</a>' ,
                     'tooltip-subtitle' => esc_html__('Enable/Disable Menu from header', 'accelerated-mobile-pages'),
                     'true'      => 'true',
                     'false'     => 'false',
@@ -7266,7 +7293,7 @@ if(!ampforwp_check_extensions()){
         'id'         => 'opt-choose',
         'subsection' => false,
        'desc' => $freepro_listing,
-        'icon' => 'el el-heart',
+        'icon' => 'el el-gift',
     ) );
 }
 
