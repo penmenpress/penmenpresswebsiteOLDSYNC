@@ -2,8 +2,8 @@
 Contributors: smashballoon
 Tags: Facebook, Facebook feed, Facebook posts, Facebook wall, Facebook page
 Requires at least: 3.0
-Tested up to: 4.9
-Stable tag: 2.7.2
+Tested up to: 5.0
+Stable tag: 2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -265,32 +265,44 @@ You no longer need your own Access Token to use the Custom Facebook Feed Plugin,
 
 == Changelog ==
 
+= 2.8 =
+* New: Added support for Notes in timeline feeds. If your timeline feed contains a note then the plugin will now get the content from the note and display it within the post.
+* New: Facebook call-to-action buttons - such as "Learn More", "Shop Now", and "Message Page" - are now supported in your posts. These text strings can be translated using the settings at: Facebook Feed > Customize > Custom Text/Translate
+* New: Added a setting that you can enable if you are displaying posts from a restricted (non-public) Facebook page. This will allow the page avatar to be displayed, and is located at: Facebook Feed > Customize > Misc > Misc Settings > Is Facebook Page restricted?
+* New: If a visitor posts to your page then their avatar will now be displayed and cached for 6 months. To clear the cache of these avatar images use the button located at: Facebook Feed > Customize > Misc > Misc Settings > Clear Avatar Cache
+* Tweak: The Timezone setting can now be set in the shortcode. Eg: `timezone="America/Los_Angeles"`
+* Tweak: Minor UI changes to the admin pages
+* Tweak: Reduced some of the data in the System Info
+* Fix: If you backdate a post it will now be ordered correctly in your feed
+* Fix: Fixed a theme conflict related to the Color Picker in the admins section
+* Verified compatibility with WordPress 5.0 and Gutenburg
+
 = 2.7.2 =
 * **Important:** If you are displaying a feed from a Facebook page which you are *not* an admin of then it is advised that you obtain a new Access Token in the plugin using the "Log in and get my Access Token" button. This will switch you from using the "SlickRemix" app to using our own "Smash Balloon" Facebook app which was recently approved by Facebook, and will prevent you from experiencing any potential interuptions in your feeds going forward. This will be the final time this is required.
 * Fix: Fixed a rare issue caused by some themes including the JavaScript file incorrectly
 
 = 2.7.1 =
-* Tweak: Made some adjustments to the Access Token login process
+* Tweak: Made some adjustments to the Facebook Access Token login process
 
 = 2.7 =
-* New: Now easily get your own Facebook Access Token to avoid any Facebook connection issues. Simply click the blue "Log in and get my Access Token" button on the plugin's settings page and connect your Facebook account to get your token. The Access Token will work to get posts from ANY Facebook page. Thanks to our friends at SlickRemix for powering our new login and getting the plugin back up and running again!
-* Tweak: Removed the minimum caching time if you're using your own Page Access Token
+* New: Now easily get your own Facebook Access Token to avoid any Facebook connection issues. Simply click the blue Facebook "Log in and get my Access Token" button on the Custom Facebook Feed settings page and connect your Facebook account to get your token. The Access Token will work to get posts from ANY Facebook page. Thanks to our friends at SlickRemix for powering our new login and getting the plugin back up and running again!
+* Tweak: Removed the minimum caching time if you're using your own Facebook Page Access Token
 
 = 2.6.4 =
-* **Important:** If you are displaying posts from a Facebook page that **you are an admin of** then it is now highly recommended that you retrieve your own Access Token for that page to avoid any API rate limit errors. Simply follow these [step-by-step](https://smashballoon.com/custom-facebook-feed/page-token/) instructions to obtain one.
+* **Important:** If you are displaying Facebook posts from a Facebook page that **you are an admin of** then it is now highly recommended that you retrieve your own Facebook Access Token for that Facebook page to avoid any Facebook API rate limit errors. Simply follow these [step-by-step](https://smashballoon.com/custom-facebook-feed/page-token/) instructions to obtain one.
 
 = 2.6.3 =
-* Fix: Fixed an issue where API errors were being cached
+* Fix: Fixed an issue where Facebook API errors were being cached
 
 = 2.6.2 =
 * Fix: Replaced all HTTP links with HTTPS
 * Fix: Fixed a rare issue which affected the layout of other Facebook widgets
-* Fix: Automatically remove slashes at the end of the Page ID as it caused an error
-* Fix: The API response test in the System Info now only tests with your token if you have the "Use my own Access Token" setting enabled
-* Fix: Fixed an issue which caused an occasional API rate limit error
+* Fix: Automatically remove slashes at the end of the Facebook Page ID as it caused an error
+* Fix: The API response test in the System Info now only tests with your Facebook token if you have the "Use my own Access Token" setting enabled
+* Fix: Fixed an issue which caused an occasional Facebook API rate limit error
 
 = 2.6.1 =
-* Fix: Removed an unnecessary API call
+* Fix: Removed an unnecessary Facebook API call
 * Fix: Removed a PHP notice which was displayed under rare circumstances
 * Fix: Minor bug fixes
 

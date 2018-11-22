@@ -145,9 +145,6 @@
 #cff .cff-author .cff-story{
   font-weight: normal;
 }
-#cff.cff-default-styles .cff-author .cff-author-text span{
-  font-weight: 1.2;
-}
 #cff.cff-default-styles .cff-author a{
   text-decoration: none;
 }
@@ -307,6 +304,13 @@
 #cff .cff-desc-wrap{
   float: left;
   width: 100%;
+}
+
+/* Note */
+#cff .cff-note-title{
+  display: block;
+  font-weight: bold;
+  padding-bottom: 5px;
 }
 
 /* View on Facebook / View Link text */
@@ -493,4 +497,18 @@
 #cff .cff-linebreak{
   display: block;
   height: 5px;
+}
+
+/* Call to action button */
+#cff .cff-cta-link a {
+  display: inline-block;
+  padding: 5px 15px;
+  border: 1px solid #ddd;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 3px;
+}
+#cff .cff-cta-link a:hover {
+  background: #f9f9f9;
+  background: rgba(0,0,0,0.05);
+  text-decoration: none;
 }

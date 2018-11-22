@@ -159,20 +159,26 @@ jQuery(document).ready(function($) {
 
 	//Shortcode tooltips
 	jQuery('#cff-admin label').click(function(){
-	var $sbi_shortcode = jQuery(this).siblings('.cff_shortcode');
-	if($sbi_shortcode.is(':visible')){
-		jQuery(this).siblings('.cff_shortcode').css('display','none');
-	} else {
-		jQuery(this).siblings('.cff_shortcode').css('display','block');
-	}  
+	  	var $el = jQuery(this);
+	    var $cff_shortcode = $el.siblings('.cff_shortcode');
+	    if($cff_shortcode.is(':visible')){
+	      $el.siblings('.cff_shortcode').css('display','none');
+	    } else {
+	      $el.siblings('.cff_shortcode').css('display','block');
+	    }  
 	});
-	jQuery('#cff-admin label').hover(function(){
-	if( jQuery(this).siblings('.cff_shortcode').length > 0 ){
-		jQuery(this).attr('title', 'Click for shortcode option').append('<code class="cff_shortcode_symbol">[]</code>');
-	}
+	jQuery('#cff-admin th').hover(function(){
+		if( jQuery(this).find('.cff_shortcode').length > 0 ){
+		  jQuery(this).find('label').append('<code class="cff_shortcode_symbol">[]</code>');
+		}
 	}, function(){
 		jQuery(this).find('.cff_shortcode_symbol').remove();
 	});
+	jQuery('#cff-admin label').hover(function(){
+		if( jQuery(this).siblings('.cff_shortcode').length > 0 ){
+		  jQuery(this).attr('title', 'Click for shortcode option');
+		}
+	}, function(){});
 
 	//Open/close the expandable option sections
 	jQuery('.cff-expandable-options').hide();
@@ -207,5 +213,28 @@ jQuery(document).ready(function($) {
 			$("#cff_show_access_token").trigger("change").prop( "checked", true );
 		}
 	});
+
+	// Clear avatar cache
+    var $cffClearAvatarsBtn = $('#cff-admin #cff_clear_avatars');
+    $cffClearAvatarsBtn.click(function(event) {
+        event.preventDefault();
+        $('#cff-clear-avatars-success').remove();
+        $(this).prop("disabled",true);
+        $.ajax({
+            url : ajaxurl,
+            type : 'post',
+            data : {
+                action : 'cff_clear_avatar_cache'
+            },
+            success : function(data) {
+                $cffClearAvatarsBtn.prop('disabled',false);
+                if(!data===false) {
+                    $cffClearAvatarsBtn.after('<i id="cff-clear-avatars-success" class="fa fa-check-circle cff-success-check"></i>');
+                } else {
+                    $cffClearAvatarsBtn.after('<span>error</span>');
+                }
+            }
+        });
+    });
 
 });
