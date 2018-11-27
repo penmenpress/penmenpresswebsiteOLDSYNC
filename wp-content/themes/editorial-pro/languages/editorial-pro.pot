@@ -1,0 +1,1885 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-02-02 11:22+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco - https://localise.biz/"
+
+#: 404.php:19
+msgid "Oops! That page can&rsquo;t be found."
+msgstr ""
+
+#: 404.php:21
+msgid "404"
+msgstr ""
+
+#: 404.php:21
+msgid "error"
+msgstr ""
+
+#: 404.php:23
+msgid ""
+"It looks like nothing was found at this location. Maybe try one of the links "
+"below or a search?"
+msgstr ""
+
+#: comments.php:33
+#, php-format
+msgctxt "comments title"
+msgid "One thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:42 comments.php:63
+msgid "Comment navigation"
+msgstr ""
+
+#: comments.php:45 comments.php:66
+msgid "Older Comments"
+msgstr ""
+
+#: comments.php:46 comments.php:67
+msgid "Newer Comments"
+msgstr ""
+
+#: comments.php:80
+msgid "Comments are closed."
+msgstr ""
+
+#: functions.php:71
+msgid "Primary Menu"
+msgstr ""
+
+#: functions.php:72
+msgid "Top Header Menu"
+msgstr ""
+
+#: functions.php:73
+msgid "Footer Menu"
+msgstr ""
+
+#: search.php:21
+#, php-format
+msgid "Search Results for: %s"
+msgstr ""
+
+#: inc/editorial-functions.php:32 inc/widgets/editorial-widget-fields.php:172
+msgid "Upload"
+msgstr ""
+
+#: inc/editorial-functions.php:33 inc/widgets/editorial-widget-fields.php:174
+#: inc/widgets/editorial-widget-fields.php:183
+msgid "Remove"
+msgstr ""
+
+#: inc/editorial-functions.php:104
+msgid "Select Category"
+msgstr ""
+
+#: inc/editorial-functions.php:117
+msgid "Select No.of Columns"
+msgstr ""
+
+#: inc/editorial-functions.php:118
+msgid "1 Column"
+msgstr ""
+
+#: inc/editorial-functions.php:119
+msgid "2 Columns"
+msgstr ""
+
+#: inc/editorial-functions.php:120
+msgid "3 Columns"
+msgstr ""
+
+#: inc/editorial-functions.php:121
+msgid "4 Columns"
+msgstr ""
+
+#: inc/editorial-functions.php:128
+msgid "Select No.of Items"
+msgstr ""
+
+#: inc/editorial-functions.php:129
+msgid "2 Items"
+msgstr ""
+
+#: inc/editorial-functions.php:130
+msgid "3 Items"
+msgstr ""
+
+#: inc/editorial-functions.php:131
+msgid "4 Items"
+msgstr ""
+
+#: inc/editorial-functions.php:132
+msgid "5 Items"
+msgstr ""
+
+#: inc/editorial-functions.php:139
+msgid "Layout 1: Post images are in rectangle."
+msgstr ""
+
+#: inc/editorial-functions.php:140
+msgid "Layout 2: Post image are in portrait."
+msgstr ""
+
+#: inc/editorial-functions.php:147 inc/customizer/editorial-sanitize.php:94
+msgid "Layout 1: ( Default Layout. )"
+msgstr ""
+
+#: inc/editorial-functions.php:148
+msgid "Layout 2: ( Horizontal image on top. )"
+msgstr ""
+
+#: inc/editorial-functions.php:149
+msgid "Layout 3: ( 4 Posts in square size. ) "
+msgstr ""
+
+#: inc/editorial-functions.php:156
+msgid "Layout 1 (Default): All posts on list."
+msgstr ""
+
+#: inc/editorial-functions.php:157
+msgid "Layout 2: First post in fullwidth and rest are in list."
+msgstr ""
+
+#: inc/editorial-functions.php:164
+msgid "Layout 1 (Default)"
+msgstr ""
+
+#: inc/editorial-functions.php:165
+msgid "Layout 2: Posts with excerpt content."
+msgstr ""
+
+#: inc/editorial-functions.php:166
+msgid "Layout 3: Posts title are over bottom of image."
+msgstr ""
+
+#: inc/editorial-functions.php:173
+msgid "2 Posts"
+msgstr ""
+
+#: inc/editorial-functions.php:174
+msgid "3 Posts"
+msgstr ""
+
+#: inc/editorial-functions.php:175
+msgid "4 Posts"
+msgstr ""
+
+#: inc/editorial-functions.php:182
+msgid "Latest Posts"
+msgstr ""
+
+#: inc/editorial-functions.php:183
+msgid "Random Posts"
+msgstr ""
+
+#: inc/editorial-functions.php:814 inc/customizer/design-panel.php:165
+msgid "Read More"
+msgstr ""
+
+#: inc/editorial-hooks.php:215 inc/customizer/design-panel.php:338
+msgid "Review Overview"
+msgstr ""
+
+#: inc/editorial-hooks.php:216 inc/customizer/design-panel.php:368
+msgid "Summary"
+msgstr ""
+
+#: inc/editorial-hooks.php:365 inc/customizer/design-panel.php:447
+msgid "Related Articles"
+msgstr ""
+
+#: inc/extras.php:143 inc/woocommerce-hooks.php:21
+#: inc/customizer/additional-panel.php:161
+msgid "Home"
+msgstr ""
+
+#: inc/extras.php:158
+msgid "Error 404"
+msgstr ""
+
+#: inc/extras.php:266
+msgid "Page"
+msgstr ""
+
+#: inc/template-tags.php:30
+#, php-format
+msgctxt "post date"
+msgid "%s"
+msgstr ""
+
+#: inc/template-tags.php:35
+#, php-format
+msgctxt "post author"
+msgid "%s"
+msgstr ""
+
+#: inc/template-tags.php:65
+msgid "0"
+msgstr ""
+
+#: inc/template-tags.php:65
+msgid "1"
+msgstr ""
+
+#: inc/template-tags.php:65
+msgid "%"
+msgstr ""
+
+#. used between list items, there is a space after the comma
+#: inc/template-tags.php:79
+msgid ", "
+msgstr ""
+
+#: inc/template-tags.php:81
+#, php-format
+msgid "Tagged %1$s"
+msgstr ""
+
+#. %s: Name of current post
+#. %s: Name of current post
+#: inc/template-tags.php:88 template-parts/content-page.php:35
+#, php-format
+msgid "Edit %s"
+msgstr ""
+
+#: template-parts/content-none.php:16
+msgid "Nothing Found"
+msgstr ""
+
+#: template-parts/content-none.php:23
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: template-parts/content-none.php:27
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+
+#: template-parts/content-none.php:33
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+
+#: template-parts/content-page.php:24 template-parts/content-single.php:43
+#: layouts/posts/layout-five.php:104 layouts/posts/layout-four.php:101
+#: layouts/posts/layout-one.php:106 layouts/posts/layout-three.php:101
+#: layouts/posts/layout-two.php:101
+msgid "Pages:"
+msgstr ""
+
+#: template-parts/content-single.php:38 layouts/posts/layout-five.php:99
+#: layouts/posts/layout-four.php:96 layouts/posts/layout-one.php:101
+#: layouts/posts/layout-three.php:96 layouts/posts/layout-two.php:96
+#, php-format
+msgid "Continue reading %s <span class=\"meta-nav\">&rarr;</span>"
+msgstr ""
+
+#. Name of the template
+msgid "Magazine Page"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:23
+msgid "Additional Settings"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:33
+msgid "Categories Color"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:59
+#, php-format
+msgid " %s"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:74
+msgid "Social Media"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:81
+#: inc/metaboxes/editorial-author-info.php:78
+msgid "Facebook"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:82
+#: inc/metaboxes/editorial-author-info.php:98
+msgid "Twitter"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:83
+#: inc/metaboxes/editorial-author-info.php:81
+msgid "Google+"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:84
+#: inc/metaboxes/editorial-author-info.php:84
+msgid "LinkedIn"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:85
+#: inc/metaboxes/editorial-author-info.php:104
+msgid "YouTube"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:86
+#: inc/metaboxes/editorial-author-info.php:99
+msgid "Vimeo"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:87
+#: inc/metaboxes/editorial-author-info.php:86
+msgid "Pinterest"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:88
+#: inc/metaboxes/editorial-author-info.php:83
+msgid "Instagram"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:108
+msgid "Your Social Account URL"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:121
+msgid "Breadcrumbs Settings"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:143
+msgid "Breadcrumbs Option"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:144
+msgid "Show/hide breadcrumbs at innerpages."
+msgstr ""
+
+#: inc/customizer/additional-panel.php:148
+#: inc/customizer/additional-panel.php:291
+#: inc/customizer/additional-panel.php:320
+#: inc/customizer/additional-panel.php:349
+#: inc/customizer/additional-panel.php:378
+#: inc/customizer/additional-panel.php:407
+#: inc/customizer/additional-panel.php:435 inc/customizer/design-panel.php:152
+#: inc/customizer/design-panel.php:325 inc/customizer/design-panel.php:406
+#: inc/customizer/design-panel.php:627 inc/customizer/editorial-sanitize.php:66
+#: inc/customizer/general-panel.php:94
+msgid "Show"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:149
+#: inc/customizer/additional-panel.php:292
+#: inc/customizer/additional-panel.php:321
+#: inc/customizer/additional-panel.php:350
+#: inc/customizer/additional-panel.php:379
+#: inc/customizer/additional-panel.php:408
+#: inc/customizer/additional-panel.php:436 inc/customizer/design-panel.php:153
+#: inc/customizer/design-panel.php:326 inc/customizer/design-panel.php:407
+#: inc/customizer/design-panel.php:628 inc/customizer/editorial-sanitize.php:67
+#: inc/customizer/general-panel.php:95
+msgid "Hide"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:171
+msgid "Home Text"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:172
+msgid "Add breadcrumbs home text."
+msgstr ""
+
+#: inc/customizer/additional-panel.php:193
+msgid "Separator Value"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:205
+msgid "Posts Settings"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:227
+msgid "Post Categories Type"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:230
+#: inc/customizer/editorial-sanitize.php:128
+msgid "In Box"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:231
+#: inc/customizer/editorial-sanitize.php:129
+msgid "In Plain Text"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:252
+msgid "Image Hover Type"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:255
+#: inc/customizer/editorial-sanitize.php:107
+msgid "Zoom In"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:256
+#: inc/customizer/editorial-sanitize.php:108
+msgid "Zoom In Rotate"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:257
+#: inc/customizer/editorial-sanitize.php:109
+msgid "Zoom Out"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:258
+#: inc/customizer/editorial-sanitize.php:110
+msgid "Zoom Out Rotate"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:259
+#: inc/customizer/editorial-sanitize.php:111
+msgid "Shine"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:260
+#: inc/customizer/editorial-sanitize.php:112
+msgid "Slanted Shine"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:261
+#: inc/customizer/editorial-sanitize.php:113
+msgid "Grayscale"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:262
+#: inc/customizer/editorial-sanitize.php:114
+msgid "Opacity"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:263
+#: inc/customizer/editorial-sanitize.php:115
+msgid "Flashing"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:264
+#: inc/customizer/editorial-sanitize.php:116
+msgid "Circle"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:286
+msgid "Post Date Option"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:287
+msgid "Show/hide date from post ( only from widget posts )."
+msgstr ""
+
+#: inc/customizer/additional-panel.php:315
+msgid "Post Author Option"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:316
+msgid "Show/hide author from post ( only from widget posts )."
+msgstr ""
+
+#: inc/customizer/additional-panel.php:344
+msgid "Post Comment Option"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:345
+msgid "Show/hide comment from post ( only from widget posts )."
+msgstr ""
+
+#: inc/customizer/additional-panel.php:373
+msgid "Post Categories Option"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:374
+msgid "Show/hide categories from post ( only from widget posts )."
+msgstr ""
+
+#: inc/customizer/additional-panel.php:402 inc/customizer/design-panel.php:320
+msgid "Post Review Option"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:403
+msgid "Show/hide review from post ( only from widget posts )."
+msgstr ""
+
+#: inc/customizer/additional-panel.php:430
+msgid "Post Format Icon Option"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:431
+msgid "Show/hide format icon at post featured image."
+msgstr ""
+
+#: inc/customizer/additional-panel.php:457
+msgid "Fall back Image"
+msgstr ""
+
+#: inc/customizer/design-panel.php:27
+msgid "Design Settings"
+msgstr ""
+
+#: inc/customizer/design-panel.php:38
+msgid "Archive Settings"
+msgstr ""
+
+#: inc/customizer/design-panel.php:58 inc/customizer/design-panel.php:233
+msgid "Available Sidebars"
+msgstr ""
+
+#: inc/customizer/design-panel.php:59 inc/customizer/design-panel.php:234
+#: inc/customizer/design-panel.php:568
+msgid "Choose sidebar from available options."
+msgstr ""
+
+#: inc/customizer/design-panel.php:63 inc/customizer/design-panel.php:238
+#: inc/customizer/design-panel.php:572
+#: inc/metaboxes/editorial-post-sidebar.php:45
+#: inc/widgets/editorial-widgets-area.php:29
+msgid "Left Sidebar"
+msgstr ""
+
+#: inc/customizer/design-panel.php:67 inc/customizer/design-panel.php:242
+#: inc/customizer/design-panel.php:576
+#: inc/metaboxes/editorial-post-sidebar.php:51
+msgid "Right Sidebar"
+msgstr ""
+
+#: inc/customizer/design-panel.php:71 inc/customizer/design-panel.php:246
+#: inc/customizer/design-panel.php:580
+msgid "No Sidebar"
+msgstr ""
+
+#: inc/customizer/design-panel.php:75 inc/customizer/design-panel.php:250
+#: inc/customizer/design-panel.php:584
+msgid "No Sidebar Center"
+msgstr ""
+
+#: inc/customizer/design-panel.php:98
+msgid "Archive Page Layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:99
+msgid "Choose available layout for all archive pages."
+msgstr ""
+
+#: inc/customizer/design-panel.php:102 inc/customizer/editorial-sanitize.php:79
+msgid "Classic Layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:103 inc/customizer/editorial-sanitize.php:80
+msgid "Columns Layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:104 inc/customizer/editorial-sanitize.php:81
+msgid "Classic with Grids Layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:105 inc/customizer/editorial-sanitize.php:82
+msgid "List layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:125
+msgid "Archive excerpt length"
+msgstr ""
+
+#: inc/customizer/design-panel.php:147
+msgid "Archive Read More"
+msgstr ""
+
+#: inc/customizer/design-panel.php:148
+msgid "Show/hide read more link on archive posts."
+msgstr ""
+
+#: inc/customizer/design-panel.php:173
+msgid "Read More Text"
+msgstr ""
+
+#: inc/customizer/design-panel.php:194
+msgid "Read More Type"
+msgstr ""
+
+#: inc/customizer/design-panel.php:199
+msgid "Button"
+msgstr ""
+
+#: inc/customizer/design-panel.php:200
+msgid "Only Text"
+msgstr ""
+
+#: inc/customizer/design-panel.php:212
+msgid "Post Settings"
+msgstr ""
+
+#: inc/customizer/design-panel.php:274 inc/customizer/header-panel.php:58
+#: inc/customizer/header-panel.php:467 inc/widgets/editorial-block-grid.php:73
+#: inc/widgets/editorial-block-list.php:65
+#: inc/widgets/editorial-carousel.php:59
+#: inc/widgets/editorial-featured-slider.php:124
+msgid "Available Layouts"
+msgstr ""
+
+#: inc/customizer/design-panel.php:275
+msgid "Choose single post layout from available layouts."
+msgstr ""
+
+#: inc/customizer/design-panel.php:279
+#: inc/metaboxes/editorial-post-layout.php:37
+msgid "Post Layout 1"
+msgstr ""
+
+#: inc/customizer/design-panel.php:283
+#: inc/metaboxes/editorial-post-layout.php:43
+msgid "Post Layout 2"
+msgstr ""
+
+#: inc/customizer/design-panel.php:287
+#: inc/metaboxes/editorial-post-layout.php:49
+msgid "Post Layout 3"
+msgstr ""
+
+#: inc/customizer/design-panel.php:291
+#: inc/metaboxes/editorial-post-layout.php:55
+msgid "Post Layout 4"
+msgstr ""
+
+#: inc/customizer/design-panel.php:295
+#: inc/metaboxes/editorial-post-layout.php:61
+msgid "Post Layout 5"
+msgstr ""
+
+#: inc/customizer/design-panel.php:321
+msgid "Enable/disable review section at single post page."
+msgstr ""
+
+#: inc/customizer/design-panel.php:348 inc/customizer/design-panel.php:457
+msgid "Section Title"
+msgstr ""
+
+#: inc/customizer/design-panel.php:378
+msgid "Summary Title"
+msgstr ""
+
+#: inc/customizer/design-panel.php:401
+msgid "Author Option"
+msgstr ""
+
+#: inc/customizer/design-panel.php:402
+msgid "Enable/disable author information at single post page."
+msgstr ""
+
+#: inc/customizer/design-panel.php:429
+msgid "Related Articles Option"
+msgstr ""
+
+#: inc/customizer/design-panel.php:430
+msgid "Enable/disable related articles section at single post page."
+msgstr ""
+
+#: inc/customizer/design-panel.php:434 inc/customizer/editorial-sanitize.php:53
+#: inc/customizer/header-panel.php:118 inc/customizer/header-panel.php:164
+#: inc/customizer/header-panel.php:210 inc/customizer/header-panel.php:248
+#: inc/customizer/header-panel.php:276 inc/customizer/header-panel.php:397
+msgid "Enable"
+msgstr ""
+
+#: inc/customizer/design-panel.php:435 inc/customizer/editorial-sanitize.php:54
+#: inc/customizer/header-panel.php:119 inc/customizer/header-panel.php:165
+#: inc/customizer/header-panel.php:211 inc/customizer/header-panel.php:249
+#: inc/customizer/header-panel.php:277 inc/customizer/header-panel.php:398
+msgid "Disable"
+msgstr ""
+
+#: inc/customizer/design-panel.php:485
+msgid "Types of Related Articles"
+msgstr ""
+
+#: inc/customizer/design-panel.php:486
+msgid "Option to display related articles from category/tags."
+msgstr ""
+
+#: inc/customizer/design-panel.php:489
+#: inc/customizer/editorial-sanitize.php:141
+msgid "by Category"
+msgstr ""
+
+#: inc/customizer/design-panel.php:490
+#: inc/customizer/editorial-sanitize.php:142
+msgid "by Tags"
+msgstr ""
+
+#: inc/customizer/design-panel.php:511
+msgid "Related Articles Layouts"
+msgstr ""
+
+#: inc/customizer/design-panel.php:514
+#: inc/customizer/editorial-sanitize.php:154
+msgid "Default Layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:515 inc/customizer/editorial-sanitize.php:41
+#: inc/customizer/editorial-sanitize.php:155
+#: inc/customizer/general-panel.php:151
+msgid "Boxed Layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:536
+msgid "Post excerpt length"
+msgstr ""
+
+#: inc/customizer/design-panel.php:548
+msgid "Page Settings"
+msgstr ""
+
+#: inc/customizer/design-panel.php:567
+msgid "Archive Sidebars"
+msgstr ""
+
+#: inc/customizer/design-panel.php:600
+msgid "Footer Settings"
+msgstr ""
+
+#: inc/customizer/design-panel.php:622
+msgid "Widget Area Section"
+msgstr ""
+
+#: inc/customizer/design-panel.php:623
+msgid "Show/Hide option about footer widget area."
+msgstr ""
+
+#: inc/customizer/design-panel.php:648
+msgid "Widget Area Layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:649
+msgid ""
+"Choose layout from available option to display number of columns in footer "
+"area."
+msgstr ""
+
+#: inc/customizer/design-panel.php:653
+#: inc/customizer/editorial-sanitize.php:189
+msgid "Four Columns"
+msgstr ""
+
+#: inc/customizer/design-panel.php:657
+#: inc/customizer/editorial-sanitize.php:188
+msgid "Three Columns"
+msgstr ""
+
+#: inc/customizer/design-panel.php:661
+#: inc/customizer/editorial-sanitize.php:187
+msgid "Two Columns"
+msgstr ""
+
+#: inc/customizer/design-panel.php:665
+#: inc/customizer/editorial-sanitize.php:186
+msgid "One Column"
+msgstr ""
+
+#: inc/customizer/design-panel.php:688
+msgid "Background Color"
+msgstr ""
+
+#: inc/customizer/design-panel.php:709
+msgid "Text Color"
+msgstr ""
+
+#: inc/customizer/design-panel.php:732
+msgid "Copyright Info"
+msgstr ""
+
+#: inc/customizer/design-panel.php:752
+msgid "HomePage Widget Settings"
+msgstr ""
+
+#: inc/customizer/design-panel.php:772
+msgid "Widget Title Layout"
+msgstr ""
+
+#: inc/customizer/design-panel.php:773
+msgid ""
+"Choose option to managed the widget title layout only in homepage widgetarea."
+msgstr ""
+
+#: inc/customizer/design-panel.php:777 inc/customizer/header-panel.php:63
+#: inc/customizer/header-panel.php:472
+msgid "Layout 1"
+msgstr ""
+
+#: inc/customizer/design-panel.php:781 inc/customizer/header-panel.php:67
+#: inc/customizer/header-panel.php:476
+msgid "Layout 2"
+msgstr ""
+
+#: inc/customizer/design-panel.php:802
+msgid "Checked to added border for each posts in widget section."
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:40
+msgid "Fullwidth Layout"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:95
+msgid "Layout 2: ( Different style on caption and control. )"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:167
+#: inc/customizer/general-panel.php:119
+msgid "3 Balls"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:168
+#: inc/customizer/general-panel.php:120
+msgid "Rectangles"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:169
+#: inc/customizer/general-panel.php:121
+msgid "Steps"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:170
+#: inc/customizer/general-panel.php:122
+msgid "Spinning Border"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:171
+#: inc/customizer/general-panel.php:123
+msgid "Single Bleep"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:172
+#: inc/customizer/general-panel.php:124
+msgid "Square"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:173
+#: inc/customizer/general-panel.php:125
+msgid "Hollow Circle"
+msgstr ""
+
+#: inc/customizer/editorial-sanitize.php:174
+#: inc/customizer/general-panel.php:126
+msgid "Knight Rider"
+msgstr ""
+
+#: inc/customizer/general-panel.php:32
+msgid "General Settings"
+msgstr ""
+
+#: inc/customizer/general-panel.php:52
+msgid "Theme color"
+msgstr ""
+
+#: inc/customizer/general-panel.php:66
+msgid "Website Layout"
+msgstr ""
+
+#: inc/customizer/general-panel.php:67
+msgid "Choose site layout which shows your website more effective."
+msgstr ""
+
+#: inc/customizer/general-panel.php:89
+msgid "Pre Loader Option"
+msgstr ""
+
+#: inc/customizer/general-panel.php:90
+msgid "Show/hide pre loaders from site."
+msgstr ""
+
+#: inc/customizer/general-panel.php:116
+msgid "Pre loaders"
+msgstr ""
+
+#: inc/customizer/general-panel.php:147
+msgid "Site Layout"
+msgstr ""
+
+#: inc/customizer/general-panel.php:150
+msgid "FullWidth Layout"
+msgstr ""
+
+#: inc/customizer/header-panel.php:27
+msgid "Header Settings"
+msgstr ""
+
+#: inc/customizer/header-panel.php:37
+msgid "Header Layouts"
+msgstr ""
+
+#: inc/customizer/header-panel.php:59
+msgid "Select header layout from available layouts."
+msgstr ""
+
+#: inc/customizer/header-panel.php:71
+msgid "Layout 3"
+msgstr ""
+
+#: inc/customizer/header-panel.php:75
+msgid "Layout 4"
+msgstr ""
+
+#: inc/customizer/header-panel.php:91
+msgid "Top Header Section"
+msgstr ""
+
+#: inc/customizer/header-panel.php:113
+msgid "Top Header Option"
+msgstr ""
+
+#: inc/customizer/header-panel.php:114
+msgid "Enable/disable top header section."
+msgstr ""
+
+#: inc/customizer/header-panel.php:138
+msgid "Checked to hide top header background."
+msgstr ""
+
+#: inc/customizer/header-panel.php:159
+msgid "Current Date Option"
+msgstr ""
+
+#: inc/customizer/header-panel.php:160
+msgid "Enable/disable current date from top header."
+msgstr ""
+
+#: inc/customizer/header-panel.php:184
+msgid "Checked to hide top header date icon."
+msgstr ""
+
+#: inc/customizer/header-panel.php:205
+msgid "Social Icon Option"
+msgstr ""
+
+#: inc/customizer/header-panel.php:206
+msgid "Enable/disable social icons from top header (right)."
+msgstr ""
+
+#: inc/customizer/header-panel.php:223
+msgid "Main Menu Section"
+msgstr ""
+
+#: inc/customizer/header-panel.php:243
+msgid "Menu Sticky"
+msgstr ""
+
+#: inc/customizer/header-panel.php:244
+msgid "Enable/disable option for Menu Sticky"
+msgstr ""
+
+#: inc/customizer/header-panel.php:271
+msgid "Home Icon Option"
+msgstr ""
+
+#: inc/customizer/header-panel.php:272
+msgid "Enable/disable option for home icon at primary menu."
+msgstr ""
+
+#: inc/customizer/header-panel.php:301
+msgid "Menu Typography"
+msgstr ""
+
+#: inc/customizer/header-panel.php:302
+msgid "Select how you want your main menu to appear."
+msgstr ""
+
+#: inc/customizer/header-panel.php:335
+msgid "Main Menu Background Color"
+msgstr ""
+
+#: inc/customizer/header-panel.php:357
+msgid "Menu Hover Color"
+msgstr ""
+
+#: inc/customizer/header-panel.php:371
+msgid "News Ticker Section"
+msgstr ""
+
+#: inc/customizer/header-panel.php:392
+msgid "News Ticker Option"
+msgstr ""
+
+#: inc/customizer/header-panel.php:393
+msgid "Enable/disable news ticker at header."
+msgstr ""
+
+#: inc/customizer/header-panel.php:408
+#: inc/widgets/editorial-default-tabbed.php:110
+#: layouts/headers/news-ticker.php:13
+msgid "Latest"
+msgstr ""
+
+#: inc/customizer/header-panel.php:418
+msgid "News Ticker Caption"
+msgstr ""
+
+#: inc/customizer/header-panel.php:446
+msgid "News Ticker Post Count"
+msgstr ""
+
+#: inc/customizer/header-panel.php:468
+msgid "Select ticker layout from available layouts."
+msgstr ""
+
+#: inc/customizer/typography-panel.php:27
+msgid "Typography"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:38
+msgid "Paragraph"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:62
+msgid "Paragraph Typography"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:63
+msgid "Select how you want your paragraphs to appear."
+msgstr ""
+
+#: inc/customizer/typography-panel.php:86
+msgid "Heading 1"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:110
+msgid "Heading 1 Typography"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:111
+msgid "Select how you want your Heading 1 to appear."
+msgstr ""
+
+#: inc/customizer/typography-panel.php:135
+msgid "Heading 2"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:159
+msgid "Heading 2 Typography"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:160
+msgid "Select how you want your Heading 2 to appear."
+msgstr ""
+
+#: inc/customizer/typography-panel.php:184
+msgid "Heading 3"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:208
+msgid "Heading 3 Typography"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:209
+msgid "Select how you want your Heading 3 to appear."
+msgstr ""
+
+#: inc/customizer/typography-panel.php:233
+msgid "Heading 4"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:257
+msgid "Heading 4 Typography"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:258
+msgid "Select how you want your Heading 4 to appear."
+msgstr ""
+
+#: inc/customizer/typography-panel.php:282
+msgid "Heading 5"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:306
+msgid "Heading 5 Typography"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:307
+msgid "Select how you want your Heading 5 to appear."
+msgstr ""
+
+#: inc/customizer/typography-panel.php:331
+msgid "Heading 6"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:355
+msgid "Heading 6 Typography"
+msgstr ""
+
+#: inc/customizer/typography-panel.php:356
+msgid "Select how you want your Heading 6 to appear."
+msgstr ""
+
+#: inc/import/mt-importer.php:28
+msgid "Import Demo"
+msgstr ""
+
+#: inc/import/mt-importer.php:30
+msgid "Click on Import Demo button about importing demo contents."
+msgstr ""
+
+#: inc/import/mt-importer.php:54
+msgid "Demo Data"
+msgstr ""
+
+#: inc/import/mt-importer.php:71
+msgid "Import Demo Data"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:28
+msgid "Additional User Meta"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:33
+msgid "A special image for each user"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:42
+msgid "Upload Image"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:43
+msgid "Upload an additional image for your user profile."
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:73
+msgid "Behance"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:74
+msgid "Delicious"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:75
+msgid "DeviantArt"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:76
+msgid "Digg"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:77
+msgid "Dribbble"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:79
+msgid "Flickr"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:80
+msgid "Github"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:82
+msgid "Html5"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:85
+msgid "PayPal"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:87
+msgid "Reddit"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:88
+msgid "RSS"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:89
+msgid "Share"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:90
+msgid "Skype"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:91
+msgid "SoundCloud"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:92
+msgid "Spotify"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:93
+msgid "StackExchange"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:94
+msgid "Stackoverflow"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:95
+msgid "Steam"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:96
+msgid "StumbleUpon"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:97
+msgid "Tumblr"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:100
+msgid "VKontakte"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:101
+msgid "Windows"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:102
+msgid "WordPress"
+msgstr ""
+
+#: inc/metaboxes/editorial-author-info.php:103
+msgid "Yahoo"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:15
+msgid "Post Format Settings"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:37
+msgid "Video Format"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:38
+msgid "Featured Video url"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:47
+msgid "Audio Format"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:48
+msgid "Embed audio url"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:51
+msgid "Embed audio"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:52
+msgid "Reset url"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:57
+msgid "Gallery Format"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:58
+msgid "Embed gallery images."
+msgstr ""
+
+#: inc/metaboxes/editorial-post-format.php:81
+msgid "Add Images"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-layout.php:14
+msgid "Post Layout"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-layout.php:31
+msgid "Global Layout"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:14
+msgid "Post Review"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:26
+msgid "No Review"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:27
+msgid "Star Review"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:28
+msgid "Percentage Review"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:31
+msgid "5 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:32
+msgid "4.5 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:33
+msgid "4 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:34
+msgid "3.5 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:35
+msgid "3 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:36
+msgid "2.5 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:37
+msgid "2 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:38
+msgid "1.5 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:39
+msgid "1 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:40
+msgid "0.5 Stars"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:66
+msgid "Add star ratings for this post :"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:77
+#: inc/metaboxes/editorial-post-review.php:93
+#: inc/metaboxes/editorial-post-review.php:121
+#: inc/metaboxes/editorial-post-review.php:132
+msgid "Feature Name:"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:80
+#: inc/metaboxes/editorial-post-review.php:96
+msgid "Select rating"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:85
+#: inc/metaboxes/editorial-post-review.php:101
+#: inc/metaboxes/editorial-post-review.php:125
+#: inc/metaboxes/editorial-post-review.php:136
+msgid "Delete"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:108
+#: inc/metaboxes/editorial-post-review.php:143
+msgid "Add rating category"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:112
+msgid "Add Percentage ratings for this post :"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:123
+#: inc/metaboxes/editorial-post-review.php:134
+msgid "Percent: "
+msgstr ""
+
+#: inc/metaboxes/editorial-post-review.php:147
+msgid "Review description:"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-sidebar.php:14
+#: inc/metaboxes/editorial-post-sidebar.php:22
+msgid "Sidebar Position"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-sidebar.php:39
+msgid "Default Sidebar"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-sidebar.php:57
+msgid "No Sidebar Full Width"
+msgstr ""
+
+#: inc/metaboxes/editorial-post-sidebar.php:63
+msgid "No Sidebar Content Centered"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:20
+msgid "You can place banner as advertisement with links."
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:22
+msgid "Editorial: Ads Banner"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:32
+msgid "Leaderboard (728x90)"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:33
+msgid "Large (300x250)"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:37
+msgid "None"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:38
+msgid "External Link"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:39
+msgid "Do Not Follow Link"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:46
+msgid "Title"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:52
+msgid "Ads Size"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:60
+msgid "Add Image"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:66
+msgid "Add Url"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:72
+msgid "Open in new tab"
+msgstr ""
+
+#: inc/widgets/editorial-ads-banner.php:79
+msgid "Rel Attribute for URL Link"
+msgstr ""
+
+#: inc/widgets/editorial-block-column.php:20
+msgid "Display block posts as Column layout."
+msgstr ""
+
+#: inc/widgets/editorial-block-column.php:22
+msgid "Editorial: Block Posts (Column)"
+msgstr ""
+
+#: inc/widgets/editorial-block-column.php:39
+#: inc/widgets/editorial-block-grid.php:38
+#: inc/widgets/editorial-block-layout.php:36
+#: inc/widgets/editorial-block-list.php:38
+#: inc/widgets/editorial-carousel.php:39
+msgid "Block Title"
+msgstr ""
+
+#: inc/widgets/editorial-block-column.php:45
+#: inc/widgets/editorial-block-grid.php:44
+#: inc/widgets/editorial-carousel.php:45
+msgid "Category for Block Posts"
+msgstr ""
+
+#: inc/widgets/editorial-block-column.php:53
+#: inc/widgets/editorial-block-grid.php:52
+#: inc/widgets/editorial-block-layout.php:50
+#: inc/widgets/editorial-block-list.php:52
+#: inc/widgets/editorial-carousel.php:53
+#: inc/widgets/editorial-featured-slider.php:53
+#: inc/widgets/editorial-featured-slider.php:118
+#: inc/widgets/editorial-fullwidth-tabbed.php:63
+msgid "Display Posts from Sub-categories"
+msgstr ""
+
+#: inc/widgets/editorial-block-column.php:59
+#: inc/widgets/editorial-block-grid.php:58
+msgid "No. of Columns"
+msgstr ""
+
+#: inc/widgets/editorial-block-column.php:67
+#: inc/widgets/editorial-block-grid.php:66
+#: inc/widgets/editorial-block-layout.php:56
+#: inc/widgets/editorial-block-list.php:58
+#: inc/widgets/editorial-carousel.php:75
+#: inc/widgets/editorial-fullwidth-tabbed.php:69
+#: inc/widgets/editorial-posts-list.php:43
+msgid "No. of Posts"
+msgstr ""
+
+#: inc/widgets/editorial-block-column.php:74
+#: inc/widgets/editorial-block-grid.php:81
+#: inc/widgets/editorial-block-layout.php:63
+#: inc/widgets/editorial-fullwidth-tabbed.php:76
+msgid "No. of Words"
+msgstr ""
+
+#: inc/widgets/editorial-block-grid.php:20
+msgid "Display block posts in grid layout."
+msgstr ""
+
+#: inc/widgets/editorial-block-grid.php:22
+msgid "Editorial: Block Posts (Grid)"
+msgstr ""
+
+#: inc/widgets/editorial-block-layout.php:20
+msgid "Display posts in block layout"
+msgstr ""
+
+#: inc/widgets/editorial-block-layout.php:22
+msgid "Editorial: Block Layout"
+msgstr ""
+
+#: inc/widgets/editorial-block-layout.php:42
+#: inc/widgets/editorial-block-list.php:44
+msgid "Category for Block Layout"
+msgstr ""
+
+#: inc/widgets/editorial-block-list.php:20
+msgid "Display posts in block list layout"
+msgstr ""
+
+#: inc/widgets/editorial-block-list.php:22
+msgid "Editorial: Block Posts (List)"
+msgstr ""
+
+#: inc/widgets/editorial-block-list.php:73
+msgid "No. of words"
+msgstr ""
+
+#: inc/widgets/editorial-carousel.php:20
+msgid "A widget to display posts in carousel layout."
+msgstr ""
+
+#: inc/widgets/editorial-carousel.php:22
+msgid "Editorial : Carousel"
+msgstr ""
+
+#: inc/widgets/editorial-carousel.php:67
+msgid "No. of Items"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:20
+msgid ""
+"A widget to show the popular, latest and comment section in single widget."
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:22
+msgid "Editorial: Default Tabbed"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:35
+msgid "Popular Posts Tab"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:41
+#: inc/widgets/editorial-default-tabbed.php:60
+#: inc/widgets/editorial-default-tabbed.php:79
+#: inc/widgets/editorial-fullwidth-tabbed.php:97
+#: inc/widgets/editorial-fullwidth-tabbed.php:130
+#: inc/widgets/editorial-fullwidth-tabbed.php:163
+#: inc/widgets/editorial-fullwidth-tabbed.php:196
+#: inc/widgets/editorial-fullwidth-tabbed.php:229
+msgid "Tab Title"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:47
+#: inc/widgets/editorial-default-tabbed.php:66
+msgid "No. of. Posts"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:54
+msgid "Latest Posts Tab"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:73
+msgid "Comments Tab"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:85
+msgid "No. of Comments"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:107
+msgid "Popular"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:113
+msgid "Comments"
+msgstr ""
+
+#: inc/widgets/editorial-default-tabbed.php:212
+msgid "&nbsp;commented on"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:20
+msgid "Display slider with featured posts."
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:22
+msgid "Editorial: Featured Slider"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:39
+msgid "Slider Section"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:45
+msgid "Category for Slider"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:59
+msgid "Slide Auto Play"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:65
+msgid "Display Slider Pager"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:71
+msgid "Display Slider Control"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:77
+msgid "Slide pause time"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:84
+msgid "Slide speed time"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:91
+msgid "No. of slides"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:98
+msgid "Featured Posts Section"
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:104
+msgid "Removed Featured Posts Section "
+msgstr ""
+
+#: inc/widgets/editorial-featured-slider.php:110
+msgid "Category for Featured Posts"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:20
+msgid "A widget to show the categories posts in fullwidth tabbed layout."
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:22
+msgid "Editorial: Fullwidth Tabbed"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:38
+msgid "Tab Settings"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:44
+msgid "Post in Row"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:52
+msgid "Tab Content Layout"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:56
+msgid "Block View"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:57
+msgid "Grid View"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:84
+msgid "First Tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:90
+#: inc/widgets/editorial-fullwidth-tabbed.php:123
+#: inc/widgets/editorial-fullwidth-tabbed.php:156
+#: inc/widgets/editorial-fullwidth-tabbed.php:189
+#: inc/widgets/editorial-fullwidth-tabbed.php:222
+msgid "Tab Icon"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:91
+#: inc/widgets/editorial-fullwidth-tabbed.php:124
+#: inc/widgets/editorial-fullwidth-tabbed.php:157
+#: inc/widgets/editorial-fullwidth-tabbed.php:190
+#: inc/widgets/editorial-fullwidth-tabbed.php:223
+msgid "Use only Font Awesome icon class eg.( fa-globe )"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:103
+msgid "Category for first tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:117
+msgid "Second Tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:136
+msgid "Category for second tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:150
+msgid "Third Tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:169
+msgid "Category for third tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:183
+msgid "Fourth Tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:202
+msgid "Category for forth tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:216
+msgid "Fifth Tab"
+msgstr ""
+
+#: inc/widgets/editorial-fullwidth-tabbed.php:235
+msgid "Category for fifth tab"
+msgstr ""
+
+#: inc/widgets/editorial-posts-list.php:20
+msgid "Display latest or random posts in list view."
+msgstr ""
+
+#: inc/widgets/editorial-posts-list.php:22
+msgid "Editorial: Posts Lists"
+msgstr ""
+
+#: inc/widgets/editorial-posts-list.php:37
+msgid "Widget Title"
+msgstr ""
+
+#: inc/widgets/editorial-posts-list.php:50
+msgid "Posts Type"
+msgstr ""
+
+#: inc/widgets/editorial-show-video.php:20
+msgid "Show the single video iframe using video url from vimeo and youtube.."
+msgstr ""
+
+#: inc/widgets/editorial-show-video.php:22
+msgid "Editorial: Show Video"
+msgstr ""
+
+#: inc/widgets/editorial-show-video.php:35
+msgid "Video Title"
+msgstr ""
+
+#: inc/widgets/editorial-show-video.php:41
+msgid "Add video url"
+msgstr ""
+
+#: inc/widgets/editorial-widget-fields.php:169
+msgid "No file chosen"
+msgstr ""
+
+#: inc/widgets/editorial-widget-fields.php:177
+msgid "Upgrade your version of WordPress for full media support."
+msgstr ""
+
+#: inc/widgets/editorial-widget-fields.php:186
+msgid "Upload image"
+msgstr ""
+
+#: inc/widgets/editorial-widget-fields.php:197
+msgid "View File"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:19
+msgid "Sidebar"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:39
+msgid "Header Ads"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:49
+msgid "HomePage Slider Area"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:59
+msgid "HomePage Top Content Area"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:69
+msgid "HomePage Top Sidebar Area"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:79
+msgid "HomePage Top Fullwidth Area"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:89
+msgid "HomePage Bottom Content Area"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:99
+msgid "HomePage Bottom Sidebar Area"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:109
+msgid "HomePage Bottom Fullwidth Area"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:119
+msgid "Footer 1st Column"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:129
+msgid "Footer 2nd Column"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:139
+msgid "Footer 3rd Column"
+msgstr ""
+
+#: inc/widgets/editorial-widgets-area.php:149
+msgid "Footer 4th Column"
+msgstr ""
+
+#. Name of the theme
+msgid "Editorial Pro"
+msgstr ""
+
+#. Description of the theme
+msgid ""
+"Editorial Pro is a premium version of editorial free theme which have fully "
+"responsive layout, outstanding design and many features like typography "
+"option, new extra widgets with multiple layouts, demo importer &amp; many "
+"more exciting features which is suitable for gamers, News, Magazine, Ad, "
+"Review and blogging websites. Get free support at https://mysterythemes."
+"com/support/forum/themes/pro-themes/ and check the demo at http://demo."
+"mysterythemes.com/editorial-pro-landing/"
+msgstr ""
+
+#. URI of the theme
+msgid "https://mysterythemes.com/wp-themes/editorial-pro/"
+msgstr ""
+
+#. Author of the theme
+msgid "Mystery Themes"
+msgstr ""
+
+#. Author URI of the theme
+msgid "https://mysterythemes.com/"
+msgstr ""
