@@ -1,35 +1,16 @@
 <?php
 class pwaforwpFileCreation{
                 
-	public function pwaforwp_swhtml($is_amp = false){
-            $settings                       = pwaforwp_defaultSettings();
-	    if( $is_amp ){                
-                        if(isset($settings['add_to_home_selector'])){
-                  
-                        if(strchr($settings['add_to_home_selector'], '#')){
-                         $addtohomemanually    ='var a2hsBtn = document.getElementById("'.substr($settings['add_to_home_selector'], 1).'");		
-                                                            a2hsBtn.addEventListener("click", (e) => {
-                                                               addToHome();	
-                                                            });';   
-                        }
-                        if(strchr($settings['add_to_home_selector'], '.')){
-                           $addtohomemanually    ='var a2hsBtn = document.getElementsByClassName("'.substr($settings['add_to_home_selector'], 1).'");		
-                                                            a2hsBtn.addEventListener("click", (e) => {
-                                                               addToHome();	
-                                                            });';  
-                        }                                     
-                       }else{
-                        $addtohomemanually ='';
-                       }                                        
-                                            
+	public function pwaforwp_swhtml($is_amp = false){           
+	    if( $is_amp ){                                                                                                                           
                        $multisite_filename_postfix = '';
                         if ( is_multisite() ) {
                            $multisite_filename_postfix = '-' . get_current_blog_id();
                         }
                         $url 	                        = pwaforwp_front_url();
-		        $ServiceWorkerfileName          = $url.'/pwa-amp-sw'.$multisite_filename_postfix;		
+		        $ServiceWorkerfileName          = $url.'pwa-amp-sw'.$multisite_filename_postfix;		
 			$swHtmlContent 			= file_get_contents(PWAFORWP_PLUGIN_DIR."layouts/sw.html");
-			$swHtmlContent 			= str_replace(array("{{serviceWorkerFile}}", "{{addtohomemanually}}"), array($ServiceWorkerfileName, $addtohomemanually), $swHtmlContent);
+			$swHtmlContent 			= str_replace(array("{{serviceWorkerFile}}"), array($ServiceWorkerfileName), $swHtmlContent);
 			return $swHtmlContent;		    
 	    }	
 	}
@@ -56,13 +37,34 @@ class pwaforwpFileCreation{
                 }else{
                  $addtohomemanually ='';
                 }
-                                                
+                
+                if(isset($settings['custom_add_to_home_setting'])){
+                   $addtohomebanner ='var lastScrollTop = 0;                                        
+                                      window.addEventListener("scroll", (evt) => {
+                                        var st = document.documentElement.scrollTop;                                                                                                                
+                                            if (st > lastScrollTop){
+                                               if(deferredPrompt !=null){
+                                               document.getElementById("pwaforwp-add-to-home-click").style.display = "block";                                                                 
+                                               }                                              
+                                            } else {
+                                              document.getElementById("pwaforwp-add-to-home-click").style.display = "none";
+                                            }
+                                         lastScrollTop = st;  
+                                        });
+                                      var addtohomeBtn = document.getElementById("pwaforwp-add-to-home-click");		
+                                        addtohomeBtn.addEventListener("click", (e) => {
+                                            addToHome();	
+                                        });'; 
+                }else{
+                   $addtohomebanner =''; 
+                }
+                                
 		$url 	                        = pwaforwp_front_url();
                 $multisite_filename_postfix = '';
                 if ( is_multisite() ) {
                    $multisite_filename_postfix = '-' . get_current_blog_id();
                 }
-		$ServiceWorkerfileName 	        = $url.'/pwa-sw'.$multisite_filename_postfix;		
+		$ServiceWorkerfileName 	        = $url.'pwa-sw'.$multisite_filename_postfix;		
 		$swHtmlContent 			= file_get_contents(PWAFORWP_PLUGIN_DIR."layouts/sw_non_amp.js");                                                               
                 if($server_key !='' && $config !=''){
                  $firebaseconfig = 'var config ='.$config.'; '
@@ -73,7 +75,7 @@ class pwaforwpFileCreation{
                  $firebaseconfig = '';  
                  $useserviceworker = '';
                 }                                
-		$swHtmlContent 			= str_replace(array("{{swfile}}", "{{config}}", "{{userserviceworker}}", "{{addtohomemanually}}"), array($ServiceWorkerfileName, $firebaseconfig, $useserviceworker, $addtohomemanually), $swHtmlContent);
+		$swHtmlContent 			= str_replace(array("{{swfile}}", "{{config}}", "{{userserviceworker}}", "{{addtohomemanually}}", "{{addtohomebanner}}"), array($ServiceWorkerfileName, $firebaseconfig, $useserviceworker, $addtohomemanually, $addtohomebanner), $swHtmlContent);
 		return $swHtmlContent;		    
     }
     
@@ -127,7 +129,7 @@ class pwaforwpFileCreation{
     public function pwaforwp_swjs($is_amp = false){
             
 		$swJsContent 		= file_get_contents(PWAFORWP_PLUGIN_DIR."layouts/sw.js");
-		$settings 		= pwaforwp_defaultSettings();
+		$settings 		= pwaforwp_defaultSettings();               
                 if($settings['excluded_urls'] !=''){                   
                   $exclude_from_cache     = $settings['excluded_urls']; 
                   $exclude_from_cache     = str_replace('/', '\/', $exclude_from_cache);     
@@ -135,6 +137,17 @@ class pwaforwpFileCreation{
                 }else{
                   $exclude_from_cache     = '';   
                 }
+                $offline_google = '';
+                $cache_version = PWAFORWP_PLUGIN_VERSION;
+                
+                if(isset($settings['force_update_sw_setting']) && $settings['force_update_sw_setting'] !=''){
+                  $cache_version =   $settings['force_update_sw_setting'];
+                }
+                if(isset($settings['offline_google_setting'])){
+                $offline_google = 'importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.1/workbox-sw.js");
+                                    workbox.googleAnalytics.initialize();';    
+                }
+                
                 
                 
                 $server_key = $settings['fcm_server_key'];
@@ -162,13 +175,14 @@ class pwaforwpFileCreation{
 			$offline_page 	= str_replace( 'http://', 'https://', $offline_page ).'?amp=1';
 			$page404 		= str_replace( 'http://', 'https://', $page404 ).'?amp=1';  
 			$swJsContent 	= str_replace(array(
-							"{{OFFLINE_PAGE}}", "{{404_PAGE}}", "{{CACHE_VERSION}}","{{SITE_URL}}", "{{HTML_CACHE_TIME}}","{{CSS_CACHE_TIME}}", "{{FIREBASEJS}}" , "{{EXCLUDE_FROM_CACHE}}"), 
-							array($offline_page, $page404, PWAFORWP_PLUGIN_VERSION, $site_url, $cacheTimerHtml, $cacheTimerCss, $firebasejs, $exclude_from_cache),
+							"{{OFFLINE_PAGE}}", "{{404_PAGE}}", "{{CACHE_VERSION}}","{{SITE_URL}}", "{{HTML_CACHE_TIME}}","{{CSS_CACHE_TIME}}", "{{FIREBASEJS}}" , "{{EXCLUDE_FROM_CACHE}}", "{{OFFLINE_GOOGLE}}"), 
+							array($offline_page, $page404, $cache_version, $site_url, $cacheTimerHtml, $cacheTimerCss, $firebasejs, $exclude_from_cache, $offline_google),
 							 $swJsContent);                		
 		} else {
 			$offline_page 	= str_replace( 'http://', 'https://', $offline_page );
 			$page404 		= str_replace( 'http://', 'https://', $page404 );    
-			$swJsContent 	= str_replace(array("{{OFFLINE_PAGE}}", "{{404_PAGE}}", "{{CACHE_VERSION}}","{{SITE_URL}}", "{{HTML_CACHE_TIME}}","{{CSS_CACHE_TIME}}", "{{FIREBASEJS}}", "{{EXCLUDE_FROM_CACHE}}"), array($offline_page, $page404, PWAFORWP_PLUGIN_VERSION, $site_url, $cacheTimerHtml, $cacheTimerCss, $firebasejs, $exclude_from_cache), $swJsContent);                		
+			$swJsContent 	= str_replace(array("{{OFFLINE_PAGE}}", "{{404_PAGE}}", "{{CACHE_VERSION}}","{{SITE_URL}}", "{{HTML_CACHE_TIME}}","{{CSS_CACHE_TIME}}", "{{FIREBASEJS}}", "{{EXCLUDE_FROM_CACHE}}", "{{OFFLINE_GOOGLE}}"),
+                                                      array($offline_page, $page404, $cache_version, $site_url, $cacheTimerHtml, $cacheTimerCss, $firebasejs, $exclude_from_cache, $offline_google), $swJsContent);                		
 		}                		
 	    return $swJsContent;
 		
