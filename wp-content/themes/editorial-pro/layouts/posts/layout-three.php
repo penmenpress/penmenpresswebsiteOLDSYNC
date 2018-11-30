@@ -20,9 +20,6 @@ $post_id = get_the_ID();
 	<div class="entry-meta">
 		<?php 
 			editorial_pro_posted_on();
-			editorial_post_views_count();
-			editorial_pro_post_comment();
-		?>
 		<?php if (function_exists( 'coauthors_posts_links' ) )
 				{
 					coauthors_posts_links();
@@ -32,6 +29,10 @@ $post_id = get_the_ID();
 					the_author_posts_link();
 				}
 			?>
+			editorial_post_views_count();
+			editorial_pro_post_comment();
+		?>
+		
 	</div><!-- .entry-meta -->
 </header><!-- .entry-header -->
 <div id="primary" class="content-area">
