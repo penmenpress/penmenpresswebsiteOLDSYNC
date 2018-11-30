@@ -23,6 +23,15 @@ $post_id = get_the_ID();
 			editorial_post_views_count();
 			editorial_pro_post_comment();
 		?>
+		<?php if (function_exists( 'coauthors_posts_links' ) )
+				{
+					coauthors_posts_links();
+				}
+				else
+				{
+					the_author_posts_link();
+				}
+			?>
 	</div><!-- .entry-meta -->
 </header><!-- .entry-header -->
 <div id="primary" class="content-area">
