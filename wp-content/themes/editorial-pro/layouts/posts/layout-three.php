@@ -19,7 +19,7 @@ $post_id = get_the_ID();
 	<h1 class="entry-title"><?php the_title();?></h1>
 	<div class="entry-meta">
 		<?php 
-			editorial_pro_posted_on();
+			//editorial_pro_posted_on();
 		if (function_exists( 'coauthors_posts_links' ) )
 				{
 					coauthors_posts_links();
