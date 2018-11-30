@@ -143,7 +143,12 @@ $warning |= empty($status_options['mail']);
                 <?php } else { ?>
                     <?php if (Newsletter::instance()->options['licence_expires'] > time()) { ?>
                     <li class="tnp-professional-extensions-button">
-                        <a href="?page=newsletter_main_extensions"><i class="fa fa-check-square-o"></i> <?php _e('Licence active', 'newsletter') ?></a>
+                    <?php if (!class_exists('NewsletterExtensions')) {
+                        echo '<a href="?page=newsletter_main_extensions">';
+                        } else {
+                        echo '<a href="?page=newsletter_extensions_index">';
+                        } ?>
+                        <i class="fa fa-check-square-o"></i> <?php _e('Licence active', 'newsletter') ?></a>
                     <?php } elseif (Newsletter::instance()->options['licence_expires'] < time()) { ?>
                     <li class="tnp-professional-extensions-button-red">
                         <a href="?page=newsletter_main_main"><i class="fa fa-hand-paper-o" style="color: white"></i> <?php _e('Licence expired', 'newsletter') ?></a>

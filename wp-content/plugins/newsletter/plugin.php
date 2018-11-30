@@ -4,17 +4,32 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.7.9
+  Version: 5.8.0
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
   Text Domain: newsletter
+  License: GPLv2 or later
 
   Copyright 2009-2018 The Newsletter Team (email: info@thenewsletterplugin.com, web: https://www.thenewsletterplugin.com)
+
+  Newsletter is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 2 of the License, or
+  any later version.
+
+  Newsletter is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Newsletter. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
+
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.7.9');
+define('NEWSLETTER_VERSION', '5.8.0');
 
 global $newsletter, $wpdb;
 
@@ -336,7 +351,7 @@ class Newsletter extends NewsletterModule {
 
     function add_extensions_menu() {
         if (!class_exists('NewsletterExtensions')) {
-            $this->add_menu_page('extensions', '<span style="color:#27AE60; font-weight: bold;">Add-ons</span>');
+            $this->add_menu_page('extensions', '<span style="color:#27AE60; font-weight: bold;">Addons</span>');
         }
     }
 
@@ -1148,7 +1163,7 @@ class Newsletter extends NewsletterModule {
      */
     function getTnpExtensions() {
 
-        $extensions_json = false; //get_transient('tnp_extensions_json');
+        $extensions_json = get_transient('tnp_extensions_json');
 
         if (false === $extensions_json) {
             $url = "http://www.thenewsletterplugin.com/wp-content/extensions.json";
@@ -1225,6 +1240,33 @@ class Newsletter extends NewsletterModule {
             }
         //}
         return $this->newsletter_page_url;
+    }
+
+	function get_license_key() {
+		if (defined('NEWSLETTER_LICENSE_KEY')) {
+			return NEWSLETTER_LICENSE_KEY;
+		} else {
+			if (!empty($this->options['contract_key'])) {
+				return $this->options['contract_key'];
+			}
+		}
+		return false;
+	}
+
+    public static function check_license($license_key) {
+    	$response = wp_remote_get('http://www.thenewsletterplugin.com/wp-content/plugins/file-commerce-pro/check.php?k=' . urlencode($license_key), array('sslverify' => false));
+	    if (is_wp_error($response)) {
+		    /* @var $response WP_Error */
+		    return new WP_Error(-1,'It seems that your blog cannot contact the license validator. Ask your provider to unlock the HTTP/HTTPS connections to www.thenewsletterplugin.com<br>'
+		                                            .esc_html($response->get_error_code()) . ' - ' . esc_html($response->get_error_message()));
+	    } else if ($response['response']['code'] != 200) {
+		    return new WP_Error(-1,'[' . $response['response']['code'] . '] The license seems expired or not valid, please check your <a href="https://www.thenewsletterplugin.com/account">license code and status</a>, thank you.'
+		                                            .'<br>You can anyway download the professional extension from https://www.thenewsletterplugin.com.');
+	    } elseif ($expires = json_decode(wp_remote_retrieve_body($response))) {
+		    return array('expires' => $expires->expire, 'message' => 'Your license is valid and expires on ' . esc_html(date('Y-m-d', $expires->expire)));
+	    } else {
+		    return new WP_Error(-1,'Unable to detect the license expiration. Debug data to report to the support: <code>' . esc_html(wp_remote_retrieve_body($response)) . '</code>');
+	    }
     }
 
 }

@@ -2084,3 +2084,29 @@ iframe.tnp-editor-preview-desktop {
      height: 500px; 
      float: left;
 }
+
+
+/* Form inserimento licenza in Addons Manager */
+
+#tnp-license-control  {
+    border: 2px solid #27313C;
+    display: inline-block;
+    padding: 15px 25px;
+    margin-left: -10px;
+    margin-top: 15px;
+    border-radius: 2px;
+}
+
+#tnp-license-control form {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+#tnp-license-control form input {
+    padding-left: 10px;
+}
+
+#tnp-license-control a {
+    border-bottom: none;
+
+}
