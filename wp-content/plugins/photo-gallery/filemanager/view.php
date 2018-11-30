@@ -204,7 +204,14 @@ class FilemanagerView {
                     if ( BWG()->is_demo !== '1' || strpos( $file[ 'date_modified' ], '20 July 2014' ) === FALSE ) {
                       $file[ 'name' ] = esc_html( $file[ 'name' ] );
                       $file[ 'filename' ] = esc_html( $file[ 'filename' ] );
+                      $file[ 'alt' ] = esc_html( $file[ 'alt' ] );
                       $file[ 'thumb' ] = esc_html( $file[ 'thumb' ] );
+                      $file[ 'credit' ] = esc_html( $file[ 'credit' ] );
+                      $file[ 'aperture' ] = esc_html( $file[ 'aperture' ] );
+                      $file[ 'camera' ] = esc_html( $file[ 'camera' ] );
+                      $file[ 'caption' ] = esc_html( $file[ 'caption' ] );
+                      $file[ 'copyright' ] = esc_html( $file[ 'copyright' ] );
+                      $file[ 'tags' ] = esc_html( $file[ 'tags' ] );
                       ?>
                       <div class="explorer_item" draggable="true"
                            name="<?php echo $file[ 'name' ]; ?>"

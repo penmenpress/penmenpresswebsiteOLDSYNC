@@ -767,7 +767,7 @@ function bwg_add_tag(image_id, tagIds, titles) {
             tag_ids = tag_ids + tagIds[i] + ',';
             var html = jQuery("#" + image_id + "_tag_temptagid").clone().html();
             /* Remove white spaces from keywords to set as id and remove prefix.*/
-            var id = tagIds[i].replace(/\s+/g, '_').replace('bwg_', '').replace(/&amp;/g, "").replace(/&/g, "");
+            var id = tagIds[i].replace(/\s+/g, '_').replace('bwg_', '').replace(/&amp;/g, "").replace(/&/g, "").replace(/'/g, "39").replace(/"/g, "34");
             html = html.replace(/temptagid/g, id)
                        .replace(/temptagname/g, titles[i]);
             jQuery("#tags_div_" + image_id).append("<div class='tag_div' id='" + image_id + "_tag_" + id + "'>");
@@ -1630,7 +1630,7 @@ function bwg_add_image(files) {
         .replace(/tempfb_post_url/g, (is_facebook_post ? files[i]['fb_post_url'] : 0));
     if ( is_embed ) {
       html = html.replace(/tempalt/g, files[i]['name']);
-      jQuery(".wd-image-actions").addClass("wd-hide");
+      html = html.replace(/wd-image-actions/g, 'wd-image-actions wd-hide');
     }
     else {
       html = html.replace(/tempalt/g, files[i]['alt']);
@@ -1652,7 +1652,6 @@ function bwg_add_image(files) {
     jQuery("#tr_" + bwg_j).html(html);
 
     jQuery("#ids_string").val(jQuery("#ids_string").val() + bwg_j + ',');
-
     if ( jQuery("#tbody_arr").data("meta") == 1 && files[i]['tags'] ) {
       /* If tags added to image from image file meta keywords.*/
       var tagsTitles = jQuery.parseJSON(files[i]['tags']);

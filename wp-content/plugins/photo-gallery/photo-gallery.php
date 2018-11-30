@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.5.10
+ * Version: 1.5.11
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/pricing/
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,8 +81,8 @@ final class BWG {
     $this->plugin_dir = WP_PLUGIN_DIR . "/" . plugin_basename(dirname(__FILE__));
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.5.10';
-    $this->db_version = '1.5.10';
+    $this->plugin_version = '1.5.11';
+    $this->db_version = '1.5.11';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
 
@@ -1826,7 +1826,7 @@ final class BWG {
    */
   private function before_shortcode_add_builder_editor() {
     if ( defined('ELEMENTOR_VERSION') ) {
-      add_action('elementor/editor/before_enqueue_scripts', array( $this, 'global_script' ));
+      add_action('elementor/editor/footer', array( $this, 'global_script' ));
     }
     if ( class_exists('FLBuilder') ) {
       add_action('wp_enqueue_scripts', array( $this, 'global_script' ));
@@ -2079,7 +2079,7 @@ function wdpg_tenweb_install_notice() {
 
       .tenweb_description h1 {
         font-size: 24px;
-        font-weight: bold;
+        font-weight: 500;
         width: 100%;
       }
       .tenweb_description p {
@@ -2090,6 +2090,8 @@ function wdpg_tenweb_install_notice() {
       .tenweb_plugins_icons{
         position: relative;
       }
+
+
 
       .tenweb_plugins_icons #tenweb_plugins_icons_cont {
         display: flex;
@@ -2120,7 +2122,7 @@ function wdpg_tenweb_install_notice() {
       .tenweb_plugins_icons_item span {
         line-height: 25px;
         font-size: 14px;
-        font-weight: bold;
+        font-weight: 500;
       }
 
       .tenweb_action .tenweb_activaion {
@@ -2133,7 +2135,7 @@ function wdpg_tenweb_install_notice() {
         height: 30px;
         line-height: 30px;
         margin: 0px;
-        font-weight: bold;
+        font-weight: 500;
       }
 
       .tenweb_action .tenweb_activaion:hover {
@@ -2177,39 +2179,140 @@ function wdpg_tenweb_install_notice() {
         padding: 0px;
       }
 
-      @media only screen and (max-width: 1100px) {
-
-        #wd_tenweb_notice_cont #wd_tenweb_logo_notice {
-          height: 25px;
+      @media only screen and (min-width: 1920px) {
+        .tenweb_logo {
+          width: calc(15% - 10px);
         }
 
-        .tenweb_action p {
-          padding: 0px;
-          font-size: 12px;
+        body #wd_tenweb_logo_notice {
+          height: 50px;
+        }
+
+        .tenweb_description {
+          width: calc(37% - 20px);
+        }
+
+        .tenweb_description p {
+          font-size: 18px;
+        }
+
+        .tenweb_plugins_icons {
+          width: calc(35% - 20px);
         }
 
         .tenweb_plugins_icons_item span {
-          font-size: 12px;
+          font-size: 16px;
         }
 
-        .tenweb_plugins_icons #tenweb_plugins_icons_cont {
-          display: flex;
-          height: 120px;
-          justify-content: center;
-          align-items: center;
-          flex-wrap: wrap;
+        .tenweb_action {
+          width: calc(11% - 10px);
         }
 
-        .tenweb_plugins_icons_item {
-          margin-bottom: 0px;
+        .tenweb_action .tenweb_activaion {
+          height: 35px;
+          line-height: 35px;
+          font-size: 16px;
+          font-weight: 500;
         }
 
-        #wd_tenweb_notice_cont .spinner {
-          right: 0px;
+        .tenweb_action p {
+          font-size: 15px;
+          font-weight: 500;
         }
       }
 
-      @media only screen and (max-width: 840px) {
+
+
+      @media only screen and (min-width: 1440px) and (max-width: 1919px){
+        .tenweb_logo {
+          width: calc(15% - 10px);
+        }
+
+        body #wd_tenweb_logo_notice {
+          height: 40px;
+        }
+
+        .tenweb_description {
+          width: calc(30% - 20px);
+        }
+
+        .tenweb_description p {
+          font-size: 16px;
+        }
+
+        .tenweb_plugins_icons {
+          width: calc(41% - 20px);
+        }
+
+        .tenweb_plugins_icons_item span {
+          font-size: 15px;
+        }
+
+        .tenweb_action {
+          width: calc(12% - 10px);
+        }
+
+        .tenweb_action .tenweb_activaion {
+          height: 35px;
+          line-height: 35px;
+          font-size: 16px;
+          font-weight: 500;
+        }
+
+        .tenweb_action p {
+          font-size: 15px;
+          font-weight: 500;
+          line-height: 19px;
+        }
+      }
+
+      @media only screen and (max-width: 1439px) and (min-width: 1025px) {
+        .tenweb_logo {
+          width: calc(13% - 10px);
+        }
+
+        body #wd_tenweb_logo_notice {
+          height: 30px;
+        }
+
+        .tenweb_description {
+          width: calc(34% - 20px);
+        }
+
+        .tenweb_description p {
+          font-size: 15px;
+        }
+
+        .tenweb_plugins_icons {
+          width: calc(40% - 20px);
+        }
+
+        .tenweb_plugins_icons_item span {
+          font-size: 15px;
+        }
+
+        .tenweb_action {
+          width: calc(12% - 10px);
+        }
+
+        .tenweb_action .tenweb_activaion {
+          height: 35px;
+          line-height: 35px;
+          font-size: 16px;
+          font-weight: 500;
+        }
+
+        .tenweb_action p {
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 19px;
+        }
+
+
+      }
+
+
+      @media only screen and (max-width: 1024px) {
         #wd_tenweb_notice_cont {
           width: calc(100% - 20px);
           height: auto;
@@ -2225,7 +2328,7 @@ function wdpg_tenweb_install_notice() {
         }
 
         .tenweb_plugins_icons_item span {
-          font-size: 13px;
+          font-size: 14px;
         }
 
         .tenweb_logo img {
@@ -2255,13 +2358,13 @@ function wdpg_tenweb_install_notice() {
 
         .tenweb_description h1 {
           font-size: 18px;
-          font-weight: bold;
+          font-weight: 500;
           padding-top: 0;
           margin-left: 10px;
         }
 
         .tenweb_action p {
-          font-size: 13px;
+          font-size: 14px;
         }
 
         .tenweb_description p {

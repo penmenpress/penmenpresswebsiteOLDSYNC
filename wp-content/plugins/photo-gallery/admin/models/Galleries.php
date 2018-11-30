@@ -508,8 +508,16 @@ class GalleriesModel_bwg {
                 // If tags added to image from image file meta keywords.
                 $tag_name = str_replace('bwg_', '', $tag_id);
                 $term = term_exists($tag_name, 'bwg_tag');
-                if ( !$term ) {
+                if ( $term === 0 || $term === NULL || is_array($term) ) {
                   $term = wp_insert_term($tag_name, 'bwg_tag');
+                  // If term exist, get the existing term id.
+                  if ( is_wp_error($term) ) {
+                    if ( isset($term->error_data) ) {
+                      $error_data = $term->error_data;
+                      $term = array();
+                      $term['term_id'] = $error_data['term_exists'];
+                    }
+                  }
                 }
                 $tag_id = isset($term['term_id']) ? $term['term_id'] : 0;
               }

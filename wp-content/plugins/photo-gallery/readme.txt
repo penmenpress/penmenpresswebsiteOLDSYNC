@@ -3,7 +3,7 @@ Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
 Tested up to: 4.9 
-Stable tag: 1.5.10
+Stable tag: 1.5.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -279,8 +279,17 @@ Choose whether to display random or the first/last specific number of images.
 
 == Changelog ==
 
+= 1.5.11 =
+* Fixed: Upload image when there is a qoute in the image metadata.   
+* Fixed: Bug on slideshow autoplay.   
+* Fixed: Bug when you put album after a gallery with scroll load.   
+* Fixed: Conflict with "BigSlam" theme.
+* Fixed: Conflict with some ajax themes.   
+* Fixed: PNG and GIF crop.   
+* Fixed: JS error in Elementor editor page.    
+
 = 1.5.10 =
-*   Fixed: Closing notification.  
+* Fixed: Closing notification.  
 
 = 1.5.9 =
 * Changed: Pages of Notification to install 10WEB Manager plugin.
@@ -1331,7 +1340,7 @@ This vulnerability was discovered by Fortinet's FortiGuard Labs.
 1.  Photo Gallery - Popup View   
 2.  Photo Gallery - Thumbnails View   
 3.  Photo Gallery - Image Browser View 
-4.  Photo Gallery - Mansory View   
-5.  Photo Gallery - Mosaic View   
+4.  Photo Gallery - Mansory View (Premium version)   
+5.  Photo Gallery - Mosaic View (Premium version) 
 6.  Photo Gallery - Edit Global Options   
 7.  Photo Gallery - Edit Watermark   

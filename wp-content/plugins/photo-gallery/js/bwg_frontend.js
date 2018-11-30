@@ -78,7 +78,7 @@ jQuery(document).ready(function () {
   });
 });
 
-function bwg_main_ready(){
+function bwg_main_ready() {
   /* If there is error (empty gallery).*/
   jQuery(".bwg_container").each(function () {
     if ( jQuery(this).find(".wd_error").length > 0 ) {
@@ -1268,7 +1268,7 @@ function bwg_mosaic_ajax(bwg, tot_cccount_mosaic_ajax) {
 
 function bwg_add_album() {
   var bwg_touch_flag = false;
-  jQuery( ".bwg-album" ).on("click", function () {
+  jQuery( ".bwg-album" ).off("click").on("click", function () {
     if ( !bwg_touch_flag ) {
       var bwg = jQuery(this).attr("data-bwg");
       bwg_touch_flag = true;

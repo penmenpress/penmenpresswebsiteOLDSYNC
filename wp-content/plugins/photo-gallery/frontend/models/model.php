@@ -185,8 +185,10 @@ class BWGModelSite {
     }
     if ( isset( $_REQUEST[ 'action_' . $bwg ] ) && $_REQUEST[ 'action_' . $bwg ] == 'back' && ($pagination_type == 2 || $pagination_type == 3) ) {
       if ( isset( $_REQUEST[ 'page_number_' . $bwg ] ) && $_REQUEST[ 'page_number_' . $bwg ] ) {
-        $limit = $albums_per_page * $_REQUEST[ 'page_number_' . $bwg ];
-        $limit_str = 'LIMIT 0,' . $limit;
+        if ( $albums_per_page ) {
+          $limit = $albums_per_page * $_REQUEST['page_number_' . $bwg];
+          $limit_str = 'LIMIT 0,' . $limit;
+        }
       }
     }
     // Select all galleries.

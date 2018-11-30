@@ -131,6 +131,11 @@ class BWGViewSite {
         ?>
       </div>
     </div>
+    <script>
+      jQuery(document).ready(function () {
+        bwg_main_ready();
+      });
+    </script>
     <?php
   }
 

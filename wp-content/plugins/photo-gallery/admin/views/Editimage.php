@@ -185,7 +185,7 @@ class EditimageView_bwg {
         imagedestroy($dst_r);
       }
       elseif ( $type_orig == 3 ) {
-        $img_r = imagecreatefrompng($filename);
+        $img_r = imagecreatefrompng($exp_filename[0]);
         $dst_r = ImageCreateTrueColor($thumb_width, $thumb_height);
         imageColorAllocateAlpha($dst_r, 0, 0, 0, 127);
         imagealphablending($dst_r, FALSE);
@@ -198,7 +198,7 @@ class EditimageView_bwg {
         imagedestroy($dst_r);
       }
       elseif ( $type_orig == 1 ) {
-        $img_r = imagecreatefromgif($filename);
+        $img_r = imagecreatefromgif($exp_filename[0]);
         $dst_r = ImageCreateTrueColor($thumb_width, $thumb_height);
         imageColorAllocateAlpha($dst_r, 0, 0, 0, 127);
         imagealphablending($dst_r, FALSE);
