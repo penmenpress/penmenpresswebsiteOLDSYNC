@@ -20,6 +20,14 @@ $post_id = get_the_ID();
 	<div class="entry-meta">
 		<?php 
 			editorial_pro_posted_on();
+		if (function_exists( 'coauthors_posts_links' ) )
+				{
+					coauthors_posts_links();
+				}
+				else
+				{
+					the_author_posts_link();
+				}
 			editorial_post_views_count();
 			editorial_pro_post_comment();
 		?>
