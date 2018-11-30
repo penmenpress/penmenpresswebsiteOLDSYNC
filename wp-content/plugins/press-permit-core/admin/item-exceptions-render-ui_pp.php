@@ -94,9 +94,6 @@ class PP_ItemExceptionsRenderUI {
 			
 			$is_unfiltered = ! empty( $role_caps['pp_administer_content'] ) || ! empty( $role_caps['pp_unfiltered'] );
 			
-			if ( $is_unfiltered )
-				$disabled = ' disabled="disabled"';
-	
 			if ( $reqd_caps ) {
 				if ( ! array_diff( $reqd_caps, array_keys($role_caps) ) || $is_unfiltered ) {
 					$this->opt_class[''] = " class='pp-yes' ";
@@ -147,7 +144,10 @@ class PP_ItemExceptionsRenderUI {
 					$this->opt_class[''] = " class='pp-def' ";
 			}
 			
-			$disabled = $disabled || ( ( 'children' == $assign_for ) && apply_filters( 'pp_assign_for_children_locked', false, $for_item_type, array( 'operation' => $op ) ) ) ? ' disabled="disabled" ' : '';
+			if ( $is_unfiltered && ( $current_val === '' ) )  // Disable UI for unfiltered users unless an (ineffective) exception is already stored
+				$disabled = ' disabled="disabled"';
+			else
+				$disabled = ( ( 'children' == $assign_for ) && apply_filters( 'pp_assign_for_children_locked', false, $for_item_type, array( 'operation' => $op ) ) ) ? ' disabled="disabled" ' : '';
 
 			$for_type = ( $for_item_type ) ? $for_item_type : '(all)';
 			?>

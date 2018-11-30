@@ -5,7 +5,7 @@ Tags: restrict, access, permissions, cms, user, private, category, pages, privac
 License: GPLv3
 Requires at least: 3.4
 Tested up to: 5.0
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
@@ -49,6 +49,11 @@ Pro [extensions](https://presspermit.com/extensions) are [available](https://pre
 Initial production release
 
 == Changelog ==
+
+= 2.5.2 - 28 Nov 2018 =
+* Fixed : On the Edit Page form, clearing a "Sub-Pages" exception did not delete propagated exceptions from the subpages
+* Fixed : Quick Edit did not allow private and draft pages to be assigned or retained as parent (since 2.4.2)
+* Fixed : Inability to delete exceptions which were assigned to a user before they become an Administrator (though those exceptions were correctly disregarded)
 
 = 2.5.1 - 9 Nov 2018 =
 * Fixed : In Exceptions metaboxes on the Edit Page screen, when a user or group is selected, their "Enabled / Blocked" dropdown was displayed without an identifying label (since 2.5)

@@ -267,6 +267,29 @@ public static function assign_exceptions( $agents, $agent_type = 'user', $args =
 				if ( $delete_eitem_ids = $wpdb->get_col( "SELECT eitem_id FROM $wpdb->ppc_exception_items WHERE assign_for = '$assign_for' AND item_id = '$item_id' AND exception_id IN ('" . implode( "','", $exception_ids ) . "')" ) ) {
 					self::remove_exception_items_by_id( $delete_eitem_ids );
 				}
+
+				if ( ( 'children' == $assign_for ) && ! defined( 'PP_NO_PROPAGATING_EXCEPTION_DELETION' ) ) {
+					$descendant_ids = array();
+
+					if ( 'term' == $via_item_source ) {
+						if ( $_term = $wpdb->get_row( "SELECT term_id, taxonomy FROM $wpdb->term_taxonomy WHERE term_taxonomy_id = '$item_id' LIMIT 1" ) ) {
+							
+							if ( $_term_ids = pp_get_descendant_ids( 'term', $_term->term_id ) ) {
+								$descendant_ids = pp_termid_to_ttid( $_term_ids, $_term->taxonomy );
+							}
+						}
+					} else {
+						$propagate_post_types = apply_filters( 'pp_propagate_exception_types', array( $for_item_type ), compact( 'mod_type', 'operation', 'for_item_source', 'for_item_type', 'via_item_source', 'via_item_type', 'item_id' ) );
+						$descendant_ids = pp_get_descendant_ids( $via_item_source, $item_id, array( 'include_attachments' => false, 'post_types' => $propagate_post_types ) );  // normally propagate only to matching post_types
+					}
+
+					if ( $descendant_ids ) {
+						$id_csv = implode( "','", $descendant_ids );
+						if ( $delete_eitem_ids = $wpdb->get_col( "SELECT eitem_id FROM $wpdb->ppc_exception_items WHERE inherited_from != '0' AND item_id IN ('$id_csv') AND exception_id IN ('" . implode( "','", $exception_ids ) . "')" ) ) {
+							self::remove_exception_items_by_id( $delete_eitem_ids );
+						}
+					}
+				}
 			}
 		}
 	}
