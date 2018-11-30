@@ -19,7 +19,18 @@ $post_id = get_the_ID();
 	<h1 class="entry-title"><?php the_title();?></h1>
 	<div class="entry-meta">
 		<?php 
+		try{
 			editorial_pro_posted_on();
+		   } catch (!the_author_posts_link()){
+			if ( function_exists( 'coauthors_posts_links' ) )
+			{	
+				coauthors_posts_links();
+			}
+			else
+			{
+				the_author_post_link();
+			}
+		}
 			editorial_post_views_count();
 			editorial_pro_post_comment();
 		?>
