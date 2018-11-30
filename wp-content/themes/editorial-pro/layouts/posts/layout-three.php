@@ -43,6 +43,18 @@ $post_id = get_the_ID();
 		            </div><!-- .video-wrap -->
 				</div><!-- .single-post-video -->
 		<?php } elseif( $get_post_format == 'audio' ) { ?>
+			
+			<?php if (function_exists( 'coauthors_posts_links' ) )
+				{
+					coauthors_posts_links();
+				}
+				else
+				{
+					the_author_posts_link();
+				}
+			?>
+				
+			}
 				<div class="single-post-image">
 					<figure>
 						<?php  
