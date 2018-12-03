@@ -852,6 +852,9 @@ class NewsletterModule {
      * @return string
      */
     function get_email_key($email) {
+        if (!isset($email->token)) {
+            return $email->id . '-';
+        }
         return $email->id . '-' . $email->token;
     }
 
@@ -1507,7 +1510,7 @@ class NewsletterModule {
 
             $nek = false;
             if ($email) {
-                $nek = $email->id . '-' . $email->token;
+                $nek = $this->get_email_key($email);
                 $text = str_replace('{email_id}', $email->id, $text);
                 $text = str_replace('{email_key}', $nek, $text);
                 $text = str_replace('{email_subject}', $email->subject, $text);

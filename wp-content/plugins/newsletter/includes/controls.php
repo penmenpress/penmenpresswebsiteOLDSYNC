@@ -549,7 +549,7 @@ class NewsletterControls {
         $this->select($name, $options);
     }
 
-    function page($name = 'page', $first = null, $language = '') {
+    function page($name = 'page', $first = null, $language = '', $show_id = false) {
         $args = array(
             'post_type' => 'page',
             'posts_per_page' => 1000,
@@ -567,6 +567,9 @@ class NewsletterControls {
             $label = $page->post_title;
             if ($page->post_status != 'publish') {
                 $label .= ' (' . $page->post_status . ')';
+            }
+            if ($show_id) {
+                $label .= ' [' . $page->ID . ']';
             }
             $options[$page->ID] = $label;
         }

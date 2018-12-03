@@ -143,11 +143,13 @@ $warning |= empty($status_options['mail']);
                 <?php } else { ?>
                     <?php if (Newsletter::instance()->options['licence_expires'] > time()) { ?>
                     <li class="tnp-professional-extensions-button">
-                    <?php if (!class_exists('NewsletterExtensions')) {
-                        echo '<a href="?page=newsletter_main_extensions">';
+                        <?php
+                        if (!class_exists('NewsletterExtensions')) {
+                            echo '<a href="?page=newsletter_main_extensions">';
                         } else {
-                        echo '<a href="?page=newsletter_extensions_index">';
-                        } ?>
+                            echo '<a href="?page=newsletter_extensions_index">';
+                        }
+                        ?>
                         <i class="fa fa-check-square-o"></i> <?php _e('Licence active', 'newsletter') ?></a>
                     <?php } elseif (Newsletter::instance()->options['licence_expires'] < time()) { ?>
                     <li class="tnp-professional-extensions-button-red">
@@ -159,6 +161,27 @@ $warning |= empty($status_options['mail']);
     </ul>
 </div>
 
+<?php if (isset($_GET['debug']) || !isset($dismissed['newsletter-shortcode'])) { ?>
+    <?php
+    // Check of Newsletter dedicated page
+    if (!empty(Newsletter::instance()->options['page'])) {
+        if (get_post_status(Newsletter::instance()->options['page']) === 'publish') {
+            $content = get_post_field('post_content', $this->options['page']);
+            // With and without attributes
+            if (strpos($content, '[newsletter]') === false && strpos($content, '[newsletter ') === false) {
+                ?>    
+                <div class="tnp-notice">
+                    <a href="<?php echo $_SERVER['REQUEST_URI'] . '&noheader=1&dismiss=newsletter-shortcode' ?>" class="tnp-dismiss">&times;</a>
+                    The Newsletter dedicated page does not contain the [newsletter] shortcode. If you're using a visual composer it could be ok.
+                    <a href="<?php echo site_url('/wp-admin/post.php') ?>?post=<?php echo esc_attr(Newsletter::instance()->options['page']) ?>&action=edit"><strong>Edit the page</strong></a>.
+
+                </div>
+                <?php
+            }
+        }
+    }
+    ?>
+<?php } ?>
 
 <?php if (isset($_GET['debug']) || !isset($dismissed['rate']) && $user_count > 300) { ?>
     <div class="tnp-notice">

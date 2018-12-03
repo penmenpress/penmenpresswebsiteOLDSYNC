@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated,mailing list
 Requires at least: 3.4.0
 Tested up to: 4.9.8
-Stable tag: 5.8.0
+Stable tag: 5.8.1
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -116,6 +116,13 @@ Thank you, The Newsletter Team
 3. The Reports extension
 
 == Changelog ==
+
+= 5.8.1 =
+
+* Delivery expected time indicator on status panel
+* Fixed notice on email token missing
+* Addons installation availability on status panel
+* Option to remove the dedicated page check
 
 = 5.8.0 =
 
