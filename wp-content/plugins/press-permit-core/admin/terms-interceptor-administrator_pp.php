@@ -11,6 +11,7 @@ function _pp_flt_administrator_pad_term_counts( $terms, $taxonomies, $args ) {
 
 			// pp_tally_term_counts() is PP equivalent to WP _pad_term_counts()
 			$args['required_operation'] = ( pp_is_front() && ! is_preview() ) ? 'read' : 'edit';
+			$taxonomies = (array) $taxonomies;  // avoid PHP warning if taxonomies argument is corrupted upstream
 			PP_TermsQueryLib::tally_term_counts( $terms, reset($taxonomies), $args );
 		}
 	}

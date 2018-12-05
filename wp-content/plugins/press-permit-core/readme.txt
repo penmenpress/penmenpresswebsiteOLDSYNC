@@ -5,7 +5,7 @@ Tags: restrict, access, permissions, cms, user, private, category, pages, privac
 License: GPLv3
 Requires at least: 3.4
 Tested up to: 5.0
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
@@ -49,6 +49,11 @@ Pro [extensions](https://presspermit.com/extensions) are [available](https://pre
 Initial production release
 
 == Changelog ==
+
+
+= 2.5.3 - 4 Dec 2018 =
+* Fixed : PHP warning on third party calls to get_terms() with an invalid taxonomies argument
+* Fixed : PHP warning on Permissions > Settings > Install when new Press Permit Core version is available
 
 = 2.5.2 - 28 Nov 2018 =
 * Fixed : On the Edit Page form, clearing a "Sub-Pages" exception did not delete propagated exceptions from the subpages
