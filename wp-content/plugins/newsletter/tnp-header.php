@@ -166,7 +166,7 @@ $warning |= empty($status_options['mail']);
     // Check of Newsletter dedicated page
     if (!empty(Newsletter::instance()->options['page'])) {
         if (get_post_status(Newsletter::instance()->options['page']) === 'publish') {
-            $content = get_post_field('post_content', $this->options['page']);
+            $content = get_post_field('post_content', Newsletter::instance()->options['page']);
             // With and without attributes
             if (strpos($content, '[newsletter]') === false && strpos($content, '[newsletter ') === false) {
                 ?>    
