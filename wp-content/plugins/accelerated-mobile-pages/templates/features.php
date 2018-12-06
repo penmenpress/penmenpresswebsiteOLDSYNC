@@ -146,6 +146,8 @@ add_amp_theme_support('AMP-gdpr');
  	// Load aq resizer only in AMP mode
  	add_action('pre_amp_render_post','ampforwp_include_aqresizer');
  	function ampforwp_include_aqresizer(){
+ 		//Removed Jetpack Mobile theme option #2584
+ 		remove_action('option_stylesheet', 'jetpack_mobile_stylesheet');
  		require AMPFORWP_PLUGIN_DIR  .'includes/vendor/aq_resizer.php';
  	}
  	// TODO: Update this function 
@@ -1411,7 +1413,7 @@ function ampforwp_new_dir( $dir ) {
 				 $content = preg_replace('#<badge.*?>(.*?)</badge>#i', '', $content);
 				 $content = preg_replace('#<plusone.*?>(.*?)</plusone>#i', '', $content);
 				 $content = preg_replace('#<col.*?>#i', '', $content);
-				 $content = preg_replace('#<table.*?>#i', '<table width="100%">', $content);
+				 //Removed because class is being removed from table #2699
 				 $content = preg_replace('/href="javascript:void*/', ' ', $content);
 				 // Convert the Wistia embed into URL to build amp-wistia-player and remove unnecesarry wistia code
 				 $content = preg_replace('/<script src="(https?).*(\/\/fast|support)(\.wistia\.com\/)(embed\/medias\/)([0-9|\w]+)(.*?)<\/script>/', "$1:$2$3$4$5\n", $content);
@@ -2410,39 +2412,31 @@ function ampforwp_replace_title_tags() {
 
 			if ( ampforwp_is_front_page() ) {
 				//WPML Static Front Page Support for title and description with Yoast #1143
-
 				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-				 if ( is_plugin_active( 'sitepress-multilingual-cms/sitepress.php' ) && is_plugin_active('wordpress-seo/wp-seo.php') ) {
+				 if ( is_plugin_active( 'sitepress-multilingual-cms/sitepress.php' ) ) {
 
 				 	$ID = get_option( 'page_on_front' );
-				$fixed_title = WPSEO_Meta::get_value( 'title', $ID );
-
-				$site_title = apply_filters( 'wpseo_title', wpseo_replace_vars( $fixed_title, get_post( $ID, ARRAY_A ) )  );
 				 }
-
 				else {
-					$ID = ampforwp_get_frontpage_id();
-					$site_title = get_the_title( $ID ) . $sep . get_option( 'blogname' );
-				
+					$ID = ampforwp_get_frontpage_id();				
 				}
+				$site_title = get_the_title( $ID ) . $sep . get_option( 'blogname' );
 			}
 			// Blog page 
 			if ( ampforwp_is_blog() ) {
 				$ID = ampforwp_get_blog_details('id');
 				$site_title = get_the_title( $ID ) . $sep . get_option( 'blogname' );
 			}
-
 			// Custom Front Page Title From Yoast SEO #1163
-			if ( class_exists('WPSEO_Meta_Columns') ) {
-				 	Global $redux_builder_amp;
-				 	$ID = ampforwp_get_frontpage_id();
-				 	if ( ampforwp_is_blog() ) {
-				 		$ID = ampforwp_get_blog_details('id');
-				 	}
-				 	$fixed_title = WPSEO_Meta::get_value( 'title', $ID );
-				 	if ( $fixed_title ) {
-				 		$site_title = apply_filters( 'wpseo_title', wpseo_replace_vars( $fixed_title, get_post( $ID, ARRAY_A ) )  );
-				 	}
+			if ( class_exists('WPSEO_Meta_Columns') && (ampforwp_is_front_page() || ampforwp_is_blog()) ) {
+			 	$ID = ampforwp_get_frontpage_id();
+			 	if ( ampforwp_is_blog() ) {
+			 		$ID = ampforwp_get_blog_details('id');
+			 	}
+			 	$fixed_title = WPSEO_Meta::get_value( 'title', $ID );
+			 	if ( $fixed_title ) {
+			 		$site_title = apply_filters( 'wpseo_title', wpseo_replace_vars( $fixed_title, get_post( $ID, ARRAY_A ) )  );
+			 	}
 			}
 		}
 
@@ -4256,10 +4250,14 @@ function ampforwp_view_nonamp(){
    		$ampforwp_backto_nonamp = '';
    	}
 
-	$current_amp_url 	= home_url( $wp->request );
-	$current_amp_url 	= trailingslashit($current_amp_url);
-	$remove 			= '/'. AMPFORWP_AMP_QUERY_VAR;
-	$non_amp_url 		= str_replace($remove, '', $current_amp_url);
+	$amp_url = "";
+	$amp_url = untrailingslashit( home_url( $wp->request ) );
+	$amp_url = explode('/', $amp_url);
+	$amp_url = array_flip($amp_url);
+	unset($amp_url['amp']);
+	$non_amp_url = "";
+	$non_amp_url = array_flip($amp_url);
+	$non_amp_url = implode('/', $non_amp_url);
 	$query_arg_array 	= $wp->query_vars;
 	
 	if( array_key_exists( "page" , $query_arg_array  ) ) {
@@ -4268,6 +4266,11 @@ function ampforwp_view_nonamp(){
 	if ( $page >= '2') { 
 		$non_amp_url = trailingslashit( $non_amp_url  . '?page=' . $page);
 	} 
+
+	if ( ampforwp_get_setting('amp-mobile-redirection') ) {
+		$non_amp_url = add_query_arg('nonamp','1',$non_amp_url);
+	}
+
 	if ( $ampforwp_backto_nonamp ) { ?><a class="view-non-amp" href="<?php echo user_trailingslashit( esc_url($non_amp_url) ) ?>" <?php echo esc_attr($nofollow); ?>><?php echo esc_html( $redux_builder_amp['amp-translator-non-amp-page-text'] ) ;?></a> <?php
 	}
 }
@@ -4457,7 +4460,9 @@ function ampforwp_post_paginated_link_generator( $i ) {
 		$url = get_preview_post_link( $post, $query_args, $url );
 
 	}
-	$url = add_query_arg(AMPFORWP_AMP_QUERY_VAR,'1',$url);
+	if ( false == ampforwp_get_setting('ampforwp-amp-takeover') ) {
+		$url = add_query_arg(AMPFORWP_AMP_QUERY_VAR,'1',$url);
+	}
 	return '<a href="' . esc_url( $url ) . '">';
 }
 // Modify the content to make Pagination work on Pages and FrontPage #2253
@@ -5956,9 +5961,12 @@ function ampforwp_url_purifier($url){
 		} else {
 			$query_name = $wp_query->query['pagename'];
 		}
-		if( ampforwp_is_query_post_same( $_SERVER['QUERY_STRING'],$query_name) && isset( $query_arg['q'] ) ){
-			unset($query_arg['q']);
-        }
+        if( ampforwp_is_query_post_same( $_SERVER['QUERY_STRING'],$query_name) && isset( $query_arg['q'] ) ){
+           	 	unset($query_arg['q']);
+      	}
+  		else if ( $query_name && isset( $query_arg['q'] ) ){ 
+  			unset($query_arg['q']); 
+  		}
         $url = add_query_arg( $query_arg, $url);
 	}
 	return apply_filters( 'ampforwp_url_purifier', $url );
@@ -6351,6 +6359,10 @@ function ampforwp_default_logo_data() {
 		$logo_url = $imageDetail[0];
 		$image[0] = $imageDetail[1];
 		$image[1] = $imageDetail[2];
+		if ( 0 === $image[1] ) {
+			$image[0] = '190';
+			$image[1] = '36';
+		}
 	}
 
 	$logo_alt = get_post_meta( $logo_id, '_wp_attachment_image_alt', true);
@@ -6682,7 +6694,20 @@ function ampforwp_is_non_amp( $type="" ) {
 		if ( is_page() && false == $redux_builder_amp['amp-on-off-for-all-pages'] ) {
 			return;
 		}
-	
+// Removing the AMP on login register etc of Theme My Login plugin	
+    
+	if (function_exists('tml_register_default_actions')){
+        $tml_pages = tml_get_actions();
+        $pages = array();
+        if ( isset($tml_pages) && $tml_pages ) {
+          foreach ($tml_pages as $page) {
+            $pages[] = $page->get_slug();
+          }
+      }
+      if(in_array(get_query_var('action'), $pages) ){
+        return false;
+      }
+   }
 	return $non_amp;
 }
 
@@ -7093,13 +7118,18 @@ function ampforwp_vuukle_comments_markup() {
 	}
 	$display_comments_on = false;
 	$display_comments_on = ampforwp_get_comments_status();
-
+	$siteUrl = trim(site_url(), '/');  
+	  if (!preg_match('#^http(s)?://#', $siteUrl)) {
+	      $siteUrl = 'http://' . $siteUrl;
+	  }
+	$urlParts = parse_url($siteUrl);
+	$siteUrl = preg_replace('/^www\./', '', $urlParts['host']);// remove www
 	$srcUrl = 'https://cdn.vuukle.com/amp.html?';
 	$srcUrl = add_query_arg('url' ,get_permalink(), $srcUrl);
-	$srcUrl = add_query_arg('host' ,site_url(), $srcUrl);
+	$srcUrl = add_query_arg('host' ,$siteUrl, $srcUrl);
 	$srcUrl = add_query_arg('id' , $post->ID, $srcUrl);
 	$srcUrl = add_query_arg('apiKey' , $apiKey, $srcUrl); 
-	$srcUrl = add_query_arg('title' , $post->post_title, $srcUrl); 
+	$srcUrl = add_query_arg('title' , urlencode($post->post_title), $srcUrl); 
 
 	$vuukle_html ='';
 	if ( $display_comments_on ) {
@@ -7114,11 +7144,7 @@ function ampforwp_add_vuukle_scripts( $data ) {
 	global $redux_builder_amp;
 	$display_comments_on = "";
 	$display_comments_on = ampforwp_get_comments_status();
-	if ( 4 != $redux_builder_amp['amp-design-selector']
-		 && isset($redux_builder_amp['ampforwp-vuukle-comments-support'])
-		 && $redux_builder_amp['ampforwp-vuukle-comments-support']
-		 && $display_comments_on  && comments_open() 
-		) {
+	if ( ampforwp_get_setting('ampforwp-vuukle-comments-support') && $display_comments_on) {
 			if ( empty( $data['amp_component_scripts']['amp-iframe'] ) ) {
 				$data['amp_component_scripts']['amp-iframe'] = 'https://cdn.ampproject.org/v0/amp-iframe-0.1.js';
 			}
@@ -7211,7 +7237,7 @@ function ampforwp_check_excerpt(){
  
 	$value = '';
 	$value =  ( isset( $redux_builder_amp['excerpt-option'] ) &&  $redux_builder_amp['excerpt-option'] ) ;
-	if ( null == $value ) {
+	if ( null === $value ) {
 		$value = '1';
 	}
  
@@ -7432,3 +7458,19 @@ add_action('wp','ampforwp_remove_marfeel',9);
 function ampforwp_remove_marfeel(){
 remove_action('wp', 'render_marfeel_amp_content' );
 }
+// Total Plus compatibility #2511
+add_action('current_screen', 'ampforwp_totalplus_comp_admin');
+function ampforwp_totalplus_comp_admin() {
+	$screen = get_current_screen();
+	if ( 'toplevel_page_amp_options' == $screen->base ) {
+		remove_action('admin_enqueue_scripts', 'total_plus_admin_scripts', 100);
+	}
+}
+// uploading the images with SVG format #2431
+function ampforwp_upload_svg($file_types){
+$new_filetypes = array();
+$new_filetypes['svg'] = 'image/svg+xml';
+$file_types = array_merge($file_types, $new_filetypes );
+return $file_types;
+}
+add_action('upload_mimes', 'ampforwp_upload_svg');

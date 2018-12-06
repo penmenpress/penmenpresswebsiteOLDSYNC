@@ -2149,6 +2149,16 @@
                                 continue; // You need a type!
                             }
 
+                            if(isset($field['desc'])){
+                                    $description = $field['desc'];
+                                    foreach ($this->sections as $key => $value) {
+                                        if(strpos($description, '{'.$value['id'].'}')!==false){
+                                           $description = str_replace('{'.$value['id'].'}', 'admin.php?page=amp_options&tab='.$key, $description);
+                                        }
+                                    }
+                                   $field['desc'] =  $description;
+                            }
+
                             if ( $field['type'] == "info" && isset( $field['raw_html'] ) && $field['raw_html'] == true ) {
                                 $field['type']                             = "raw";
                                 $field['content']                          = $field['desc'];
@@ -3228,7 +3238,7 @@
                     $addClass = ''; $style="";
                     $current_screen = get_current_screen(); 
                     if(is_object($current_screen) && $current_screen->parent_base=='amp_options'){
-                        $enabledOptions = array('basic', 'design', 'opt-go-premium','opt-choose');
+                        $enabledOptions = array('basic', 'design', 'opt-go-premium','opt-choose','ampforwp-theme-subsection');
                         if(!in_array($section['id'], $enabledOptions)){
                             $addClass = 'otherSectionFields';
                             $style="style='display:none;'";

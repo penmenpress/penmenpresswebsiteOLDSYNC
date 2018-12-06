@@ -65,6 +65,17 @@ $extension_listing_array = array(
                             'store_url'=>'https://accounts.ampforwp.com',
                             'is_activated'=>(is_plugin_active('amp-cf7/amp-cf7.php')? 1 : 2),
                             'settingUrl'=>'{ampforwp-cf7-subsection}',
+                        ), 
+                        array(
+                            'name'=>'Caldera Forms for AMP',
+                            'desc'=>'Add Caldera Form in AMP.',
+                            'img_src'=>AMPFORWP_IMAGE_DIR . '/cf.png',
+                            'price'=>'$39',
+                            'url_link'=>'http://ampforwp.com/caldera-forms-for-amp',
+                            'plugin_active_path'=> 'caldera-forms-for-amp/caldera-forms-for-amp.php',
+                            'item_name'=>'Caldera Forms for AMP',
+                            'store_url'=>'https://accounts.ampforwp.com',
+                            'is_activated'=>(is_plugin_active('caldera-forms-for-amp/caldera-forms-for-amp.php')? 1 : 2),
                         ),
                         array(
                             'name'=>'Gravity Forms',
@@ -297,7 +308,7 @@ $extension_listing_array = array(
                         array(
                             'name'=>'AMP Stories',
                             'desc'=>'A Revolutionary new way to share your stories',
-                            'img_src'=>AMPFORWP_IMAGE_DIR . '/cache-icon.png',
+                            'img_src'=>AMPFORWP_IMAGE_DIR . '/amp-stories.png',
                             'price'=>'$79',
                             'url_link'=>'https://ampforwp.com/amp-stories/#utm_source=options-panel&utm_medium=extension-tab_stories&utm_campaign=AMP%20Plugin',
                             'plugin_active_path'=> 'amp-stories/ampforwp-stories.php',
@@ -307,15 +318,15 @@ $extension_listing_array = array(
                             'settingUrl'=>admin_url( 'edit.php?post_type=ampforwp_story' ),
                         ),
                         array(
-                            'name'=>'Shortcode Ultimate',
-                            'desc'=>'This is an extension of Shortcode Ultimate plugin for AMP Compatibility',
-                            'img_src'=>AMPFORWP_IMAGE_DIR . '/cache-icon.png',
+                            'name'=>'Shortcodes Ultimate',
+                            'desc'=>'This is an extension of Shortcodes Ultimate plugin for AMP Compatibility',
+                            'img_src'=>AMPFORWP_IMAGE_DIR . '/amp-SU.png',
                             'price'=>'$19',
                             'url_link'=>'https://ampforwp.com/shortcodes-ultimate/#utm_source=options-panel&utm_medium=extension-tab_shortcodes_ultimate&utm_campaign=AMP%20Plugin',
-                            'plugin_active_path'=> 'shortcodes-ultimate-for-amp/shortcode-ultimate-for-amp.php',
-                            'item_name'=>'Shortcode Ultimate',
+                            'plugin_active_path'=> 'shortcodes-ultimate-for-amp/shortcodes-ultimate-for-amp.php',
+                            'item_name'=>'Shortcodes Ultimate',
                             'store_url'=>'https://accounts.ampforwp.com',
-                            'is_activated'=>(is_plugin_active('shortcodes-ultimate-for-amp/shortcode-ultimate-for-amp.php')? 1 : 2),
+                            'is_activated'=>(is_plugin_active('shortcodes-ultimate-for-amp/shortcodes-ultimate-for-amp.php')? 1 : 2),
                         ),
                         array(
                             'name'=>'Structured Data for WP',
@@ -362,20 +373,20 @@ $extension_listing_array = array(
                             'store_url'=>'https://accounts.ampforwp.com',
                             'is_activated'=>(is_plugin_active('amp-teaser/amp-teaser.php')? 1: 2),
                             'settingUrl'=>'{ampforwp-teaser-subsection}',
-                        ),
-                        array(
-                            'name'=>'View All Extensions',
-                            'desc'=>'See all the extensions available for AMP',
-                            'img_src'=>AMPFORWP_IMAGE_DIR . '/comments.png',
-                            'price'=>'FREE',
-                            'url_link'=>'https://ampforwp.com/extensions/#utm_source=options-panel&utm_medium=extension-tab_amp-more-comingsoon&utm_campaign=AMP%20Plugin',
-                            'plugin_active_path'=> '',
-                            'item_name'=>'',
-                            'store_url'=>'',
-                            'is_activated'=>2,
-                            'settingUrl'=>'',
-                        ),
+                        )
                     );
+        $viewAllExtensions = array(
+                    'name'=>'View All Extensions',
+                    'desc'=>'See all the extensions available for AMP',
+                    'img_src'=>AMPFORWP_IMAGE_DIR . '/comments.png',
+                    'price'=>'FREE',
+                    'url_link'=>'https://ampforwp.com/extensions/#utm_source=options-panel&utm_medium=extension-tab_amp-more-comingsoon&utm_campaign=AMP%20Plugin',
+                    'plugin_active_path'=> '',
+                    'item_name'=>'',
+                    'store_url'=>'',
+                    'is_activated'=>2,
+                    'settingUrl'=>'',
+                );
 
 $extension_listing_array = apply_filters( 'ampforwp_extension_lists_filter', $extension_listing_array );
 $all_extensions_data = $extension_listing_array;
@@ -384,11 +395,14 @@ $ampforwp_nameOfUser = "";
 $ampforwp_is_productActivated = false;
 function ampforwp_sort_extension_array($a, $b){
     if ($a['is_activated'] == $b['is_activated']) {
-        return 0;
+        return strcmp(strtolower($a['name']), strtolower($b['name']));
     }
     return ($a['is_activated'] < $b['is_activated']) ? -1 : 1;
 }
 usort($extension_listing_array, 'ampforwp_sort_extension_array');
+//add view all extensions
+array_push($extension_listing_array, $viewAllExtensions);
+
 foreach ($extension_listing_array as $key => $extension) {
     $currentStatus = "";
 
@@ -405,7 +419,6 @@ foreach ($extension_listing_array as $key => $extension) {
 
             $settingPageUrl = '<div class="extension-menu-call"><a href="'.$extension['settingUrl'].'" class="amp_extension_settings"><i class="dashicons-before dashicons-admin-generic"></i> Settings</a></div>';
         }
-
         $amplicense = '';
         $onclickUrl = $amp_license_response = $allResponseData = $onclickUrlclose= '';
         $allResponseData = array('success'=>'',
@@ -456,8 +469,7 @@ foreach ($extension_listing_array as $key => $extension) {
         $pluginReview .= $verify. "<br/>".$amp_license_response;
         if(isset($selectedOption['amp-license'][$pathExploded]['message']) && $selectedOption['amp-license'][$pathExploded]['message']!=""){
             $pluginReview .= "<div class='afw-license-response-message'>".$selectedOption['amp-license'][$pathExploded]['message']."</div>";
-        }
-        
+        }      
     }
     $secondPageClickClass = '';
     if($extension['is_activated']==1 && strpos($ampforwp_extension_list_html, "Your Installed Extensions")===false){
@@ -479,15 +491,11 @@ foreach ($extension_listing_array as $key => $extension) {
 
 $extension_listing = '
 <div class="extension_listing">
-<p style="font-size:13px">Take your AMP to the next level with these premium extensions which gives you advanced features.</p>
-
-   
+<p style="font-size:13px">Take your AMP to the next level with these premium extensions which gives you advanced features.</p> 
 '.$ampforwp_extension_list_html.'
-
 </ul>
 </div>
 ';
-
 // #2267
 function ampforwp_check_extensions(){
 	global $all_extensions_data;
@@ -498,8 +506,7 @@ function ampforwp_check_extensions(){
 				return true;
 			}
 		}
-	}
-	
+	}	
 	return false;
 }
 
@@ -802,8 +809,6 @@ $freepro_listing = '
         </div><!-- /.faq -->
     </div><!-- /. pvf -->
 </div><!-- /. fp-wr -->';
-
-
 $gettingstarted_extension_listing = '
 <div class="extension_listing getting_started_listing">
 <p style="font-size:13px">Take your AMP to the next level with these premium extensions which gives you advanced features.</p>
@@ -1050,12 +1055,7 @@ $args = array(
 
 );
 
-
 Redux::setArgs( "redux_builder_amp", $args );
-
-
-
-
     $tabs = array(
         array(
             'id'      => 'redux-help-tab-1',
@@ -1086,23 +1086,16 @@ Redux::setArgs( "redux_builder_amp", $args );
      */
 
     Redux::setSection( $opt_name, array(
-        'title'  => esc_html__( 'Basic Field', 'accelerated-mobile-pages' ),
-        'id'     => 'basic',
-        'desc'   => esc_html__( 'Basic field with no subsections.', 'accelerated-mobile-pages' ),
-        'icon'   => 'el el-home',
+        'title' => esc_html__( 'Settings', 'accelerated-mobile-pages' ),
+        'id'    => 'basic',
         'fields' => array(
             array(
                 'id'       => 'opt-blank',
-                'title'    => esc_html__( 'Example Text', 'accelerated-mobile-pages' ),
-                'desc'     => esc_html__( 'Example description.', 'accelerated-mobile-pages' ),
-                'tooltip-subtitle' => esc_html__( 'Example subtitle.', 'accelerated-mobile-pages' ),
+                'type'     => 'raw',
+                'title'    => '',
+                'desc'     => '',
             )
-        )
-    ) );
-
-    Redux::setSection( $opt_name, array(
-        'title' => esc_html__( 'Settings', 'accelerated-mobile-pages' ),
-        'id'    => 'basic',
+        ),
         'desc'  =>  '<div class="amp-faq">'.esc_html__('Thank you for using Accelerated Mobile Pages plugin.', 'accelerated-mobile-pages'). ' ' .
           '  <h2 style="width: 150px;float: right;
     padding: 8px 11px;background: #4CAF50;
@@ -2003,12 +1996,8 @@ Redux::setArgs( "redux_builder_amp", $args );
                'required'  => array('amp-inspection-tool', '=' , '0'),
                'switch-text' => true,
            ),
-
-
        )
-
   )
-
   );
 
   // Performance SECTION
@@ -2069,11 +2058,8 @@ Redux::setArgs( "redux_builder_amp", $args );
                'tooltip-subtitle'     => esc_html__('Improve the Page Speed and Loading time with Minification option', 'accelerated-mobile-pages'),
                'default'  => 0
            ),
-
        )
-
   )
-
   );
 
   function ampforwp_get_default_analytics($param=""){
@@ -2189,7 +2175,7 @@ Redux::setArgs( "redux_builder_amp", $args );
                         'mode'     => 'javascript',
                         'theme'    => 'monokai',
                         'desc'     => '',
-                        'default'  => esc_html__('{
+                        'default'  => ('{
     "vars": {
         "account": "UA-xxxxxxx-x"  //Replace this with your Tracking ID
     },
@@ -2202,7 +2188,7 @@ Redux::setArgs( "redux_builder_amp", $args );
      * Enter your Advanced Analytics code here
     */
     }
-}','accelerated-mobile-pages')
+}')
                     ),
                       //GTM
                         array(
@@ -2739,7 +2725,6 @@ function ampforwp_add_sd_fields($fields){
         'fields'     => apply_filters('ampforwp_sd_custom_fields', $fields = array()
         ),
     ) );
-
 
     // Notifications SECTION
    Redux::setSection( $opt_name, array(
@@ -4325,18 +4310,14 @@ Redux::setSection( $opt_name, array(
                                 <div class="amp_layouts_container">
                                     '.$upcomingLayoutsDesign.'
                                 </div>
-                            </div>',
-                
-                
+                            </div>',               
             ),
             array(
                 'id'   => 'info_theme_framework',
                 'type' => 'info',
                 'style' => 'success',
                 'desc' => $amptfad
-            ),
-
-            
+            ),            
             )
         ) );
 /*---------------------*/
@@ -4503,7 +4484,6 @@ Redux::setSection( $opt_name, array(
                     array('amp-design-selector', '=' , '4')
                 )
             ),
-
            array(
                     'id'       => 'content-font-family-enable',
                     'type'     => 'switch',
@@ -4775,7 +4755,7 @@ Redux::setSection( $opt_name, array(
                 'title'     => esc_html__('Alt Menu Text', 'accelerated-mobile-pages'),
                 'type'      => 'color_rgba',
                 'default'   => array(
-                    'rgba'  => 'rgb(53, 53, 53)',
+                    'rgba'  => 'rgba(53, 53, 53,1)',
                     ),
                     'required' => array(
                       array('primary-menu','=',1)
@@ -5282,6 +5262,7 @@ Redux::setSection( $opt_name, array(
     //End of code for fetching categories to show as a list in redux settings
 
     // code for fetching tags to show as a list in the redux settings
+    $tags_array = '';
     if(get_tags()){
         $tags = get_tags( array(
                                 'orderby' => 'name',
@@ -5472,6 +5453,18 @@ Redux::setSection( $opt_name, array(
                          array('excerpt-option', '=' , '1'),
                      )                         
                 ),
+
+            // Excerpt length for Swift
+                array(
+                        'id'        =>'amp-swift-excerpt-len',
+                        'type'      =>'text',
+                        'tooltip-subtitle'  =>__('Enter the number of words Eg: 20','accelerated-mobile-pages'),
+                        'title'     =>__('Excerpt Length','accelerated-mobile-pages'),
+                        'required' => array(
+                         array('amp-design-selector', '=' , '4')),
+                        'validate'  =>'numeric',
+                        'default'   =>'20',
+                ),    
  
              // Featured Time
                 array(
@@ -5582,7 +5575,7 @@ Redux::setSection( $opt_name, array(
 
         )
     ));
-
+if(!is_plugin_active( 'amp-newspaper-theme/ampforwp-custom-theme.php' ) ){
 $single_page_options = array(
                 array(
                        'id' => 'ampforwp-single_section_1',
@@ -6180,6 +6173,16 @@ $single_page_options = array(
         'desc' => $single_extension_listing 
     )
 );
+}
+else{
+      $single_page_options = array(         
+        array(
+            'id'      => 'amp_newspaper_settings_info',
+            'type'    => 'Info',
+            'desc' => '<div style="background: #FFF9C4;padding: 12px;line-height: 2.4;margin:-25px -14px -18px -17px;font-size:16px"><b>It seems that you have activated the amp newspaper theme plugin.</b><br><div class="extension-menu-call"> <a href="{ampforwp-theme-subsection-shortcode}" class="redux-group-tab-link-a current" >Go to newspaper theme settings.</a></div></div>',
+              ),
+           );
+       }
    // Single Section
   Redux::setSection( $opt_name, array(
         'title'      => esc_html__( 'Single', 'accelerated-mobile-pages' ),
@@ -7165,7 +7168,6 @@ $single_page_options = array(
           ),
         )
     ) );
-
 
     // Date SECTION
    Redux::setSection( $opt_name, array(

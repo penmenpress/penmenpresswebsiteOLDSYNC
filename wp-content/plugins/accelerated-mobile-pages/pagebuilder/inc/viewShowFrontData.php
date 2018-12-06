@@ -495,6 +495,7 @@ function amppb_validateCss($css){
 	$css = (esc_html($css));
 	$css = str_replace('&quot;', '"', $css);
 	$css = preg_replace('/@media([^\r\n,{}]+){\s*}/', "", $css);
+	$css = str_replace(array('.amppb-fluid','.amppb-fixed'), array('.ap-fl','.ap-fi'), $css);
 	$css = preg_replace('/(([a-z -]*:(\s)*;))/', "", $css);
 	$css = preg_replace('/((;[\s\n;]*;))/', ";", $css);
 	$css = preg_replace('/(?:[^\r\n,{}]+)(?:,(?=[^}]*{,)|\s*{[\s]*})/', "", $css);
@@ -546,7 +547,13 @@ function amppb_post_content($content){
 							$replace .= 'ap_r_'.$rowsData['id'];
 						}
 						if(isset($rowsData['data'][$field['name']]) && !is_array($rowsData['data'][$field['name']])){
-							$replace .= $rowsData['data'][$field['name']];
+							if($field['name']=='grid_type' && $rowsData['data'][$field['name']] == 'amppb-fluid' ){
+								$replace .= 'ap-fl';
+							}elseif($field['name']=='grid_type' && $rowsData['data'][$field['name']]=='amppb-fixed'){
+								$replace .= 'ap-fi';
+							}else{
+								$replace .= $rowsData['data'][$field['name']];
+							}
 						}else{
 							$replace .= '';
 						}
@@ -725,14 +732,17 @@ function rowData($container,$col,$moduleTemplate){
 										}
 
 									$repeaterFrontTemplate = str_replace('{{repeater_unique}}', $repeaterUniqueId, $repeaterFrontTemplate);
-										$repeaterUniqueId++;
+									$repeaterFrontTemplate = ampforwp_replaceIfContentConditional('repeater_unique', $repeaterUniqueId, $repeaterFrontTemplate);
+										
 									}
 								}
+								$repeaterUniqueId++;
 								$repeaterFrontTemplate = str_replace('{{repeater-module-class}}', esc_attr($moduleField['name'].'_'.$repeaterVarIndex), $repeaterFrontTemplate);
 								
 								$repeaterFields .= $repeaterFrontTemplate;
 
 							}
+							$repeaterUniqueId = $repeaterUniqueId-1;//Rememeber: loop is going to POST INCREMENT So for perfect counting need to decrese by 1
 						}//If Check for Fall back
 						if(!is_numeric($repeaterKey)){
 							$moduleFrontHtml = str_replace('{{repeater_'.$repeaterKey.'}}', trim($repeaterFields), $moduleFrontHtml);
@@ -912,6 +922,10 @@ function rowData($container,$col,$moduleTemplate){
                 }//If closed
 
                 $moduleFrontHtml = str_replace('{{unique_cell_id}}', $contentArray['cell_id'], $moduleFrontHtml);
+                if(isset($repeaterUniqueId)){ 
+                $moduleFrontHtml = str_replace('{{repeater_max_count}}', $repeaterUniqueId, $moduleFrontHtml);          
+				$moduleFrontHtml = ampforwp_replaceIfContentConditional('repeater_max_count', $repeaterUniqueId, $moduleFrontHtml);
+				}
 				$html .= "<div class='amp_mod ap_m_".$contentArray['cell_id'].' '.$contentArray['type']."'>".$moduleFrontHtml;
 				$html .= '</div>';
 				/*if($contentArray['type']=="text"){

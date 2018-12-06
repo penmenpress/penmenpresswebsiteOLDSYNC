@@ -36,7 +36,9 @@ class AMP_Blacklist_Sanitizer extends AMP_Base_Sanitizer {
 
 		if($node->nodeName=='a' ){
 			$href = $node->getAttribute('href');
-			$node->setAttribute('href',ampforwp_findInternalUrl($href));
+			if ( $href ){
+				$node->setAttribute('href',ampforwp_findInternalUrl($href));
+			}
 		}
 		
 		// Some nodes may contain valid content but are themselves invalid.
@@ -142,7 +144,8 @@ class AMP_Blacklist_Sanitizer extends AMP_Base_Sanitizer {
 		// If no href is set and this isn't an anchor, it's invalid
 		if ( empty( $href ) ) {
 			$name_attr = $node->getAttribute( 'name' );
-			if ( ! empty( $name_attr ) ) {
+			$id_attr = $node->getAttribute( 'id' );
+			if ( ! empty( $id_attr ) || ! empty( $name_attr ) ) {
 				// No further validation is required
 				return true;
 			} else {
@@ -160,7 +163,7 @@ class AMP_Blacklist_Sanitizer extends AMP_Base_Sanitizer {
 			$href = untrailingslashit( get_home_url() ) . $href;
 		}
 
-		$valid_protocols = array( 'http', 'https', 'mailto', 'sms', 'tel', 'viber', 'whatsapp' );
+		$valid_protocols = array( 'http', 'https', 'mailto', 'sms', 'tel', 'viber', 'whatsapp' , 'ftp');
 		$special_protocols = array( 'tel', 'sms' ); // these ones don't valid with `filter_var+FILTER_VALIDATE_URL`
 		$protocol = strtok( $href, ':' );
 
