@@ -132,6 +132,13 @@ function editorial_pro_content_width() {
 }
 add_action( 'after_setup_theme', 'editorial_pro_content_width', 0 );
 
+// Add theme support for Featured Images
+add_theme_support('post-thumbnails', array(
+'post',
+'page',
+'custom-post-type-name',
+));
+
 /**
  * Implement the Custom Header feature.
  */
