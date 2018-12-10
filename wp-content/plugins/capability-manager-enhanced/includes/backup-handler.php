@@ -23,14 +23,37 @@ class Capsman_BackupHandler
 		
 			global $wpdb;
 			$wp_roles = $wpdb->prefix . 'user_roles';
-			$cm_roles = 'capsman_backup';
+			$cm_roles = $this->cm->ID . '_backup';
+			$cm_roles_initial = $this->cm->ID . '_backup_initial';
 
 			switch ( $_POST['action'] ) {
 				case 'backup':
+					if ( ! get_option( $cm_roles_initial ) ) {
+						if ( $current_backup = get_option( $cm_roles ) ) {
+							update_option( $cm_roles_initial, $current_backup, false );
+
+							if ( $initial_datestamp = get_option( $this->cm->ID . '_backup_datestamp' ) ) {
+								update_option($this->cm->ID . '_backup_initial_datestamp', $initial_datestamp, false );
+							}
+						}
+					}
+
 					$roles = get_option($wp_roles);
-					update_option($cm_roles, $roles);
+					update_option($cm_roles, $roles, false);
+					update_option($this->cm->ID . '_backup_datestamp', current_time( 'timestamp' ), false );
 					ak_admin_notify(__('New backup saved.', 'capsman-enhanced'));
 					break;
+				
+				case 'restore_initial':
+					$roles = get_option($cm_roles_initial);
+					if ( $roles ) {
+						update_option($wp_roles, $roles);
+						ak_admin_notify(__('Roles and Capabilities restored from initial backup.', 'capsman-enhanced'));
+					} else {
+						ak_admin_error(__('Restore failed. No backup found.', 'capsman-enhanced'));
+					}
+					break;
+
 				case 'restore':
 					$roles = get_option($cm_roles);
 					if ( $roles ) {

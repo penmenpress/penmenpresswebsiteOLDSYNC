@@ -47,6 +47,12 @@
 					<td>
 						<select name="action">
 							<option value="backup"> <?php _e('Backup roles and capabilities', 'capsman-enhanced'); ?> </option>
+
+							<?php
+							if ( $initial = get_option( 'capsman_backup_initial' ) ):?>
+								<option value="restore_initial"> <?php _e('Restore initial backup', 'capsman-enhanced'); ?> </option>
+							<?php endif;?>
+
 							<option value="restore"> <?php _e('Restore last saved backup', 'capsman-enhanced'); ?> </option>
 						</select> &nbsp;
 						<input type="submit" name="Perform" value="<?php _e('Do Action', 'capsman-enhanced') ?>" class="button-primary" />
@@ -54,6 +60,77 @@
 				</tr>
 				</table>
 			</dd>
+
+		<p>&nbsp;
+		<?php if( ! empty( $initial ) ):?>
+		<a id="cme_show_initial" href="javascript:void(0)"><?php _e('Show initial backup', 'capsman-enhanced');?></a> &nbsp;&bull;&nbsp;
+		<?php endif;?>
+		<a id="cme_show_last" href="javascript:void(0)"><?php _e('Show last backup', 'capsman-enhanced');?></a>
+		</p>
+
+		<script type="text/javascript">
+		/* <![CDATA[ */
+		jQuery(document).ready( function($) {
+			$( '#cme_show_initial').click( function() {
+				$('#cme_display_capsman_backup_initial').show();
+				$('#cme_display_capsman_backup').hide();
+			});
+			$( '#cme_show_last').click( function() {
+				$('#cme_display_capsman_backup_initial').hide();
+				$('#cme_display_capsman_backup').show();
+			});
+		});
+		/* ]]> */
+		</script>
+
+		<?php
+			global $wp_roles;
+
+			$initial_caption = ( $backup_datestamp = get_option( 'capsman_backup_initial_datestamp' ) ) ? sprintf( __('Initial Backup - %s', 'capsman-enhanced'), date( 'j M Y, g:i a', $backup_datestamp ) ) : __('Initial Backup', 'capsman-enhanced');
+			$last_caption = ( $backup_datestamp = get_option( 'capsman_backup_datestamp' ) ) ? sprintf( __('Last Backup - %s', 'capsman-enhanced'), date( 'j M Y, g:i a', $backup_datestamp ) ) : __('Last Backup', 'capsman-enhanced');
+			
+			$backups = array( 
+				'capsman_backup_initial' => $initial_caption, 
+				'capsman_backup' =>			$last_caption,
+			);
+			
+			foreach( $backups as $name => $caption ) {
+				if ( $backup_data = get_option( $name ) ) :?>
+					<div id="cme_display_<?php echo $name;?>" style="display:none;padding-left:20px;">
+					<h3><?php printf( __( "%s (%s roles)", 'capsman-enhanded' ), $caption, count($backup_data) ); ?></h3>
+					
+					<?php foreach( $backup_data as $role => $props ) :?>
+						<?php if ( ! isset( $props['name'] ) ) continue;?>
+						<?php 
+						$level = 0;
+						for( $i=10; $i>=0; $i--) {
+							if ( ! empty( $props['capabilities']["level_{$i}"] ) ) {
+								$level = $i;
+								break;
+							}
+						}
+						?>
+						<?php 
+						$role_caption = $props['name'];
+						if ( empty( $wp_roles->role_objects[$role] ) ) $role_caption = "<span class='cme-plus' style='color:green;font-weight:800'>$role_caption</span>";?>
+						<h4><?php printf( __( '%s (level %s)', 'capsman-enhanced' ), $role_caption, $level );?></h4>
+						<ul style="list-style:disc;padding-left:30px">
+						
+						<?php
+						ksort( $props['capabilities'] );
+						foreach( $props['capabilities'] as $cap_name => $val ) :
+							if ( 0 === strpos( $cap_name, 'level_' ) ) continue;
+						?>
+							<?php if ( $val && ( empty( $wp_roles->role_objects[$role] ) || empty( $wp_roles->role_objects[$role]->capabilities[$cap_name] ) ) ) $cap_name = "<span class='cme-plus' style='color:green;font-weight:800'>$cap_name</span>";?>
+							<li><?php echo ( $val ) ? $cap_name : "<strike>$cap_name</strike>";?></li>
+						<?php endforeach;?>
+
+						</ul>
+					<?php endforeach;?>
+					</div>
+				<?php endif;
+			}
+			?>
 		</dl>
 
 		<dl>

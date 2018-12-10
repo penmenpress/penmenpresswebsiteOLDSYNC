@@ -138,9 +138,6 @@ abstract class akPluginAbstract
 	{
         $this->pluginActivate();
 
-        // Save options and version
-		add_option($this->ID . '_version', $this->version);
-
         // Do activated hook.
 		do_action('ak_activate_' . $this->ID . '_plugin');
 	}
@@ -163,7 +160,7 @@ abstract class akPluginAbstract
 			$version = get_option($this->ID . '_version');
 			$this->pluginUpdate($version);
 
-			update_option($this->ID . '_version', $this->version);
+			update_option($this->ID . '_version', CAPSMAN_ENH_VERSION);
 
 			do_action('ak_' . $this->ID . '_updated');
 		}
@@ -212,7 +209,7 @@ abstract class akPluginAbstract
 
 		$url = apply_filters('ak_' . $this->ID . '_style_admin', $url);
 		if ( ! empty($url) ) {
-   			wp_register_style('ak_' . $this->ID . '_admin', $url, array('ak_framework_admin'), $this->version);
+   			wp_register_style('ak_' . $this->ID . '_admin', $url, array('ak_framework_admin'), CAPSMAN_ENH_VERSION);
    			wp_enqueue_style('ak_' . $this->ID . '_admin');
     	}
 		
@@ -245,8 +242,8 @@ abstract class akPluginAbstract
 		if ( ! isset($this->ID) )
 			$this->ID = ( empty($id) ) ? strtolower(basename($this->mod_file, '.php')) : trim($id) ;
 
-   		$old_version = get_option($this->ID . '_version');
-		if ( version_compare($old_version, $this->version, 'ne') ) {
+		$old_version = get_option($this->ID . '_version');
+		if ( version_compare($old_version, CAPSMAN_ENH_VERSION, 'ne') ) {
 			$this->needs_update = true;
 		}
 	}

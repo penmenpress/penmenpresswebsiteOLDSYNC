@@ -8,14 +8,14 @@
  * @copyright   Copyright (C) 2009, 2010 Jordi Canals; modifications Copyright (C) 2012-2018 Kevin Behrens
  * @license		GNU General Public License version 3
  * @link		http://agapetry.net
- * @version 	1.5.10
+ * @version 	1.5.11
  */
 
 /*
 Plugin Name: Capability Manager Enhanced
 Plugin URI: http://presspermit.com/capability-manager
 Description: Manage WordPress role definitions, per-site or network-wide. Organizes post capabilities by post type and operation.
-Version: 1.5.10
+Version: 1.5.11
 Author: Jordi Canals, Kevin Behrens
 Author URI: http://agapetry.net
 Text Domain: capsman-enhanced
@@ -24,8 +24,8 @@ License: GPLv3
 */
 
 if ( ! defined( 'CAPSMAN_VERSION' ) ) {
-	define( 'CAPSMAN_VERSION', '1.5.10' );
-	define( 'CAPSMAN_ENH_VERSION', '1.5.10' );
+	define( 'CAPSMAN_VERSION', '1.5.11' );
+	define( 'CAPSMAN_ENH_VERSION', '1.5.11' );
 }
 
 if ( cme_is_plugin_active( 'capsman.php' ) ) {

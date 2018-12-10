@@ -3,8 +3,8 @@ Contributors: txanny, kevinB
 Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JWZVFUDLLYQBA
 Tags: roles, capabilities, manager, editor, rights, role, capability, types, taxonomies, network, multisite, default
 Requires at least: 3.1
-Tested up to: 4.9.8
-Stable tag: 1.5.10
+Tested up to: 5.0
+Stable tag: 1.5.11
 
 A simple way to manage WordPress roles and capabilities.
 
@@ -108,6 +108,11 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 == Changelog ==
+
+= 1.5.11 =
+  * Feature : Automatically save backup of WP roles on plugin activation or update
+  * Feature : When roles are manually backed up, also retain initial role backup
+  * Feature : Backup Tool can also display contents of role backups
 
 = 1.5.10 =
   * Fixed : Back button caused mismatching role dropdown selection
