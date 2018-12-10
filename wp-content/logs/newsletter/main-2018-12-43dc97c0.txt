@@ -4,3 +4,5 @@
 02-12-2018 22:30:50 - INFO  - m: 15.1 MB, u: 0 - send> No more users, set as sent
 03-12-2018 00:41:13 - ERROR - m: 15.2 MB, u: 0 - Blocked by transient newsletter_main_engine set 0 seconds ago
 06-12-2018 01:30:49 - ERROR - m: 14.4 MB, u: 0 - Blocked by transient newsletter_main_engine set 0 seconds ago
+07-12-2018 17:45:57 - ERROR - m: 15.7 MB, u: 0 - Blocked by transient newsletter_main_engine set 0 seconds ago
+07-12-2018 19:01:17 - ERROR - m: 15.7 MB, u: 0 - Blocked by transient newsletter_main_engine set 1 seconds ago
