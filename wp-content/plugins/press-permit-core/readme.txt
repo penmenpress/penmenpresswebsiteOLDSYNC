@@ -5,7 +5,7 @@ Tags: restrict, access, permissions, cms, user, private, category, pages, privac
 License: GPLv3
 Requires at least: 3.4
 Tested up to: 5.0
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
@@ -50,6 +50,9 @@ Initial production release
 
 == Changelog ==
 
+= 2.5.4 - 6 Dec 2018 =
+* Fixed : Pro - Excessive update checks on Plugins screen if any Pro extensions are installed but inactive
+* Fixed : Pro - Restrictive exceptions assigned directly to a post did not override direct-assigned enabling exceptions, even when PP_RESTRICTION_PRIORITY defined
 
 = 2.5.3 - 4 Dec 2018 =
 * Fixed : PHP warning on third party calls to get_terms() with an invalid taxonomies argument

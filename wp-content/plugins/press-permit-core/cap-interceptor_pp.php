@@ -212,9 +212,17 @@ class PP_CapInterceptor
 								
 								$exc_post_type = apply_filters( 'pp_exception_post_type', $item_type, $op, $_args );
 								
-								if ( $additional_ids = $pp_current_user->get_exception_posts( $op, 'additional', $exc_post_type, array( 'status' => true ) ) )
+								if ( $additional_ids = $pp_current_user->get_exception_posts( $op, 'additional', $exc_post_type, array( 'status' => true ) ) ) {
 									$additional_ids = pp_array_flatten( array_intersect_key( $additional_ids, $valid_stati ) );
 								
+									if ( defined( 'PP_RESTRICTION_PRIORITY') && PP_RESTRICTION_PRIORITY ) {
+										if ( $exclude_ids = $pp_current_user->get_exception_posts( $op, 'exclude', $exc_post_type, array( 'status' => true ) ) ) {
+											$exclude_ids = pp_array_flatten( array_intersect_key( $exclude_ids, $valid_stati ) );
+											$additional_ids = array_diff( $additional_ids, $exclude_ids );
+										}
+									}
+								}
+
 								if ( $additional_ids ) {
 									$has_post_additions = apply_filters( 'pp_has_post_additions', null, $additional_ids, $item_type, $item_id, compact('op','orig_reqd_caps') ); 
 									if ( is_null( $has_post_additions ) )

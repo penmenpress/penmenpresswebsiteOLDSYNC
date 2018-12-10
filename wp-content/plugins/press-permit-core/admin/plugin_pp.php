@@ -258,8 +258,6 @@ class PP_Plugin_Status {
 					} else {
 						$message = sprintf(__('There is a new version of %1$s, but <a href="%2$s">your support key</a> is not activated. <a href="%3$s">Purchase a Press Permit Pro support key</a> for one-click updates and support resources. <a href="%4$s" class="thickbox" title="%5$s">View version %6$s details</a>.','pp'), $plugin_data['Name'], admin_url('admin.php?page=pp-settings&pp_tab=install'), 'https://presspermit.com/' . 'purchase/', $details_url, esc_attr($plugin_data['Name']), $version_info->new_version);
 					}
-					
-					set_site_transient('ppc_update_info', false);
 				} else {
 					$message = sprintf(_pp_('There is a new version of %1$s available. <a href="%2$s" class="thickbox" title="%3$s">View version %4$s details</a> or <a href="%5$s">update now</a>.'),$plugin_data['Name'],$details_url,esc_attr($plugin_data['Name']),$version_info->new_version,$update_url);
 				}
@@ -278,7 +276,6 @@ class PP_Plugin_Status {
 				
 			$wp_list_table = _get_list_table('WP_Plugins_List_Table');
 			echo '<tr class="plugin-update-tr"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update"><div class="update-message">'.$message.'</div></td></tr>';
-			set_site_transient('ppc_update_info', false);
 
 			return;
 		}
