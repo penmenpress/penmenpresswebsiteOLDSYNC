@@ -34,6 +34,7 @@ revslider
 simple-responsive-slider
 sucuri
 supsystic-tables
+tractor-insightcore01
 ultimate-tinymce
 wc-logs
 woocommerce_uploads

@@ -39,9 +39,12 @@ li.jstree-closed > a .jstree-icon {
 	width: 27px;
 }
 
-li.jstree-node.jstree-leaf {
-	display: none;
-}
+ li.jstree-leaf > a .jstree-icon {
+	background: url("images/closedimage.png") 0px 0px no-repeat !important;
+	height: 25px;
+	line-height: 25px;
+	width: 27px;
+} 
 
 .jstree-default .jstree-icon:empty {
 	height: 25px !important;

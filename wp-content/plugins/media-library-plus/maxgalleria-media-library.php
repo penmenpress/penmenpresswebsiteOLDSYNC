@@ -3,7 +3,7 @@
 Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.3.1
+Version: 4.3.3
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -40,7 +40,7 @@ class MaxGalleriaMediaLib {
 
 	public function set_global_constants() {	
 		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_KEY', 'maxgalleria_media_library_version');
-		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.3.1');
+		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.3.3');
 		define('MAXGALLERIA_MEDIA_LIBRARY_IGNORE_NOTICE', 'maxgalleria_media_library_ignore_notice');
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME);
@@ -235,7 +235,10 @@ class MaxGalleriaMediaLib {
   public function enqueue_admin_print_scripts() {
     global $pagenow, $current_screen;
 		
-    if (isset( $current_screen ) && $current_screen->base != 'all-import_page_pmxi-admin-import' && $current_screen->base != 'pmxi-admin-import') {
+    if (isset( $current_screen ) && 
+        $current_screen->base != 'all-import_page_pmxi-admin-import' && 
+        $current_screen->base != 'pmxi-admin-manage' && 
+        $current_screen->base != 'pmxi-admin-import') {
       
       if (in_array($pagenow, array('post.php', 'page.php', 'post-new.php', 'post-edit.php', 'uploads.php', 'admin.php'))) {
 
@@ -1668,20 +1671,20 @@ order by folder_id";
 					$folders[] = $folder;
 				}
 
-				$max_id += 99999;
-				foreach($add_child as $child) {
-					$max_id++;
-					$folder = array();
-					$folder['id'] = $max_id;
-					$folder['parent'] = $child;
-					$folder['text'] = "empty node";
-					$state = array();
-					$state['opened'] = false;
-					$state['disabled'] = true;
-					$state['selected'] = false;
-					$folder['state'] = $state;
-					$folders[] = $folder;							
-				}
+//				$max_id += 99999;
+//				foreach($add_child as $child) {
+//					$max_id++;
+//					$folder = array();
+//					$folder['id'] = $max_id;
+//					$folder['parent'] = $child;
+//					$folder['text'] = "empty node";
+//					$state = array();
+//					$state['opened'] = false;
+//					$state['disabled'] = true;
+//					$state['selected'] = false;
+//					$folder['state'] = $state;
+//					$folders[] = $folder;							
+//				}
 			}
 
 			return $folders;
