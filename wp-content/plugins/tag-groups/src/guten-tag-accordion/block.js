@@ -719,14 +719,22 @@ class tagGroupsAccordionCloudParameters extends Component {
         </InspectorControls>
       ),
       <div className="chatt-mango-editor">
-        <img src={logoUrl} alt='logo' style={{float:'left', margin:15}}/>
-        <h3>{ __( 'Accordion Tag Cloud' ) }</h3>
-        <div className="cm-gutenberg dashicons-before dashicons-admin-generic">
-          { __( 'Select this block and customize the tag cloud in the Inspector.' ) }
-        </div>
-        <div className="cm-gutenberg dashicons-before dashicons-welcome-view-site">
-          { __( 'See the output with Preview.' ) }
-        </div>
+        <table style={{border:'none'}}>
+        <tr>
+        <td>
+          <img src={logoUrl} alt='logo' style={{float:'left', margin:15}}/>
+        </td>
+        <td>
+          <h3>{ __( 'Accordion Tag Cloud' ) }</h3>
+          <div className="cm-gutenberg dashicons-before dashicons-admin-generic">
+            { __( 'Select this block and customize the tag cloud in the Inspector.' ) }
+          </div>
+          <div className="cm-gutenberg dashicons-before dashicons-welcome-view-site">
+            { __( 'See the output with Preview.' ) }
+          </div>
+        </td>
+        </tr>
+        </table>
       </div>
     ]
   }
