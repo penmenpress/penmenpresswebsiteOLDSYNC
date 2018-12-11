@@ -95,7 +95,7 @@ final class Elanzalite_Pro_Button_Customize {
 				$manager,
 				'Magazine_button',
 				array(
-					'title'    => esc_html__( 'Create Magazine Template', 'elanzalite' ),
+					'title'    => esc_html__( 'Add Magazine Template', 'elanzalite' ),
 					'pro_text' => esc_html__( 'View Docs','elanzalite' ),
 					'pro_url'  => '//themehunk.com/docs/elanza-lite-theme/#create-magazine',
 					'priority' => 2,
