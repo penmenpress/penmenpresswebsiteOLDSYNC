@@ -30,10 +30,10 @@ class NewsletterUsers extends NewsletterModule {
     }
 
     function hook_wp_ajax_newsletter_users_export() {
-        require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
-        $controls = new NewsletterControls();
+
         $newsletter = Newsletter::instance();
         if (current_user_can('manage_options') || ($newsletter->options['editor'] == 1 && current_user_can('manage_categories'))) {
+            require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
             $controls = new NewsletterControls();
 
             if ($controls->is_action('export')) {
@@ -91,7 +91,6 @@ class NewsletterUsers extends NewsletterModule {
         $sql .= "PRIMARY KEY (`id`),\nUNIQUE KEY `email` (`email`),\nKEY `wp_user_id` (`wp_user_id`)\n) $charset_collate;";
 
         dbDelta($sql);
-        
     }
 
     function admin_menu() {

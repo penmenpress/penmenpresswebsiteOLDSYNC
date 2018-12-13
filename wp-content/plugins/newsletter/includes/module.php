@@ -9,8 +9,22 @@ defined('ABSPATH') || exit;
  * @property int $status When and how the list is visible to the subscriber - see constants
  * @property bool $checked If it must be pre-checked on subscription form
  * @property array $languages The list of language used to pre-assign this list
- * */
+ */
 abstract class TNP_List {
+
+    const STATUS_PRIVATE = 0;
+    const STATUS_PUBLIC = 2;
+    const STATUS_PROFILE_ONLY = 1;
+    const STATUS_HIDDEN = 3; // Public but never show (can be set with a hidden form field)
+
+}
+
+/**
+ * @property int $id The list unique identifier
+ * @property string $name The list name
+ * @property int $status When and how the list is visible to the subscriber - see constants
+ */
+abstract class TNP_Profile {
 
     const STATUS_PRIVATE = 0;
     const STATUS_PUBLIC = 2;
@@ -648,11 +662,15 @@ class NewsletterModule {
         add_submenu_page('newsletter_main_index', $title, $title, $capability, $name, array($this, 'menu_page'));
     }
 
-    function add_admin_page($page, $title) {
-        global $newsletter;
+    function add_admin_page($page, $title, $capability = '') {
+        if (empty($capability)) {
+            $newsletter = Newsletter::instance();
+            $capability = ($newsletter->options['editor'] == 1) ? 'manage_categories' : 'manage_options';
+        }
+        
         $name = 'newsletter_' . $this->module . '_' . $page;
         $name = apply_filters('newsletter_admin_page', $name);
-        add_submenu_page(null, $title, $title, ($newsletter->options['editor'] == 1) ? 'manage_categories' : 'manage_options', $name, array($this, 'menu_page'));
+        add_submenu_page(null, $title, $title, $capability, $name, array($this, 'menu_page'));
     }
 
     function sanitize_file_name($name) {
@@ -956,6 +974,31 @@ class NewsletterModule {
             }
         }
         return $user;
+    }
+    
+    /**
+     * @param string $language The language for the list labels (it does not affect the lists returned)
+     * @return TNP_Profile[]
+     */
+    function get_profiles($language = '') {
+        static $profiles = array();
+        if (isset($profiles[$language])) {
+            return $profiles[$language];
+        }
+
+        $profiles[$language] = array();
+        $data = NewsletterSubscription::instance()->get_options('profile', $language);
+        for ($i = 1; $i <= NEWSLETTER_PROFILE_MAX; $i++) {
+            if (empty($data['profile_' . $i])) {
+                continue;
+            }
+            $profile = new stdClass();
+            $profile->name = $data['profile_' . $i];
+            $profile->id = $i;
+            $profile->status = (int) $data['profile_' . $i . '_status'];
+            $profiles[$language][] = $profile;
+        }
+        return $profiles[$language];
     }
 
     /**

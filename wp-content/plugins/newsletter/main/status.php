@@ -192,7 +192,6 @@ $speed = Newsletter::$instance->options['scheduler_max'];
                         </td>
 
                     </tr>
-                    get_filesystem_method
                     <tr>
                         <td>Delivering</td>
                         <td>

@@ -125,21 +125,6 @@
     
 }
 
-/* Urls Clicked */
-
-.widefat th {
-    font-family: "Montserrat", sans-serif;
-    color: #2C3E50;
-    text-transform: uppercase;
-    font-size: 13px;
-    letter-spacing: 0.1em;
-}
-
-.widefat {
-    padding: 0px 10px;
-}
-
-
 /* Retarget Table Layout */
 
 .tnp-retarget .tnp-retarget-table {
