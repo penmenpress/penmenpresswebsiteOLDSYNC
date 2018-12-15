@@ -3,7 +3,7 @@ Contributors: jmlapam
 Tags: twitter, cards, semantic markup, metabox, meta, photo, product, gallery, player
 Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7BJYYT486HEH6
 Requires at least: 4.2
-Tested up to: 4.9.5
+Tested up to: 5.0.1
 Requires PHP: 5.4
 License: GPLv2 or later
 Stable tag: trunk
@@ -17,15 +17,20 @@ Once activated the plugin adds appropriate meta on your WordPress website allowi
 
 = Features =
 
-*  meta box : customize Twitter Cards experience (per each post)
-*  preview : preview the rendering on Twitter. 
-*  WP SEO by Yoast and All in One SEO compatible (no conflict with SEO title and desc set with these plugins)
+* Gutenberg compatible with a custom sidebar
+* meta box : customize Twitter Cards experience (per each post)
+* preview : preview the rendering on Twitter.
+* WP SEO by Yoast and All in One SEO compatible (no conflict with SEO title and desc set with these plugins)
 
-contact@tweetpress.fr
+contact@julien-maury.com
 
 = First image found instead of featured image =
 
-If you want to get first image found in post content as twitter image, I've created a free add-on here https://github.com/TweetPressFr/jm-twitter-cards-first-image
+If you want to get first image found in post content as twitter image, I've created a free add-on here https://github.com/jmau111/jm-twitter-cards-first-image
+
+= Force refresh Twitter image =
+
+If you want to get your Twitter image to refresh, I’ve created a free add-on here https://github.com/jmau111/jm-twitter-cards-refresh-image
 
 = Translators =
 
@@ -38,12 +43,12 @@ Thanks a lot to all translators. Can't wait to add your work to the project.
 
 = Github =
 
-*  Latest stable version : https://github.com/TweetPressFr/jm-twitter-cards
-*  Trunk version : https://github.com/TweetPressFr/jm-twitter-cards/tree/trunk
+*  Latest stable version : [https://github.com/jmau111/jm-twitter-cards](https://github.com/jmau111/jm-twitter-cards)
+*  Trunk version : [https://github.com/jmau111/jm-twitter-cards/tree/trunk](https://github.com/jmau111/jm-twitter-cards/tree/trunk)
 
 This URL is the place where I improve the plugin according to support requests and stuffs like this. GitHub is the place !
 
-[Follow me on Twitter](http://twitter.com/intent/user?screen_name=tweetpressfr)
+[Follow me on Twitter](http://twitter.com/intent/user?screen_name=jmau111)
 
 == Installation ==
 
@@ -110,6 +115,19 @@ Cela peut poser problème si vous travaillez avec de la HD et/ou beaucoup d'imag
 Il suffit de renseigner les clés de vos custom fields en page d'option et le plugin s'occupera de récupérer les datas correspondantes.
 
 == Changelog ==
+
+### 10.0.1
+* December 2018
+* handle case where installation is WordPress 5++ but the classic editor plugin or the disable Gutenberg plugin is used
+
+### 10.0.0
+* December 2018
+* Reorganize deeply the plugin structure
+* css fixes props to [tomdxw](https://github.com/tomdxw)
+* delete image sizes, actually very bad for disk space and rules have changes in 2018 with Twitter image
+* Gutenberg users will have additional features such as custom modal and preview but also custom title and desc for cards \0/
+* I've added some instructions and advices props to https://www.contentkingapp.com/
+* There is a new admin sub page called "tutorials" with video tutorials !
 
 ### 9.4
 * June 2018
