@@ -26,9 +26,6 @@ class NewsletterProfile extends NewsletterModule {
     }
 
     function hook_init() {
-        if (is_admin()) {
-            add_action('wp_ajax_newsletter_users_export', array($this, 'hook_wp_ajax_newsletter_users_export'));
-        }
         add_filter('newsletter_replace', array($this, 'hook_newsletter_replace'), 10, 3);
         add_filter('newsletter_page_text', array($this, 'hook_newsletter_page_text'), 10, 3);
     }

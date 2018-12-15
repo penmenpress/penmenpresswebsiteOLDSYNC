@@ -1,8 +1,8 @@
 === Newsletter ===
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated,mailing list
 Requires at least: 3.4.0
-Tested up to: 5.0.0
-Stable tag: 5.8.3
+Tested up to: 5.0.1
+Stable tag: 5.8.4
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -117,7 +117,11 @@ Thank you, The Newsletter Team
 
 == Changelog ==
 
-= NEXT =
+= 5.8.4 =
+
+* Fixed export error
+
+= 5.8.3 =
 
 * Fixed a debug notice with PHP 7.2
 * Status, SMTP and main settings limited to the administrators
