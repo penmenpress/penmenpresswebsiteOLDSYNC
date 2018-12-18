@@ -3,8 +3,8 @@ Contributors: mohammed_kaludi, ahmedkaludi, ampforwp
 Tags: AMP, accelerated mobile pages, mobile, amp project, google amp, amp wp, google, plugin, SEO
 Donate link: https://www.paypal.me/Kaludi/25
 Requires at least: 3.0
-Tested up to: 4.9.8
-Stable tag: 0.9.97.22
+Tested up to: 5.0
+Stable tag: 0.9.97.23
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,6 +31,7 @@ Bug reports for AMP for WP are [welcomed on GitHub](https://github.com/ahmedkalu
 
 = Features: =
 
+* NEW - Gutenberg Support
 * NEW - GDPR Compliance
 * NEW - Introducing Page Builder 3.0 for AMP! [Learn More & Video](https://ampforwp.com/tutorials/article/amp-page-builder-installation/)
 * NEW Default Theme for AMP called Swift
@@ -183,6 +184,14 @@ You can contact us from [here](https://ampforwp.com/contact/)
 
 == Changelog ==
 
+= 0.9.97.23 (18th December 2018) =
+* Fixed: Sub menu items and arrows are not functioning in publisher theme. #2672
+* Fixed: Fatal error when Polylang(Core) is activated. #2657
+* Fixed: Improve coding in amp-page-builder.php #2725
+* Fixed: Escaping not done properly #2723
+* Fixed: Serialization problem with AMP settings data. #2717
+* Fixed: Whenever Convert AMP to WP theme (Beta) option is enabled Logo Image is being stretched. #2726
+
 = 0.9.97.22 (6th December 2018) =
 * Added: Total Plus theme compatibility #2511
 * Added: Allow SVG format Logo in AMP #2431
@@ -230,7 +239,7 @@ You can contact us from [here](https://ampforwp.com/contact/)
 = 0.9.97.19 (4th October 2018) =
 * Fixed: Tables overflow not working in swift theme #2392
 * Fixed: Null check added to fix null reference exception #2526
-* Fixed: Minor Bug related with menu
+* Fixed: Minor Bug related with menu #2612
 
 = 0.9.97.18 (29th September 2018) =
 * Fixed: Minor Bug related with menu

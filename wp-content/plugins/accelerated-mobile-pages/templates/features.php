@@ -2052,6 +2052,8 @@ function ampforwp_remove_schema_data() {
 		ampforwp_remove_filters_for_class( 'amp_post_template_head', 'SocialSharing_Projects_Handler', 'addedStylesForAMP', 10 );
 		// Remove JPG, PNG Compression and Optimization Plugin Lazy Load #2322
 		ampforwp_remove_filters_for_class( 'the_content', 'Wp_Image_compression', 'filter_images', 200 );
+		// Remove Publisher theme menu in amp #2672
+		ampforwp_remove_filters_for_class( 'wp_nav_menu_args', 'BF_Menus', 'walker_front', 10 );
 		//SiteOrigin Page builder compatibilty with AMP Frontpage
 		if ( ampforwp_is_front_page() ) {
 				ampforwp_remove_filters_for_class( 'the_content', 'SiteOrigin_Panels', 'generate_post_content', 10 );
@@ -5007,11 +5009,12 @@ function ampforwp_dev_mode_notice(){
 	global $redux_builder_amp;
 	$message = '';
 	if(isset($redux_builder_amp['ampforwp-development-mode']) && $redux_builder_amp['ampforwp-development-mode']) {
-			$message =  '<strong>AMP Dev mode is Enabled! </strong> Please turn off Development mode, when you are done.';?>		
+			$message =  ' Please turn off Development mode, when you are done.';?>
+					
 			<div class="notice notice-success is-dismissible amp-dev-notice" style="position:relative;
 		    height: 40px; overflow: hidden; ">
 				<div class="ampforwp-dev-mode-message" style="margin-top: 10px;">
-					<?php echo esc_html($message); ?>					
+				    <?php echo '<strong>'. esc_html__('AMP Dev mode is Enabled!', 'accelerated-mobile-pages').'</strong>'. esc_html__($message, 'accelerated-mobile-pages'); ?>				
 				</div>	
 			</div>
 <?php }
@@ -6162,7 +6165,7 @@ function ampforwp_polylang_front_page() {
 		$frontpage_id = get_option('page_on_front');
 		// is_front_page is not working here so had to do this way
 		// Check current page id with translated page id
-		if ( $page_id == pll_get_post($frontpage_id) && ! is_page() && ! is_single() && ! is_archive() && ! is_search() && ! ampforwp_is_blog() ){
+		if ( function_exists('pll_get_post') && $page_id == pll_get_post($frontpage_id) && ! is_page() && ! is_single() && ! is_archive() && ! is_search() && ! ampforwp_is_blog() ){
 			return true;
 		}
 	}
