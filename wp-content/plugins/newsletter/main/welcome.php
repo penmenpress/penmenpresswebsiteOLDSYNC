@@ -58,9 +58,9 @@ $subscription_options = NewsletterSubscription::instance()->get_options();
 
 $logger = Newsletter::instance()->logger;
 
-$page_exists = !empty($main_options['page']) && get_permalink($main_options['page']);
+$page_exists = get_option('newsletter_page');
 
-if (!$page_exists) {
+if (empty($page_exists)) {
     $logger->info('Dedicated page creation');
         // Page creation
         $page = array();
@@ -79,6 +79,7 @@ if (!$page_exists) {
         Newsletter::instance()->save_options($main_options);
         $main_options = Newsletter::instance()->get_options();
         $page_exists = true;
+        update_option('newsletter_page', $page_id, false);
     } else {
         $logger->info('Dedicated page already exists');
     }

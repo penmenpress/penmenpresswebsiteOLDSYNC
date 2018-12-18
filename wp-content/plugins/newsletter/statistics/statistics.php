@@ -101,7 +101,8 @@ class NewsletterStatistics extends NewsletterModule {
                 // Track an action as an email read and not a click
                 $this->update_open_value(self::SENT_READ, $user_id, $email_id, $ip);
             }
-
+            
+            $this->update_user_last_ip($user, $ip);
             $this->update_user_last_activity($user);
 
             header('Location: ' . apply_filters('newsletter_redirect_url', $url, $email, $user));

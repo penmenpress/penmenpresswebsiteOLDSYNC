@@ -1155,6 +1155,12 @@ class NewsletterModule {
         global $wpdb;
         $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set last_activity=%d where id=%d limit 1", time(), $user->id));
     }
+    
+    function update_user_last_ip($user, $ip) {
+        global $wpdb;
+        // Only if changed
+        $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set country='', last_ip=%s where last_ip<>%s and id=%d limit 1", $ip, $ip, $user->id));
+    }
 
     /**
      * Finds single style blocks and adds a style attribute to every HTML tag with a class exactly matching the rules in the style

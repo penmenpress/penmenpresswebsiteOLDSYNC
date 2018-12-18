@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated,mailing list
 Requires at least: 3.4.0
 Tested up to: 5.0.1
-Stable tag: 5.8.4
+Stable tag: 5.8.5
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -60,27 +60,32 @@ delivery service) you should check with that service if some sort of agreement i
 * Auto confirmation on first login
 * Imports already registered users
 
-= Free Extensions =
+= Free Addons =
 
-Find and install them from the Extensions panel in your blog.
+Find and install them from the Addons panel in your blog.
 
 * [WP Registration Integration](https://www.thenewsletterplugin.com/documentation/wpusers-extension) - connects the WordPress standard and custom registration with Newsletter subscription. Optionally imports all registered users as subscribers.
-* [Archive Extension](https://www.thenewsletterplugin.com/documentation/archive-extension) - creates a simple blog page which lists all your sent newsletters
-* [Locked Content Extension](https://www.thenewsletterplugin.com/documentation/locked-content-extension) - open up your premium content only after subscription
+* [Archive](https://www.thenewsletterplugin.com/documentation/archive-extension) - creates a simple blog page which lists all your sent newsletters
+* [Locked Content](https://www.thenewsletterplugin.com/documentation/locked-content-extension) - open up your premium content only after subscription
+* [Newsletter REST API](https://www.thenewsletterplugin.com/developers/dev-newsletter-api) - adds a tier of REST api to integrate with the Newsletter core services
 
-= Professional Extensions =
+= Professional Addons =
 
 Need *more power*? Feel *something's missing*? The Newsletter Plugin features can be easily extended through 
-our **premium, professional Extensions**! Let us introduce just two of them : )
+our **premium, professional Addons**! Let us introduce just two of them : )
 
-* [Reports Extension](https://www.thenewsletterplugin.com/reports) - improves the internal statistics collection system and provides better reports of data collected for each sent email. Neat.
-* [Automated Extension](https://www.thenewsletterplugin.com/automated) - generates and sends your newsletters using your blog last posts, even custom ones like events or products. Just sit and watch!
-* [WooCommerce Extension](https://www.thenewsletterplugin.com/woocommerce) - subscribe customers to a mailing list and generate product newletters.
-* [Amazon SES and other providers integration](https://www.thenewsletterplugin.com/integrations) - seamlessly integrate Amazon SES and other email service providers with The Newsletter Plugin. Hassle-free.
-* [Contact Form 7 Extension](https://www.thenewsletterplugin.com/documentation/contact-form-7-extension) - integrate the subscription on Contact Form 7 forms
-* [Ninja Forms Extension](https://www.thenewsletterplugin.com/documentation/ninjaforms-extension) - integrate the subscription on Ninja Forms
-* [WP Forms Extension](https://www.thenewsletterplugin.com/documentation/wpforms-extension) - integrate the subscription on WP Forms
-* [Google Analytics Extension](https://www.thenewsletterplugin.com/google-analytics) - track newsletter links with Google UTM tracking paramaters
+* [Reports](https://www.thenewsletterplugin.com/reports) - improves the internal statistics collection system and provides better reports of data collected for each sent email. And retargeting. Neat. 
+* [Automated](https://www.thenewsletterplugin.com/automated) - generates and sends your newsletters using your blog last posts, even custom ones like events or products. Just sit and watch!
+* [Autoresponder](https://www.thenewsletterplugin.com/autorespoder) - creates email series to follow up your subscribers
+* [WooCommerce Integration](https://www.thenewsletterplugin.com/woocommerce) - subscribe customers to a mailing list and generate product newletters.
+* [Amazon SES and other mail providers integration](https://www.thenewsletterplugin.com/integrations) - seamlessly integrate Amazon SES and other email service providers with The Newsletter Plugin. Hassle-free.
+* [Contact Form 7 Integration](https://www.thenewsletterplugin.com/documentation/contact-form-7-extension) - integrate the subscription on Contact Form 7 forms
+* [Ninja Forms Integration](https://www.thenewsletterplugin.com/documentation/ninjaforms-extension) - integrate the subscription on Ninja Forms
+* [WP Forms Integration](https://www.thenewsletterplugin.com/documentation/wpforms-extension) - integrate the subscription on WP Forms
+* [Google Analytics](https://www.thenewsletterplugin.com/google-analytics) - track newsletter links with Google UTM tracking paramaters
+* [Subscribe on Comment](https://www.thenewsletterplugin.com/documentation/comments-extension) - adds the subscription option to your blog comment form
+* Extended Composer Blocks - adds new blocks to the composer
+* [Geolocation](https://www.thenewsletterplugin.com/documentation/geolocation-extension) - adds geolocation capability to target subscribers by location
 
 = Support =
 
@@ -117,6 +122,11 @@ Thank you, The Newsletter Team
 
 == Changelog ==
 
+= 5.8.5 =
+
+* Reverted back to select2 3.x
+* Added last_ip field for better geolocation
+
 = 5.8.4 =
 
 * Fixed export error
@@ -141,7 +151,7 @@ Thank you, The Newsletter Team
 
 = 5.8.0 =
 
-* Add-ons manager compatibility
+* Addons manager compatibility
 
 = 5.7.9 =
 

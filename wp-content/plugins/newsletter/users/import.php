@@ -216,7 +216,7 @@ if ($controls->is_action('import')) {
                         <div class="tnp-tip">
                             <span class="tip-button">Tip</span>
                             <span class="tip-content">
-                                Upload a CSV file, see format description <a href="#import_format">here</a>.
+                                Upload a CSV file, see format description <a href="#import_format">below</a>.
                             </span>
                         </div>
                     </th>

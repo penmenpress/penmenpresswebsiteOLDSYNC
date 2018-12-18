@@ -26,7 +26,7 @@ $subscribed = get_option('newsletter_subscribed', false);
 $has_license = !empty(Newsletter::instance()->options['contract_key']);
 if ($has_license) {
     if (!class_exists('NewsletterExtensions')) {
-        $controls->warnings = 'Please, install our add-ons manager to manage all extensions from this panel. 
+        $controls->warnings = 'Please, install our Addons manager to manage all extensions from this panel. 
             <a href="https://www.thenewsletterplugin.com/documentation/how-to-install-the-addons-manager" target="_blank">Get it here</a>.';
     }
 }

@@ -142,7 +142,7 @@ $warning |= empty($status_options['mail']);
         if (empty(Newsletter::instance()->options['contract_key']) && !defined('NEWSLETTER_LICENSE_KEY')) {
             ?>
             <li class="tnp-professional-extensions-button"><a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin&utm_medium=link&utm_campaign=header" target="_blank">
-                    <i class="fa fa-trophy"></i> <?php _e('Get Professional Extensions', 'newsletter') ?></a>
+                    <i class="fa fa-trophy"></i> <?php _e('Get Professional Addons', 'newsletter') ?></a>
             </li>
         <?php } else {
             ?>

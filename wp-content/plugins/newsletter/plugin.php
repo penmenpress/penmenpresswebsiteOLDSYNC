@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.8.4
+  Version: 5.8.5
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -29,7 +29,7 @@
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.8.4');
+define('NEWSLETTER_VERSION', '5.8.5');
 
 global $newsletter, $wpdb;
 
@@ -141,7 +141,7 @@ class Newsletter extends NewsletterModule {
 
         // Here because the upgrade is called by the parent constructor and uses the scheduler
         add_filter('cron_schedules', array($this, 'hook_cron_schedules'), 1000);
-        parent::__construct('main', '1.5.0', null, array('info', 'smtp'));
+        parent::__construct('main', '1.5.1', null, array('info', 'smtp'));
 
         $max = $this->options['scheduler_max'];
         if (!is_numeric($max)) {
@@ -149,7 +149,7 @@ class Newsletter extends NewsletterModule {
         }
         $this->max_emails = max(floor($max / 12), 1);
 
-        add_action('init', array($this, 'hook_init'));
+        add_action('init', array($this, 'hook_init'), 1);
         add_action('newsletter', array($this, 'hook_newsletter'), 1);
         add_action('newsletter_extension_versions', array($this, 'hook_newsletter_extension_versions'), 1);
         add_action('plugins_loaded', array($this, 'hook_plugins_loaded'));
@@ -287,6 +287,7 @@ class Newsletter extends NewsletterModule {
             time int(10) unsigned NOT NULL DEFAULT '0',
             error varchar(100) NOT NULL DEFAULT '',
 	    ip varchar(100) NOT NULL DEFAULT '',
+            country varchar(4) NOT NULL DEFAULT '',
             PRIMARY KEY (email_id,user_id),
             KEY user_id (user_id),
             KEY email_id (email_id)
@@ -389,7 +390,7 @@ class Newsletter extends NewsletterModule {
                 wp_enqueue_style('wp-color-picker');
                 wp_enqueue_script('wp-color-picker');
 
-                wp_enqueue_style('tnp-select2', $newsletter_url . '/vendor/select2/select2.min.css');
+                wp_enqueue_style('tnp-select2', $newsletter_url . '/vendor/select2/select2.css');
                 wp_enqueue_script('tnp-select2', $newsletter_url . '/vendor/select2/select2.min.js');
                 wp_enqueue_script('tnp-jquery-vmap', $newsletter_url . '/vendor/jqvmap/jquery.vmap.min.js', array('jquery'));
                 wp_enqueue_script('tnp-jquery-vmap-world', $newsletter_url . '/vendor/jqvmap/jquery.vmap.world.js', array('tnp-jquery-vmap'));
@@ -411,6 +412,8 @@ class Newsletter extends NewsletterModule {
         }
 
         //add_filter('site_transient_update_plugins', array($this, 'hook_site_transient_update_plugins'));
+        
+        do_action('newsletter_init');
 
         if (empty($this->action)) {
             return;
@@ -449,6 +452,7 @@ class Newsletter extends NewsletterModule {
             echo '<div class="notice notice-warning"><p>The Newsletter plugin is in <strong>debug mode</strong>. When done change it on Newsletter <a href="admin.php?page=newsletter_main_main"><strong>main settings</strong></a>. Do not keep the debug mode active on production sites.</p></div>';
         }
 
+        if (!defined('NEWSLETTER_CRON_WARNINGS') || NEWSLETTER_CRON_WARNINGS) {
         $x = wp_next_scheduled('newsletter');
         if ($x === false) {
             echo '<div class="notice notice-error"><p>The Newsletter delivery engine is off (it should never be off). Deactivate and reactivate the Newsletter plugin.</p></div>';
@@ -461,6 +465,7 @@ class Newsletter extends NewsletterModule {
 //                    echo '<div class="notice notice-error"><p>The WP scheduler doesn\'t seem to be triggered enough often for Newsletter. <a href="https://www.thenewsletterplugin.com/documentation/newsletter-delivery-engine#cron" target="_blank"><strong>Read this page to solve the problem</strong></a> or disable this notice on <a href="admin.php?page=newsletter_main_main"><strong>main settings</strong></a>.</p></div>';
 //                }
 //            }
+        }
         }
     }
 

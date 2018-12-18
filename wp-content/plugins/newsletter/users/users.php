@@ -19,7 +19,7 @@ class NewsletterUsers extends NewsletterModule {
     }
 
     function __construct() {
-        parent::__construct('users', '1.2.4');
+        parent::__construct('users', '1.2.6');
         add_action('init', array($this, 'hook_init'));
     }
 
@@ -69,6 +69,7 @@ class NewsletterUsers extends NewsletterModule {
   `feed` tinyint(4) NOT NULL DEFAULT '0',
   `referrer` varchar(50) NOT NULL DEFAULT '',
   `ip` varchar(50) NOT NULL DEFAULT '',
+  `last_ip` varchar(50) NOT NULL DEFAULT '',
   `wp_user_id` int(11) NOT NULL DEFAULT '0',
   `http_referer` varchar(255) NOT NULL DEFAULT '',
   `country` varchar(4) NOT NULL DEFAULT '',
@@ -91,6 +92,8 @@ class NewsletterUsers extends NewsletterModule {
         $sql .= "PRIMARY KEY (`id`),\nUNIQUE KEY `email` (`email`),\nKEY `wp_user_id` (`wp_user_id`)\n) $charset_collate;";
 
         dbDelta($sql);
+        
+        $this->query("update " . NEWSLETTER_USERS_TABLE . " set last_ip=ip where last_ip=''");
     }
 
     function admin_menu() {

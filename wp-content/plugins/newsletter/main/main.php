@@ -238,6 +238,8 @@ if (!empty($return_path)) {
                             </td>
                         </tr>
                     </table>
+                    
+                    <?php do_action('newsletter_panel_main_speed', $controls) ?>
                 </div>
 
 
