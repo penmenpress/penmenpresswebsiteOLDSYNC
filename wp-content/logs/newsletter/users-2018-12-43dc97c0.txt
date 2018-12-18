@@ -1,0 +1,1 @@
+18-12-2018 18:42:46 - INFO  - m: 5.1 MB, u: 0 - Version changed from 1.2.4 to 1.2.6
