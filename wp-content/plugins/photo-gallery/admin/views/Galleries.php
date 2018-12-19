@@ -626,8 +626,8 @@ class GalleriesView_bwg extends AdminView_bwg {
             'image_url' => urlencode($row->pure_image_url),
             'thumb_url' => urlencode($row->pure_thumb_url),
             'image_id' => $row->id,
-            'width' => '1000',
-            'height' => '500',
+            'bwg_width' => '1000',
+            'bwg_height' => '500',
             BWG()->nonce => wp_create_nonce('editimage_' . BWG()->prefix),
           ), admin_url('admin-ajax.php'));
           $image_link = add_query_arg(array(
@@ -649,7 +649,7 @@ class GalleriesView_bwg extends AdminView_bwg {
 					), $image_link);
           $image_link = add_query_arg(array('TB_iframe' => '1'), $image_link);
           $edit_link = add_query_arg(array('type' => 'rotate', 'TB_iframe' => '1'), $link);
-          $crop_link = add_query_arg(array('height' => '600', 'type' => 'crop', 'TB_iframe' => '1'), $link);
+          $crop_link = add_query_arg(array('bwg_height' => '600', 'type' => 'crop', 'TB_iframe' => '1'), $link);
           $image_url = (!$is_embed ? BWG()->upload_url : "") . $row->thumb_url;
           $add_tag_url = add_query_arg(array('image_id' => $row->id, 'TB_iframe' => '1'),  $params['add_tags_action']);
           ?>
@@ -777,8 +777,8 @@ class GalleriesView_bwg extends AdminView_bwg {
           'action' => 'add_pricelist',
           'page' => 'pricelists_pge',
           'task' => 'explore',
-          'width' => '785',
-          'height' => '550',
+          'bwg_width' => '785',
+          'bwg_height' => '550',
           'TB_iframe' => '1',
         ), $query_url);
       ?>

@@ -1343,6 +1343,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
             }
             case 'album_extended_preview': {
               jQuery("#extended_album_height").val(short_code['extended_album_height']);
+              jQuery("#extended_album_column_number_" + short_code['extended_album_column_number']).attr('checked', 'checked');
               jQuery("#album_extended_thumb_width").val(short_code['extended_album_thumb_width']);
               jQuery("#album_extended_thumb_height").val(short_code['extended_album_thumb_height']);
               jQuery("#album_extended_image_column_number").val(short_code['extended_album_image_column_number']);
@@ -1402,7 +1403,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
               else {
                 jQuery("#album_extended_show_gallery_description_0").attr('checked', 'checked');
               }
-              if (short_code['extended_album_view_type'] == 'thumbnail') {
+			        if (short_code['extended_album_view_type'] == 'thumbnail') {
                 jQuery("#album_extended_view_type_1").attr('checked', 'checked');
                 jQuery("#for_album_extended_image_title_show_hover_0").show();
                 jQuery("#for_album_extended_ecommerce_icon_show_hover_0").show();
@@ -2017,8 +2018,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
           case 'album_extended_preview': {
             title = ' gal_title="' + jQuery.trim(jQuery('#album option:selected').text().replace("'", "").replace('"', '')) + '"';
             tagtext += ' album_id="' + jQuery("#album").val() + '"';
-
             tagtext += ' extended_album_height="' + jQuery("#extended_album_height").val() + '"';
+            tagtext += ' extended_album_column_number="' + jQuery("input[name=extended_album_column_number]:checked").val() + '"';
             tagtext += ' extended_album_thumb_width="' + jQuery("#album_extended_thumb_width").val() + '"';
             tagtext += ' extended_album_thumb_height="' + jQuery("#album_extended_thumb_height").val() + '"';
             tagtext += ' extended_album_image_column_number="' + jQuery("#album_extended_image_column_number").val() + '"';
@@ -2035,7 +2036,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
             tagtext += ' show_sort_images="' + jQuery("input[name=album_extended_show_sort_images]:checked").val() + '"';
             tagtext += ' show_tag_box="' + jQuery("input[name=album_extended_show_tag_box]:checked").val() + '"';
             tagtext += ' show_album_name="' + jQuery("input[name=show_album_extended_name]:checked").val() + '"';
-            tagtext += ' extended_album_description_enable="' + jQuery("input[name=extended_album_description_enable]:checked").val() + '"';
+			      tagtext += ' extended_album_description_enable="' + jQuery("input[name=extended_album_description_enable]:checked").val() + '"';
             tagtext += ' show_gallery_description="' + jQuery("input[name=album_extended_show_gallery_description]:checked").val() + '"';
             tagtext += ' extended_album_view_type="' + jQuery("input[name=album_extended_view_type]:checked").val() + '"';
             tagtext += ' extended_album_image_title="' + jQuery("input[name=album_extended_image_title_show_hover]:checked").val() + '"';

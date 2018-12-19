@@ -148,8 +148,8 @@ class EditimageView_bwg {
                                      'image_id' => $image_id,
                                      'image_url' => $image_data->image_url,
                                      'thumb_url' => $image_data->thumb_url,
-                                     'width' => '1000',
-                                     'height' => '600',
+                                     'bwg_width' => '1000',
+                                     'bwg_height' => '600',
                                      'TB_iframe' => '1',
                                    ), admin_url('admin-ajax.php'));
     }
@@ -161,8 +161,8 @@ class EditimageView_bwg {
                                      'action' => 'editimage_' . BWG()->prefix,
                                      'type' => 'crop',
                                      'image_id' => $image_id,
-                                     'width' => '1000',
-                                     'height' => '600',
+                                     'bwg_width' => '1000',
+                                     'bwg_height' => '600',
                                      'TB_iframe' => '1',
                                    ), admin_url('admin-ajax.php'));
     }
@@ -471,8 +471,8 @@ class EditimageView_bwg {
                                      'image_id' => $image_id,
                                      'image_url' => $image_data->image_url,
                                      'thumb_url' => $image_data->thumb_url,
-                                     'width' => '650',
-                                     'height' => '500',
+                                     'bwg_width' => '650',
+                                     'bwg_height' => '500',
                                      'TB_iframe' => '1',
                                    ), admin_url('admin-ajax.php'));
     }
@@ -484,8 +484,8 @@ class EditimageView_bwg {
                                      'action' => 'editimage_' . BWG()->prefix,
                                      'type' => 'rotate',
                                      'image_id' => $image_id,
-                                     'width' => '650',
-                                     'height' => '500',
+                                     'bwg_width' => '650',
+                                     'bwg_height' => '500',
                                      'TB_iframe' => '1',
                                    ), admin_url('admin-ajax.php'));
     }

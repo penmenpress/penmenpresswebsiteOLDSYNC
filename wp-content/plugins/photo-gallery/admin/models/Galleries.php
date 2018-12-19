@@ -778,17 +778,22 @@ class GalleriesModel_bwg {
    * @return int
    */
   public function image_set_watermark($id, $gallery_id = 0, $all = FALSE) {
-    $options = new WD_BWG_Options();
-    list($width_watermark, $height_watermark, $type_watermark) = @getimagesize( str_replace(' ', '%20', $options->built_in_watermark_url) );
-    if ( $options->built_in_watermark_type == 'image' && (empty($width_watermark) OR empty($height_watermark) OR empty($type_watermark))) {
-      $message_id = 26;
+    if ( ini_get('allow_url_fopen') == 0 ) {
+      $message_id = 27;
     }
     else {
-      if ( $gallery_id == 0 ) {
-        $gallery_id = (int) WDWLibrary::get('current_id', 0);
+      $options = new WD_BWG_Options();
+      list($width_watermark, $height_watermark, $type_watermark) = @getimagesize(str_replace(' ', '%20', $options->built_in_watermark_url));
+      if ( $options->built_in_watermark_type == 'image' && (empty($width_watermark) OR empty($height_watermark) OR empty($type_watermark)) ) {
+        $message_id = 26;
       }
-      $limit = WDWLibrary::get('limit', 0);
-      $message_id = WDWLibrary::bwg_image_set_watermark($gallery_id, ($all ? 0 : $id), $limit);
+      else {
+        if ( $gallery_id == 0 ) {
+          $gallery_id = (int) WDWLibrary::get('current_id', 0);
+        }
+        $limit = WDWLibrary::get('limit', 0);
+        $message_id = WDWLibrary::bwg_image_set_watermark($gallery_id, ($all ? 0 : $id), $limit);
+      }
     }
 
     return $message_id;

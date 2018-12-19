@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.5.11
+ * Version: 1.5.12
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/pricing/
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,8 +81,8 @@ final class BWG {
     $this->plugin_dir = WP_PLUGIN_DIR . "/" . plugin_basename(dirname(__FILE__));
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.5.11';
-    $this->db_version = '1.5.11';
+    $this->plugin_version = '1.5.12';
+    $this->db_version = '1.5.12';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
 
@@ -216,8 +216,16 @@ final class BWG {
 
 	  // Register widget for Elementor builder.
     add_action('elementor/widgets/widgets_registered', array($this, 'register_elementor_widgets'));
+
+    //fires after elementor editor styles and scripts are enqueued.
+    add_action('elementor/editor/after_enqueue_styles', array($this, 'enqueue_editor_styles'), 11);
+
     // Register 10Web category for Elementor widget if 10Web builder doesn't installed.
     add_action('elementor/elements/categories_registered', array($this, 'register_widget_category'), 1, 1);
+  }
+
+  public function enqueue_editor_styles() {
+    wp_enqueue_style('twbb-editor-styles', $this->plugin_url . '/css/bwg_elementor_icon/bwg_elementor_icon.css', array(), '1.0.0');
   }
 
   /**
@@ -242,7 +250,7 @@ final class BWG {
   }
 
   public function register_block_editor_assets($assets) {
-    $version = '2.0.0';
+    $version = '2.0.1';
     $js_path = $this->plugin_url . '/js/tw-gb/block.js';
     $css_path = $this->plugin_url . '/css/tw-gb/block.css';
     if (!isset($assets['version']) || version_compare($assets['version'], $version) === -1) {
@@ -264,34 +272,6 @@ final class BWG {
   }
 
   public function enqueue_block_editor_assets() {
-    $key = 'tw/' . $this->prefix;
-    $plugin_name = $this->nicename;
-    $icon_url = $this->plugin_url . '/images/tw-gb/photo-gallery.svg';
-    $icon_svg = $this->plugin_url . '/images/tw-gb/icon.svg';
-    $url = add_query_arg(array('action' => 'shortcode_bwg'), admin_url('admin-ajax.php'));
-    ?>
-    <script>
-      if ( !window['tw_gb'] ) {
-        window['tw_gb'] = {};
-      }
-      if ( !window['tw_gb']['<?php echo $key; ?>'] ) {
-        window['tw_gb']['<?php echo $key; ?>'] = {
-          title: '<?php echo $plugin_name; ?>',
-          titleSelect: '<?php echo sprintf(__('Select %s', $this->prefix), $plugin_name); ?>',
-          iconUrl: '<?php echo $icon_url; ?>',
-          iconSvg: {
-            width: '20',
-            height: '20',
-            src: '<?php echo $icon_svg; ?>'
-          },
-          isPopup: true,
-          data: {
-            shortcodeUrl: '<?php echo $url; ?>'
-          }
-        }
-      }
-    </script>
-    <?php
     // Remove previously registered or enqueued versions
     $wp_scripts = wp_scripts();
     foreach ($wp_scripts->registered as $key => $value) {
@@ -308,6 +288,12 @@ final class BWG {
     wp_localize_script('tw-gb-block', 'tw_obj', array(
       'nothing_selected' => __('Nothing selected.', $this->prefix),
       'empty_item' => __('- Select -', $this->prefix),
+      'key' => 'tw/' . $this->prefix,
+      'plugin_name' => $this->nicename,
+      'select' => sprintf(__('Select %s', $this->prefix), $this->nicename),
+      'icon_url' => $this->plugin_url . '/images/tw-gb/photo-gallery.svg',
+      'icon_svg' => $this->plugin_url . '/images/tw-gb/icon.svg',
+       'url' => add_query_arg(array('action' => 'shortcode_bwg'), admin_url('admin-ajax.php')),
     ));
     wp_enqueue_style('tw-gb-block', $assets['css_path'], array( 'wp-edit-blocks' ), $assets['version']);
   }
@@ -1239,6 +1225,7 @@ final class BWG {
       $this->prefix . '_sumoselect',
       $this->prefix . '_font-awesome',
       $this->prefix . '_mCustomScrollbar',
+      'dashicons'
     );
 	  $required_scripts = array(
       'jquery',
@@ -1309,7 +1296,6 @@ final class BWG {
       'bwg_hide_ecommerce' =>  __('Hide Ecommerce', $this->prefix),
       'bwg_show_comments' =>  __('Show Comments', $this->prefix),
       'bwg_hide_comments' =>  __('Hide Comments', $this->prefix),
-      'bwg_how_comments' =>  __('how Comments', $this->prefix),
       'bwg_restore' =>  __('Restore', $this->prefix),
       'bwg_maximize' =>  __('Maximize', $this->prefix),
       'bwg_fullscreen' =>  __('Fullscreen', $this->prefix),
@@ -1921,12 +1907,10 @@ function wdpg_tenweb_install_notice() {
             <?php
           }
           ?>
-
         </div>
       </div>
       <button type="button" class="wd_tenweb_notice_dissmiss notice-dismiss" onclick="jQuery('#wd_tenweb_notice_cont').attr('style', 'display: none !important;'); jQuery.post('<?php echo $dismiss_url; ?>');"><span class="screen-reader-text"></span></button>
       <div id="verifyUrl" data-url="<?php echo $verify_url ?>"></div>
-
     </div>
     <script>
       var url = jQuery(".tenweb_activaion").attr("data-install-url");
@@ -1941,8 +1925,10 @@ function wdpg_tenweb_install_notice() {
           method: "POST",
           url: url,
         }).done(function() {
-          jQuery.ajax({ // Check if plugin installed
+		  // Check if plugin installed
+          jQuery.ajax({
             type: 'POST',
+			dataType: 'json',
             url: jQuery("#verifyUrl").attr('data-url'),
             error: function()
             {
@@ -1951,11 +1937,11 @@ function wdpg_tenweb_install_notice() {
             },
             success: function(response)
             {
-              var plStatus = JSON.parse(response);
-              if(plStatus.status_install != 1) {
+              if ( response.status_install == 1 ) {
                 jQuery('#install_now').addClass('hide');
                 jQuery('#activate_now').removeClass('hide');
-                activate_tenweb_plugin();
+
+				activate_tenweb_plugin();
               }
               else {
                 jQuery("#loading").removeClass('is-active');
@@ -1964,12 +1950,10 @@ function wdpg_tenweb_install_notice() {
             }
           });
         })
-              .fail(function() {
-                //window.location = window.location.href;
-                jQuery("#loading").removeClass('is-active');
-                jQuery(".error_install").removeClass('hide');
-              });
-
+		.fail(function() {
+			jQuery("#loading").removeClass('is-active');
+			jQuery(".error_install").removeClass('hide');
+		});
       }
 
       function activate_tenweb_plugin() {
@@ -1980,8 +1964,10 @@ function wdpg_tenweb_install_notice() {
         }).done(function() {
           jQuery("#loading").removeClass('is-active');
           var data_tenweb_url = '';
-          jQuery.ajax({ // Check if plugin installed
+		  // Check if plugin installed
+          jQuery.ajax({
             type: 'POST',
+			dataType: 'json',
             url: jQuery("#verifyUrl").attr('data-url'),
             error: function()
             {
@@ -1990,8 +1976,7 @@ function wdpg_tenweb_install_notice() {
             },
             success: function(response)
             {
-              var plStatus = JSON.parse(response);
-              if(plStatus.status_active == 1) {
+              if ( response.status_active == 0 ) {
                 jQuery('#install_now').addClass('hide');
                 data_tenweb_url = jQuery('#activate_now').attr('data-tenweb-url');
                 jQuery.post('<?php echo $dismiss_url; ?>');
@@ -2003,24 +1988,22 @@ function wdpg_tenweb_install_notice() {
             },
             complete : function() {
               if ( data_tenweb_url != '' ) {
-                window.location.href = data_tenweb_url;
+               window.location.href = data_tenweb_url;
               }
             }
           });
-
         })
-              .fail(function() {
-                //window.location = window.location.href;
-                jQuery("#loading").removeClass('is-active');
-              });
+		.fail(function() {
+			jQuery("#loading").removeClass('is-active');
+		});
       }
 
       jQuery("#install_now").on("click",function(){
         install_tenweb_plugin();
-      })
+      });
       jQuery("#activate_now").on("click",function(){
-        activate_tenweb_plugin()
-      })
+        activate_tenweb_plugin();
+	  });
     </script>
     <style>
       #wd_tenweb_notice_cont {
@@ -2086,12 +2069,9 @@ function wdpg_tenweb_install_notice() {
         font-size: 13px;
       }
 
-
       .tenweb_plugins_icons{
         position: relative;
       }
-
-
 
       .tenweb_plugins_icons #tenweb_plugins_icons_cont {
         display: flex;
@@ -2221,8 +2201,6 @@ function wdpg_tenweb_install_notice() {
         }
       }
 
-
-
       @media only screen and (min-width: 1440px) and (max-width: 1919px){
         .tenweb_logo {
           width: calc(15% - 10px);
@@ -2307,10 +2285,7 @@ function wdpg_tenweb_install_notice() {
           font-weight: 500;
           line-height: 19px;
         }
-
-
       }
-
 
       @media only screen and (max-width: 1024px) {
         #wd_tenweb_notice_cont {
@@ -2482,17 +2457,29 @@ if ( !function_exists('wd_tenwebps_install_notice_status') ) {
   add_action('wp_ajax_wd_tenweb_dismiss', 'wd_tenwebps_install_notice_status');
 }
 
-
-//Check status 10web manager install
-function check_tenweb_status(){
+// Check status 10web manager install
+function check_tenweb_status() {
   $status_install = 0;
   $status_active = 0;
   $plugin_dir = ABSPATH . 'wp-content/plugins/10web-manager/';
-  if ( !is_dir($plugin_dir)){
+  if ( is_dir($plugin_dir) ) {
     $status_install = 1;
-  }else if(is_plugin_active( '10web-manager/10web-manager.php' )) {
+  } else if ( is_plugin_active( '10web-manager/10web-manager.php' ) ) {
     $status_active = 1;
   }
+
+  if ( is_dir($plugin_dir) ) {
+	$old_opt_array = array();
+	$new_opt_array = array('photo-gallery' => date('Y-m-d H:i:s'));
+	$key = 'tenweb_manager_installed';
+	$option = get_option($key);
+	if ( !empty($option) ) {
+		$old_opt_array = (array) json_decode($option);
+	}
+	$array_installed = array_merge( $new_opt_array, $old_opt_array );
+	update_option( $key, json_encode($array_installed) );
+  }
+
   $jsondata = array('status_install' => $status_install, 'status_active' => $status_active);
   echo json_encode($jsondata); exit;
 }

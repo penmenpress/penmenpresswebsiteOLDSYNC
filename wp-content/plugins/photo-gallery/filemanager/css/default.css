@@ -792,3 +792,19 @@ a.wd-btn-primary:link {
 #explorer_header .item_name, #explorer_header .item_size, #explorer_header .item_date_modified {
   padding: 0px 15px;
 }
+
+#explorer_body_container .fm-no-found-wrap {
+	position: absolute;
+	top: 35%;
+	left: 0;
+	right: 0;
+	display:none;
+	text-align: center;
+}
+
+#explorer_body_container .fm-no-found-wrap h2 {
+	font-size: 20px;
+	line-height: 28px;
+	font-weight: 400;
+	margin: 0;
+}

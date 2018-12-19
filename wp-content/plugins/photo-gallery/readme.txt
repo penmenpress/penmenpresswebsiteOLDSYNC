@@ -2,8 +2,8 @@
 Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
-Tested up to: 4.9 
-Stable tag: 1.5.11
+Tested up to: 5.0 
+Stable tag: 1.5.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,7 @@ Photo Gallery is a powerful image gallery plugin with a list of advanced options
 https://www.youtube.com/watch?v=VDKtGHAJVpc
 
 = Useful Links: =  
-[Special Offer for all Premium Plugins](https://10web.io/pricing/) 
+[Special Offer for all Premium Plugins](https://10web.io/plugins-bundle-pricing/) 
 [WordPress Photo Gallery](https://10web.io/plugins/wordpress-photo-gallery/)  
 [Demo](https://demo.10web.io/photo-gallery/)  
 [User Manual](https://help.10web.io/hc/en-us/sections/360002159111-Photo-Gallery)  
@@ -278,6 +278,21 @@ Choose whether to display random or the first/last specific number of images.
 
 
 == Changelog ==
+
+= 1.5.12 =
+* Added: Number of columns option for Extended Gallery Group view.   
+* Added: Title/description vertical alignment option for Extended Gallery Group view.   
+* Added: Backend notification if php-xml library is not installed.   
+* Changed: Extended Gallery Group view theme default values.   
+* Changed: Bulk-editing image info.   
+* Improved: Extended Gallery Group view responsiveness.   
+* Improved: Decreased load time in Image uploader and working with a large number of images.   
+* Fixed: Bug on inserting media from Youtube.   
+* Fixed: Crop popup dimensions for a newly added image.  
+* Fixed: Image uploader popup dimensions in Bridge theme.  
+* Fixed: Gutenberg block edit functionality.   
+* Fixed: JS before doctype on Gutenberg edit page.    
+* Added: Free plugin flow: When installing Manager, store plugin name or slug in a WP option.   
 
 = 1.5.11 =
 * Fixed: Upload image when there is a qoute in the image metadata.   

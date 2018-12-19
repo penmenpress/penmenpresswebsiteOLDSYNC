@@ -862,7 +862,7 @@ function bwg_ecommerce() {
     bwg_popup_sidebar_close(jQuery(".bwg_comment_container"));
     jQuery(".bwg_comment_container").attr("class", "bwg_comment_container bwg_close");
     // Must be translatable
-    jQuery(".bwg_comment").attr("title", bwg_objectsL10n.bwg_how_comments);
+    jQuery(".bwg_comment").attr("title", bwg_objectsL10n.bwg_show_comments);
   }
   if (jQuery(".bwg_ecommerce_container").hasClass("bwg_open")) {
     /* Close ecommerce.*/

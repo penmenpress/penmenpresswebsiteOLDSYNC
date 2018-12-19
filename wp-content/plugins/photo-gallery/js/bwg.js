@@ -125,7 +125,7 @@ jQuery(document).ready(function () {
     });
   });
 
-  /* bwg_tb_window function changes the size of PopUp (width, height) */
+  /* Change the popup dimensions. */
   bwg_tb_window();
 
   /* Hide loading */
@@ -395,6 +395,9 @@ function spider_ajax_save(form_id, tr_group) {
       jQuery( "tbody" ).on( "click", ".toggle-row", function() {
         jQuery( this ).closest( "tr" ).toggleClass( "is-expanded" );
       });
+
+      /* Change the popup dimensions. */
+      bwg_tb_window("#images_table");
     }
   });
 
@@ -1651,6 +1654,9 @@ function bwg_add_image(files) {
     jQuery("#tbody_arr").prepend("<tr id='tr_" + bwg_j + "'>");
     jQuery("#tr_" + bwg_j).html(html);
 
+    /* Change the popup dimensions. */
+    bwg_tb_window("#tr_" + bwg_j);
+
     jQuery("#ids_string").val(jQuery("#ids_string").val() + bwg_j + ',');
     if ( jQuery("#tbody_arr").data("meta") == 1 && files[i]['tags'] ) {
       /* If tags added to image from image file meta keywords.*/
@@ -1700,9 +1706,9 @@ function wd_pagination() {
   });
 }
 
-function bwg_tb_window(id) {
-  if (typeof id === 'undefined') {
-    var id = '';
+function bwg_tb_window(cont_id) {
+  if (typeof cont_id === 'undefined') {
+    var cont_id = '';
   }
   var thickDims, tbWidth, tbHeight;
   thickDims = function () {
@@ -1722,17 +1728,17 @@ function bwg_tb_window(id) {
   jQuery(window).resize(function () {
     thickDims()
   });
-  jQuery('a.thickbox-preview' + id).click(function () {
+  jQuery(cont_id + ' a.thickbox-preview').click(function () {
     tb_click.call(this);
     var alink = jQuery(this).parents('.available-theme').find('.activatelink'), link = '', href = jQuery(this).attr('href'), url, text;
-    if (tbWidth = href.match(/&width=[0-9]+/)) {
+    if (tbWidth = href.match(/&bwg_width=[0-9]+/)) {
       tbWidth = parseInt(tbWidth[0].replace(/[^0-9]+/g, ''), 10);
     }
     else {
       tbWidth = jQuery(window).width() - 120;
     }
 
-    if (tbHeight = href.match(/&height=[0-9]+/)) {
+    if (tbHeight = href.match(/&bwg_height=[0-9]+/)) {
       tbHeight = parseInt(tbHeight[0].replace(/[^0-9]+/g, ''), 10);
     }
     else {

@@ -250,6 +250,9 @@ class BWGControllerSite {
         if ( !isset($theme_row->album_extended_gal_title_align) ) {
           $theme_row->album_extended_gal_title_align = 'center';
         }
+        if ( !isset($theme_row->album_extended_title_desc_alignment) ) {
+          $theme_row->album_extended_title_desc_alignment = 'top';
+        }
       }
     }
 
@@ -482,7 +485,7 @@ class BWGControllerSite {
       $params['tags_rows'] = $this->model->get_tags_rows_data($params['gallery_id']);
     }
 
-    $params['current_url'] = (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $params['current_url'] = trim((is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 
     $params_array = array(
       'action' => 'GalleryBox',

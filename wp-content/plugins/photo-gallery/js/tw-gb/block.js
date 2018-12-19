@@ -1,8 +1,28 @@
 /**
  * 10Web plugins Gutenberg integration
- * version 2.0.0
+ * version 2.0.1
  */
 ( function ( blocks, element ) {
+  if ( !window['tw_gb'] ) {
+    window['tw_gb'] = {};
+  }
+  if ( !window['tw_gb'][tw_obj.key] ) {
+    window['tw_gb'][tw_obj.key] = {
+      title: tw_obj.plugin_name,
+      titleSelect: tw_obj.select,
+      iconUrl: tw_obj.icon_url,
+      iconSvg: {
+      width: '20',
+        height: '20',
+        src: tw_obj.icon_svg
+      },
+      isPopup: true,
+        data: {
+        shortcodeUrl: tw_obj.url
+      }
+    }
+  }
+
   registerAllPluginBlocks();
 
   function registerAllPluginBlocks() {
@@ -92,6 +112,16 @@
             }
           };
           props.setAttributes( { popupOpened: true } );
+          if (!shortcode_id && '' != shortcode) {
+            var shortcode_extract = shortcode.split(' ');
+            for (i = 0; i < shortcode_extract.length; i++) {
+              var attributes = shortcode_extract[i].split('=');
+              if ('id'== attributes[0]) {
+                shortcode_id = attributes[1].replace(/"/g, "");
+              }
+            }
+            // shortcode_id = parseInt(shortcode_extract[1].split('=')[1].split('"')[1]);
+          }
           var elem = el( 'form', { className: 'tw-container' }, el( 'div', { className: 'tw-container-wrap' + (pluginData.containerClass ? ' ' + pluginData.containerClass : '') }, el( 'span', {
             className: "media-modal-close",
             onClick: close
