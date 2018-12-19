@@ -9,3 +9,4 @@
 17-12-2018 00:42:49 - ERROR - m: 16.7 MB, u: 0 - Blocked by transient newsletter_main_engine set 1 seconds ago
 17-12-2018 12:32:38 - ERROR - m: 16.7 MB, u: 0 - Blocked by transient newsletter_main_engine set 0 seconds ago
 18-12-2018 18:42:44 - INFO  - m: 4.8 MB, u: 0 - Version changed from 1.5.0 to 1.5.1
+18-12-2018 22:12:40 - ERROR - m: 14.9 MB, u: 0 - Blocked by transient newsletter_main_engine set 0 seconds ago
