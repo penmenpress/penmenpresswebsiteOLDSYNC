@@ -121,6 +121,9 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
 
     /**
     *   Retrieves post types from taxonomies
+    *
+    * @param array|string $taxonomy_slugs
+    * @return array
     */
     static function post_types_from_taxonomies( $taxonomy_slugs = array() ) {
 
@@ -144,11 +147,11 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
 
           $post_type_a = array();
 
-          if ( 'post_tag' == $taxonomy ) {
-
-            $post_type_a = array( 'post' );
-
-          } else {
+          // if ( 'post_tag' == $taxonomy ) {
+          //
+          //   $post_type_a = array( 'post' );
+          //
+          // } else {
 
             $taxonomy_o = get_taxonomy( $taxonomy );
 
@@ -160,7 +163,7 @@ if ( ! class_exists( 'TagGroups_Taxonomy' ) ) {
               $post_type_a = $taxonomy_o->object_type;
 
             }
-          }
+          // }
 
           if ( ! empty( $post_type_a )) {
 

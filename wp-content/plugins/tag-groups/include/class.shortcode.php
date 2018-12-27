@@ -42,6 +42,32 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
       }
 
       /**
+      * Tabbed tag cloud with first letters as tabs
+      */
+      add_shortcode( 'tag_groups_alphabet_tabs', array( 'TagGroups_Shortcode_Alphabet_Tabs', 'tag_groups_alphabet_tabs' ) );
+
+      // if ( function_exists( 'register_block_type' ) ) {
+      //
+      //   register_block_type( 'chatty-mango/tag-groups-alphabet-tabs', array(
+      //     'render_callback' => array( 'TagGroups_Shortcode_Alphabet_Tabs', 'tag_groups_alphabet_tabs' ),
+      //   ) );
+      //
+      // }
+
+      /**
+      * Accordion tag cloud with first letters as panels
+      */
+      // add_shortcode( 'tag_groups_alphabet_accordion', array( 'TagGroups_Shortcode_Alphabet_Accordion', 'tag_groups_alphabet_accordion' ) );
+      //
+      // if ( function_exists( 'register_block_type' ) ) {
+      //
+      //   register_block_type( 'chatty-mango/tag-groups-alphabet-accordion', array(
+      //     'render_callback' => array( 'TagGroups_Shortcode_Alphabet_Accordion', 'tag_groups_alphabet_accordion' ) ,
+      //   ) );
+      //
+      // }
+
+      /**
       * Group info
       */
       add_shortcode( 'tag_groups_info', array( 'TagGroups_Shortcode_Info', 'tag_groups_info' ) );
@@ -324,8 +350,11 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
         /*
         *  find minimum and maximum of quantity of posts for each tag
+        *
+        * @param
+        * @return array $min_max
         */
-        static function determine_min_max( $tags, $amount, $tag_group_ids, $include_tags_post_id_groups = null ) {
+        static function determine_min_max( $tags, $amount, $tag_group_ids, $include_tags_post_id_groups = null, $data = null, $post_counts = null ) {
 
           $min_max = array();
 
@@ -353,16 +382,20 @@ if ( ! class_exists('TagGroups_Shortcode') ) {
 
             if ( $term_o->is_in_group( $tag_group_ids ) ) {
 
-              // check if tag has posts for this particular group
-              if ( ! empty( $post_counts ) ) {
+              // check if tag has posts for a particular group
+              if ( ! empty( $data ) && ! empty( $post_counts ) ) {
 
-                if ( isset( $post_counts[ $tag->term_id ][ $data[ $i ]['term_group'] ] ) ) {
+                foreach ( $tag_group_ids as $tag_group_id ) {
 
-                  $tag_count = $post_counts[ $tag->term_id ][ $data[ $i ]['term_group'] ];
+                  if ( isset( $post_counts[ $tag->term_id ][ $tag_group_id ] ) ) {
 
-                } else {
+                    $tag_count = $post_counts[ $tag->term_id ][ $tag_group_id ];
 
-                  $tag_count = 0;
+                  } else {
+
+                    $tag_count = 0;
+
+                  }
 
                 }
 

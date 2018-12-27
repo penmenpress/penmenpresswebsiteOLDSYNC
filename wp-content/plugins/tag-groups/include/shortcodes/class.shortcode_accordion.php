@@ -428,7 +428,6 @@ if ( ! class_exists('TagGroups_Shortcode_Accordion') ) {
       /*
       *  return as html (in the shape of clouds in an accordion)
       */
-      $min_max = self::determine_min_max( $posttags, $amount, $tag_group_ids, $include_tags_post_id_groups );
 
       $post_counts = array();
 
@@ -437,6 +436,8 @@ if ( ! class_exists('TagGroups_Shortcode_Accordion') ) {
         $post_counts = TagGroups_Premium_Term::get_post_counts();
 
       }
+
+      $min_max = self::determine_min_max( $posttags, $amount, $tag_group_ids, $include_tags_post_id_groups, $data, $post_counts );
 
       $html = '<div' . $div_id_output . $div_class_output . '>';
 

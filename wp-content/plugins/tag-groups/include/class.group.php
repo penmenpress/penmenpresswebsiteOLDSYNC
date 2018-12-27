@@ -510,19 +510,21 @@ if ( ! class_exists('TagGroups_Group') ) {
 
       } else {
 
+        $result = array();
+
         foreach ( $terms as $key => $term ) {
 
           $tg_term = new TagGroups_Term( $term );
 
           if ( $tg_term->is_in_group( $this->term_group ) && ! in_array( $term->term_id, $result ) ) {
 
-            unset( $key );
+            $result[] = $term;
 
           }
 
         }
 
-        return $terms;
+        return $result;
 
       }
 
@@ -916,7 +918,7 @@ if ( ! class_exists('TagGroups_Group') ) {
             $number++;
 
           }
-          
+
         }
 
       }

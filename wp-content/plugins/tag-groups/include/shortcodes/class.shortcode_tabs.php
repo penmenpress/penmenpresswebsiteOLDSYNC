@@ -431,8 +431,6 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
         */
         $output = array();
 
-        $min_max = self::determine_min_max( $posttags, $amount, $tag_group_ids, $include_tags_post_id_groups );
-
         $post_counts = array();
 
         if ( class_exists( 'TagGroups_Premium_Term' ) && method_exists( 'TagGroups_Premium_Term', 'get_post_counts' ) ) {
@@ -440,6 +438,8 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
           $post_counts = TagGroups_Premium_Term::get_post_counts();
 
         }
+
+        $min_max = self::determine_min_max( $posttags, $amount, $tag_group_ids, $include_tags_post_id_groups, $data, $post_counts );
 
         for ( $i = $start_group; $i <= $group->get_max_position(); $i++ ) {
 
@@ -570,7 +570,6 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
         /*
         *  render the tab content
         */
-        $min_max = self::determine_min_max( $posttags, $amount, $tag_group_ids, $include_tags_post_id_groups );
 
         $post_counts = array();
 
@@ -579,6 +578,8 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
           $post_counts = TagGroups_Premium_Term::get_post_counts();
 
         }
+
+        $min_max = self::determine_min_max( $posttags, $amount, $tag_group_ids, $include_tags_post_id_groups, $data, $post_counts );
 
         for ( $i = $start_group; $i <= $group->get_max_position(); $i++ ) {
 

@@ -3,8 +3,8 @@ Contributors: camthor
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FD5ZU4EEBGSC8
 Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
 Requires at least: 4.0
-Tested up to: 5.0.0
-Stable tag: 0.40.3
+Tested up to: 5.0.2
+Stable tag: 0.41.0
 Requires PHP: 5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -116,6 +116,7 @@ No, unfortunately it isn't. But, nevertheless, I'm glad you asked! You are warml
 5. Tag cloud ("Blitzer" theme)
 6. Accordion ("Blitzer" theme)
 7. Group administration
+8. Tag cloud with first letters of tags as tabs
 
 == Privacy ==
 
@@ -123,11 +124,32 @@ This plugin does not collect or process any personal user data.
 
 == Changelog ==
 
+= 0.41.0 =
+
+FEATURES
+
+* Added experimental shortcode [tag_groups_alphabet_tabs] to show first letters of tags instead of groups (beta). Try parameters include_letters and exclude_letters="abc". Not yet available as Gutenberg block.
+
+BUG FIXES
+
+* Fixed issues in class.group.php (credits @luke4roads)
+* Fixed issues in determining number of tags per posts for a particular group
+
+= 0.40.4 =
+
+BUG FIXES
+
+* Fixed issue when default post_tag taxonomy is used with custom posts
+
+OTHER
+
+* Debugging messages during uninstallation
+
 = 0.40.3 =
 
 OTHER
 
-* Fixed compatibility issues with the latest Gutenberg (sigh)
+* Fixed compatibility issues with the latest version of Gutenberg
 
 = 0.40.2 =
 

@@ -259,11 +259,11 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
           $post_type_a = array();
 
-          if ( 'post_tag' == $taxonomy ) {
-
-            $post_type_a = array( 'post' );
-
-          } else {
+          // if ( 'post_tag' == $taxonomy ) {
+          //
+          //   $post_type_a = array( 'post' );
+          //
+          // } else {
 
             $taxonomy_o = get_taxonomy( $taxonomy );
 
@@ -275,9 +275,9 @@ if ( ! class_exists('TagGroups_Admin') ) {
               $post_type_a = $taxonomy_o->object_type;
 
             }
-          }
+          // }
 
-          if ( ! empty( $post_type_a )) {
+          if ( ! empty( $post_type_a ) ) {
 
             foreach ( $post_type_a as $post_type ) {
 
@@ -869,7 +869,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       $tag_group_taxonomy = get_option( 'tag_group_taxonomy', array('post_tag') );
 
-      if ( !in_array( $screen->taxonomy, $tag_group_taxonomy ) ) {
+      if ( ! in_array( $screen->taxonomy, $tag_group_taxonomy ) ) {
 
         return;
 
@@ -1398,6 +1398,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
           // one tag group per tag
 
           $filter_terms = array( );
+
           $query->query_vars['tax_query'] = array(
             'relation' => 'OR'
           );
@@ -2536,6 +2537,7 @@ if ( ! class_exists('TagGroups_Admin') ) {
         }
 
         return $items_per_page;
+
       }
 
     } // class

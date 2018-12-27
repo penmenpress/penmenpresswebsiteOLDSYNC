@@ -13,7 +13,13 @@ last change for version 0.31.2
 /**
 * Delete options only if requested
 */
-if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+if ( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+
+  if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+    error_log( '[Tag Groups Premium] Starting uninstall routine.' );
+
+  }
 
   /**
   * Purge cache
@@ -34,6 +40,7 @@ if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
   $tag_group_premium_version = get_option( 'tag_group_premium_version', false );
 
+  $option_count = 0;
 
   if ( $tag_group_reset_when_uninstall && ! $tag_group_premium_version ) {
 
@@ -47,15 +54,29 @@ if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
       foreach ( $option_names[ 'tag_group_group_languages' ] as $language ) {
 
-        delete_option( 'term_group_labels_' . $language );
+        if ( delete_option( 'term_group_labels_' . $language ) ) {
+
+          $option_count++;
+
+        }
 
       }
-      
+
     }
 
     foreach ( $option_names as $key => $value ) {
 
-      delete_option( $key );
+      if ( delete_option( $key ) ) {
+
+        $option_count++;
+
+      }
+
+    }
+
+    if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+      error_log( sprintf( '[Tag Groups] %d options deleted.', $option_count ) );
 
     }
 
@@ -127,6 +148,11 @@ if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
   *
   * Don't call the method clear_term_cache since we don't know if it is still available.
   */
+  if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+    error_log( '[Tag Groups] Removing transients.' );
+
+  }
 
   delete_transient( 'tag_groups_post_counts' );
 
@@ -135,5 +161,11 @@ if( defined( 'WP_UNINSTALL_PLUGIN' ) ) {
   delete_transient( 'tag_groups_post_terms' );
 
   delete_transient( 'tag_groups_post_types' );
+
+  if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+    error_log( '[Tag Groups] Finished uninstall routine.' );
+
+  }
 
 }
