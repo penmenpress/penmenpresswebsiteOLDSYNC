@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.5.12
+ * Version: 1.5.13
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/pricing/
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,8 +81,8 @@ final class BWG {
     $this->plugin_dir = WP_PLUGIN_DIR . "/" . plugin_basename(dirname(__FILE__));
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.5.12';
-    $this->db_version = '1.5.12';
+    $this->plugin_version = '1.5.13';
+    $this->db_version = '1.5.13';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
 
@@ -220,7 +220,7 @@ final class BWG {
     //fires after elementor editor styles and scripts are enqueued.
     add_action('elementor/editor/after_enqueue_styles', array($this, 'enqueue_editor_styles'), 11);
 
-    // Register 10Web category for Elementor widget if 10Web builder doesn't installed.
+    // Register 10Web category for Elementor widget if 10Web builder isn't installed.
     add_action('elementor/elements/categories_registered', array($this, 'register_widget_category'), 1, 1);
   }
 
@@ -250,7 +250,7 @@ final class BWG {
   }
 
   public function register_block_editor_assets($assets) {
-    $version = '2.0.1';
+    $version = '2.0.2';
     $js_path = $this->plugin_url . '/js/tw-gb/block.js';
     $css_path = $this->plugin_url . '/css/tw-gb/block.css';
     if (!isset($assets['version']) || version_compare($assets['version'], $version) === -1) {
@@ -285,7 +285,7 @@ final class BWG {
     $assets = apply_filters('tw_get_block_editor_assets', array());
     // Not performing unregister or unenqueue as in old versions all are with prefixes.
     wp_enqueue_script('tw-gb-block', $assets['js_path'], array( 'wp-blocks', 'wp-element' ), $assets['version']);
-    wp_localize_script('tw-gb-block', 'tw_obj', array(
+    wp_localize_script('tw-gb-block', 'tw_obj_translate', array(
       'nothing_selected' => __('Nothing selected.', $this->prefix),
       'empty_item' => __('- Select -', $this->prefix),
       'key' => 'tw/' . $this->prefix,
