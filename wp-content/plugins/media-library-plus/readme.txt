@@ -2,8 +2,8 @@
 Contributors: maxfoundry, AlanP57
 Tags: WordPress media library folders, media library folders, organize media library
 Requires at least: 4.0
-Tested up to: 5.0.0
-Stable tag: 4.3.3
+Tested up to: 5.0.2
+Stable tag: 4.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,11 @@ To delete a folder, right click (Ctrl-click with Macs) on a folder. A popup menu
 
 
 == Changelog ==
+= 4.3.4 =
+* Add code to test for thumbnail files before moving them 
+* Tested with Wordpress 5.0.2
+* Added themify to the list of folders to automatically hide 
+
 = 4.3.3 =
 * Change the folder tree left node image
 * Removed empty leaf nodes from the folder tree

@@ -3,7 +3,7 @@
 Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.3.3
+Version: 4.3.4
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -40,7 +40,7 @@ class MaxGalleriaMediaLib {
 
 	public function set_global_constants() {	
 		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_KEY', 'maxgalleria_media_library_version');
-		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.3.3');
+		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.3.4');
 		define('MAXGALLERIA_MEDIA_LIBRARY_IGNORE_NOTICE', 'maxgalleria_media_library_ignore_notice');
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME);
@@ -237,6 +237,7 @@ class MaxGalleriaMediaLib {
 		
     if (isset( $current_screen ) && 
         $current_screen->base != 'all-import_page_pmxi-admin-import' && 
+        $current_screen->base != 'all-import_page_pmxi-admin-manage' &&
         $current_screen->base != 'pmxi-admin-manage' && 
         $current_screen->base != 'pmxi-admin-import') {
       
@@ -4823,17 +4824,9 @@ and meta_key = '_wp_attached_file'";
 
         if($next_id != "") {
           if($action_name == 'copy_media') {
-            if(class_exists('MaxGalleriaMediaLibProS3') && 
-              ($this->s3_addon->license_status == S3_VALID || $this->s3_addon->license_status == S3_FILE_COUNT_WARNING)) 
-              $message = $this->move_copy_file_s3(true, $next_id, $folder_id, $current_folder, $user_id);
-            else  
-              $message = $this->move_copy_file(true, $next_id, $folder_id, $current_folder, $user_id);
+            $message = $this->move_copy_file(true, $next_id, $folder_id, $current_folder, $user_id);
           } else {
-            if(class_exists('MaxGalleriaMediaLibProS3') && 
-              ($this->s3_addon->license_status == S3_VALID || $this->s3_addon->license_status == S3_FILE_COUNT_WARNING)) 
-              $message = $this->move_copy_file_s3(false, $next_id, $folder_id, $current_folder, $user_id);
-            else  
-              $message = $this->move_copy_file(false, $next_id, $folder_id, $current_folder, $user_id);
+            $message = $this->move_copy_file(false, $next_id, $folder_id, $current_folder, $user_id);
           }  
           update_user_meta($user_id, MAXG_MC_FILES, $files_to_move);                     
         } else {
@@ -4863,7 +4856,7 @@ and meta_key = '_wp_attached_file'";
 		$refresh = false;
     
     $destination = get_user_meta($user_id, MAXG_MC_DESTINATION_FOLDER, true);
-    
+        
     $sql = "select meta_value as attached_file
 from {$wpdb->prefix}postmeta 
 where post_id = $copy_id    
@@ -4939,24 +4932,25 @@ AND meta_key = '_wp_attached_file'";
                   foreach($metadata['sizes'] as $source_path) {
                     $thumbnail_file = $path_to_thumbnails . DIRECTORY_SEPARATOR . $source_path['file'];
                     $thumbnail_destination = $destination_path . DIRECTORY_SEPARATOR . $source_path['file'];
-                    rename($thumbnail_file, $thumbnail_destination);
+		                if(file_exists($thumbnail_file)) {
+                      rename($thumbnail_file, $thumbnail_destination);
 
-                    // check current theme customizer settings for the fileg
-                    // and update if found
-                    $update_theme_mods = false;
-                    $move_source_url = $this->get_file_url_for_copy($source_path);
-                    $move_thumbnail_url = $this->get_file_url_for_copy($thumbnail_destination);
-                    $key = array_search ($move_source_url, $this->theme_mods);
-                    if($key !== false ) {
-                      set_theme_mod( $key, $move_thumbnail_url);
-                      $update_theme_mods = true;                      
-                    }
-                    if($update_theme_mods) {
-                      $theme_mods = get_theme_mods();
-                      $this->theme_mods = json_decode(json_encode($theme_mods), true);
+                      // check current theme customizer settings for the fileg
+                      // and update if found
                       $update_theme_mods = false;
+                      $move_source_url = $this->get_file_url_for_copy($source_path);
+                      $move_thumbnail_url = $this->get_file_url_for_copy($thumbnail_destination);
+                      $key = array_search ($move_source_url, $this->theme_mods);
+                      if($key !== false ) {
+                        set_theme_mod( $key, $move_thumbnail_url);
+                        $update_theme_mods = true;                      
+                      }
+                      if($update_theme_mods) {
+                        $theme_mods = get_theme_mods();
+                        $this->theme_mods = json_decode(json_encode($theme_mods), true);
+                        $update_theme_mods = false;
+                      }
                     }
-
                   }
                   
                 }

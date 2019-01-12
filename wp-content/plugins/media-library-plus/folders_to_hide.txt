@@ -34,6 +34,7 @@ revslider
 simple-responsive-slider
 sucuri
 supsystic-tables
+themify
 tractor-insightcore01
 ultimate-tinymce
 wc-logs

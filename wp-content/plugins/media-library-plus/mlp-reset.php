@@ -5,7 +5,7 @@ Plugin URI: http://maxgalleria.com
 Description: Plugin for reseting WordPress Media Library Folders
 Author: Max Foundry
 Author URI: http://maxfoundry.com
-Version: 4.3.3
+Version: 4.3.4
 Copyright 2015 Max Foundry, LLC (http://maxfoundry.com)
 
 */
