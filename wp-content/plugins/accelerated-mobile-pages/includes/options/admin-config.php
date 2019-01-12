@@ -517,7 +517,7 @@ $freepro_listing = '
         <span class="ov"></span>
     </div>
     <div class="fp-cnt">
-            <h1>Upgrade to Pro <span>@ 40% off</span></h1>
+            <h1>Upgrade to Pro</h1>
             <p>Take your AMP to the next level with more beautiful themes, great extensions and more powerful features.</p>
             <a class="buy" href="#upgrade">BUY NOW</a>
     </div>
@@ -684,10 +684,9 @@ $freepro_listing = '
             </div>
             <div class="pri-lst">
                 <div class="pri-tb">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&discount=BFCM2018&download_id=24570&edd_options[price_id]=1&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=1&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>PERSONAL</h5>
-                        <span class="amt strikethrough"><sup>$</sup>149</span>
-                        <span class="amt"><sup>$</sup>89.4</span>
+                        <span class="amt"><sup>$</sup>149</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">1 Site License</span>
                         <span class="e">E-mail support</span>
@@ -697,10 +696,9 @@ $freepro_listing = '
                     </a>
                 </div>
                 <div class="pri-tb rec">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&discount=BFCM2018&discount=BFCM2018&download_id=24570&edd_options[price_id]=2&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=2&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>MULTIPLE</h5>
-                        <span class="amt strikethrough"><sup>$</sup>199</span>
-                        <span class="amt"><sup>$</sup>119.4</span>
+                        <span class="amt"><sup>$</sup>199</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">3 Site License</span>
                         <span class="e">E-mail support</span>
@@ -711,10 +709,9 @@ $freepro_listing = '
                     </a>
                 </div>
                 <div class="pri-tb">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&discount=BFCM2018&edd_options[price_id]=3&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=3&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>WEBMASTER</h5>
-                        <span class="amt strikethrough"><sup>$</sup>249</span>
-                        <span class="amt"><sup>$</sup>149.40</span>
+                        <span class="amt"><sup>$</sup>249</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">10 Site License</span>
                         <span class="e">E-mail support</span>
@@ -724,10 +721,9 @@ $freepro_listing = '
                     </a>
                 </div>
                 <div class="pri-tb">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&discount=BFCM2018&download_id=24570&edd_options[price_id]=4&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=4&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>FREELANCER</h5>
-                        <span class="amt strikethrough"><sup>$</sup>299</span>
-                        <span class="amt"><sup>$</sup>179.40</span>
+                        <span class="amt"><sup>$</sup>299</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">25 Site License</span>
                         <span class="e">E-mail support</span>
@@ -737,10 +733,9 @@ $freepro_listing = '
                     </a>
                 </div>
                 <div class="pri-tb">
-                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&discount=BFCM2018&edd_options[price_id]=5&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
+                    <a href="https://accounts.ampforwp.com/order?edd_action=add_to_cart&download_id=24570&edd_options[price_id]=5&utm_medium=freevspro&utm_campaign=AMP%20Plugin">
                         <h5>AGENCY</h5>
-                        <span class="amt strikethrough"><sup>$</sup>499</span>
-                        <span class="amt"><sup>$</sup>299.40</span>
+                        <span class="amt"><sup>$</sup>499</span>
                         <span class="bil">Billed Annually</span>
                         <span class="s">Unlimited</span>
                         <span class="e">E-mail support</span>
@@ -3539,13 +3534,36 @@ Redux::setSection( $opt_name, array(
                         'tooltip-subtitle' => esc_html__( 'Hide AMP from all the posts of a selected category.', 'accelerated-mobile-pages' ),
                         'default'   => 0, 
                         'data'      => 'category_list_hierarchy',
-                        ), 
+                       
+                         'class'     => 'hide'
+                        ),
+                        array(
+                        'id'        =>'hide-amp-categories2',
+                        'type'      => 'select',
+                        'title'     => __('Select Categories to Hide AMP'),
+                        'tooltip-subtitle' => __( 'Hide AMP from all the posts of a selected category.', 'accelerated-mobile-pages' ),
+                        'multi'     => true, 
+                        'ajax'      => true, 
+                        'data-action'     => 'ampforwp_categories', 
+                        'data'      => 'categories',
+                        ),  
                         array(
                         'id'        =>'hide-amp-tags-bulk-option',
                         'type'      => 'checkbox',
                         'title'     => esc_html__('Select Tags to Hide AMP'),
                         'tooltip-subtitle' => esc_html__( 'Hide AMP from all the posts of a selected tags.', 'accelerated-mobile-pages' ),
                         'default'   => 0, 
+                        'data'      => 'tags',
+                         'class'      => 'hide'
+                       ),
+                    array(
+                        'id'        =>'hide-amp-tags-bulk-option2',
+                        'type'      => 'select',
+                        'title'     => __('Select Tags to Hide AMP'),
+                        'tooltip-subtitle' => __( 'Hide AMP from all the posts of a selected tags.', 'accelerated-mobile-pages' ),
+                        'multi'     => true,
+                        'ajax'      => true,
+                        'data-action' => 'ampforwp_tags', 
                         'data'      => 'tags',
 
                        ),
@@ -5261,25 +5279,7 @@ Redux::setSection( $opt_name, array(
     }
     //End of code for fetching categories to show as a list in redux settings
 
-    // code for fetching tags to show as a list in the redux settings
-    $tags_array = '';
-    if(get_tags()){
-        $tags = get_tags( array(
-                                'orderby' => 'name',
-                                'order'   => 'ASC',
-                                'number'  => 500
-                                ) );
-        $tags_array = array();
-        if( $tags ) :
-            foreach( $tags as $tag ){
-                $tag_id = $tag->term_id;
-                $key = "".$tag_id;
-                // building associative array of ID-tag_name
-                $tags_array[ $key ] = $tag->name;
-            }
-        endif;
-    }
-    // End of code for fetching tags to show as a list in redux settings
+    
     $ampforwp_home_loop = array();
     $ampforwp_home_loop = get_option('ampforwp_custom_post_types');
     $ampforwp_home_loop['post'] = 'Posts';
@@ -5339,12 +5339,16 @@ Redux::setSection( $opt_name, array(
                     'type'     => 'select',
                         'class'    => 'child_opt',
                     'title'    => esc_html__( 'Featured Slider from Tags', 'accelerated-mobile-pages' ),
-                    'options'  => $tags_array,
+                    //'options'  => $tags_array,
                     'required' => array(
                     array('amp-design-selector', '=' , '3'),
                     array('amp-design-3-featured-slider', '=' , '1'),
                     array('amp-design-3-featured-content', '=' , '2'),
-                        ),       
+                        ),  
+                    //'multi'     => true,
+                        'ajax'      => true,
+                        'data-action' => 'tags', 
+                        'data'      => 'tags',         
                 ),
                  array(
                         'id'        =>'ampforwp-featur-slider-num-posts',
@@ -6253,19 +6257,6 @@ else{
                         'true'      => 'true',
                         'false'     => 'false',
                         'default'   => 1,
-                        'required'  => array(
-                                        array('amp-design-selector', '!=' , '3') 
-                                    )
-                ),
-                array(
-                        'id'       => 'ampforwp-footer-top-design3',
-                        'type'     => 'switch',
-                        'title'    => esc_html__('Back to Top link', 'accelerated-mobile-pages'),
-                        'tooltip-subtitle' => esc_html__('Enable / Disable Link to top of the page in the footer', 'accelerated-mobile-pages'),
-                        'true'      => 'true',
-                        'false'     => 'false',
-                        'default'   => 0,
-                        'required'  => array( array( 'amp-design-selector', '=' , '3' ) )
                 ),
 
                 array(
