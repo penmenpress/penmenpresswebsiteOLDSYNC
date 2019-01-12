@@ -171,6 +171,7 @@ class NewsletterModule {
         if ($r === false) {
             $this->logger->fatal($wpdb->last_error);
         }
+        return $r;
     }
 
     /**
@@ -1156,10 +1157,10 @@ class NewsletterModule {
         $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set last_activity=%d where id=%d limit 1", time(), $user->id));
     }
     
-    function update_user_last_ip($user, $ip) {
+    function update_user_ip($user, $ip) {
         global $wpdb;
         // Only if changed
-        $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set country='', last_ip=%s where last_ip<>%s and id=%d limit 1", $ip, $ip, $user->id));
+        $r = $this->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set ip=%s, geo=0 where ip<>%s and id=%d limit 1", $ip, $ip, $user->id));
     }
 
     /**

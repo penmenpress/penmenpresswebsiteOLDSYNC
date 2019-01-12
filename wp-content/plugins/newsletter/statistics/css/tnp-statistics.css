@@ -122,7 +122,7 @@
 #tnp-events-chart {
     width: 80%;
     margin: 0 auto;
-    
+    height: 300px;
 }
 
 /* Retarget Table Layout */
@@ -135,6 +135,10 @@
 .tnp-retarget .tnp-retarget-table th {
     color: #fff;
     border: none;
+}
+
+#tnp-body.tnp-statistics .tnp-widget {
+    min-height: 500px;
 }
 
 

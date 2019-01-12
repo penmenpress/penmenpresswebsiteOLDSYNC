@@ -581,7 +581,7 @@ class NewsletterSubscription extends NewsletterModule {
 
         $id = (int) $id;
 
-        $wpdb->update(NEWSLETTER_USERS_TABLE, array('updated' => $time, 'ip' => $ip), array('id' => $id));
+        $wpdb->update(NEWSLETTER_USERS_TABLE, array('updated' => $time, 'ip' => $ip, 'geo'=>0), array('id' => $id));
     }
 
     /**
@@ -695,6 +695,7 @@ class NewsletterSubscription extends NewsletterModule {
         $ip = $this->get_remote_ip();
         $ip = $this->process_ip($ip);
         $user['ip'] = $ip;
+        $user['geo'] = 0;
         $user['status'] = $opt_in == self::OPTIN_SINGLE ? Newsletter::STATUS_CONFIRMED : Newsletter::STATUS_NOT_CONFIRMED;
 
         $user['updated'] = time();

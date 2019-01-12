@@ -114,7 +114,7 @@ $controls->data['search_page'] ++;
     <div id="tnp-heading">
 
         <h2><?php _e('Subscribers', 'newsletter') ?>
-            <a class="tnp-btn-h1" href="?page=newsletter_users_new">+</a>
+            <a class="tnp-btn-h1" href="?page=newsletter_users_new">Add a subscriber</a>
         </h2>
 
     </div>

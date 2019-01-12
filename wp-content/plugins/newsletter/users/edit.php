@@ -240,7 +240,6 @@ function percentValue($value, $total) {
                             <th><?php _e('IP address', 'newsletter'); ?></th>
                             <td>
                                 <?php $controls->value('ip'); ?>
-                                last seen: <?php $controls->value('last_ip'); ?>
                             </td>
                         </tr>
                         <tr>

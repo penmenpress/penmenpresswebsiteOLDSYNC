@@ -19,7 +19,7 @@ class NewsletterUsers extends NewsletterModule {
     }
 
     function __construct() {
-        parent::__construct('users', '1.2.6');
+        parent::__construct('users', '1.2.9');
         add_action('init', array($this, 'hook_init'));
     }
 
@@ -69,9 +69,9 @@ class NewsletterUsers extends NewsletterModule {
   `feed` tinyint(4) NOT NULL DEFAULT '0',
   `referrer` varchar(50) NOT NULL DEFAULT '',
   `ip` varchar(50) NOT NULL DEFAULT '',
-  `last_ip` varchar(50) NOT NULL DEFAULT '',
   `wp_user_id` int(11) NOT NULL DEFAULT '0',
   `http_referer` varchar(255) NOT NULL DEFAULT '',
+  `geo` tinyint(4) NOT NULL DEFAULT '0',
   `country` varchar(4) NOT NULL DEFAULT '',
   `region` varchar(100) NOT NULL DEFAULT '',
   `city` varchar(100) NOT NULL DEFAULT '',
@@ -93,7 +93,14 @@ class NewsletterUsers extends NewsletterModule {
 
         dbDelta($sql);
         
-        $this->query("update " . NEWSLETTER_USERS_TABLE . " set last_ip=ip where last_ip=''");
+        if ($this->old_version < '1.2.7') {
+            $this->query("update " . NEWSLETTER_USERS_TABLE . " set geo=1 where country<>''");
+            
+        }
+        if ($this->old_version > '1.2.5' && $this->old_version < '1.2.9') {
+            $this->upgrade_query("ALTER TABLE " . NEWSLETTER_USERS_TABLE . " DROP COLUMN last_ip;");
+        }
+        
     }
 
     function admin_menu() {

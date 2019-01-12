@@ -102,7 +102,7 @@ class NewsletterStatistics extends NewsletterModule {
                 $this->update_open_value(self::SENT_READ, $user_id, $email_id, $ip);
             }
             
-            $this->update_user_last_ip($user, $ip);
+            $this->update_user_ip($user, $ip);
             $this->update_user_last_activity($user);
 
             header('Location: ' . apply_filters('newsletter_redirect_url', $url, $email, $user));

@@ -10,6 +10,8 @@ if (!defined('ABSPATH')) exit;
                 <input type="text" class="tnpc-edit-box-content-field-input image"/>
                 <input class="button select_image" value="Select or Upload Image" type="button">
             </div>
+            <div class="tnpc-edit-box-content-text"><?php _e("WIDTH", "newsletter") ?><span>(optional but recommended)</span></div>
+            <div class="tnpc-edit-box-content-field"><input type="text" class="tnpc-edit-box-content-field-input width"/></div>
             <div class="tnpc-edit-box-content-text"><?php _e("ALT TEXT", "newsletter") ?><span>(optional but recommended)</span></div>
             <div class="tnpc-edit-box-content-field"><input type="text" class="tnpc-edit-box-content-field-input alt"/></div>
             <div class="tnpc-edit-box-content-text"><?php _e("LINK", "newsletter") ?> <span>(optional link address including http://)</span></div>
@@ -34,7 +36,7 @@ if (!defined('ABSPATH')) exit;
         file_frame = wp.media.frames.file_frame = wp.media({
             title: jQuery('#tnpc-edit-image .image').val(),
             button: {
-                text: 'Insert',
+                text: '',
             },
             multiple: false  // Set to true to allow multiple files to be selected
         });

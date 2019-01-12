@@ -25,6 +25,7 @@ jQuery.fn.hover_edit = function () {
                             jQuery(this).parent().parent().slideUp(500)
                             target.find('img').attr("src", jQuery("#tnpc-edit-image .image").val());
                             target.find('img').attr("alt", jQuery("#tnpc-edit-image .alt").val());
+                            target.find('img').attr("width", jQuery("#tnpc-edit-image .width").val());
                             target.find('a').attr("href", jQuery("#tnpc-edit-image .url").val());
                             tnp_mobile_preview();
                         });
