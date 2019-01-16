@@ -72,7 +72,7 @@ if ($controls->is_action()) {
             $addresses = array();
             foreach ($users as &$user) {
                 $addresses[] = $user->email;
-                $res = $module->mail($user->email, $module->replace($module->options['confirmation_subject']), $module->replace($module->options['confirmation_message'], $user));
+                $res = $module->send_message('confirmation', $user);
                 if (!$res) {
                     $controls->errors = 'The email address ' . $user->email . ' failed.';
                     break;
@@ -93,7 +93,7 @@ if ($controls->is_action()) {
             $addresses = array();
             foreach ($users as $user) {
                 $addresses[] = $user->email;
-                $res = $module->mail($user->email, $module->replace($module->options['confirmed_subject']), $module->replace($module->options['confirmed_message'], $user));
+                $res = $module->send_message('confirmed', $user);
                 if (!$res) {
                     $controls->errors = 'The email address ' . $user->email . ' failed.';
                     break;

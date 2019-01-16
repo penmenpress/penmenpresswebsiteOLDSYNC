@@ -34,9 +34,9 @@
         <td>
 
 
-            <?php $controls->text('button_label', 70) ?>
-            <br>
-            <?php $controls->text('url', 70, 'https://...') ?>
+            <?php $controls->text('button_label', 12, 'Button label...') ?>
+            
+            <?php $controls->text('url', 40, 'https://...') ?>
 
             <table class="tnp-button-colors">
                 <tr>

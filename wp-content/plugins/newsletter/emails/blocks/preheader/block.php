@@ -15,7 +15,8 @@ $default_options = array(
     'block_background' => '#ffffff',
     'font_family' => $font_family,
     'font_size' => 13,
-    'color' => '#999999'
+    'font_color' => '#999999',
+    'font_weight' => 'normal'
 );
 
 $options = array_merge($default_options, $options);
@@ -31,7 +32,15 @@ $options = array_merge($default_options, $options);
         text-align: center; 
         font-size: <?php echo $options['font_size'] ?>px; 
         font-family: <?php echo $options['font_family'] ?>; 
-        color: <?php echo $options['color'] ?>;
+        font-weight: <?php echo $options['font_weight'] ?>; 
+        color: <?php echo $options['font_color'] ?>;
+    }
+    .preheader-view-link {
+        font-size: <?php echo $options['font_size'] ?>px; 
+        font-family: <?php echo $options['font_family'] ?>; 
+        font-weight: <?php echo $options['font_weight'] ?>; 
+        color: <?php echo $options['font_color'] ?>;
+        text-decoration: none;
     }
 </style>
 
@@ -41,7 +50,7 @@ $options = array_merge($default_options, $options);
             <?php echo $options['text'] ?>
         </td>
         <td class="preheader-link" width="50%" valign="top" align="center">
-            <a href="{email_url}" target="_blank" rel="noopener" style="text-decoration: none; font-size: <?php echo $options['font_size'] ?>px; font-family: <?php echo $options['font_family'] ?>; color: <?php echo $options['color'] ?>"><?php echo $options['view'] ?></a>
+            <a href="{email_url}" target="_blank" rel="noopener" class="preheader-view-link"><?php echo $options['view'] ?></a>
         </td>
     </tr>
 </table>

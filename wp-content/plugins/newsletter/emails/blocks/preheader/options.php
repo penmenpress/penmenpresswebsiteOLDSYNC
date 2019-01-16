@@ -18,6 +18,12 @@
             <?php $controls->text('view', 70) ?>
         </td>
     </tr>
+    <tr>
+        <th>Font</th>
+        <td>
+            <?php $controls->css_font('font') ?>
+        </td>
+    </tr>
             <tr>
         <th><?php _e('Background', 'newsletter')?></th>
         <td>

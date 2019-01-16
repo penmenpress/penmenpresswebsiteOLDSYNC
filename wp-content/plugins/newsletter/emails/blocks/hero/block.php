@@ -16,9 +16,11 @@ $defaults = array(
     'font_family' => 'Helvetica, Arial, sans-serif',
     'font_size' => '14',
     'font_weight' => 'normal',
+    'font_color' => '#000000',
     'title_font_family' => 'Helvetica, Arial, sans-serif',
     'title_font_size' => '20',
     'title_font_weight' => 'normal',
+    'title_font_color' => '#000000',
     'block_background' => '#ffffff',
     'layout' => 'full',
     'button_label' => 'Click Here',
@@ -34,10 +36,12 @@ $url = $options['url'];
 $font_family = $options['font_family'];
 $font_size = $options['font_size'];
 $font_weight = $options['font_weight'];
+$font_color = $options['font_color'];
 
 $title_font_family = $options['title_font_family'];
 $title_font_size = $options['title_font_size'];
 $title_font_weight = $options['title_font_weight'];
+$title_font_color = $options['title_font_color'];
 
 $button_color = $options['button_color'];
 $button_background = $options['button_background'];
@@ -65,7 +69,7 @@ if (!empty($options['image'])) {
     <style>
         .hero-title {
             font-size: <?php echo $title_font_size ?>px; 
-            color: #333333; 
+            color: <?php echo $title_font_color ?>; 
             padding-top: 30px; 
             font-family: <?php echo $title_font_family ?>;
             font-weight: <?php echo $title_font_weight ?>; 
@@ -74,7 +78,7 @@ if (!empty($options['image'])) {
             padding: 20px 0 0 0; 
             font-size: <?php echo $font_size ?>px; 
             line-height: 150%; 
-            color: #666666; 
+            color: <?php echo $font_color ?>; 
             font-family: <?php echo $font_family ?>; 
         }
         .hero-button-table {

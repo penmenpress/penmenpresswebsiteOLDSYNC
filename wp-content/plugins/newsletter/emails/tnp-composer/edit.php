@@ -1,5 +1,14 @@
 <?php
 if (!defined('ABSPATH')) exit;
+
+function tnp_buttons_row() {
+    ?>
+<div class="tnpc-edit-box-buttons">
+    <div class="tnpc-edit-box-buttons-cancel"><?php _e("Cancel", "newsletter") ?></div>
+    <div class="tnpc-edit-box-buttons-save"><?php _e("Save", "newsletter") ?></div>
+</div>
+<?php
+}
 ?>
 <div class="tnpc-edit" id="tnpc-edit-image">
     <div class="tnpc-edit-box">
@@ -17,10 +26,7 @@ if (!defined('ABSPATH')) exit;
             <div class="tnpc-edit-box-content-text"><?php _e("LINK", "newsletter") ?> <span>(optional link address including http://)</span></div>
             <div class="tnpc-edit-box-content-field"><input type="text" class="tnpc-edit-box-content-field-input url"/></div>
         </div>
-        <div class="tnpc-edit-box-buttons">
-            <div class="tnpc-edit-box-buttons-save"><?php _e("Save", "newsletter") ?></div>
-            <div class="tnpc-edit-box-buttons-cancel"><?php _e("Cancel", "newsletter") ?></div>
-        </div>
+        <?php tnp_buttons_row() ?>
     </div>
 </div>
 <script type="text/javascript">
@@ -258,12 +264,10 @@ if (!defined('ABSPATH')) exit;
     </div>
 </div>
 
+<?php // General container for generic block options ?>
 <div class="tnpc-edit" id="tnpc-block-options">
     <div class="tnpc-edit-box">
         <form id="tnpc-block-options-form" onsubmit="return false;"></form>
-        <div class="tnpc-edit-box-buttons">
-            <div class="tnpc-edit-box-buttons-save"><?php _e("Save", "newsletter") ?></div>
-            <div class="tnpc-edit-box-buttons-cancel"><?php _e("Cancel", "newsletter") ?></div>
-        </div>
+        <?php tnp_buttons_row() ?>
     </div>
 </div>

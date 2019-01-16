@@ -274,19 +274,21 @@ iframe#tnp-mobile-preview {
     top: 0;
     left: -20px;
 }
+
+/* Block options container */
 .tnpc-edit-box {
-    width: 800px;
-    background-color: rgba(255,255,255,1);
+    width: 850px;
     margin-right: auto;
     margin-left: auto;
     margin-top: 10px;
     -webkit-box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.5);
     -moz-box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.5);
     box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.5);
-    padding: 25px;
+    padding: 10px;
     display: none;
-    background-color: #EDF1F4;
-    border-radius: 10px;
+    background-color: #fff;
+    /*background-color: #EDF1F4;*/
+    /*border-radius: 10px;*/
 }
 .tnpc-edit-box-title {
     /*float: left;*/
@@ -399,11 +401,14 @@ iframe#tnp-mobile-preview {
     border-radius: 50%;
     color: rgba(0,0,0,1);
 }
+
+/* Save and cancel buttons container on block options popup */
 .tnpc-edit-box-buttons{
-    /*float: left;*/
-    width: 100%;
-    margin-top: 25px;
+    margin-top: 10px;
+    text-align: right;
+    margin-right: 10px;
 }
+
 .tnpc-edit-box-buttons-save{
     height: 35px;
     text-align: right;
@@ -432,8 +437,8 @@ iframe#tnp-mobile-preview {
     height: 35px;
     text-align: right;
     line-height: 35px;
-    color: #C0392B;
-    font-weight: 600;
+    color: #666;
+    font-weight: normal;
     font-size: 15px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -448,7 +453,7 @@ iframe#tnp-mobile-preview {
     padding-left: 25px;
     width: 33%;*/
     display: inline-block;
-    margin-left: 10px;
+    margin-right: 25px;
 }
 .tnpc-edit-box-buttons-cancel:hover {
     color: #E74C3C;

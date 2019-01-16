@@ -755,12 +755,10 @@ class NewsletterControls {
         echo esc_attr($value);
         echo '"/>';
     }
-    
+
     function hidden($name) {
         $value = $this->get_value($name);
-        echo '<input name="options[' . $name . ']" type="hidden" value="';
-        echo esc_attr($value);
-        echo '"/>';
+        echo '<input name="options[', esc_attr($name), ']" id="options-', esc_attr($name), '" type="hidden" value="', esc_attr($value), '">';
     }
 
     function button($action, $label, $function = null) {
@@ -1027,19 +1025,18 @@ class NewsletterControls {
      */
     function preferences($name = 'preferences') {
         $lists = Newsletter::instance()->get_lists();
-        
+
         echo '<div class="newsletter-preferences-group">';
 
         foreach ($lists as $list) {
-            
+
             echo '<div class="newsletter-preferences-item">';
             $this->checkbox2($name . '_' . $list->id, esc_html($list->name));
             echo '</div>';
         }
     }
-    
-    function lists_checkboxes($name = 'lists')
-    {
+
+    function lists_checkboxes($name = 'lists') {
         $this->preferences_group($name);
     }
 
@@ -1049,12 +1046,12 @@ class NewsletterControls {
      * will be an array if at east one preference is checked).
      */
     function preferences_group($name = 'preferences') {
-        
+
         $lists = Newsletter::instance()->get_lists();
 
         echo '<div class="newsletter-preferences-group">';
         foreach ($lists as $list) {
-            
+
             echo '<div class="newsletter-preferences-item">';
             $this->checkbox_group($name, $list->id, '(' . $list->id . ') ' . esc_html($list->name));
             echo '</div>';
@@ -1336,9 +1333,16 @@ class NewsletterControls {
     }
 
     function css_font($name = 'font', $attrs = array()) {
+        $default = array('color' => true, 'weight'=>true);
+        $attrs = array_merge($default, $attrs);
         $this->css_font_family($name . '_family');
         $this->css_font_size($name . '_size');
-        $this->css_font_weight($name . '_weight');
+        if ($attrs['weight']) {
+            $this->css_font_weight($name . '_weight');
+        }
+        if ($attrs['color']) {
+            $this->color($name . '_color');
+        }
     }
 
     function css_font_size($name = 'font_size') {
@@ -1354,7 +1358,7 @@ class NewsletterControls {
         }
         echo '</select>';
     }
-    
+
     function css_font_weight($name = 'font_weight') {
         $value = $this->get_value($name);
 
@@ -1474,7 +1478,7 @@ class NewsletterControls {
 
         $languages = Newsletter::instance()->get_languages();
         $languages = array_merge(array('' => 'All'), $languages);
-        
+
         $this->select($name, $languages);
     }
 
@@ -1592,14 +1596,15 @@ class NewsletterControls {
     }
 
     function block_padding($name = 'block_padding') {
+        echo '<div style="text-align: center; width: 250px;">';
         $this->text($name . '_top', 5);
-        echo 'px (top)<br>';
-        $this->text($name . '_right', 5);
-        echo 'px (right)<br>';
-        $this->text($name . '_bottom', 5);
-        echo 'px (bottom)<br>';
+        echo '<br>';
         $this->text($name . '_left', 5);
-        echo 'px (left)<br>';
+        echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        $this->text($name . '_right', 5);
+        echo '<br>';
+        $this->text($name . '_bottom', 5);
+        echo '</div>';
     }
 
 }

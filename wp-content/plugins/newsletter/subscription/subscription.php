@@ -816,11 +816,16 @@ class NewsletterSubscription extends NewsletterModule {
     }
 
     /**
-     * Send emails during the subscription process. Emails are themes with email.php file.
-     * @global type $newsletter
+     * Sends a service message applying the template.
+     * 
+     * @param TNP_User $user
+     * @param string $subject
+     * @param string $message
      * @return type
      */
-    function mail($to, $subject, $message, $language = '') {
+    function mail($user, $subject, $message) {
+        $language = $this->get_user_language($user);
+        
         $options_template = $this->get_options('template', $language);
 
         $template = trim($options_template['template']);
@@ -832,8 +837,10 @@ class NewsletterSubscription extends NewsletterModule {
         $headers = array('Auto-Submitted' => 'auto-generated');
 
         // Replaces tags from the template
-        $message = $this->replace($message);
-        return Newsletter::instance()->mail($to, $subject, $message, $headers);
+        $message = $this->replace($message, $user);
+        $subject = $this->replace($subject, $user);
+        
+        return Newsletter::instance()->mail($user->email, $subject, $message, $headers);
     }
 
     /**
@@ -902,15 +909,17 @@ class NewsletterSubscription extends NewsletterModule {
         if (!$force && !empty($this->options[$type . '_disabled'])) {
             return true;
         }
+        
+        $language = $this->get_user_language($user);
 
-        $options = $this->get_options('', $this->get_user_language($user));
+        $options = $this->get_options('', $language);
         $message = $options[$type . '_message'];
         if ($user->status == Newsletter::STATUS_NOT_CONFIRMED) {
             $message = $this->add_microdata($message);
         }
         $subject = $options[$type . '_subject'];
-
-        return $this->mail($user->email, $this->replace($subject, $user), $this->replace($message, $user), $this->get_user_language($user));
+        
+        return $this->mail($user, $subject, $message);
     }
 
     /**

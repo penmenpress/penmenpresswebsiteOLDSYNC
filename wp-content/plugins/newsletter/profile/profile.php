@@ -297,16 +297,18 @@ class NewsletterProfile extends NewsletterModule {
             $buffer .= $x['field'];
             $buffer .= "</div>\n";
         }
+        
+        $local_options = $this->get_options($sub, $this->get_user_language($user));
 
         // Privacy
         $privacy_url = NewsletterSubscription::instance()->get_privacy_url();
-        if (!empty($this->options['privacy_label']) && !empty($privacy_url)) {
+        if (!empty($local_options['privacy_label']) && !empty($privacy_url)) {
             $buffer .= '<div class="tnp-field tnp-field-privacy">';
             if ($privacy_url) {
                 $buffer .= '<a href="' . $privacy_url . '" target="_blank">';
             }
 
-            $buffer .= $this->options['privacy_label'];
+            $buffer .= $local_options['privacy_label'];
 
             if ($privacy_url) {
                 $buffer .= '</a>';
@@ -315,7 +317,7 @@ class NewsletterProfile extends NewsletterModule {
         }
 
         $buffer .= '<div class="tnp-field tnp-field-button">';
-        $buffer .= '<input class="tnp-submit" type="submit" value="' . esc_attr($this->options['save_label']) . '">';
+        $buffer .= '<input class="tnp-submit" type="submit" value="' . esc_attr($local_options['save_label']) . '">';
         $buffer .= "</div>\n";
 
         $buffer .= "</form>\n</div>\n";

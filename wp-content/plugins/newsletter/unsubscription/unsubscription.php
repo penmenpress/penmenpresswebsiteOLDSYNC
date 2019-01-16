@@ -115,7 +115,7 @@ class NewsletterUnsubscription extends NewsletterModule {
         $message = $options['unsubscribed_message'];
         $subject = $options['unsubscribed_subject'];
 
-        return NewsletterSubscription::instance()->mail($user->email, $this->replace($subject, $user), $this->replace($message, $user));
+        return NewsletterSubscription::instance()->mail($user, $subject, $message);
     }
 
     /**
