@@ -4,3 +4,4 @@
 09-01-2019 03:26:50 - ERROR - m: 15.2 MB, u: 0 - Blocked by transient newsletter_main_engine set 1 seconds ago
 09-01-2019 16:07:05 - ERROR - m: 14.9 MB, u: 0 - Blocked by transient newsletter_main_engine set 0 seconds ago
 12-01-2019 23:48:14 - ERROR - m: 15.1 MB, u: 0 - Blocked by transient newsletter_main_engine set 0 seconds ago
+20-01-2019 09:07:39 - ERROR - m: 16.4 MB, u: 0 - Blocked by transient newsletter_main_engine set 1 seconds ago
