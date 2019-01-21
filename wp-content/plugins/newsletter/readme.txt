@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated,mailing list
 Requires at least: 3.4.0
 Tested up to: 5.0.3
-Stable tag: 5.8.7
+Stable tag: 5.8.8
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -122,7 +122,13 @@ Thank you, The Newsletter Team
 
 == Changelog ==
 
-= 5.8.6 =
+= 5.8.8 =
+
+* Fixed multilanguage text for newsletter page
+
+* Fixed a profile panel debug notice
+
+= 5.8.7 =
 
 * Tags replacement even on template for messages
 * Fixed profile page labels translation

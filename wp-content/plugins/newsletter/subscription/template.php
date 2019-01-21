@@ -19,10 +19,6 @@ if (!$controls->is_action()) {
     if ($controls->is_action('save')) {
         $module->save_options($controls->data, 'template', null, $current_language);
 
-        if (strpos($controls->data['template'], '{message}') === false) {
-            $controls->errors = __('The tag {message} is missing in your template', 'newsletter');
-        }
-
         $controls->add_message_saved();
     }
 
@@ -59,6 +55,10 @@ if (!$controls->is_action()) {
                     implode(', ', $addresses) . '.' . ' <a href="https://www.thenewsletterplugin.com/plugins/newsletter/subscribers-module#test" target="_blank"><i class="fa fa-info-circle"></i></a>';
         }
     }
+}
+
+if (strpos($controls->data['template'], '{message}') === false) {
+    $controls->errors = __('The tag {message} is missing in your template', 'newsletter');
 }
 ?>
 

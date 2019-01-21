@@ -1691,7 +1691,7 @@ class NewsletterSubscription extends NewsletterModule {
 
         $message = apply_filters('newsletter_page_text', '', $message_key, $user);
 
-        $options = $this->get_options('', $this->get_user_language($user));
+        $options = $this->get_options('', $this->get_current_language($user));
 
         if (empty($message)) {
             $message = $options[$message_key . '_text'];

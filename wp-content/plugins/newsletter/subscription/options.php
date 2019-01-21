@@ -267,7 +267,7 @@ if ($controls->is_action()) {
                                 <?php _e('Welcome email', 'newsletter') ?>
                             </th>
                             <td>
-                                <?php $controls->email('confirmed', 'wordpress', true); ?>
+                                <?php $controls->email('confirmed', 'wordpress', $is_all_languages); ?>
                                 <br>
                                 <?php $controls->button('test-confirmed', 'Send a test'); ?>
                             </td>

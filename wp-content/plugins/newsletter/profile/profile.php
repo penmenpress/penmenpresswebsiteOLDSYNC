@@ -298,7 +298,7 @@ class NewsletterProfile extends NewsletterModule {
             $buffer .= "</div>\n";
         }
         
-        $local_options = $this->get_options($sub, $this->get_user_language($user));
+        $local_options = $this->get_options('', $this->get_user_language($user));
 
         // Privacy
         $privacy_url = NewsletterSubscription::instance()->get_privacy_url();
