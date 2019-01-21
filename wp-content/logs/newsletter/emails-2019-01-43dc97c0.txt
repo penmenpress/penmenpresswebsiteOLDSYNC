@@ -1,0 +1,4 @@
+21-01-2019 01:26:23 - INFO  - m: 9.9 MB, u: 107 - upgrade_query> Executing alter table wp_newsletter_emails change column `type` `type` varchar(50) not null default ''
+21-01-2019 01:26:23 - INFO  - m: 9.9 MB, u: 107 - upgrade_query> Executing alter table wp_newsletter_emails add column token varchar(10) not null default ''
+21-01-2019 01:26:23 - INFO  - m: 9.9 MB, u: 107 - upgrade_query> Executing alter table wp_newsletter_emails drop column visibility
+21-01-2019 01:26:23 - INFO  - m: 9.9 MB, u: 107 - upgrade_query> Executing alter table wp_newsletter_emails add column private tinyint(1) not null default 0
