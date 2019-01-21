@@ -163,7 +163,6 @@ if ( ! function_exists( 'gglcptch_add_actions' ) ) {
 		$is_user_logged_in = is_user_logged_in();
 
 		if ( ! empty( $gglcptch_options['login_form'] ) || ! empty( $gglcptch_options['reset_pwd_form'] ) || ! empty( $gglcptch_options['registration_form'] ) ) {
-			add_action( 'login_enqueue_scripts', 'gglcptch_add_styles' );
 
 			if ( gglcptch_is_recaptcha_required( 'login_form', $is_user_logged_in ) ) {
 				add_action( 'login_form', 'gglcptch_login_display' );
@@ -211,6 +210,11 @@ if ( ! function_exists( 'gglcptch_add_actions' ) ) {
 			if ( ! $gglcptch_ip_in_whitelist ) {
 				add_filter( 'cntctfrm_check_form', 'gglcptch_contact_form_check' );
 			}
+		}
+
+		/* Add Google Captcha to Testimonials by BestWebSoft */
+		if ( gglcptch_is_recaptcha_required( 'testimonials', $is_user_logged_in ) ) {
+			add_filter( 'tstmnls_display_recaptcha', 'gglcptch_display', 10, 0 );
 		}
 	}
 }
