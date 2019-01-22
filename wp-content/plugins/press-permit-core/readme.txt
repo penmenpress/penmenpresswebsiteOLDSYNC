@@ -4,8 +4,8 @@ Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JWZVF
 Tags: restrict, access, permissions, cms, user, private, category, pages, privacy, capabilities, role, scoper
 License: GPLv3
 Requires at least: 3.4
-Tested up to: 5.0
-Stable tag: 2.5.4
+Tested up to: 5.0.3
+Stable tag: 2.5.5
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
@@ -49,6 +49,9 @@ Pro [extensions](https://presspermit.com/extensions) are [available](https://pre
 Initial production release
 
 == Changelog ==
+
+= 2.5.5 - 21 Jan 2019 =
+* Fixed : On Edit Page screen, Groups and Users could not be selected for exceptions if WP_DEBUG was defined
 
 = 2.5.4 - 6 Dec 2018 =
 * Fixed : Pro - Excessive update checks on Plugins screen if any Pro extensions are installed but inactive

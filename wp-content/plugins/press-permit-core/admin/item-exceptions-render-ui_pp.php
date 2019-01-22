@@ -144,7 +144,7 @@ class PP_ItemExceptionsRenderUI {
 					$this->opt_class[''] = " class='pp-def' ";
 			}
 			
-			if ( $is_unfiltered && ( $current_val === '' ) )  // Disable UI for unfiltered users unless an (ineffective) exception is already stored
+			if ( ! empty($is_unfiltered) && ( $current_val === '' ) )  // Disable UI for unfiltered users unless an (ineffective) exception is already stored
 				$disabled = ' disabled="disabled"';
 			else
 				$disabled = ( ( 'children' == $assign_for ) && apply_filters( 'pp_assign_for_children_locked', false, $for_item_type, array( 'operation' => $op ) ) ) ? ' disabled="disabled" ' : '';
