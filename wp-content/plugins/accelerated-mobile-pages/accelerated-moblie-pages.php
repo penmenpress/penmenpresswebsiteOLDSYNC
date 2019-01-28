@@ -3,7 +3,7 @@
 Plugin Name: Accelerated Mobile Pages
 Plugin URI: https://wordpress.org/plugins/accelerated-mobile-pages/
 Description: AMP for WP - Accelerated Mobile Pages for WordPress
-Version: 0.9.97.24
+Version: 0.9.97.27
 Author: Ahmed Kaludi, Mohammed Kaludi
 Author URI: https://ampforwp.com/
 Donate link: https://www.paypal.me/Kaludi/25
@@ -20,7 +20,7 @@ define('AMPFORWP_PLUGIN_DIR_URI', plugin_dir_url(__FILE__));
 define('AMPFORWP_DISQUS_URL',plugin_dir_url(__FILE__).'includes/disqus.html');
 define('AMPFORWP_IMAGE_DIR',plugin_dir_url(__FILE__).'images');
 define('AMPFORWP_MAIN_PLUGIN_DIR', plugin_dir_path( __DIR__ ) );
-define('AMPFORWP_VERSION','0.9.97.24');
+define('AMPFORWP_VERSION','0.9.97.27');
 // any changes to AMP_QUERY_VAR should be refelected here
 function ampforwp_generate_endpoint(){
     $ampforwp_slug = '';
@@ -519,7 +519,7 @@ if ( is_admin() ) {
 // AMP endpoint Verifier
 function ampforwp_is_amp_endpoint() {
 	if ( ampforwp_is_non_amp() && ! is_admin()) {
-		return ampforwp_is_non_amp();
+		return apply_filters('ampforwp_is_amp_endpoint_takeover', ampforwp_is_non_amp() );
 	}
 	else {
 		return apply_filters('ampforwp_is_amp_endpoint', false !== get_query_var( 'amp', false ) );
@@ -827,7 +827,7 @@ function ampforwp_get_all_post_types(){
     }
 
 // Register widgets
-add_action('init', 'ampforwp_widgets',0.5);
+add_action('amp_init', 'ampforwp_widgets');
 function ampforwp_widgets(){
 	add_action( 'widgets_init', 'ampforwp_register_widgets' );
 }
@@ -845,4 +845,23 @@ function ampforwp_register_widgets() {
 		unregister_widget( $registered_widget_class_name );
 		register_widget( $amp_class_name );
 	}
+}
+
+add_filter('plugin_row_meta' , 'ampforwp_add_plugin_meta_links', 10, 2);
+if ( ! function_exists('ampforwp_add_plugin_meta_links') ) {
+function ampforwp_add_plugin_meta_links($meta_fields, $file) {
+    if ( plugin_basename(__FILE__) == $file ) {
+      $plugin_url = "https://wordpress.org/support/plugin/accelerated-mobile-pages/reviews/?rate=5#new-post";
+      $meta_fields[] = "<a href='" . esc_url($plugin_url) ."' target='_blank' title='" . esc_html__('Rate', 'accelerated-mobile-pages') . "'>
+            <i class='ampforwp-rate-stars'>"
+        . "<svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg>"
+        . "<svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg>"
+        . "<svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg>"
+        . "<svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg>"
+        . "<svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg>"
+        . "</i></a>";      
+       
+    }
+    return $meta_fields;
+  }
 }

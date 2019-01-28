@@ -119,6 +119,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	99. Merriweather Font Management
 	100. Flags compatibility in Menu
 	101. Function for Logo attributes 
+	102. SD Feature Image Guidlines #2838
 */
 // AMP Components	
 // AMP LOGO
@@ -1454,15 +1455,13 @@ function ampforwp_new_dir( $dir ) {
 				// Removing the type attribute from the <ul> (Improved after 0.9.63)
 				 $content = preg_replace('/<ul(.*?)\btype=".*?"(.*?)/','<ul $1',$content);
 				 //Convert the Twitter embed into url for better sanitization #1010
-				  $content = preg_replace('/<blockquote(\s)class="twitter-(.*?)"[^>](.*?)<a href="(https:\/\/twitter.com\/)(.*?)">(.*?)<\/blockquote>/si', "https://twitter.com/$5", $content);
+				  $content = preg_replace("/<blockquote(\s)class=\"twitter-(.*?)\"[^>](.*?)<a href=\"(https:\/\/twitter.com\/([a-zA-Z0-9_]{1,20})\/status\/)(.*?)\">(.*?)<\/blockquote>/si", "\n$4$6", $content);
 				  // Convert the Soundcloud embed into URL to build amp-soundcloud
 				  $content = preg_replace('/<iframe .*(https?).*(\/\/api\.soundcloud\.com\/tracks\/)([0-9]+)(.*)<\/iframe>/', "$1:$2$3", $content);
 				  // for readability attibute in div tag
 				  $content = preg_replace('/readability=[^>]*/', '', $content);
 				  // removing color from span tag
 				  $content = preg_replace('/<span(.*?)(color=".*?")(.*?)>/', '<span$1$3>', $content);
-				  // removing alt from a tag
-				  $content = preg_replace('/<a(.*?)(alt=".*?")(.*?)>/', '<a$1$3>', $content);
 				  // removing sl-processed attribute
 				  $content = preg_replace('/(<[^>]+) sl-processed=".*?"/', '$1', $content);
 				  // ga-on
@@ -2997,7 +2996,7 @@ function ampforwp_auto_flush_on_save($redux_builder_amp) {
 		$wp_rewrite->flush_rules();
 	}
 	$options = $new_options = array();
-	if ( is_array($redux_builder_amp['hide-amp-categories']) && !is_array($redux_builder_amp['hide-amp-categories2'])) {
+	if ( is_array(ampforwp_get_setting('hide-amp-categories')) && !is_array(ampforwp_get_setting('hide-amp-categories2'))) {
 		$options = array_keys(array_filter($redux_builder_amp['hide-amp-categories'] ) );
 		foreach ($options as $option ) {
 			$new_options[] = $option;
@@ -3178,14 +3177,19 @@ function ampforwp_sidebar_content_sanitizer($sidebar){
   global $redux_builder_amp;
   $sanitized_sidebar     	= "";
   $non_sanitized_sidebar   	= "";
-  $sidebar_data 			= array();  
+  $sidebar_data 			= array();
+  $blacklist_array	 		= array();
+  // Remove some blacklist tags from sidebars only when search,archives and categories widgets are active #2835
+  if ( is_active_widget(false,false,'search') || is_active_widget(false,false,'archives') || is_active_widget(false,false,'categories') ) {
+  	$blacklist_array['non-content'] = true;
+  }
   ob_start();
   dynamic_sidebar( $sidebar );
   $non_sanitized_sidebar = ob_get_contents();
   ob_end_clean();
   
   if ( $non_sanitized_sidebar ) {
-	  $sanitized_sidebar = new AMPFORWP_Content( $non_sanitized_sidebar,
+	  $sanitized_sidebar = new AMPforWP_Content( $non_sanitized_sidebar,
 	    apply_filters( 'amp_content_embed_handlers', array(
 	          'AMP_Twitter_Embed_Handler' => array(),
 	          'AMP_YouTube_Embed_Handler' => array(),
@@ -3200,7 +3204,7 @@ function ampforwp_sidebar_content_sanitizer($sidebar){
 	    ) ),
 	    apply_filters(  'amp_sidebar_sanitizers', array(
 	           'AMP_Style_Sanitizer' => array(),
-	           'AMP_Blacklist_Sanitizer' => array(),
+	           'AMP_Blacklist_Sanitizer' => $blacklist_array,
 	           'AMP_Img_Sanitizer' => array(),
 	           'AMP_Video_Sanitizer' => array(),
 	           'AMP_Audio_Sanitizer' => array(),
@@ -3211,9 +3215,8 @@ function ampforwp_sidebar_content_sanitizer($sidebar){
 	    )  ), array('non-content'=>'non-content')
 	  );
   }
-  // Allow some blacklisted tags #1400
-  add_filter('amp_blacklisted_tags','ampforwp_sidebar_blacklist_tags');
   if ( is_active_widget(false,false,'search') && $sanitized_sidebar) {
+  	// Allow some blacklisted tags #1400
 	add_filter('ampforwp_modify_sidebars_content','ampforwp_modified_search_sidebar');
   }
   return $sanitized_sidebar;
@@ -4677,8 +4680,8 @@ function ampforwp_posts_to_remove () {
 	$selected_cats 					= array();
 	$post_id_array 					= array();
 	$current_cats_ids 				= array();
-	if(isset($redux_builder_amp['hide-amp-categories2'])){
-		$get_categories_from_checkbox = $redux_builder_amp['hide-amp-categories2'];
+	if(ampforwp_get_setting('hide-amp-categories2')){
+		$get_categories_from_checkbox = ampforwp_get_setting('hide-amp-categories2');
 		if($get_categories_from_checkbox){
 			$get_selected_cats = array_filter($get_categories_from_checkbox);
 			foreach ($get_selected_cats as $key => $value) {
@@ -4695,8 +4698,8 @@ function ampforwp_posts_to_remove () {
 	    	return true;
 	    }
 	}
-	if( is_array($redux_builder_amp['hide-amp-tags-bulk-option2']) )	{
-		$get_tags_checkbox =  array_values(array_filter($redux_builder_amp['hide-amp-tags-bulk-option2'])); 
+	if( ampforwp_get_setting('hide-amp-tags-bulk-option2') )	{
+		$get_tags_checkbox =  array_values(array_filter(ampforwp_get_setting('hide-amp-tags-bulk-option2') )); 
 		$all_tags 	= get_the_tags(get_the_ID());
 		$tagsOnPost = array();
 		if ( $all_tags ) {
@@ -4717,13 +4720,13 @@ if ( ! function_exists('ampforwp_exclude_archive') ) {
 		global $redux_builder_amp;
 		$exclude = array();
 		// Categories
-		if ( isset($redux_builder_amp['hide-amp-categories2']) && is_array($redux_builder_amp['hide-amp-categories2']) && 'cat' == $archive ) {
-			$exclude = array_values(array_filter($redux_builder_amp['hide-amp-categories2']));
+		if ( is_array(ampforwp_get_setting('hide-amp-categories2')) && 'cat' == $archive ) {
+			$exclude = array_values(array_filter(ampforwp_get_setting('hide-amp-categories2') ) );
 			return $exclude;
 		}
 		// Tags
-		if ( isset($redux_builder_amp['hide-amp-tags-bulk-option2']) && is_array($redux_builder_amp['hide-amp-tags-bulk-option2']) && 'tag' == $archive ) {
-			$exclude = array_values(array_filter($redux_builder_amp['hide-amp-tags-bulk-option2']));
+		if ( is_array(ampforwp_get_setting('hide-amp-tags-bulk-option2')) && 'tag' == $archive ) {
+			$exclude = array_values(array_filter(ampforwp_get_setting('hide-amp-tags-bulk-option2')));
 			return $exclude;
 		}
 	}
@@ -4973,7 +4976,7 @@ function is_category_amp_disabled(){
 	global $redux_builder_amp;
 	$current_cats_ids = $selected_cats = array();
 	if(is_archive() && $redux_builder_amp['ampforwp-archive-support']==1){
-		if(is_tag() && is_array($redux_builder_amp['hide-amp-tags-bulk-option2']))	{
+		if(is_tag() && is_array(ampforwp_get_setting('hide-amp-tags-bulk-option2') ) )	{
 			$all_tags 	= get_the_tags();
 			$tagsOnPost = array();
 			if ( $all_tags ) {
@@ -4981,7 +4984,7 @@ function is_category_amp_disabled(){
 					$tagsOnPost[] = $tagsvalue->term_id;
 				}
 			}
-			$get_tags_checkbox =  array_values(array_filter($redux_builder_amp['hide-amp-tags-bulk-option2'])); 
+			$get_tags_checkbox =  array_values(array_filter(ampforwp_get_setting('hide-amp-tags-bulk-option2'))); 
 			
 			if( count(array_intersect($get_tags_checkbox,$tagsOnPost))>0 ){
 				return true;
@@ -4992,7 +4995,7 @@ function is_category_amp_disabled(){
 		}//tags check area closed
 		$categories = get_the_category();
 		if ( $categories) {
-			$get_categories_from_checkbox =  $redux_builder_amp['hide-amp-categories2']; 
+			$get_categories_from_checkbox =  ampforwp_get_setting('hide-amp-categories2'); 
 			// Check if $get_categories_from_checkbox has some cats then only show
 			if ( $get_categories_from_checkbox ) {
 				$get_selected_cats = array_filter($get_categories_from_checkbox);
@@ -6713,6 +6716,7 @@ if ( ! function_exists( 'ampforwp_google_fonts_generator' ) ) {
 
 	        $font_output .= "@font-face {  ";
 	        $font_output .= "font-family: " . $redux_builder_amp['amp_font_selector']. ';' ;
+	        $font_output .= "font-display: auto;";
 	        $font_output .= "font-style: " . $font_style . ';';
 	        $font_output .= "font-weight: " . $font_weight . ';' ;
 	        $font_output .= "src: local('". $redux_builder_amp['amp_font_selector']." ".$font_local_weight." ".$font_local_type."'), local('". $redux_builder_amp['amp_font_selector']."-".$font_local_weight.$font_local_type."'), url(" .str_replace("http://", "https://", $font_data->files->$value) . ');' ;
@@ -6736,7 +6740,7 @@ function swifttheme_footer_widgets_init() {
 	        'after_title' => '</h4>',
 	    ) );
 	register_sidebar( array(
-	        'name' => esc_html__( 'AMP Widget Above Footer', 'accelerated-mobile-pages' ),
+	        'name' => esc_html__( 'AMP Widget Above Loop', 'accelerated-mobile-pages' ),
 	        'id' => 'ampforwp-above-loop',
 	        'description' => esc_html__( 'This Widget will be display on Above Loop area', 'accelerated-mobile-pages' ),
 	        'class'=>'w-bl',
@@ -6746,7 +6750,7 @@ function swifttheme_footer_widgets_init() {
 	        'after_title' => '</h4>',
 	    ) );
 	register_sidebar( array(
-	        'name' => esc_html__( 'AMP Widget Above Footer', 'accelerated-mobile-pages' ),
+	        'name' => esc_html__( 'AMP Widget Below loop', 'accelerated-mobile-pages' ),
 	        'id' => 'ampforwp-below-loop',
 	        'description' => esc_html__( 'This Widget will be display on Below loop area', 'accelerated-mobile-pages' ),
 	        'class'=>'w-bl',
@@ -7703,3 +7707,28 @@ function ampforwp_backtotop( $data ) {
 	return $data;
 } 
 
+// Jannah Theme Subtitle Support #2732 
+add_action('ampforwp_below_the_title','ampforwp_jannah_subtitle');
+function ampforwp_jannah_subtitle(){
+	if (function_exists('jannah_theme_name') && function_exists('tie_get_postdata')){?>
+		<h4 class="amp-wp-content"><?php echo esc_html(tie_get_postdata( 'tie_post_sub_title' ))?></h4>
+	<?php
+	} 
+}
+
+// SD Feature Image Guidlines #2838
+add_filter( 'amp_post_template_metadata', 'ampforwp_sd_feature_image_guidlines', 22, 1 );
+if ( ! function_exists('ampforwp_sd_feature_image_guidlines') ) {
+	function ampforwp_sd_feature_image_guidlines($metadata){
+		if ( isset($metadata['image']['width']) && $metadata['image']['width'] <= 1200  ){
+			$image_width = 1280;
+			$image_height = 720;
+			$image = ampforwp_aq_resize( $metadata['image']['url'], $image_width, $image_height, true, false, true );
+			$image_url = $image[0]; 
+			$metadata['image']['url'] = $image_url;
+			$metadata['image']['width'] = $image_width;
+			$metadata['image']['height'] = $image_height;
+		}
+		return $metadata;
+	}
+}

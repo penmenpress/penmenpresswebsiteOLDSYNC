@@ -195,6 +195,17 @@ $extension_listing_array = array(
                             'settingUrl'=>'{ampforwp-cta-subsection}',
                         ),
                         array(
+                            'name'=>'Classipress for AMP',
+                            'desc'=>'Amp Compatibility for Classipress Theme',
+                            'img_src'=>AMPFORWP_IMAGE_DIR . '/cp.png',
+                            'price'=>'$19',
+                            'url_link'=>'http://ampforwp.com/classipress-for-amp',
+                            'plugin_active_path'=> 'classipress-for-amp/classipress-for-amp.php',
+                            'item_name'=>'Classipress for AMP',
+                            'store_url'=>'https://accounts.ampforwp.com',
+                            'is_activated'=>(is_plugin_active('classipress-for-amp/classipress-for-amp.php')? 1 : 2),
+                        ),
+                        array(
                             'name'=>'AMP WooCommerce Pro',
                             'desc'=>'Advanced WooCommerce in AMP in two clicks.',
                             'img_src'=>AMPFORWP_IMAGE_DIR . '/woo.png',
@@ -3997,14 +4008,6 @@ $e_commerce_support[] = array(
                        'required' => array( 'amp-use-pot', '=' , 0 )
                    ),
                    array(
-                       'id'       => 'amp-translator-error-404-text',
-                       'type'     => 'text',
-                       'title'    => esc_html__('Error 404', 'accelerated-mobile-pages'),
-                       'default'  => esc_html__('Error 404','accelerated-mobile-pages'),
-                       'placeholder'=>esc_html__('write here','accelerated-mobile-pages'),
-                       'required' => array( 'amp-use-pot', '=' , 0 )
-                   ),
-                   array(
                        'id'       => 'amp-translator-footer-text',
                        'type'     => 'textarea',
                        'title'    => esc_html__('Footer', 'accelerated-mobile-pages'),
@@ -4452,7 +4455,7 @@ Redux::setSection( $opt_name, array(
                 'id'        =>'google_font_api_key',
                 'type'      =>'text',
                 'title'     =>esc_html__('Google Font API key','accelerated-mobile-pages'),
-                'tooltip-subtitle'  => esc_html__('You can get the Link <a target="_blank" href="https://developers.google.com/fonts/docs/developer_api?refresh=1&pli=1#APIKey">form here</a>','accelerated-mobile-pages'),
+                'tooltip-subtitle'  => esc_html__('You can get the Link ','accelerated-mobile-pages').'<a target="_blank" href="https://developers.google.com/fonts/docs/developer_api?refresh=1&pli=1#APIKey">'.esc_html__('form here','accelerated-mobile-pages').'</a>',
                 'default'   =>'',
                 'required' => array(
                     array('amp-design-selector', '=' , '4')

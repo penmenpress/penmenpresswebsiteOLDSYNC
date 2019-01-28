@@ -170,6 +170,25 @@ if(!function_exists('ampforwp_amp_nonamp_convert')){
 	    }
 	    //For template pages
 	    switch ( true ) {
+	    	case ampforwp_is_front_page():
+				$templates[] = $filePath . "/front-page.php";
+				 foreach ( $templates as $key => $value ) {
+					if ( 'single' == $type && file_exists($value) ) {
+						$file = $value;
+						break;
+					}
+				}
+	    	break;
+	    	case ampforwp_is_home():
+				$templates[] = $filePath . "/home.php";
+				$templates[] = $filePath . "/index.php";
+				 foreach ( $templates as $key => $value ) { 
+					if ( 'single' == $type && file_exists($value) ) {
+						$file = $value;
+						break;
+					}
+				} 
+	    	break;
 	    	case (is_tax()):
 	    			$term = get_queried_object();
 					$templates = array();
@@ -432,8 +451,14 @@ if(!function_exists('ampforwp_findInternalUrl')){
 				return $url;
 			}
 		}
-	    if($url=='#'){ return $url; }
-	   	if(strpos($url, "#")!==false){
+		if ( false !== strpos($url, '#') && false === ampforwp_is_amp_inURL($url) && !ampforwp_isexternal($url) ) {
+			$url_array = explode('#', $url);
+			if ( !empty($url_array) && '' !== $url_array[0]) {
+	      		$url = ampforwp_url_controller($url_array[0]).'#'.$url_array[1];
+				return $url;
+			}
+		}
+	    if( false === wp_http_validate_url($url) ) {
 	        return $url;
 	    }
 	    if(!ampforwp_isexternal($url) && ampforwp_is_amp_inURL($url)===false){

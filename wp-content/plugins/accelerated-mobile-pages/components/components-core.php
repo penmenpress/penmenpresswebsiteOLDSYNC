@@ -71,7 +71,7 @@ function amp_icon_css(){
 
 	// Add @font-face for Design-1,2,3
 	if ( 1 == $redux_builder_amp['amp-design-selector'] || 2 == $redux_builder_amp['amp-design-selector'] || 3 == $redux_builder_amp['amp-design-selector'] ) { ?>
-		@font-face {font-family: 'icomoon';font-style: normal;font-weight: normal;src:  local('icomoon'), local('icomoon'), url('<?php echo esc_url(plugin_dir_url(__FILE__)) ?>icomoon/icomoon.ttf');}
+		@font-face {font-family: 'icomoon';font-style: normal;font-weight: normal;font-display: auto;src:  local('icomoon'), local('icomoon'), url('<?php echo esc_url(plugin_dir_url(__FILE__)) ?>icomoon/icomoon.ttf');}
 		[class^="icon-"], [class*=" icon-"] {font-family: 'icomoon';speak: none;font-style: normal;font-weight: normal;font-variant: normal;text-transform: none;line-height: 1;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
 	<?php }
 }
@@ -115,7 +115,7 @@ function amp_title(){
 		?><h1 class="amp-post-title"><?php 
 			$ampforwp_title = get_the_title($ID);
 			$ampforwp_title =  apply_filters('ampforwp_filter_single_title', $ampforwp_title);
-			echo esc_html( $ampforwp_title ); 
+			echo wp_kses_data( $ampforwp_title ); 
 		?></h1><?php 
 		do_action('ampforwp_below_the_title');
     }
