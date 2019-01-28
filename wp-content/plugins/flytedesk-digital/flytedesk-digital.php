@@ -3,7 +3,7 @@
  * Plugin Name:       Flytedesk Digital
  * Plugin URI:        https://www.flytedesk.com
  * Description:       This plugin allows Flytedesk publishers to easily insert digital ad units to be filled via the Flytedesk platform.  https://flytedesk.com
- * Version:           20181101
+ * Version:           20190124
  * Author:            Troy Cobb
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt

@@ -3,8 +3,8 @@ Contributors: Flytedesk
 Donate link: https://www.flytedesk.com
 Tags: flytedesk, college publishers, digital advertising
 Requires at least: 4.0
-Tested up to: 4.9.8
-Stable tag: 20181101
+Tested up to: 5.0.3
+Stable tag: 20190124
 License: GPLv2 or later
 Requires PHP: 5.4
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
