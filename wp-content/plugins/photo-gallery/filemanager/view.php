@@ -116,16 +116,12 @@ class FilemanagerView {
             </div>
           </div>
           <div id="path">
-            <?php
-            foreach ( $path_components as $key => $path_component ) {
-              ?>
-              <a <?php echo ($key == 0) ? 'title="'. __("To change upload directory go to Options page.", BWG()->prefix).'"' : ''; ?> class="path_component path_dir"
-                 onclick="onPathComponentClick(event, this, <?php echo $key; ?>);">
-                  <?php echo str_replace('\\', '', $path_component['name']); ?></a>
+            <?php foreach ( $path_components as $key => $path_component ) { ?>
+              <a class="path_component path_dir" onclick="onPathComponentClick(event, this, <?php echo $key; ?>);">
+                <?php echo str_replace( ABSPATH, '', $path_component['name'] ); ?>
+              </a>
               <a class="path_component path_separator"><?php echo '/'; ?></a>
-              <?php
-            }
-            ?>
+            <?php } ?>
           </div>
           <div id="explorer">
             <div id="explorer_header_wrapper">

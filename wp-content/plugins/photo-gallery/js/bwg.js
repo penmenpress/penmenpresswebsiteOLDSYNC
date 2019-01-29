@@ -1504,7 +1504,6 @@ function input_pagination(e, that) {
 function wd_bulk_action(that) {
   var form = jQuery(that).parents("form");
   var action = jQuery("select[name='" + ( form.attr("id") == "bwg_gallery" ? 'image_' : '' ) + "bulk_action']").val();
-
   if (action != -1) {
     if (!jQuery("input[name^='check']").is(':checked')) {
       alert(bwg.select_at_least_one_item);
@@ -1521,6 +1520,18 @@ function wd_bulk_action(that) {
     }
     else if (action == 'image_edit') {
       jQuery(".opacity_image_desc").show();
+      return false;
+    }
+    else if (action == 'image_edit_alt') {
+      jQuery(".opacity_image_alt").show();
+      return false;
+    }
+    else if (action == 'image_edit_redirect') {
+      jQuery(".opacity_image_redirect").show();
+      return false;
+    }
+    else if (action == 'image_edit_description') {
+      jQuery(".opacity_image_description").show();
       return false;
     }
     else if (action == 'image_add_tag') {

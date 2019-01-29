@@ -20,12 +20,13 @@ class FilemanagerModel {
 		$component['name'] = BWG()->upload_dir;
 		$component['path'] = $path;
 		$components[] = $component;
-		for ($i = 0; $i < count($dir_names); $i++) {
+
+		for ( $i = 0; $i < count($dir_names); $i++ ) {
 			$dir_name = $dir_names[$i];
-			if ($dir_name == '') {
+			if ( $dir_name == '' ) {
 				continue;
 			}
-			$path .= (($path == '') ? $dir_name : '/' . $dir_name);
+			$path .= ( ($path == '') ? $dir_name : '/' . $dir_name );
 			$component = array();
 			$component['name'] = $dir_name;
 			$component['path'] = $path;

@@ -140,7 +140,6 @@ class GalleriesController_bwg {
     $message = 0;
     $successfully_updated = 0;
     $url_arg = array('page' => $this->page,'task' => 'display');
-
     $check = WDWLibrary::get('check', '');
     $all = WDWLibrary::get('check_all_items', '');
     $all = ($all == 'on' ? TRUE : FALSE);

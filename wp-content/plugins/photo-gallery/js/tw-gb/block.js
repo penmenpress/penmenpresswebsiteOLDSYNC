@@ -1,32 +1,18 @@
 /**
  * 10Web plugins Gutenberg integration
- * version 2.0.2
+ * version 2.0.3
  */
 ( function ( blocks, element ) {
-  if ( !window['tw_gb'] ) {
-    window['tw_gb'] = {};
-  }
-  if ( !window['tw_gb'][tw_obj_translate.key] ) {
-    window['tw_gb'][tw_obj_translate.key] = {
-      title: tw_obj_translate.plugin_name,
-      titleSelect: tw_obj_translate.select,
-      iconUrl: tw_obj_translate.icon_url,
-      iconSvg: {
-      width: '20',
-        height: '20',
-        src: tw_obj_translate.icon_svg
-      },
-      isPopup: true,
-        data: {
-        shortcodeUrl: tw_obj_translate.url
-      }
-    }
-  }
-
   registerAllPluginBlocks();
 
   function registerAllPluginBlocks() {
-    var twPluginsData = window['tw_gb'];
+    var twPluginsData = JSON.parse(tw_obj_translate.blocks);
+    for ( var pluginId in window['tw_gb'] ) {
+      if ( !window['tw_gb'].hasOwnProperty( pluginId ) ) {
+        continue;
+      }
+      twPluginsData[pluginId] = window['tw_gb'][pluginId];
+    }
     if ( !twPluginsData ) {
       return;
     }

@@ -1006,26 +1006,26 @@ class bwg_UploadHandler {
    * @param $info
    * @return mixed
    */
-	private function set_file_info( $info ) {
-		$data['is_dir'] = 0;
-		$data['path'] = $info->path;
-		$data['type'] = $info->type;
-		$data['name'] = $info->name;
-		$data['filename'] = $info->filename;
-		$data['alt'] = $info->alt;
-		$data['thumb'] = 'thumb/' . $info->name;
-		$data['size'] = $info->size;
-		$data['resolution'] = $info->resolution;
-		$data['credit'] = $info->credit;
-		$data['aperture'] = $info->aperture;
-		$data['camera'] = $info->camera;
-		$data['caption'] = $info->caption;
-		$data['iso'] = $info->iso;
-		$data['orientation'] = $info->orientation;
-		$data['copyright'] = $info->copyright;
-		$data['tags'] = $info->tags;
-		$data['date_modified'] = date('Y-m-d H:i:s');
-		return $data;
-	}
+  private function set_file_info( $info ) {
+    $data['is_dir'] = 0;
+    $data['path'] = $info->path;
+    $data['type'] = $info->type;
+    $data['name'] = $info->name;
+    $data['filename'] = $info->filename;
+    $data['alt'] = $info->alt;
+    $data['thumb'] = 'thumb/' . $info->name;
+    $data['size'] = $info->size;
+    $data['resolution'] = $info->resolution;
+    $data['credit'] = iconv_mime_decode($info->credit);
+    $data['aperture'] = iconv_mime_decode($info->aperture);
+    $data['camera'] = iconv_mime_decode($info->camera);
+    $data['caption'] = iconv_mime_decode($info->caption);
+    $data['iso'] = iconv_mime_decode($info->iso);
+    $data['orientation'] = $info->orientation;
+    $data['copyright'] = iconv_mime_decode($info->copyright);
+    $data['tags'] = iconv_mime_decode($info->tags);
+    $data['date_modified'] = date('Y-m-d H:i:s');
+    return $data;
+  }
 }
 die();

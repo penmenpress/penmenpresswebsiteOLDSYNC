@@ -2240,7 +2240,9 @@ class WDWLibrary {
       ),
     );
     $post = get_page_by_path($old_tag, OBJECT, BWG()->prefix . '_tag');
-    wp_delete_post($post->ID);
+    if (!empty($post)) {
+      wp_delete_post($post->ID, TRUE);
+    }
     WDWLibrary::bwg_create_custom_post($custom_post_params);
   }
 
@@ -2431,8 +2433,18 @@ class WDWLibrary {
         'bulk_action' => __('reset', BWG()->prefix),
         'disabled' => '',
       ),
-      'image_edit' => array(
-        'title' => __('Edit info', BWG()->prefix),
+      'image_edit_alt' => array(
+        'title' => __('Edit Alt/Title', BWG()->prefix),
+        'bulk_action' => __('edited', BWG()->prefix),
+        'disabled' => '',
+      ),
+      'image_edit_description' => array(
+        'title' => __('Edit description', BWG()->prefix),
+        'bulk_action' => __('edited', BWG()->prefix),
+        'disabled' => '',
+      ),
+      'image_edit_redirect' => array(
+        'title' => __('Edit redirect URL', BWG()->prefix),
         'bulk_action' => __('edited', BWG()->prefix),
         'disabled' => '',
       ),
@@ -2662,7 +2674,7 @@ class WDWLibrary {
     $post_id = get_option( 'wp_page_for_privacy_policy' );
     if ( $post_id ) {
       $post = get_post( $post_id, OBJECT );
-      if ( $post->post_status == 'publish' ) {
+      if ( !is_null($post) && $post->post_status == 'publish' ) {
         $permalink = get_permalink( $post_id );
       }
     }

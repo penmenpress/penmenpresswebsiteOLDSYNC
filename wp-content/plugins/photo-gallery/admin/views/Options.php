@@ -200,6 +200,16 @@ class OptionsView_bwg extends AdminView_bwg {
               </div>
               <div class="wd-box-content wd-width-100">
                 <div class="wd-group">
+                  <label class="wd-label"><?php _e('Discourage search engines', BWG()->prefix); ?></label>
+                  <div class="bwg-flex">
+                    <input type="radio" name="noindex_custom_post" id="noindex_custom_post_1" value="1" <?php if ($row->noindex_custom_post) echo 'checked="checked"'; ?> /><label for="noindex_custom_post_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                    <input type="radio" name="noindex_custom_post" id="noindex_custom_post_0" value="0" <?php if (!$row->noindex_custom_post) echo 'checked="checked"'; ?> /><label for="noindex_custom_post_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                  </div>
+                  <p class="description"><?php _e('Do not allow search engines to index custom posts.', BWG()->prefix); ?></p>
+                </div>
+              </div>
+              <div class="wd-box-content wd-width-100">
+                <div class="wd-group">
                   <label class="wd-label"><?php _e('Show comments for custom posts', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
                     <input type="radio" name="show_hide_post_meta" id="show_hide_post_meta_1" value="1" <?php if ($row->show_hide_post_meta) echo 'checked="checked"'; ?> /><label for="show_hide_post_meta_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
@@ -218,10 +228,10 @@ class OptionsView_bwg extends AdminView_bwg {
                     <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="save_ip" id="save_ip_0" value="0" <?php if (!$row->save_ip) echo 'checked="checked"'; ?> /><label for="save_ip_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
                   </div>
                   <p class="description"><?php _e('Disable saving user IP address when rating the images.', BWG()->prefix); ?></p>
-				  <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
-				</div>
+                  <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+                </div>
               </div>
-			  <div class="wd-box-content wd-width-100">
+              <div class="wd-box-content wd-width-100">
                 <div class="wd-group">
                   <label class="wd-label"><?php _e('Right-click protection', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
@@ -291,6 +301,12 @@ class OptionsView_bwg extends AdminView_bwg {
                   </div>
                   <p class="description"><?php _e('Generate or edit a shortcode.', BWG()->prefix); ?></p>
                 </div>
+				<div class="wd-group">
+					<label class="wd-label"><?php _e('Developer mode', BWG()->prefix); ?></label>
+					<input type="radio" name="developer_mode" id="developer_mode_1" value="1" <?php if ($row->developer_mode) echo 'checked="checked"'; ?> /><label for="developer_mode_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                    <input type="radio" name="developer_mode" id="developer_mode_0" value="0" <?php if (!$row->developer_mode) echo 'checked="checked"'; ?> /><label for="developer_mode_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+					<p class="description"><?php _e('', BWG()->prefix); ?></p>
+				</div>
               </div>
               <?php
               if ( !BWG()->is_demo ) {

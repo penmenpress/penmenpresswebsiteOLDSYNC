@@ -14,6 +14,7 @@ class WD_BWG_Options {
   public $preload_images = 1;
   public $preload_images_count = 10;
   public $show_hide_custom_post = 0;
+  public $noindex_custom_post = 1;
   public $show_hide_post_meta = 0;
   public $save_ip = 1;
   public $image_right_click = 0;
@@ -22,6 +23,7 @@ class WD_BWG_Options {
   public $enable_wp_editor = 0;
   public $enable_seo = 1;
   public $read_metadata = 1;
+  public $developer_mode = 0;
 
   // Thumbnail
   public $thumb_width = 250;
@@ -324,12 +326,14 @@ class WD_BWG_Options {
         }
       }
     }
-
     if ( $this->images_directory === 'wp-content/uploads' ) {
       // If images directory has not been changed by user.
       $upload_dir = wp_upload_dir();
       $this->upload_dir = $upload_dir['basedir'] . '/photo-gallery';
       $this->upload_url = $upload_dir['baseurl'] . '/photo-gallery';
+      if ( is_ssl() ) {
+        $this->upload_url = str_replace('http://', 'https://', $this->upload_url);
+      }
     }
     else {
       // For old users, who have changed images directory.

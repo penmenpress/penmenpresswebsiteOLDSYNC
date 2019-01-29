@@ -293,7 +293,7 @@ class BWGUpdate {
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `carousel_play_pause_btn_size` int(4) NOT NULL DEFAULT 20");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `carousel_rl_btn_width` int(4) NOT NULL DEFAULT 40 ");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `carousel_close_rl_btn_hover_color` varchar(8) NOT NULL DEFAULT 'CCCCCC' ");
-      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `carousel_rl_btn_style` varchar(16) NOT NULL DEFAULT 'fa-chevron'");
+      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `carousel_rl_btn_style` varchar(16) NOT NULL DEFAULT 'bwg-icon-chevron'");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `carousel_mergin_bottom` varchar(8) NOT NULL DEFAULT '0.5' ");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `carousel_font_family` varchar(8) NOT NULL DEFAULT 'segoe ui' ");
       $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_theme ADD `carousel_feature_border_width` int(4) NOT NULL DEFAULT 2");

@@ -60,7 +60,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
             <a href="#bwg_tab_albums_content" class="bwg-tablink"><?php _e('Gallery group', BWG()->prefix); ?></a>
           </li>
         </ul>
-        <div id="bwg_tab_galleries_content" class="bwg-section bwg-no-bottom-border wd-box-content">
+        <div id="bwg_tab_galleries_content" style="display: none" class="bwg-section bwg-no-bottom-border wd-box-content">
           <div class="bwg_change_gallery_type">
             <span class="gallery_type" onClick="bwg_gallery_type('thumbnails')">
               <div><label for="thumbnails"><img id="display_thumb" src="<?php echo BWG()->plugin_url . '/images/thumbnails.jpg'; ?>" /></label></div>
@@ -132,7 +132,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
             </select>
           </div>
         </div>
-        <div id="bwg_tab_albums_content" class="bwg-section bwg-no-bottom-border wd-box-content">
+        <div id="bwg_tab_albums_content" style="display: none" class="bwg-section bwg-no-bottom-border wd-box-content">
           <div class="bwg_change_gallery_type">
             <span class="gallery_type" onClick="bwg_gallery_type('album_compact_preview')">
               <div><label for="album_compact_preview"><img src="<?php echo BWG()->plugin_url . '/images/album_compact_preview.jpg'; ?>" /></label></div>
@@ -442,7 +442,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
           $currrent_id = stripslashes($_POST['currrent_id']);
           $title = ((isset($_POST['title'])) ? stripslashes($_POST['title']) : '');
           $tagtext = '[Best_Wordpress_Gallery id="' . $currrent_id . '"' . $title . ']';
-          $tagfunction = "<?php echo photo_gallery(" . $currrent_id . "); ?>";
+          $tagfunction = "<?php echo if( function_exists('photo_gallery') ) { photo_gallery(" . $currrent_id . "); } ?>";
         }
         ?>
         <hr />
@@ -560,7 +560,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
             var short_code = get_short_params(shortcodes[shortcode_id]);
             bwg_insert = 0;
             jQuery("#bwg_shortcode").val('[Best_Wordpress_Gallery id="' + shortcode_id + '"]');
-            var str = "&#60;?php echo photo_gallery(" + shortcode_id + "); ?&#62;";
+            var str = "&#60;?php echo if( function_exists('photo_gallery') ) { photo_gallery(" + shortcode_id + "); } ?&#62;";
             jQuery("#bwg_function").val(str.replace("&#60;", '<').replace("&#62;", '>'));
           }
           else {
@@ -2175,7 +2175,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
           jQuery('#insert').text('<?php _e('Update', BWG()->prefix); ?>');
           jQuery('#insert').attr('onclick', 'jQuery("#loading_div").show(); bwg_insert_shortcode(content);');
           jQuery("#bwg_shortcode").val(content);
-          var str = "&#60;?php echo photo_gallery(" + shortcode_id + "); ?&#62;";
+          var str = "&#60;?php echo if( function_exists('photo_gallery') ) { photo_gallery(" + shortcode_id + "); } ?&#62;";
           jQuery("#bwg_function").val(str.replace("&#60;", '<').replace("&#62;", '>'));
           shortcodes[shortcode_id] = tagtext;
           temp_shortcode_id = ++shortcode_id;

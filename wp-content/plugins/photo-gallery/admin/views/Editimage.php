@@ -14,7 +14,7 @@ class EditimageView_bwg {
     $instagram_post_width  = (int) WDWLibrary::get('instagram_post_width', $image_width);
     $instagram_post_height = (int) WDWLibrary::get('instagram_post_height', $image_height);
     $modified_date = WDWLibrary::get('modified_date', '');
-    $FeedbackSocialProofHeight = 132;
+    $FeedbackSocialProofHeight = 176;
     if ( $instagram_post_width ) {
       if ( $image_height / ($instagram_post_height + $FeedbackSocialProofHeight) < $image_width / $instagram_post_width ) {
         $instagram_post_width = ($image_height - $FeedbackSocialProofHeight) * $instagram_post_width / $instagram_post_height + 16;
@@ -789,7 +789,6 @@ class EditimageView_bwg {
     wp_print_scripts('jquery-ui-slider');
     ?>
     <link type="text/css" rel="stylesheet" id="bwg_tables-css" href="<?php echo BWG()->front_url . '/css/bwg_edit_image.css'; ?>" media="all">
-    <link type="text/css" rel="stylesheet" href="<?php echo BWG()->front_url . '/css/font-awesome/font-awesome.min.css?ver=4.6.3'; ?>">
     <form method="post" id="bwg_rotate_image" action="<?php echo $form_action; ?>">
       <?php wp_nonce_field('editimage_' . BWG()->prefix, 'bwg_nonce'); ?>
       <div class="main_cont" style="height: <?php echo $popup_height; ?>px;">

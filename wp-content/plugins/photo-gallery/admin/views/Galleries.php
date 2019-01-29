@@ -410,7 +410,15 @@ class GalleriesView_bwg extends AdminView_bwg {
       }
       ?>
     </div>
-    <div class="opacity_resize_image opacity_add_embed opacity_image_desc opacity_bulk_embed bwg_opacity_media" onclick="jQuery('.opacity_add_embed').hide(); jQuery('.opacity_bulk_embed').hide(); jQuery('.opacity_resize_image').hide(); jQuery('.opacity_image_desc').hide();"></div>
+    <div class="opacity_image_alt opacity_image_description opacity_image_redirect opacity_resize_image opacity_add_embed opacity_image_desc opacity_bulk_embed bwg_opacity_media"
+         onclick="
+         jQuery('.opacity_image_alt').hide();
+         jQuery('.opacity_image_description').hide();
+         jQuery('.opacity_image_redirect').hide();
+         jQuery('.opacity_add_embed').hide();
+         jQuery('.opacity_bulk_embed').hide();
+         jQuery('.opacity_resize_image').hide();
+         jQuery('.opacity_image_desc').hide();"></div>
 
     <!-- Media Embed -->
     <div id="add_embed" class="opacity_add_embed bwg_add_embed">
@@ -510,33 +518,64 @@ class GalleriesView_bwg extends AdminView_bwg {
       <input class="button button-secondary button-large" type="button" onclick="jQuery('.opacity_resize_image').hide(); return false;" value="<?php _e("Cancel", BWG()->prefix); ?>" />
       </div>
     </div>
-    <!-- Edit from bulk block -->
-    <div id="add_desc" class="opacity_image_desc bwg_image_desc">
+
+
+    <!-- Edit from bulk block alt/title -->
+    <div id="add_alt" class="opacity_image_alt bwg_image_desc">
+
       <div>
         <span class="bwg_popup_label">
           <?php _e('Alt/Title: ', BWG()->prefix); ?>
         </span>
         <input class="bwg_popup_input" type="text" id="title" name="title" value="" />
+        <p class="description"><?php _e('Leave blank and click to "Save changes" to delete Alt/Titles.', BWG()->prefix); ?></p>
       </div>
+      <br>
+      <div class="edit_cont_buttons">
+        <input class="button button-primary button-large" type="button" onclick="spider_set_input_value('ajax_task', 'image_edit_field');
+                                                                                 spider_ajax_save('bwg_gallery');
+                                                                                 jQuery('.opacity_image_alt').hide();
+                                                                                 return false;" value="<?php _e('Save changes', BWG()->prefix); ?>" />
+        <input class="button button-secondary button-large" type="button" onclick="jQuery('.opacity_image_alt').hide(); return false;" value="<?php echo __('Cancel', BWG()->prefix); ?>" />
+      </div>
+    </div>
+
+    <!-- Edit from bulk block redirect url -->
+    <div id="add_red_url" class="opacity_image_redirect bwg_image_desc">
       <div>
         <span class="bwg_popup_label">
           <?php _e('Redirect URL: ', BWG()->prefix); ?>
         </span>
         <input class="bwg_popup_input" type="text" id="redirecturl" name="redirecturl" value="" />
+        <p class="description"><?php _e('Leave blank and click to "Save changes" to delete Redirect URLs.', BWG()->prefix); ?></p>
       </div>
+      <br>
+      <div class="edit_cont_buttons">
+        <input class="button button-primary button-large" type="button" onclick="spider_set_input_value('ajax_task', 'image_edit_field');
+                                                                                 spider_ajax_save('bwg_gallery');
+                                                                                 jQuery('.opacity_image_redirect').hide();
+                                                                                 return false;" value="<?php _e('Save changes', BWG()->prefix); ?>" />
+        <input class="button button-secondary button-large" type="button" onclick="jQuery('.opacity_image_redirect').hide(); return false;" value="<?php echo __('Cancel', BWG()->prefix); ?>" />
+      </div>
+    </div>
+
+    <!-- Edit from bulk block description -->
+    <div id="add_desc" class="opacity_image_description bwg_image_desc">
       <div>
         <span class="bwg_popup_label">
           <?php _e('Description: ', BWG()->prefix); ?>
         </span>
         <textarea class="bwg_popup_input" type="text" id="desc" name="desc"></textarea>
+        <p class="description"><?php _e('Leave blank and click to "Save changes" to delete Descriptions.', BWG()->prefix); ?></p>
+
       </div>
       <br>
       <div class="edit_cont_buttons">
-        <input class="button button-primary button-large" type="button" onclick="spider_set_input_value('ajax_task', 'image_edit');
+        <input class="button button-primary button-large" type="button" onclick="spider_set_input_value('ajax_task', 'image_edit_field');
                                                                                  spider_ajax_save('bwg_gallery');
-                                                                                 jQuery('.opacity_image_desc').hide();
-                                                                                 return false;" value="<?php _e('Update', BWG()->prefix); ?>" />
-        <input class="button button-secondary button-large" type="button" onclick="jQuery('.opacity_image_desc').hide(); return false;" value="<?php echo __('Cancel', BWG()->prefix); ?>" />
+                                                                                 jQuery('.opacity_image_description').hide();
+                                                                                 return false;" value="<?php _e('Save changes', BWG()->prefix); ?>" />
+        <input class="button button-secondary button-large" type="button" onclick="jQuery('.opacity_image_description').hide(); return false;" value="<?php echo __('Cancel', BWG()->prefix); ?>" />
       </div>
     </div>
     <div class="ajax-msg wd-hide">
