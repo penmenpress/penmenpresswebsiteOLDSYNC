@@ -244,6 +244,49 @@ class OneSignal_Admin {
     onesignal_debug('    [$meta_box_checkbox_send_notification]', 'in_array($post->post_status, array("future", "draft", "auto-draft", "pending"):', in_array($post->post_status, array("future", "draft", "auto-draft", "pending")), '(' . $post->post_status . ')');
 
     ?>
+
+    <!-- code to handle checkbox issue on wordpress 5.0.0+ (may need to modify for future versions of WP)-->
+    <script>
+      /**
+       * Prompt confirmation upon post publish with onesignal checkbox clicked
+       * Unchecks box automatically once post is published
+       *    - mitigates issue where users publish, edit, and republish post (duplicate notifications)
+       */
+      function handlePostPublish(){
+        var willSend = document.getElementsByName("send_onesignal_notification")[0].checked;
+
+        if (willSend && confirm("OneSignal: publishing post. Are you sure you want to notify your subscribers?\n\nNote: cancelling will still publish your post but won't send notifications")) {
+          setTimeout(function(){document.getElementsByName("send_onesignal_notification")[0].checked=false},600);
+        } else if (willSend)  {
+          document.getElementsByName("send_onesignal_notification")[0].checked=false;
+        }
+        // add event listeners again (wp removes publish button and renders a new one after initial publish)
+        setTimeout(addListeners, 600);
+      }
+      
+      /**
+       * Mount listeners to publish buttons
+       */
+      var addListeners = function(){
+        try{
+          var publishButton = document.getElementsByClassName('editor-post-publish-button')[0];
+          
+          if (publishButton) {
+            // publish button exists - add handlePostPublish as callback
+            publishButton.addEventListener("click", handlePostPublish);
+          } else {
+            // publish button doesn't exist yet - add this function to pre-publish button
+            var prePublishButton = document.getElementsByClassName('editor-post-publish-panel__toggle')[0];
+            prePublishButton.addEventListener("click", function(){setTimeout(addListeners, 600)});
+          }
+        } catch(e) {
+          console.log(e);
+        }
+      }
+      
+      window.onload = addListeners;
+    </script>
+    
 	    <input type="hidden" name="onesignal_meta_box_present" value="true"></input>
       <input type="checkbox" name="send_onesignal_notification" value="true" <?php if ($meta_box_checkbox_send_notification) { echo "checked"; } ?>></input>
       <label>
@@ -636,7 +679,19 @@ class OneSignal_Admin {
           }
         }
 
+        /**
+         * hashes notification content and converts it into a uuid
+         * meant to prevent duplicate notification issue started with wp5.0.0 
+         */
+        function uuid($content) {
+          $content = (string)$content;
+          $sha1 = substr(sha1($content), 0, 32);
+          return substr($sha1, 0, 8).'-'.substr($sha1, 8, 4).'-'.substr($sha1, 12, 4).'-'.substr($sha1, 16, 4).'-'.substr($sha1, 20, 12);
+        }
+
+
         $fields = array(
+          'external_id'       => uuid($notif_content),
           'app_id'            => $onesignal_wp_settings['app_id'],
           'headings'          => array("en" => $site_title),
           'included_segments' => array('All'),
