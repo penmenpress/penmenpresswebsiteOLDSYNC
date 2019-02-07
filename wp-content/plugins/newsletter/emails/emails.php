@@ -29,6 +29,13 @@ class NewsletterEmails extends NewsletterModule {
             add_action('wp_ajax_tnpc_preview', array($this, 'tnpc_preview_callback'));
             add_action('wp_ajax_tnpc_css', array($this, 'tnpc_css_callback'));
             add_action('wp_ajax_tnpc_options', array($this, 'hook_wp_ajax_tnpc_options'));
+            
+            // Thank you to plugins which add the WP editor on other admin plugin pages...
+            if (isset($_GET['page']) && $_GET['page'] == 'newsletter_emails_edit') {
+                global $wp_actions;
+		$wp_actions['wp_enqueue_editor'] = 1;
+            }
+                
         }
     }
 

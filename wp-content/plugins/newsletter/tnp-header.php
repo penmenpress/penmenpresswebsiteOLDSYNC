@@ -88,7 +88,9 @@ $warning |= empty($status_options['mail']);
         </li>
         <li><a href="#"><i class="fa fa-newspaper-o"></i> <?php _e('Newsletters', 'newsletter') ?> <i class="fa fa-chevron-down"></i></a>
             <ul>
-                <li><a href="?page=newsletter_emails_index"><i class="fa fa-newspaper-o"></i> <?php _e('Single Newsletter', 'newsletter') ?>
+                <li><a href="?page=newsletter_emails_theme"><i class="fa fa-plus"></i> <?php _e('Create newsletter', 'newsletter') ?>
+                        <small><?php _e('Start your new campaign', 'newsletter') ?></small></a></li>
+                <li><a href="?page=newsletter_emails_index"><i class="fa fa-newspaper-o"></i> <?php _e('Newsletters', 'newsletter') ?>
                         <small><?php _e('The classic "write & send" newsletters', 'newsletter') ?></small></a></li>
                 <li><a href="?page=<?php echo apply_filters('newsletter_admin_page', 'newsletter_statistics_index') ?>"><i class="fa fa-bar-chart"></i> <?php _e('Statistics', 'newsletter') ?>
                         <small><?php _e('Tracking configuration and basic data', 'newsletter') ?></small></a></li>

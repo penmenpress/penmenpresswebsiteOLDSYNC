@@ -773,7 +773,7 @@ p.description {
 }
 
 #tnp-heading div p {
-    color: #666;
+    color: #565656;
 }
 
 #tnp-heading h2 {
@@ -2089,12 +2089,13 @@ iframe.tnp-editor-preview-desktop {
 /* Form inserimento licenza in Addons Manager */
 
 #tnp-license-control  {
-    border: 2px solid #27313C;
+    border-left: 5px solid #27ae60;
     display: inline-block;
-    padding: 15px 25px;
+    padding: 15px 20px;
     margin-left: -10px;
     margin-top: 15px;
     border-radius: 2px;
+    background-color: #fff;
 }
 
 #tnp-license-control form {

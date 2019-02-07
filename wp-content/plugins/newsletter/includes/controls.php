@@ -1332,6 +1332,14 @@ class NewsletterControls {
         return NewsletterUsers::instance()->get_test_users();
     }
 
+    /**
+     * Attributes:
+     * weight: [true|false]
+     * color: [true|false]
+     * 
+     * @param string $name
+     * @param array $attrs
+     */
     function css_font($name = 'font', $attrs = array()) {
         $default = array('color' => true, 'weight'=>true);
         $attrs = array_merge($default, $attrs);

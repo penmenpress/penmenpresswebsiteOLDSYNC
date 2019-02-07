@@ -1,28 +1,41 @@
 <?php
 
-if (!defined('ABSPATH'))
-    exit;
+defined('ABSPATH') || exit;
 
 function tnp_post_thumbnail_src($post, $size = 'thumbnail', $alternative = '') {
     if (is_object($post)) {
         $post = $post->ID;
     }
 
-    if (is_array($size)) {
-        $media_id = get_post_thumbnail_id($post);
-        if (!$media_id) {
-            return $alternative;
-        }
-        $src = tnp_media_resize($media_id, $size);
-        if (is_wp_error($src)) {
-            Newsletter::instance()->logger->error($src);
-            return $alternative;
-        } else {
-            return $src;
+    // Find a media id to be used as featured image
+    $media_id = get_post_thumbnail_id($post);
+    if (empty($media_id)) {
+        $attachments = get_children(array('numberpost' => 1, 'post_parent' => $post, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order'));
+        if (!empty($attachments)) {
+            foreach ($attachments as $id => &$attachment) {
+                $media_id = $id;
+                break;
+            }
         }
     }
 
-    $media = wp_get_attachment_image_src(get_post_thumbnail_id($post), $size);
+    if (!$media_id) {
+        return $alternative;
+    }
+
+    if (!defined('NEWSLETTER_MEDIA_RESIZE') || NEWSLETTER_MEDIA_RESIZE) {
+        if (is_array($size)) {
+            $src = tnp_media_resize($media_id, $size);
+            if (is_wp_error($src)) {
+                Newsletter::instance()->logger->error($src);
+                return $alternative;
+            } else {
+                return $src;
+            }
+        }
+    }
+
+    $media = wp_get_attachment_image_src($media_id, $size);
     if (strpos($media[0], 'http') !== 0) {
         $media[0] = 'http:' . $media[0];
     }
@@ -70,10 +83,12 @@ function tnp_post_date($post, $format = null) {
  * @return string
  */
 function tnp_media_resize($media_id, $size) {
-    if (empty($media_id)) return '';
+    if (empty($media_id))
+        return '';
     $relative_file = get_post_meta($media_id, '_wp_attached_file', true);
-    if (empty($relative_file)) return '';
-    
+    if (empty($relative_file))
+        return '';
+
     $width = $size[0];
     $height = $size[1];
     $crop = false;
@@ -87,17 +102,17 @@ function tnp_media_resize($media_id, $size) {
     $pathinfo = pathinfo($relative_file);
     $relative_thumb = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '-' . $width . 'x' .
             $height . ($crop ? '-c' : '') . '.' . $pathinfo['extension'];
-    $absolute_thumb = WP_CONTENT_DIR . '/newsletter/thumbnails/' . $relative_thumb;
+    $absolute_thumb = $uploads['basedir'] . '/newsletter/thumbnails/' . $relative_thumb;
 
     // Thumbnail generation if needed.
     if (!file_exists($absolute_thumb) || filemtime($absolute_thumb) < filemtime($absolute_file)) {
-        $r = wp_mkdir_p(WP_CONTENT_DIR . '/newsletter/thumbnails/' . $pathinfo['dirname']);
-        
+        $r = wp_mkdir_p($uploads['basedir'] . '/newsletter/thumbnails/' . $pathinfo['dirname']);
+
         if (!$r) {
             $src = wp_get_attachment_image_src($media_id, $size);
             return $src[0];
         }
-        
+
         $editor = wp_get_image_editor($absolute_file);
         if (is_wp_error($editor)) {
             $src = wp_get_attachment_image_src($media_id, $size);
@@ -123,5 +138,7 @@ function tnp_media_resize($media_id, $size) {
         }
     }
 
-    return WP_CONTENT_URL . '/newsletter/thumbnails/' . $relative_thumb;
+
+
+    return $uploads['baseurl'] . '/newsletter/thumbnails/' . $relative_thumb;
 }
