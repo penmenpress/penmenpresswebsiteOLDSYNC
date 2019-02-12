@@ -3,7 +3,7 @@
 Plugin Name: Media Library Folders for WordPress
 Plugin URI: http://maxgalleria.com
 Description: Gives you the ability to adds folders and move files in the WordPress Media Library.
-Version: 4.3.4
+Version: 4.3.7
 Author: Max Foundry
 Author URI: http://maxfoundry.com
 
@@ -30,6 +30,9 @@ class MaxGalleriaMediaLib {
     $this->wp_version = get_bloginfo('version'); 
 	  $this->base_url_length = strlen($this->upload_dir['baseurl']) + 1;
     
+    $this->uploads_folder_name = get_option(MAXGALLERIA_MEDIA_LIBRARY_UPLOAD_FOLDER_NAME, "uploads");      
+    $this->uploads_folder_name_length = strlen($this->uploads_folder_name);
+        
     //convert theme mods into an array
     $theme_mods = get_theme_mods();
     $this->theme_mods = json_decode(json_encode($theme_mods), true);
@@ -40,7 +43,7 @@ class MaxGalleriaMediaLib {
 
 	public function set_global_constants() {	
 		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_KEY', 'maxgalleria_media_library_version');
-		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.3.4');
+		define('MAXGALLERIA_MEDIA_LIBRARY_VERSION_NUM', '4.3.7');
 		define('MAXGALLERIA_MEDIA_LIBRARY_IGNORE_NOTICE', 'maxgalleria_media_library_ignore_notice');
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 		define('MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_DIR', WP_PLUGIN_DIR . '/' . MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_NAME);
@@ -186,12 +189,16 @@ class MaxGalleriaMediaLib {
 		</script>
   <?php
   
-    global $current_screen;
+    global $pagenow, $current_screen;
   		
     if(isset($_REQUEST['page'])) {
-      if($_REQUEST['page'] === 'media-library-folders' || 
-				 $_REQUEST['page'] === 'mlp-support' ||
-				 $_REQUEST['page'] === 'search-library') {
+      
+      if($_REQUEST['page'] === 'media-library-folders' 
+				|| $_REQUEST['page'] === 'mlp-support' 
+				|| $_REQUEST['page'] === 'mlfp-settings' 
+				|| $_REQUEST['page'] === 'image-seo' 
+				|| $_REQUEST['page'] === 'mlp-regenerate-thumbnails' 
+				|| $_REQUEST['page'] === 'search-library' ) {
         wp_enqueue_style('thickbox');
         wp_enqueue_style('maxgalleria-media-library', MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_URL . '/maxgalleria-media-library.css');
         //wp_enqueue_style('foundation', MAXGALLERIA_MEDIA_LIBRARY_PLUGIN_URL . '/libs/foundation/foundation.min.css');    
@@ -238,6 +245,7 @@ class MaxGalleriaMediaLib {
     if (isset( $current_screen ) && 
         $current_screen->base != 'all-import_page_pmxi-admin-import' && 
         $current_screen->base != 'all-import_page_pmxi-admin-manage' &&
+        $current_screen->post_type != 'acf-field-group' &&
         $current_screen->base != 'pmxi-admin-manage' && 
         $current_screen->base != 'pmxi-admin-import') {
       
@@ -472,7 +480,8 @@ class MaxGalleriaMediaLib {
     
   }
     
-  public function upload_attachment () {
+  public function upload_attachment () {   
+    global $is_IIS;
                   
     if ( !wp_verify_nonce( $_POST['nonce'], MAXGALLERIA_MEDIA_LIBRARY_NONCE)) {
       exit(__('missing nonce!','maxgalleria-media-library'));
@@ -518,6 +527,9 @@ class MaxGalleriaMediaLib {
  			$title_text = $_FILES['file']['name'];    
       $new_filename = wp_unique_filename( $destination, $_FILES['file']['name'], null );
       
+      if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
+			  $destination = rtrim($destination, '\\');
+      
       $filename = $destination . DIRECTORY_SEPARATOR . $new_filename;
       if( move_uploaded_file($_FILES['file']['tmp_name'], $filename) ) {
         
@@ -538,6 +550,7 @@ class MaxGalleriaMediaLib {
       
   public function add_new_attachment($filename, $folder_id, $title_text="", $alt_text="", $seo_title_text="") {
 
+    global $is_IIS;
     $parent_post_id = 0;
     remove_action( 'add_attachment', array($this,'add_attachment_to_folder'));
 
@@ -599,7 +612,10 @@ class MaxGalleriaMediaLib {
     require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
     // Generate the metadata for the attachment, and update the database record.
-    $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+      if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
+        $attach_data = wp_generate_attachment_metadata( $attach_id, addslashes($filename));
+      else
+        $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
         
     wp_update_attachment_metadata( $attach_id, $attach_data );
 
@@ -734,15 +750,28 @@ ORDER by ID";
   }
 
   private function get_folders($path) {
+    //error_log("get_folders");
     $sub_folders = explode('/', $path);
-    while( $sub_folders[0] !== $this->uploads_folder_name )
+    //error_log(print_r($sub_folders));
+    //error_log("uploads_folder_name " . $this->uploads_folder_name);
+    while( $sub_folders[0] !== $this->uploads_folder_name ) {
       array_shift($sub_folders);
+      //error_log(print_r($sub_folders));
+    } 
     
     if($sub_folders[0] === $this->uploads_folder_name) 
       array_shift($sub_folders);
       
     return $sub_folders;
   }
+  
+  private function get_folders2($path) {
+    $sub_folders = explode('/', $path);
+    foreach($sub_folders as $id => $folderName)
+      if ( $folderName === $this->uploads_folder_name )
+        return array_slice($sub_folders, $id+1);
+    return array();
+  }  
   
   private function folder_exist($folder_path) {
     
@@ -833,25 +862,36 @@ and pm.meta_key = '_wp_attached_file'";
 	}
 
 	public function show_mlp_admin_notice() {
-    global $current_user;
+    global $current_user;  
     
-    $review = get_user_meta( $current_user->ID, MAXGALLERIA_MLP_REVIEW_NOTICE, true );
-    if( $review !== 'off') {
-      if($review === '') {
-				//show review notice after three days
-        $review_date = date('Y-m-d', strtotime("+3 days"));        
-        update_user_meta( $current_user->ID, MAXGALLERIA_MLP_REVIEW_NOTICE, $review_date );
-				
-				//show notice if not found
-        //add_action( 'admin_notices', array($this, 'mlp_review_notice' ));            
-			} else {
-        $now = date("Y-m-d"); 
-        $review_time = strtotime($review);
-        $now_time = strtotime($now);
-        if($now_time > $review_time)
-          add_action( 'admin_notices', array($this, 'mlp_review_notice' ));
+    if(isset($_REQUEST['page'])) {
+    
+      if($_REQUEST['page'] == 'media-library-folders' 
+          || $_REQUEST['page'] === 'mlp-support' 
+          || $_REQUEST['page'] === 'mlfp-settings' 
+          || $_REQUEST['page'] === 'image-seo' 
+          || $_REQUEST['page'] === 'mlp-regenerate-thumbnails' 
+          || $_REQUEST['page'] === 'search-library' ) {
+
+        $review = get_user_meta( $current_user->ID, MAXGALLERIA_MLP_REVIEW_NOTICE, true );
+        if( $review !== 'off') {
+          if($review === '') {
+            //show review notice after three days
+            $review_date = date('Y-m-d', strtotime("+3 days"));        
+            update_user_meta( $current_user->ID, MAXGALLERIA_MLP_REVIEW_NOTICE, $review_date );
+
+            //show notice if not found
+            //add_action( 'admin_notices', array($this, 'mlp_review_notice' ));            
+          } else {
+            $now = date("Y-m-d"); 
+            $review_time = strtotime($review);
+            $now_time = strtotime($now);
+            if($now_time > $review_time)
+              add_action( 'admin_notices', array($this, 'mlp_review_notice' ));
+          }
+        }
       }
-    }          
+    }
 	}
     
   public function media_library() {
@@ -1627,8 +1667,14 @@ order by folder_id";
 						if($row->folder_id === '0') {
 							$folder['parent'] = '#';
 							//$folder['children'] = true;
-						} else
-							$folder['parent'] = $row->folder_id;
+						} else {
+						  // check if parent folder even exists
+						  $sql = "select ID from {$wpdb->prefix}posts
+						    where ID = {$row->folder_id} and post_type = '".MAXGALLERIA_MEDIA_LIBRARY_POST_TYPE."'";
+						  if (count($wpdb->get_results($sql)) == 0)
+						    continue;
+						  $folder['parent'] = $row->folder_id;
+						}
 
 						$folder['text'] = $row->post_title;
 						$state = array();
@@ -1710,7 +1756,7 @@ order by folder_id";
     //error_log("Last check: " . $folder_check_seconds . " : " . "Current time: " .  $currnet_date_time_seconds);
     
     if($folder_check_seconds < $currnet_date_time_seconds) {
-      error_log("checking folders $currnet_date_time");
+      //error_log("checking folders $currnet_date_time");
       $this->admin_check_for_new_folders(true);
 			update_option('mlf-folder-check', $currnet_date_time, true);
     }		
@@ -1730,7 +1776,8 @@ order by folder_id";
 //order by $order_by";		
 //            $rows = $wpdb->get_results($sql);
     
-    $this->new_folder_check();
+    if(!defined('SKIP_AUTO_FOLDER_CHECK'))
+      $this->new_folder_check();
     
     $folder_parents = $this->get_parents($current_folder_id);
     $folder_table = $wpdb->prefix . MAXGALLERIA_MEDIA_LIBRARY_FOLDER_TABLE;
@@ -1954,7 +2001,6 @@ function handleTreeDropEvent(event, ui ) {
 		
 	//var serial_copy_ids = JSON.stringify(move_ids.join());
 	var folder_id = jQuery(target).attr("aria-activedescendant");	
-	var destination = '';
 	var current_folder = jQuery("#current-folder-id").val();      
 	
 	var action_name = 'move_media';
@@ -1975,8 +2021,6 @@ function handleTreeDropEvent(event, ui ) {
 function delete_current_folder(node) {
 	var folder_id = jQuery(target).attr("aria-activedescendant");	
 	//console.log(folder_id);
-					
-	
 }
 
 function process_mc_data(phase, folder_id, action_name, parent_folder, serial_copy_ids) {
@@ -2259,7 +2303,7 @@ AND meta_key = '_wp_attached_file'";
     $new_folder_url = $this->get_file_url_for_copy($new_folder_path);
 		$this->write_log("new_folder_url $new_folder_url");
 		
-		$this->write_log("Trying to create directory at $new_folder_path");
+		$this->write_log("Trying to create directory at $new_folder_path, $parent_folder_id, $new_folder_url");
     
     if(!file_exists($new_folder_path)) {
       if(mkdir($new_folder_path)) {
@@ -2303,8 +2347,6 @@ AND meta_key = '_wp_attached_file'";
 		
 		$baseurl = $this->upload_dir['baseurl'];
 		
-		//error_log("starting url: $url");
-		
 		if(is_multisite()) {
 			$url_slug = "site" . $blog_id . "/";
 			$baseurl = str_replace($url_slug, "", $baseurl);
@@ -2317,10 +2359,10 @@ AND meta_key = '_wp_attached_file'";
     //$file_path = str_replace( $this->upload_dir['baseurl'], $this->upload_dir['basedir'], $url ); 
     $file_path = str_replace( $baseurl, $this->upload_dir['basedir'], $url ); 
 		
-		$this->write_log("url $url");
-		$this->write_log("baseurl "  . $this->upload_dir['baseurl']);
-		$this->write_log("basedir " . $this->upload_dir['basedir']);
-		$this->write_log("file_path $file_path");
+		//$this->write_log("url $url");
+		//$this->write_log("baseurl "  . $this->upload_dir['baseurl']);
+		//$this->write_log("basedir " . $this->upload_dir['basedir']);
+		//$this->write_log("file_path $file_path");
 				
 		//first attempt failed; try again
 		if((strpos($file_path, "http:") !== false) || (strpos($file_path, "https:") !== false)) {	
@@ -2342,34 +2384,42 @@ AND meta_key = '_wp_attached_file'";
 		}
 		    
     // are we on windows?
-    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
       $file_path = str_replace('/', '\\', $file_path);
     }
 		
-		$this->write_log("file_path 2 $file_path");
+		//$this->write_log("file_path 2 $file_path");
 				
     return $file_path;
   }
   
   public function is_windows() {
 		global $is_IIS;
-    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') 
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
       return true;
     else
       return false;      
   }
   
   public function get_file_url($path) {
-    
 		global $is_IIS;
     
-    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+    //error_log("uploads_folder_name " . $this->uploads_folder_name);
+        
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
       
       $base_url = $this->upload_dir['baseurl'];
+      
+      $position = strpos($path, $this->uploads_folder_name);
+      $relative_path = substr($path, $position+$this->uploads_folder_name_length+1);
+
+      $file_url = $base_url . '/' . $relative_path;
+      $file_url = str_replace('\\', '/', $file_url);      
+              
       // replace any slashes in the dir path when running windows
-      $base_upload_dir1 = $this->upload_dir['basedir'];
-      $base_upload_dir2 = str_replace('\\', '/', $base_upload_dir1);      
-      $file_url = str_replace( $base_upload_dir2, $base_url, $path ); 
+      //$base_upload_dir1 = $this->upload_dir['basedir'];
+      //$base_upload_dir2 = str_replace('\\', '/', $base_upload_dir1);      
+      //$file_url = str_replace( $base_upload_dir2, $base_url, $path ); 
     }
     else {
       $file_url = str_replace( $this->upload_dir['basedir'], $this->upload_dir['baseurl'], $path );          
@@ -2380,7 +2430,7 @@ AND meta_key = '_wp_attached_file'";
   public function get_file_url_for_copy($path) {
 		global $is_IIS;
     
-    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
       
       $base_url = $this->upload_dir['baseurl'];
       
@@ -2409,7 +2459,7 @@ AND meta_key = '_wp_attached_file'";
     if ((isset($_POST['serial_delete_ids'])) && (strlen(trim($_POST['serial_delete_ids'])) > 0)) {
       $delete_ids = trim(stripslashes(strip_tags($_POST['serial_delete_ids'])));
       $delete_ids = str_replace('"', '', $delete_ids);
-		  $this->write_log("delete_ids $delete_ids");
+		  //$this->write_log("delete_ids $delete_ids");
       $delete_ids = explode(",",$delete_ids);
     }  
     else
@@ -2474,7 +2524,7 @@ AND pm.meta_key = '_wp_attached_file'";
           //$this->display_folder_contents ($parent_folder);
 					//$this->display_folder_nav($parent_folder, $folder_table);
 					//error_log('display_folder_nav');
-					$folders = $this->get_folder_data($parent_folder);
+					//$folders = $this->get_folder_data($parent_folder);
 					
           $message = __('The folder was deleted.','maxgalleria-media-library');
 					$folders = $this->get_folder_data($parent_folder);
@@ -2669,7 +2719,7 @@ AND pm.meta_key = '_wp_attached_file'";
 //    echo '  <div class="media-plus-toolbar wp-filter"><div class="media-toolbar-secondary">' . PHP_EOL;
     echo '  <div class="media-plus-toolbar wp-filter">' . PHP_EOL;
     echo '<div id="mgmlp-title-area">' . PHP_EOL;
-    echo '  <h2 class="mgmlp-title">Media Library Folders Search Results</h2>' . PHP_EOL;
+		echo '  <h2 class="mgmlp-title">'. __('Media Library Folders Search Results','maxgalleria-media-library') . '</h2>' . PHP_EOL;
     echo '  <div>' . PHP_EOL;
     echo '  <span id="back-wraper"><a href="' . site_url() . '/wp-admin/admin.php?page=media-library-folders">' . __('Back to Media Library Folders','maxgalleria-media-library') . '</a></span>' . PHP_EOL;
     echo '  <span id="search-wrap"><input type="search" placeholder="Search" id="mgmlp-media-search-input" class="search"></span>' . PHP_EOL;            
@@ -2780,7 +2830,7 @@ AND pm.meta_key = '_wp_attached_file'";
   
   public function maxgalleria_rename_image() {
     
-    global $wpdb, $blog_id;
+    global $wpdb, $blog_id, $is_IIS;
     
     if ( !wp_verify_nonce( $_POST['nonce'], MAXGALLERIA_MEDIA_LIBRARY_NONCE)) {
       exit(__('missing nonce!','maxgalleria-media-library'));
@@ -2867,7 +2917,12 @@ AND pm.meta_key = '_wp_attached_file'";
 
         foreach($metadata['sizes'] as $source_path) {
           $thumbnail_file = $path_to_thumbnails . DIRECTORY_SEPARATOR . $source_path['file'];
-          unlink($thumbnail_file);
+          
+          if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
+            $thumbnail_file = str_replace('/', '\\', $thumbnail_file);
+          
+          if(file_exists($thumbnail_file))
+            unlink($thumbnail_file);
         }  
         
         //foreach (glob($old_file_path) as $source_path) {
@@ -2906,6 +2961,8 @@ AND pm.meta_key = '_wp_attached_file'";
         wp_update_attachment_metadata( $file_id, $attach_data );
 														
 				$replace_sql = "UPDATE {$wpdb->prefix}posts SET `post_content` = REPLACE (`post_content`, '$rename_image_location', '$rename_destination');";
+          
+        $replace_sql = str_replace ( '/', '\//', $replace_sql);
 				$result = $wpdb->query($replace_sql);
 				//error_log($replace_sql);
 				
@@ -2970,7 +3027,6 @@ AND pm.meta_key = '_wp_attached_file'";
   public function admin_check_for_new_folders($noecho = null) {
     
 		global $blog_id, $is_IIS;
-
 		$skip_path = "";
     $uploads_path = wp_upload_dir();
     
@@ -3010,7 +3066,7 @@ AND pm.meta_key = '_wp_attached_file'";
 							$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 							// fix slashes if running windows
-            if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+              if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
 								$url = str_replace('\\', '/', $url);      
 							}
 
@@ -3021,7 +3077,8 @@ AND pm.meta_key = '_wp_attached_file'";
 										if(!$noecho)
 											echo __('Adding','maxgalleria-media-library') . " $url<br>";
 										$parent_id = $this->find_parent_id($url);
-										$this->add_media_folder($dir_name, $parent_id, $url);
+                    if($parent_id)
+										  $this->add_media_folder($dir_name, $parent_id, $url);
 									} else {
 										$skip_path = $name;
 									}
@@ -3038,7 +3095,7 @@ AND pm.meta_key = '_wp_attached_file'";
 								$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 								// fix slashes if running windows
-                if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+                if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
 									$url = str_replace('\\', '/', $url);      
 								}
 
@@ -3049,34 +3106,46 @@ AND pm.meta_key = '_wp_attached_file'";
 											if(!$noecho)
 												echo __('Adding','maxgalleria-media-library') . " $url<br>";
 											$parent_id = $this->find_parent_id($url);
-											$this->add_media_folder($dir_name, $parent_id, $url);
+                      if($parent_id)
+											  $this->add_media_folder($dir_name, $parent_id, $url);
+											} else {
+												$skip_path = $name;									
+												//error_log("skip_path $skip_path");
+											}
+										} else {
+											$skip_path = $name;									
+												//error_log("skip_path $skip_path");
 										}
-									} else {
-										$skip_path = $name;									
-									}
-								}																
+									}																
 							} else {
 								if(strpos($name,"uploads/sites/$blog_id") !== false) {
 									$upload_pos = strpos($name, $uploads_folder);
 									$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 									// fix slashes if running windows
-									if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+                  if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
 										$url = str_replace('\\', '/', $url);      
 									}
 
-									if($this->folder_exist($url) === false) {
-										$folder_found = true;
-										if(!$noecho)
-											echo __('Adding','maxgalleria-media-library') . " $url<br>";
-										$parent_id = $this->find_parent_id($url);
-										$this->add_media_folder($dir_name, $parent_id, $url);              
-									}																
-								}
-							}
-						}
-          }  
-				}
+										if($this->folder_exist($url) === false) {											
+											if(!in_array($dir_name, $folders_to_hide)) {
+												if(!file_exists($name . DIRECTORY_SEPARATOR . 'mlpp-hidden' )){																						
+													$folder_found = true;
+													if(!$noecho)
+														echo __('Adding','maxgalleria-media-library') . " $url<br>";
+													$parent_id = $this->find_parent_id($url);
+											    if($parent_id)
+													  $this->add_media_folder($dir_name, $parent_id, $url);              
+												}
+											} else {
+												$skip_path = $name;									
+											}
+										}																
+                  }
+                }
+              }
+            }  
+          }
         }  
       }      
       if(!$folder_found) {
@@ -3097,7 +3166,7 @@ AND pm.meta_key = '_wp_attached_file'";
 		$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 		// fix slashes if running windows
-    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
 			$url = str_replace('\\', '/', $url);      
 		}
 
@@ -3107,7 +3176,8 @@ AND pm.meta_key = '_wp_attached_file'";
 				echo __('Adding','maxgalleria-media-library') . " $url<br>";
 			}	
 			$parent_id = $this->find_parent_id($url);
-			$this->add_media_folder($dir_name, $parent_id, $url);              
+			if($parent_id)
+			  $this->add_media_folder($dir_name, $parent_id, $url);              
 		}
 		return $folder_found;
 	}
@@ -3302,7 +3372,7 @@ and meta_key = '_wp_attached_file'";
 							$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 							// fix slashes if running windows
-							if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+              if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
 								$url = str_replace('\\', '/', $url);      
 							}
 
@@ -3334,7 +3404,7 @@ and meta_key = '_wp_attached_file'";
 								$url = $uploads_url . substr($name, ($upload_pos+$uploads_length));
 
 								// fix slashes if running windows
-                if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+                if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
 									$url = str_replace('\\', '/', $url);      
 								}
 
@@ -3370,7 +3440,7 @@ and meta_key = '_wp_attached_file'";
 									//error_log("uploads_url $uploads_url");
 
 									// fix slashes if running windows
-									if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+                  if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' ) {
 										$url = str_replace('\\', '/', $url);      
 									}
 									$existing_folder_id = $this->folder_exist($url);
@@ -3746,7 +3816,7 @@ and meta_key = '_wp_attached_file'";
 			
 	public function regen_mlp_thumbnails() {
 		
-    global $wpdb;
+    global $wpdb, $is_IIS;
         
     if ( !wp_verify_nonce( $_POST['nonce'], MAXGALLERIA_MEDIA_LIBRARY_NONCE)) {
       exit(__('missing nonce!','maxgalleria-media-library'));
@@ -3778,6 +3848,9 @@ and meta_key = '_wp_attached_file'";
 				@set_time_limit( 300 ); 
 
 				// regenerate the thumbnails
+        if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
+				  $metadata = wp_generate_attachment_metadata( $image_id, addslashes($image_path));
+        else
 				$metadata = wp_generate_attachment_metadata( $image_id, $image_path );
 
 				// check for errors
@@ -4030,6 +4103,9 @@ and meta_key = '_wp_attached_file'";
 
 	// Process a single image ID (this is an AJAX handler)
 	public function ajax_process_image() {
+    
+    global $is_IIS;
+    
 		@error_reporting( 0 ); // Don't break the JSON result
 
 		header( 'Content-type: application/json' );
@@ -4050,7 +4126,10 @@ and meta_key = '_wp_attached_file'";
 
 		@set_time_limit( 900 ); // 5 minutes per image should be PLENTY
 
-		$metadata = wp_generate_attachment_metadata( $image->ID, $fullsizepath );
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
+		  $metadata = wp_generate_attachment_metadata( $image->ID, addslashes($fullsizepath));
+    else
+		  $metadata = wp_generate_attachment_metadata( $image->ID, $fullsizepath );
 
 		if ( is_wp_error( $metadata ) )
 			$this->die_json_error_msg( $image->ID, $metadata->get_error_message() );
@@ -4062,7 +4141,6 @@ and meta_key = '_wp_attached_file'";
 
 		die( json_encode( array( 'success' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) was successfully resized in %3$s seconds.', 'maxgalleria-media-library' ), esc_html( get_the_title( $image->ID ) ), $image->ID, timer_stop() ) ) ) );
 	}
-
 
 	// Helper to make a JSON error message
 	public function die_json_error_msg( $id, $message ) {
@@ -4580,7 +4658,7 @@ and meta_key = '_wp_attached_file'";
         
     update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH_ID, $parent_folder);
     
-    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN')    
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
       update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH, str_replace('\\', '\\\\', $folder_path));
     else
       update_user_meta($user_id, MAXG_SYNC_FOLDER_PATH, $folder_path);
@@ -4754,7 +4832,7 @@ and meta_key = '_wp_attached_file'";
     
     $destination_folder = $this->get_folder_path($folder_id);
         
-    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN')  
+    if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
       update_user_meta($user_id, MAXG_MC_DESTINATION_FOLDER, str_replace('\\', '\\\\', $destination_folder));
     else
       update_user_meta($user_id, MAXG_MC_DESTINATION_FOLDER, $destination_folder);
@@ -4850,13 +4928,13 @@ and meta_key = '_wp_attached_file'";
   
   public function move_copy_file($copy, $copy_id, $folder_id, $current_folder, $user_id) {
     
-    global $wpdb;
+    global $wpdb, $is_IIS;
 		$message = "";
 		$files = "";
 		$refresh = false;
     
     $destination = get_user_meta($user_id, MAXG_MC_DESTINATION_FOLDER, true);
-        
+    
     $sql = "select meta_value as attached_file
 from {$wpdb->prefix}postmeta 
 where post_id = $copy_id    
@@ -4867,7 +4945,7 @@ AND meta_key = '_wp_attached_file'";
     $baseurl = $this->upload_dir['baseurl'];
     $baseurl = rtrim($baseurl, '/') . '/';
     $image_location = $baseurl . ltrim($row->attached_file, '/');
-
+    
     $image_path = $this->get_absolute_path($image_location);
 
     $destination_path = $this->get_absolute_path($destination);
@@ -4877,7 +4955,7 @@ AND meta_key = '_wp_attached_file'";
     $basename = pathinfo($image_path, PATHINFO_BASENAME);
 
     $destination_name = $destination_path . DIRECTORY_SEPARATOR . $basename;
-
+    
     $copy_status = true;
 
     if(file_exists($image_path)) {
@@ -4987,7 +5065,10 @@ AND meta_key = '_wp_attached_file'";
                 update_post_meta( $copy_id, '_wp_attached_file', $uploads_location );
 
                 // update _wp_attachment_metadata
-                $attach_data = wp_generate_attachment_metadata( $copy_id, $destination_name );										
+                if ($is_IIS || strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' || strtoupper(substr(PHP_OS, 0, 13)) == 'MICROSOFT-IIS' )
+                  $attach_data = wp_generate_attachment_metadata( $copy_id, addslashes($destination_name));										
+                else
+                  $attach_data = wp_generate_attachment_metadata( $copy_id, $destination_name );										
                 wp_update_attachment_metadata( $copy_id,  $attach_data );
 
                 // update posts and pages
@@ -4996,7 +5077,11 @@ AND meta_key = '_wp_attached_file'";
                 //echo __('Updating post links, please wait...','maxgalleria-media-library') . PHP_EOL;
                 $replace_sql = "UPDATE {$wpdb->prefix}posts SET `post_content` = REPLACE (`post_content`, '$replace_image_location', '$replace_destination_url');";
                 $result = $wpdb->query($replace_sql);
-
+                
+                $replace_sql = str_replace ( '/', '\//', $replace_sql);
+                //error_log($replace_sql);
+                $result = $wpdb->query($replace_sql);
+                
                 $message .= __('Updating attachment links, please wait...','maxgalleria-media-library') . PHP_EOL;
                 $files = $this->display_folder_contents ($current_folder, true, "", false);
                 $refresh = true;
