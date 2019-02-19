@@ -48,7 +48,7 @@ const {
 } = ChattyMangoTagGroupsGlobal;
 
 const helpUrl = 'https://documentation.chattymango.com/documentation/';
-const helpProduct = 'tag-groups';
+const helpProduct = 'tag-groups-premium';
 const helpComponent = 'tabbed-tag-cloud/tabbed-tag-cloud-parameters/';
 const logoUrl = pluginUrl + '/images/cm-tg-icon-64x64.png';
 
@@ -771,7 +771,7 @@ var cmTagGroupsTabsBlock = registerBlockType( 'chatty-mango/tag-groups-cloud-tab
     },
     add_premium_filter: {// configurable in block
       type: 'integer',
-      default: 1
+      default: 0
     },
     amount: {// configurable in block
       type: 'integer',

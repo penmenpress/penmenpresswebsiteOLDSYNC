@@ -1,10 +1,10 @@
 === Tag Groups ===
 Contributors: camthor
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FD5ZU4EEBGSC8
-Tags: tag, tags, tag cloud, tabs, accordion, taxonomy, woocommerce
+Tags: cloud, tags, tag cloud, tabs, accordion, taxonomy, tag, woocommerce
 Requires at least: 4.0
-Tested up to: 5.0.2
-Stable tag: 0.41.0
+Tested up to: 5.1.0
+Stable tag: 0.42.0
 Requires PHP: 5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -123,6 +123,20 @@ No, unfortunately it isn't. But, nevertheless, I'm glad you asked! You are warml
 This plugin does not collect or process any personal user data.
 
 == Changelog ==
+
+= 0.42 =
+
+FEATURES
+
+* Added Gutenberg block for alphabetical tag cloud
+
+BUG FIXES
+
+* Fixed wrong default taxonomies in tabbed tag clouds.
+
+OTHER
+
+* Added shortcode [tag_groups_alphabet_tabs] to help screen in the settings.
 
 = 0.41.0 =
 

@@ -1,5 +1,5 @@
 /**
-* BLOCK: chatty-mango-guten-tag-accorion
+* BLOCK: tag-groups-alphabet-tabs
 *
 *
 * @package     Tag Groups
@@ -32,10 +32,13 @@ const {
   SelectControl,
   PanelBody,
   ToggleControl,
-  RangeControl
+  RangeControl,
+  ServerSideRender
 } = wp.components;
 
-const { Component } = wp.element;
+const {
+  Component,
+} = wp.element;
 
 const {
   siteUrl,
@@ -46,8 +49,9 @@ const {
 
 const helpUrl = 'https://documentation.chattymango.com/documentation/';
 const helpProduct = 'tag-groups-premium';
-const helpComponent = 'accordion-tag-cloud/accordion-tag-cloud-parameters/';
+const helpComponent = 'alphabetical-tag-cloud/alphabetical-tag-cloud-parameters/';
 const logoUrl = pluginUrl + '/images/cm-tg-icon-64x64.png';
+
 
 class TagGroupsHelp extends Component {
   render() {
@@ -72,27 +76,20 @@ class TagGroupsHelp extends Component {
 }
 
 
-class tagGroupsAccordionCloudParameters extends Component {
+class tagGroupsAlphabeticalCloudParameters extends Component {
 
   // Method for setting the initial state.
   static getInitialState( attributes ) {
-    let selectedGroups = []; // empty means all
     let selectedTaxonomies = ['post_tag'];
 
-    // We need arrays for the select elements.
-    if ( attributes.include ) {
-      selectedGroups = attributes.include.split(",")
-    }
 
     if ( attributes.taxonomy ) {
       selectedTaxonomies = attributes.taxonomy.split(",")
     }
 
     return {
-      groups: [],
       taxonomies: [],
       posts: [],
-      selectedGroups: selectedGroups, // array representation
       selectedTaxonomies: selectedTaxonomies, // array representation
     };
   }
@@ -103,59 +100,27 @@ class tagGroupsAccordionCloudParameters extends Component {
   constructor() {
     super( ...arguments );
 
-    this.groupsEndPoint = siteUrl + '/wp-json/tag-groups/v1/groups';
-    // this.termsEndPoint = siteUrl + '/wp-json/tag-groups/v1/terms';
+    this.termsEndPoint = siteUrl + '/wp-json/tag-groups/v1/terms';
     this.taxonomiesEndPoint = siteUrl + '/wp-json/tag-groups/v1/taxonomies';
 
     this.state = this.constructor.getInitialState( this.props.attributes );
 
     // Bind so we can use 'this' inside the method.
-    this.getGroupsFromApi = this.getGroupsFromApi.bind( this );
     this.getTaxonomiesFromApi = this.getTaxonomiesFromApi.bind( this );
     this.getPostsFromApi = this.getPostsFromApi.bind( this );
-    this.handleChangeInclude = this.handleChangeInclude.bind( this );
     this.handleChangeTaxonomy = this.handleChangeTaxonomy.bind( this );
     this.toggleOptionActive = this.toggleOptionActive.bind( this );
     this.toggleOptionCollapsible = this.toggleOptionCollapsible.bind( this );
     this.toggleOptionMouseover = this.toggleOptionMouseover.bind( this );
     this.toggleOptionHideEmpty = this.toggleOptionHideEmpty.bind( this );
     this.toggleOptionAdjustSeperatorSize = this.toggleOptionAdjustSeperatorSize.bind( this );
-    this.toggleOptionAddPremiumFilter = this.toggleOptionAddPremiumFilter.bind( this );
-    this.toggleOptionHideEmptyContent = this.toggleOptionHideEmptyContent.bind( this );
-    this.toggleOptionShowAccordion = this.toggleOptionShowAccordion.bind( this );
+    this.toggleOptionHideEmptyTabs = this.toggleOptionHideEmptyTabs.bind( this );
     this.toggleOptionShowTagCount = this.toggleOptionShowTagCount.bind( this );
 
     // Load data from REST API.
-    this.getGroupsFromApi();
     this.getTaxonomiesFromApi();
     this.getPostsFromApi();
-  }
 
-
-  handleChangeInclude( options ) {
-    let selectedGroups = options.map( function( option ) {
-      if ( ! isNaN( option.value ) ) {
-        return option.value;
-      }
-    });
-
-    // Set the state
-    this.setState( { selectedGroups: selectedGroups } );
-
-    // Set the attributes
-    this.props.setAttributes( {
-      include: selectedGroups.join(',')
-    } );
-
-    if ( selectedGroups.indexOf(0) > -1 ) {
-      this.props.setAttributes( {
-        show_not_assigned: 1
-      } );
-    } else {
-      this.props.setAttributes( {
-        show_not_assigned: 0
-      } );
-    }
   }
 
 
@@ -172,19 +137,6 @@ class tagGroupsAccordionCloudParameters extends Component {
     // Set the attributes
     this.props.setAttributes( {
       taxonomy: selectedTaxonomies.join(',')
-    });
-  }
-
-
-  /**
-  * Loading Groups
-  */
-  getGroupsFromApi() {
-    // retrieve the groups
-    apiFetch( { path: this.groupsEndPoint } ).then( groups => {
-      if ( groups ) {
-        this.setState({ groups });
-      }
     });
   }
 
@@ -224,21 +176,6 @@ class tagGroupsAccordionCloudParameters extends Component {
   }
 
 
-  /**
-  * Loading Groups
-  */
-  getGroupsFromApi() {
-    // retrieve the groups
-    jQuery.getJSON(
-      this.groupsEndPoint,
-      ( groups ) => {
-        if ( groups ) {
-          this.setState({ groups });
-        }
-      }
-    );
-  }
-
   toggleOptionActive() {
     let active = ( 1 === this.props.attributes.active ) ? 0 : 1;
     this.props.setAttributes( { active } );
@@ -264,19 +201,9 @@ class tagGroupsAccordionCloudParameters extends Component {
     this.props.setAttributes( { adjust_separator_size } );
   }
 
-  toggleOptionAddPremiumFilter( key ) {
-    let add_premium_filter = ( 1 === this.props.attributes.add_premium_filter ) ? 0 : 1;
-    this.props.setAttributes( { add_premium_filter } );
-  }
-
-  toggleOptionHideEmptyContent( ) {
-    let hide_empty_content = ( 1 === this.props.attributes.hide_empty_content ) ? 0 : 1;
-    this.props.setAttributes( { hide_empty_content } );
-  }
-
-  toggleOptionShowAccordion( ) {
-    let show_accordion = ( 1 === this.props.attributes.show_accordion ) ? 0 : 1;
-    this.props.setAttributes( { show_accordion } );
+  toggleOptionHideEmptyTabs( ) {
+    let hide_empty_tabs = ( 1 === this.props.attributes.hide_empty_tabs ) ? 0 : 1;
+    this.props.setAttributes( { hide_empty_tabs } );
   }
 
   toggleOptionShowTagCount( ) {
@@ -292,7 +219,6 @@ class tagGroupsAccordionCloudParameters extends Component {
 
     const {
       active,
-      add_premium_filter,
       adjust_separator_size,
       amount,
       append,
@@ -301,36 +227,26 @@ class tagGroupsAccordionCloudParameters extends Component {
       custom_title,
       div_class,
       div_id,
-      groups_post_id,
-      header_class,
-      heightstyle,
+      exclude_letters,
       hide_empty,
-      hide_empty_content,
-      inner_div_class,
+      hide_empty_tabs,
+      include_letters,
       largest,
       link_append,
       link_target,
       mouseover,
-      not_assigned_name,
       order,
       orderby,
       prepend,
       separator,
       separator_size,
-      show_not_assigned,
       show_tag_count,
-      show_accordion,
       smallest,
       tags_post_id,
+      ul_class
     } = attributes;
 
-    let optionsGroups = [], optionsTaxonomies = [];
-
-    if( this.state.groups && this.state.groups.length > 0 ) {
-      this.state.groups.forEach( ( group ) => {
-        optionsGroups.push({ value:group.term_group, label:group.label });
-      });
-    }
+    let optionsTaxonomies = [];
 
     if( this.state.taxonomies && this.state.taxonomies.length > 0 ) {
       this.state.taxonomies.forEach( ( taxonomy ) => {
@@ -378,7 +294,7 @@ class tagGroupsAccordionCloudParameters extends Component {
               />
               <TagGroupsHelp topic="amount"/>
               <RangeControl
-  							label={ __( 'Amount of tags per group' ) + ( amount == 0 ? ': ' + __( 'unlimited' ) : '' ) }
+  							label={ __( 'Tags per group' ) + ( amount == 0 ? ': ' + __( 'unlimited' ) : '' ) }
   							value={ amount ? Number( amount ) : 0 }
   							onChange={ ( amount ) => setAttributes( { amount } ) }
   							min={ 0 }
@@ -443,15 +359,15 @@ class tagGroupsAccordionCloudParameters extends Component {
                   />
                   { ! adjust_separator_size &&
                     <div>
-                      <TagGroupsHelp topic="separator_size"/>
-                      <RangeControl
-          							label={ __( 'Separator size' ) }
-          							value={ separator_size ? Number( separator_size ) : 22 }
-          							onChange={ ( separator_size ) => setAttributes( { separator_size } ) }
-          							min={ 6 }
-          							max={ 144 }
-                      />
-                    </div>
+                    <TagGroupsHelp topic="separator_size"/>
+                    <RangeControl
+        							label={ __( 'Separator size' ) }
+        							value={ separator_size ? Number( separator_size ) : 22 }
+        							onChange={ ( separator_size ) => setAttributes( { separator_size } ) }
+        							min={ 6 }
+        							max={ 144 }
+                    />
+                  </div>
                   }
                 </div>
               }
@@ -485,7 +401,7 @@ class tagGroupsAccordionCloudParameters extends Component {
                 <div>
               <TagGroupsHelp topic="show_tag_count"/>
                 <ToggleControl
-                  label={ __( 'Show the post count in the tooltip' ) }
+                  label={ __( 'Show post count in the tooltip' ) }
                   checked={ show_tag_count }
                   onChange={ this.toggleOptionShowTagCount }
                 />
@@ -521,7 +437,7 @@ class tagGroupsAccordionCloudParameters extends Component {
               />
               <div>
               <label htmlFor="tg_input_link_append">
-  						{ __( 'Append to the link' ) }
+  						{ __( 'Append to link' ) }
               </label>
               </div>
               <PlainText
@@ -531,16 +447,6 @@ class tagGroupsAccordionCloudParameters extends Component {
     						placeholder={ __( 'Write here or leave empty.' ) }
     						onChange={ ( link_append ) => setAttributes( { link_append } ) }
               />
-              { hasPremium &&
-                <div>
-                <TagGroupsHelp topic="add_premium_filter"/>
-                <ToggleControl
-                  label={ __( 'Add filter to tags for multiple groups.' ) }
-                  checked={ add_premium_filter }
-                  onChange={ this.toggleOptionAddPremiumFilter }
-                />
-                </div>
-              }
               <TagGroupsHelp topic="tags_post_id"/>
               <label htmlFor="tg_input_tags_post_id">
               { __( 'Use tags of the following post:' ) }
@@ -551,30 +457,40 @@ class tagGroupsAccordionCloudParameters extends Component {
                 value={ tags_post_id }
                 options={ this.state.posts }
               />
-              <TagGroupsHelp topic="groups_post_id"/>
-              <label htmlFor="tg_input_group_post_id">
-  						{ __( 'Use groups of the following post:' ) }
-              </label>
-              <Select
-                id="tg_input_group_post_id"
-                onChange={ ( option ) => { if ( option ) setAttributes( { groups_post_id:option.value } ) } }
-                value={ groups_post_id }
-                options={ this.state.posts }
-              />
             </PanelBody>
 
-            <PanelBody title={ __( 'Groups and Tabs' ) } initialOpen={false}>
-            <TagGroupsHelp topic="show_accordion"/>
-              <ToggleControl
-                label={ __( 'Show the panels' ) }
-                checked={ show_accordion }
-                onChange={ this.toggleOptionShowAccordion }
+            <PanelBody title={ __( 'Tabs' ) } initialOpen={false}>
+              <div>
+              <TagGroupsHelp topic="include_letters"/>
+              <label htmlFor="tg_input_include_letters">
+              { 'Include letters' }
+              </label>
+              </div>
+              <PlainText
+              id="tg_input_include_letters"
+              className="input-control"
+              value={ include_letters ? include_letters : '' }
+              placeholder={ __( 'Write here or leave empty.' ) }
+              onChange={ ( include_letters ) => setAttributes( { include_letters } ) }
               />
-              <TagGroupsHelp topic="hide_empty_content"/>
+              <div>
+              <TagGroupsHelp topic="exclude_letters"/>
+              <label htmlFor="tg_input_exclude_letters">
+              { 'Exclude letters' }
+              </label>
+              </div>
+              <PlainText
+              id="tg_input_exclude_letters"
+              className="input-control"
+              value={ exclude_letters ? exclude_letters : '' }
+              placeholder={ __( 'Write here or leave empty.' ) }
+              onChange={ ( exclude_letters ) => setAttributes( { exclude_letters } ) }
+              />
+              <TagGroupsHelp topic="hide_empty_tabs"/>
               <ToggleControl
-                label={ __( 'Hide empty panels' ) }
-                checked={ hide_empty_content }
-                onChange={ this.toggleOptionHideEmptyContent }
+                label={ __( 'Hide empty tabs' ) }
+                checked={ hide_empty_tabs }
+                onChange={ this.toggleOptionHideEmptyTabs }
               />
               <TagGroupsHelp topic="mouseover"/>
               <ToggleControl
@@ -594,49 +510,6 @@ class tagGroupsAccordionCloudParameters extends Component {
                 checked={ active }
                 onChange={ this.toggleOptionActive }
               />
-              <TagGroupsHelp topic="include"/>
-              <label htmlFor="tg_input_include">
-  						{ __( 'Include groups' ) }
-              </label>
-              <Select
-                id="tg_input_include"
-                onChange={ this.handleChangeInclude }
-                value={ this.state.selectedGroups }
-                options={ optionsGroups }
-                multi={ true }
-                closeOnSelect={ false}
-                removeSelected={ true }
-              />
-              <TagGroupsHelp topic="heightstyle"/>
-              <label htmlFor="tg_input_heightstyle">
-  						{ __( 'Panel height' ) }
-              </label>
-              <Select
-                id="tg_input_heightstyle"
-                onChange={ ( option ) => { if ( option ) setAttributes( {  heightstyle: option.value } ) } }
-                value={ heightstyle ? heightstyle : 'content' }
-                options={ [
-                  { value:'auto', label:__( 'Adjust to heighest panel.' ) },
-                  { value:'fill', label:__( 'Fill parent element.' ) },
-                  { value:'content', label:__( 'Adjust to own content.' ) },
-                ] }
-              />
-              { show_not_assigned === 1 &&
-                <div>
-                <div>
-                <label htmlFor="tg_input_not_assigned_name">
-    						{ __( 'Label on tab for not assigned tags' ) }
-                </label>
-                </div>
-                <PlainText
-                  id="tg_input_not_assigned_name"
-      						className="input-control"
-      						value={ not_assigned_name ? not_assigned_name : 'not assigned' }
-      						placeholder={ __( 'Write here or leave empty.' ) }
-      						onChange={ ( not_assigned_name ) => setAttributes( { not_assigned_name } ) }
-                />
-                </div>
-              }
             </PanelBody>
 
             <PanelBody title={ __( 'Advanced Styling' ) } initialOpen={false}>
@@ -656,7 +529,7 @@ class tagGroupsAccordionCloudParameters extends Component {
             <div>
             <TagGroupsHelp topic="div_class"/>
             <label htmlFor="tg_input_div_class">
-            { __( 'outer <div class="...">' ) }
+            { '<div class="...">' }
             </label>
             </div>
             <PlainText
@@ -667,30 +540,17 @@ class tagGroupsAccordionCloudParameters extends Component {
               onChange={ ( div_class ) => setAttributes( { div_class } ) }
             />
             <div>
-            <TagGroupsHelp topic="header_class"/>
-            <label htmlFor="tg_input_header_class">
-            { '<h3 class="...">' }
+            <TagGroupsHelp topic="ul_class"/>
+            <label htmlFor="tg_input_ul_class">
+            { '<ul class="...">' }
             </label>
             </div>
             <PlainText
-              id="tg_input_header_class"
+              id="tg_input_ul_class"
               className="input-control"
-              value={ header_class ? header_class : '' }
+              value={ ul_class ? ul_class : '' }
               placeholder={ __( 'Write here or leave empty.' ) }
-              onChange={ ( header_class ) => setAttributes( { header_class } ) }
-            />
-            <div>
-            <TagGroupsHelp topic="inner_div_class"/>
-            <label htmlFor="tg_input_inner_div_class">
-            { __( 'inner <div class="...">' ) }
-            </label>
-            </div>
-            <PlainText
-              id="tg_input_inner_div_class"
-              className="input-control"
-              value={ inner_div_class ? inner_div_class : '' }
-              placeholder={ __( 'Write here or leave empty.' ) }
-              onChange={ ( inner_div_class ) => setAttributes( { inner_div_class } ) }
+              onChange={ ( ul_class ) => setAttributes( { ul_class } ) }
             />
             { tags_post_id !== -1 &&
             <div>
@@ -722,16 +582,16 @@ class tagGroupsAccordionCloudParameters extends Component {
         <table style={{border:'none'}}>
         <tr>
         <td>
-          <img src={logoUrl} alt='logo' style={{float:'left', margin:15}}/>
+        <img src={logoUrl} alt='logo' style={{float:'left', margin:15}}/>
         </td>
         <td>
-          <h3>{ __( 'Accordion Tag Cloud' ) }</h3>
+          <h3>{ __( 'Alphabetical Tag Cloud' ) }</h3>
           <div className="cm-gutenberg dashicons-before dashicons-admin-generic">
             { __( 'Select this block and customize the tag cloud in the Inspector.' ) }
-          </div>
-          <div className="cm-gutenberg dashicons-before dashicons-welcome-view-site">
+            </div>
+            <div className="cm-gutenberg dashicons-before dashicons-welcome-view-site">
             { __( 'See the output with Preview.' ) }
-          </div>
+            </div>
         </td>
         </tr>
         </table>
@@ -750,13 +610,13 @@ class tagGroupsAccordionCloudParameters extends Component {
 * @return {?WPBlock}		   The block, if it has been successfully
 *							   registered; otherwise `undefined`.
 */
-var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-cloud-accordion', {
-  title: __( 'Accordion Tag Cloud' ),
+var cmTagGroupsAlphabetBlock = registerBlockType( 'chatty-mango/tag-groups-alphabet-tabs', {
+  title: __( 'Alphabetical Tag Cloud' ),
   icon: 'tagcloud', // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
   category: 'widgets',
-  description: __( 'Show your tags in groups in an accordion.' ),
+  description: __( 'Show your tags under tabs sorted by first letters.' ),
   keywords: [
-    __( 'accordion' ),
+    __( 'alphabet' ),
     __( 'tag cloud' ),
     'Chatty Mango',
   ],
@@ -770,7 +630,7 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
           let parameters = [];
           for ( var attribute in attributes ) {
             if (attributes.hasOwnProperty( attribute )) {
-              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] && 'source' !== attribute && cmTagGroupsAccordionBlock.attributes[ attribute ] && attributes[ attribute ] !== cmTagGroupsAccordionBlock.attributes[ attribute ].default ) {
+              if ( null !== attributes[attribute] && '' !== attributes[ attribute ] && 'source' !== attribute && cmTagGroupsAlphabetBlock.attributes[ attribute ] && attributes[ attribute ] !== cmTagGroupsAlphabetBlock.attributes[ attribute ].default ) {
                 if ( typeof attributes[attribute] === 'number' ) {
                   parameters.push( attribute + '=' + attributes[ attribute ] );
                 } else {
@@ -780,7 +640,7 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
             }
           }
 
-          let text = '[tag_groups_accordion ' + parameters.join(' ') + ']';
+          let text = '[tag_groups_alphabet_tabs ' + parameters.join(' ') + ']';
           return createBlock( 'core/shortcode', {
             text
           } );
@@ -807,10 +667,6 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
     adjust_separator_size: {// configurable in block
       type: 'integer',
       default: 1
-    },
-    add_premium_filter: {// configurable in block
-      type: 'integer',
-      default: 0
     },
     amount: {// configurable in block
       type: 'integer',
@@ -840,15 +696,11 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
       type: 'string',
       default: ''
     },
-    exclude_terms: {// only in shortcode
+    exclude_letters: {// only in shortcode
       type: 'string',
       default: ''
     },
-    groups_post_id: {// configurable in block
-      type: 'integer',
-      default: -1
-    },
-    heightstyle: {// configurable in block
+    exclude_terms: {// only in shortcode
       type: 'string',
       default: ''
     },
@@ -856,11 +708,11 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
       type: 'integer',
       default: 1
     },
-    hide_empty_content: {// configurable in block
+    hide_empty_tabs: {// configurable in block
       type: 'integer',
       default: 0
     },
-    include: {// configurable in block
+    include_letters: {// only in shortcode
       type: 'string',
       default: ''
     },
@@ -884,10 +736,6 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
       type: 'integer',
       default: 0
     },
-    not_assigned_name: {// configurable in block
-      type: 'string',
-      default: ''
-    },
     order: {// configurable in block
       type: 'string',
       default: 'ASC'
@@ -908,18 +756,6 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
       tpye: 'string',
       default: ''
     },
-    show_not_assigned: {// indirectly configurable in block
-      type: 'integer',
-      default: 0
-    },
-    show_all_groups: {// only in shortcode
-      type: 'integer',
-      default: 0
-    },
-    show_accordion: { // configurable in block
-      type: 'integer',
-      default: 1
-    },
     show_tag_count: { // configurable in block
       type: 'integer',
       default: 1
@@ -936,11 +772,7 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
       type: 'string',
       default: ''
     },
-    header_class: {// configurable in block
-      type: 'string',
-      default: ''
-    },
-    inner_div_class: {// configurable in block
+    ul_class: {// configurable in block
       type: 'string',
       default: ''
     },
@@ -949,7 +781,7 @@ var cmTagGroupsAccordionBlock = registerBlockType( 'chatty-mango/tag-groups-clou
   /**
   * Composing and rendering the editor content and control elements
   */
-  edit: tagGroupsAccordionCloudParameters,
+  edit: tagGroupsAlphabeticalCloudParameters,
 
 
   /**

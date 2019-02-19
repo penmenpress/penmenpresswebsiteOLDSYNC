@@ -611,6 +611,16 @@ if ( ! class_exists('TagGroups_Settings') ) {
         <p>' . sprintf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'href="https://documentation.chattymango.com/documentation/tag-groups-premium/accordion-tag-cloud/accordion-tag-cloud-parameters/?pk_campaign=tg&pk_kwd=documentation" target="_blank"' ) . '</p>
         </div>';
 
+        $html .= '<h4>' . __( 'Alphabetical tabs', 'tag-groups' ) .'</h4>';
+        $html .= '<div>
+        <h4>[tag_groups_alphabet_tabs]</h4>
+        <p>' . __( 'Display the tags in tabbed tag cloud with first letters as tabs.', 'tag-groups' ) . ' ' . __( '(Not tested with lef-to-right languages.)', 'tag-groups' ) . '</p>
+        <h4>' . __( 'Example', 'tag-groups' ) . '</h4>
+        <p>[tag_groups_alphabet_tabs include_letters=1,2,10 exclude_letters="äöü"]</p>
+        <h4>' . __( 'Parameters', 'tag-groups' ) . '</h4>
+        <p>' . sprintf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'href="https://documentation.chattymango.com/documentation/tag-groups-premium/alphabetical-tag-cloud/alphabetical-tag-cloud-parameters/?pk_campaign=tg&pk_kwd=documentation" target="_blank"' ) . '</p>
+        </div>';
+
         /**
         * Let the premium plugin add own shortcode information.
         */
@@ -2036,6 +2046,9 @@ if ( ! class_exists('TagGroups_Settings') ) {
                   __( 'tag cloud', 'tag-groups' ),
                   __( 'group info', 'tag-groups' ),
                   __( 'sidebar widget', 'tag-groups' ),
+                  __( 'accordion', 'tag-groups' ),
+                  __( 'tabs', 'tag-groups' ),
+                  __( 'alphabetical', 'tag-groups' ),
                   'Gutenberg',
                 ),
               ),
@@ -2046,7 +2059,9 @@ if ( ! class_exists('TagGroups_Settings') ) {
                   __( 'tag cloud', 'tag-groups' ),
                   'CSS',
                   'style',
+                  'HTML',
                   __( 'colors', 'tag-groups' ),
+                  __( 'tag description', 'tag-groups' ),
                 ),
               ),
               'filters'  => array(

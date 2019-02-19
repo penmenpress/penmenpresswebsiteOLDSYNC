@@ -69,14 +69,14 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
       extract( shortcode_atts( array(
         'active' => null,
         'adjust_separator_size' => true,
-        // 'add_premium_filter' => 1,
+        // 'add_premium_filter' => 0,
         'amount' => 0,
         'append' => '',
         'assigned_class' => null,
         'collapsible' => null,
         'custom_title' => null,
         'div_class' => 'tag-groups-cloud',  // tag-groups-cloud preserved to create tab functionality
-        'div_id' => 'tag-groups-cloud-tabs-' . uniqid(),
+        'div_id' => 'tag-groups-cloud-alphabet-tabs-' . uniqid(),
         'exclude_terms' => '',
         'exclude_letters' => '',
         // 'groups_post_id' => -1,
@@ -89,7 +89,7 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
         'link_append' => '',
         'link_target' => '',
         'mouseover' => null,
-        'not_assigned_name' => 'not assigned',
+        // 'not_assigned_name' => 'not assigned',
         'order' => 'ASC',
         'orderby' => 'name',
         'prepend' => '',
@@ -168,7 +168,7 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
       }
 
 
-      $taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
+      $taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
 
       if ( ! empty( $taxonomy_array ) ) {
 

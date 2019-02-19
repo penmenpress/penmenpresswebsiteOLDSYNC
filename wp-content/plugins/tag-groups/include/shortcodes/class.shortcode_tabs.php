@@ -73,7 +73,7 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
       extract( shortcode_atts( array(
         'active' => null,
         'adjust_separator_size' => true,
-        'add_premium_filter' => 1,
+        'add_premium_filter' => 0,
         'amount' => 0,
         'append' => '',
         'assigned_class' => null,
@@ -180,7 +180,7 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
       }
 
 
-      $taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
+      $taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
 
       if ( ! empty( $taxonomy_array ) ) {
 
