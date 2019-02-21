@@ -93,7 +93,7 @@ function _gettext($msgid)
  *
  * @return string translated string (or original, if not found)
  */
-function __($msgid)
+function __RENAMED($msgid)
 {
     return Loader::getInstance()->getTranslator()->gettext(
         $msgid
