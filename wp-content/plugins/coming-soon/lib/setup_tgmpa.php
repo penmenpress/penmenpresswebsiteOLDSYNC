@@ -5,6 +5,11 @@
 	 * @since 5.0.20
 	 */
 	function coming_soon_init_recommendations() {
+		$dismmised = get_user_meta( get_current_user_id(), 'tgmpa_dismissed_notice_coming-soon', true);
+		if($dismmised == 1){
+				return;
+		}
+		
 		// Recommend only for new installs.
 		if ( ! coming_soon_is_new_install() ) {
 			return;
