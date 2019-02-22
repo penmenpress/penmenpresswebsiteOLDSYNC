@@ -609,9 +609,19 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
     {
 
       // TODO: consider WPML
-      $collator = new Collator( get_locale() );
 
-      $collator->sort( $alphabet );
+      if ( class_exists( 'Collator' ) ) {
+        // Collator can consider locale
+
+        $collator = new Collator( get_locale() );
+
+        $collator->sort( $alphabet );
+
+      } else {
+
+        sort( $alphabet );
+
+      }
 
       return $alphabet;
 

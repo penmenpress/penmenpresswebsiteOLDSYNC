@@ -351,7 +351,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
           }
 
-          $html .= '><input type="checkbox" name="taxonomies[]" id="' . $taxonomy . '" value="' . $taxonomy . '"';
+          $html .= '><input type="checkbox" name="taxonomies[]" autocomplete="off" id="' . $taxonomy . '" value="' . $taxonomy . '"';
 
           if ( in_array( $taxonomy, $tag_group_taxonomy ) ) {
 
@@ -446,7 +446,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         $html .= '<form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">' .
         wp_nonce_field( 'tag-groups-backend', 'tag-groups-backend-nonce', true, false ) .
 
-        '<p><input type="checkbox" id="tg_filter_posts" name="filter_posts" value="1"';
+        '<p><input type="checkbox" id="tg_filter_posts" name="filter_posts" autocomplete="off" value="1"';
 
         if ( $show_filter_posts ) {
 
@@ -461,7 +461,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         '<div class="chatty-mango-help-container chatty-mango-help-container-filter-posts" style="display:none;">' .
         __( 'Add a pull-down menu to the filters above the list of posts. If you filter posts by tag groups, then only items will be shown that have tags (terms) in that particular group. This feature can be turned off so that the menu won\'t obstruct your screen if you use a high number of groups. May not work with all taxonomies.', 'tag-groups' ) .
         '</div>
-        <p><input type="checkbox" id="tg_filter_tags" name="filter_tags" value="1"';
+        <p><input type="checkbox" id="tg_filter_tags" name="filter_tags" autocomplete="off" value="1"';
 
         if ( $show_filter_tags ) {
 
@@ -556,7 +556,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         $html .= '<p>' . __( 'You can use a shortcode to embed the tag cloud directly in a post, page or widget or you call the function in the PHP code of your theme.', 'tag-groups' ) . ' ' . __( 'Several tag clouds are also available as blocks for the Gutenberg editor.', 'tag-groups' ) . '<p>';
         $html .= '<form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">
         <input type="hidden" name="tag-groups-shortcode-nonce" id="tag-groups-shortcode-nonce" value="' . wp_create_nonce( 'tag-groups-shortcode' ). '" />
-        <p><input type="checkbox" name="widget" id="tg_widget" value="1"';
+        <p><input type="checkbox" name="widget" autocomplete="off" id="tg_widget" value="1"';
 
         if ( $tag_group_shortcode_widget ) {
 
@@ -565,7 +565,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         }
 
         $html .= '>&nbsp;<label for="tg_widget">' . __( 'Enable shortcode in sidebar widgets (if not visible anyway).', 'tag-groups' ) . '</label></p>
-        <p><input type="checkbox" name="enqueue" id="tg_enqueue" value="1" ';
+        <p><input type="checkbox" name="enqueue" id="tg_enqueue" autocomplete="off" value="1" ';
 
         if ( $tag_group_shortcode_enqueue_always ) {
 
@@ -729,7 +729,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         }
 
         $html .= '" /></li>
-        <li><input type="checkbox" name="enqueue-jquery" id="tg_enqueue-jquery" value="1"';
+        <li><input type="checkbox" name="enqueue-jquery" autocomplete="off" id="tg_enqueue-jquery" value="1"';
 
         if ( $tag_group_enqueue_jquery ) {
 
@@ -744,7 +744,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         <div style="width:50%;min-width:500px;float:left">
         <h4>' . __( 'Further options', 'tag-groups' ) . '</h4>
         <ul>
-        <li><input type="checkbox" name="mouseover" id="mouseover" value="1"';
+        <li><input type="checkbox" name="mouseover" autocomplete="off" id="mouseover" value="1"';
 
         if ( $tag_group_mouseover ) {
 
@@ -754,7 +754,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
         $html .= '>&nbsp;<label for="mouseover">' . __( 'Tabs triggered by hovering mouse pointer (without clicking).', 'tag-groups' ) .
         '</label></li>
-        <li><input type="checkbox" name="collapsible" id="collapsible" value="1"';
+        <li><input type="checkbox" name="collapsible" autocomplete="off" id="collapsible" value="1"';
 
         if ( $tag_group_collapsible ) {
 
@@ -763,7 +763,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         }
 
         $html .= '>&nbsp;<label for="collapsible">' . __( 'Collapsible tabs (toggle open/close).', 'tag-groups' ) . '</label></li>
-        <li><input type="checkbox" name="html_description" id="html_description" value="1" ';
+        <li><input type="checkbox" name="html_description" autocomplete="off" id="html_description" value="1" ';
 
         if ( $tag_group_html_description ) {
 
@@ -878,7 +878,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         <div class="chatty-mango-help-container chatty-mango-help-container-delete" style="display:none;">' .
         __( 'Please keep in mind that the tag assignments cannot be recovered by the export/import function.', 'tag-groups' ) .
         '</div>
-        <input type="checkbox" id="ok" name="ok" value="yes" />
+        <input type="checkbox" id="ok" name="ok" autocomplete="off" value="yes" />
         <label>' .
         __( 'I know what I am doing.', 'tag-groups' ) .
         '</label>
@@ -893,7 +893,7 @@ if ( ! class_exists('TagGroups_Settings') ) {
         <form method="POST" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">
         <p>' .
         wp_nonce_field( 'tag-groups-uninstall', 'tag-groups-uninstall-nonce', true, false ) .
-        '<input type="checkbox" id="ok" name="ok" value="yes"';
+        '<input type="checkbox" id="ok" name="ok" autocomplete="off" value="yes"';
 
         if ( $tag_group_reset_when_uninstall ) {
 

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: cloud, tags, tag cloud, tabs, accordion, taxonomy, tag, woocommerce
 Requires at least: 4.0
 Tested up to: 5.1.0
-Stable tag: 0.42.0
+Stable tag: 0.42.1
 Requires PHP: 5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -124,7 +124,17 @@ This plugin does not collect or process any personal user data.
 
 == Changelog ==
 
-= 0.42 =
+= 0.42.1 =
+
+BUG FIXES
+
+* Fixed issue in Alphabetical Tag Cloud with rare server configurations. (Collator not available)
+
+OTHER
+
+* Make sure Firefox doesn't restore previous checkbox values in the settings
+
+= 0.42.0 =
 
 FEATURES
 
