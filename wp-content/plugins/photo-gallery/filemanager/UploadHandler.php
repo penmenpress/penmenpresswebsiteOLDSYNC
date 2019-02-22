@@ -1007,24 +1007,26 @@ class bwg_UploadHandler {
    * @return mixed
    */
   private function set_file_info( $info ) {
+    $data = array();
     $data['is_dir'] = 0;
-    $data['path'] = $info->path;
-    $data['type'] = $info->type;
-    $data['name'] = $info->name;
-    $data['filename'] = $info->filename;
-    $data['alt'] = $info->alt;
-    $data['thumb'] = 'thumb/' . $info->name;
-    $data['size'] = $info->size;
-    $data['resolution'] = $info->resolution;
-    $data['credit'] = iconv_mime_decode($info->credit);
-    $data['aperture'] = iconv_mime_decode($info->aperture);
-    $data['camera'] = iconv_mime_decode($info->camera);
-    $data['caption'] = iconv_mime_decode($info->caption);
-    $data['iso'] = iconv_mime_decode($info->iso);
-    $data['orientation'] = $info->orientation;
-    $data['copyright'] = iconv_mime_decode($info->copyright);
-    $data['tags'] = iconv_mime_decode($info->tags);
     $data['date_modified'] = date('Y-m-d H:i:s');
+    $data['path'] = isset($info->path) ? $info->path : '';
+    $data['type'] = isset($info->type) ? $info->type : '';
+    $data['name'] = isset($info->name) ? $info->name : '';
+    $data['filename'] = isset($info->filename) ? $info->filename : '';
+    $data['alt'] = isset($info->alt) ? $info->alt : '';
+    $data['thumb'] = isset($info->name) ? 'thumb/' . $info->name : '';
+    $data['size'] = isset($info->size) ? $info->size : '';
+    $data['resolution'] = isset($info->resolution) ? $info->resolution : '';
+    $data['credit'] = isset($info->credit) ? iconv_mime_decode($info->credit) : '';
+    $data['aperture'] = isset($info->aperture) ? iconv_mime_decode($info->aperture) : '';
+    $data['camera'] = isset($info->camera) ? iconv_mime_decode($info->camera) : '';
+    $data['caption'] = isset($info->caption) ? iconv_mime_decode($info->caption) : '';
+    $data['iso'] = isset($info->iso) ? iconv_mime_decode($info->iso) : '';
+    $data['orientation'] = isset($info->orientation) ? $info->orientation : '';
+    $data['copyright'] = isset($info->copyright) ? iconv_mime_decode($info->copyright) : '';
+    $data['tags'] = isset($info->tags) ? iconv_mime_decode($info->tags) : '';
+
     return $data;
   }
 }
