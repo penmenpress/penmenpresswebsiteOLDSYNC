@@ -53,7 +53,6 @@ class PP_QueryInterceptorExtra {
 			// attachment filtering is applied here
 			$clauses['where'] = apply_filters( 'pp_posts_clauses_where', $query_interceptor->flt_posts_where( $clauses['where'], $args ), $clauses, $args );
 		}
-		//dump($clauses);
 		
 		if ( $pos_where === false )
 			$request .= " WHERE 1=1 $only_append_where " . $clauses['where'];

@@ -128,19 +128,21 @@ class PP_Options_Install {
 				if ( $expired ) {
 					$class = 'activating';
 					$is_err = true;
-					$msg = sprintf( __( 'Your support key has expired. For information on renewal at a discounted rate, <a href="%s">click here</a>.', 'pp' ), 'admin.php?page=pp-settings&amp;pp_renewal=1' );
+					$msg = sprintf( __( 'Your support key has expired. For continued priority support, <a href="%s">please renew</a>.', 'pp' ), 'admin.php?page=pp-settings&amp;pp_renewal=1' );
 				} elseif ( ! empty( $opt_val['expire_date_gmt'] ) ) {
 					$class = 'activating';
 					if ( $expire_days < 30 ) $is_err = true;
 					if ( $expire_days < 1 )
-						$msg = sprintf( __( 'Your support key (for plugin updates) will expire today. For information on renewal at a discounted rate, <a href="%s">click here</a>.', 'pp' ), $expire_days, 'admin.php?page=pp-settings&amp;pp_renewal=1' );
+						$msg = sprintf( __( 'Your support key will expire today. For updates to extension plugins and priority support, <a href="%s">please renew</a>.', 'pp' ), $expire_days, 'admin.php?page=pp-settings&amp;pp_renewal=1' );
 					elseif ( $expire_days < 30 )
-						$msg = sprintf( _n( 'Your support key (for plugin updates) will expire in %d day. For information on renewal at a discounted rate, <a href="%s">click here</a>.', 'Your support key (for plugin updates) will expire in %d days. For information on renewal at a discounted rate, <a href="%s">click here</a>.', $expire_days, 'pp' ), $expire_days, 'admin.php?page=pp-settings&amp;pp_renewal=1' );
+						$msg = sprintf( _n( 'Your support key will expire in %d day. For updates to extension plugins and priority support, <a href="%s">please renew</a>.', 'Your support key (for plugin updates) will expire in %d days. For updates to extension plugins and priority support, <a href="%s">please renew</a>.', $expire_days, 'pp' ), $expire_days, 'admin.php?page=pp-settings&amp;pp_renewal=1' );
 					else
 						$class = "activating hidden";
 				} elseif ( ! $activated ) {
 					$class = 'activating';
-					$msg = sprintf( __( 'Activate your support key to install Pro extensions and access the member support forums. Available at <a href="%s">presspermit.com</a>.', 'pp' ), 'https://presspermit.com/' . 'purchase/' );
+					$msg = sprintf( __( 'Activate your support key for Press Permit extensions and priority support. Available at <a href="%s">presspermit.com</a>.', 'pp' ), 'https://presspermit.com/' . 'purchase/' );
+				
+					$msg = sprintf( __( 'For priority support and Pro extensions, activate your support key. If you need a key, <a href="%s" target="_blank">Explore Pro packages</a>.', 'pp' ), 'https://presspermit.com/purchase/' );
 				} else {
 					$class = "activating hidden";
 					$msg = '';
@@ -148,8 +150,7 @@ class PP_Options_Install {
 				?>
 				
 					<?php if ( $expired && ( ! empty($key) ) ) : ?>
-						<br />
-						<span class="pp-key-wrap">
+						<span class="pp-key-normal">
 						<span class="pp-key-expired"><?php _e("Key Expired", 'pp') ?></span>
 						<input name="<?php echo($id);?>" type="text" id="<?php echo($id);?>" style="display:none" />
 						<button type="button" id="activation-button" name="activation-button" class="button-secondary"><?php _e('Deactivate Key','pp'); ?></button>
@@ -172,19 +173,21 @@ class PP_Options_Install {
 				</span>
 				
 					<?php if ( $activated ) : ?>
-						<?php if( pp_get_option( 'display_hints' )  ) :?>
-					<div class="pp-key-hint">
-					<span class="pp-subtext"> <?php _e('note: If you deactive, re-entry of the support key will be required for re-activation.', 'pp'); ?></span>
+						<?php if ( $expired ) : ?>
+						<div class="pp-key-hint-expired">
+						<span class="pp-key-expired pp-key-warning"> <?php _e('note: Renewal does not require deactivation. If you do deactivate, re-entry of the support key will be required.', 'pp'); ?></span>
+						</div>
+						<?php elseif( pp_get_option( 'display_hints' ) ) :?>
+						<div class="pp-key-hint">
+						<span class="pp-subtext"> <?php _e('note: If you deactive, re-entry of the support key will be required for re-activation.', 'pp'); ?></span>
 						<?php endif;?>
+					</div>
+						
 					<?php elseif ( ! $expired ) : ?>
 					<div class="pp-key-hint">
 					<span class="pp-subtext"> <?php _e('note: Your site URL and version info will be sent to presspermit.com', 'pp'); ?></span>
-					<?php else : ?>
-					<div class="pp-key-hint-expired">
-					<span class="pp-key-expired pp-key-warning"> <?php _e('note: Renewal does not require deactivation. If you do deactivate, re-entry of the support key will be required.', 'pp'); ?></span>
-					<?php endif ?>
-					
 					</div>
+					<?php endif ?>
 				
 				<div id="activation-status" class="<?php echo $class?>"><?php echo $msg;?></div><div class="pp-settings-caption" style="display:none;"><a href="<?php echo admin_url('admin.php?page=pp-settings');?>"><?php _e('reload extension info', 'pp');?></a></div>
 				
@@ -217,8 +220,6 @@ class PP_Options_Install {
 			else
 				$update_info = array();
 				
-			//dump($update_info);
-
 			$info_link = '';
 			
 			if ( ! $suppress_updates ) {
@@ -232,9 +233,14 @@ class PP_Options_Install {
 				}
 			}
 			
-			printf( __( 'Press Permit Core Version: %1$s %2$s', 'pp'), PPC_VERSION, $info_link );?>
+			?>
+			<p>
+			<?php printf( __( 'Press Permit Core Version: %1$s %2$s', 'pp'), PPC_VERSION, $info_link );?>
 			<br />
-			<?php printf( __( "Database Schema Version: %s", 'pp'), PPC_DB_VERSION);?>
+			<span style="display:none"><?php printf( __( "Database Schema Version: %s", 'pp'), PPC_DB_VERSION);?><br /></span>
+			<span class="publishpress"><?php printf( __( '- part of the %1$sPublishPress%2$s family of professional publishing tools', 'pp'), '<a href="https://publishpress.com/" target="_blank">', '</a>' );?></span>
+			</p>
+			
 			<br />
 			<?php 
 			global $wp_version;
@@ -403,7 +409,7 @@ class PP_Options_Install {
 			<?php elseif ( ! pp_update_info_enabled() ) :?>
 				<p class="pp-feature-list-caption"><strong><?php _e('Press Permit Pro extensions supply:', 'pp' );?></strong></p>
 				<ul class="pp-bullet-list">
-				<li><?php printf( __( '%1$sContent-specific editing permissions, with Edit Flow, Revisionary and Post Forking support%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-collaborative-editing">', '</a>' );?></li>
+				<li><?php printf( __( '%1$sContent-specific editing permissions, with PublishPress, Edit Flow and Revisionary support%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-collaborative-editing">', '</a>' );?></li>
 				<li><?php printf( __( '%1$sCustom Post Statuses (for visibility or moderation)%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-custom-post-statuses">', '</a>' );?></li>
 				<li><?php printf( __( '%1$sCustomize bbPress forum access%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-compatibility">', '</a>' );?></li>
 				<li><?php printf( __( '%1$sFile URL filtering%2$s', 'pp' ), '<a href="https://presspermit.com/extensions/pp-file-url-filter">', '</a>' );?></li>
@@ -437,7 +443,7 @@ class PP_Options_Install {
 				<ul class="pp-support-list">
 				<li><a href='https://presspermit.com/docs/' target='pp_doc'><?php _e('Press Permit Documentation', 'pp');?></a></li>
 
-				<li class="pp-support-forum"><a href="admin.php?page=pp-settings&amp;pp_support_forum=1" target="pp_forum"><?php _e('Press Permit Support Forums', 'pp');?></a> <strong>*</strong></li>
+				<li class="pp-support-forum"><a href="admin.php?page=pp-settings&amp;pp_help_ticket=1" target="pp_help_ticket"><?php _e('Submit a Help Ticket', 'pp');?></a> <strong>*</strong></li>
 
 				<li class="upload-config"><a href="admin.php?page=pp-settings&amp;pp_upload_config=1"><?php _e('Upload site configuration to presspermit.com now', 'pp');?></a> <strong>*</strong> 
 				<img id="pp_upload_waiting" class="waiting" style="display:none;position:relative" src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) )?>" alt="" />
@@ -506,8 +512,7 @@ class PP_Options_Install {
 				</div>
 	
 				<ul class="pp-support-list pp-bullet-list">
-				<!-- <li><a href='https://presspermit.com/docs/' target='pp_doc'><?php _e('Pro Documentation on presspermit.com', 'pp');?></a></li> -->
-				<li><a href='https://presspermit.com/forums/' target='pp_forum'><?php _e('Pro Support Forums on presspermit.com', 'pp');?></a></li>
+				<li><?php _e('Priority support through our help ticket system', 'pp');?></a></li>
 				<li><?php _e('Optional uploading of your site configuration to assist troubleshooting', 'pp');?></li>
 				</ul>
 				<?php

@@ -8,7 +8,7 @@ pp_load_admin_api();
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
+ * @copyright Copyright (c) 2019, PublishPress
  * 
  */
 class PP_AdminFilters

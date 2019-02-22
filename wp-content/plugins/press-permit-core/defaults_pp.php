@@ -9,7 +9,7 @@ if ( is_admin() )
  *
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2014, Agapetry Creations LLC
+ * @copyright Copyright (c) 2019, PublishPress
  * 
 */
 

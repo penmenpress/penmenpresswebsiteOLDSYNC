@@ -1,34 +1,38 @@
 <?php
 /**
  * Plugin Name: Press Permit Core
- * Plugin URI:  https://presspermit.com
+ * Plugin URI:  https://presspermit.com/
  * Description: Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
- * Author:      Agapetry Creations LLC
- * Author URI:  https://agapetry.com/
- * Version:     2.5.5
+ * Author: PublishPress
+ * Author URI:  https://publishpress.com/
+ * Version:     2.6
  * Text Domain: pp
  * Domain Path: /languages/
  * Min WP Version: 3.4
- */
-
-/*
-Portions created by Kevin Behrens / Agapetry Creations are Copyright 2011-2018 by Agapetry Creations LLC.
-
-This file is part of Press Permit Core.
-
-Press Permit Core is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Press Permit Core is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this plugin.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ *
+ * Copyright (c) 2019 PublishPress
+ *
+ * GNU General Public License, Free Software Foundation <https://www.gnu.org/licenses/gpl-3.0.html>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package     Press Permit Core
+ * @category    Core
+ * @author      PublishPress
+ * @copyright   Copyright (C) 2019 PublishPress. All rights reserved.
+ *
+ **/
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
@@ -62,7 +66,7 @@ if ( defined( 'PPC_FOLDER' ) ) {
 			define( 'PPC_ABSPATH', WP_CONTENT_DIR . '/plugins/' . PPC_FOLDER );
 	
 		if ( ! ppc_early_exit() ) {
-			define( 'PPC_VERSION', '2.5.5' );
+			define( 'PPC_VERSION', '2.6' );
 			define( 'PPC_DB_VERSION', '2.0.1' );
 
 			global $pp_min_ext_version;

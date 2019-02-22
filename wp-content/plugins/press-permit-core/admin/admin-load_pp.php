@@ -43,7 +43,7 @@ function pp_admin_init() {
 
 	add_action( 'pp_user_init', '_pp_load_ajax_handler' );
 
-	if ( ! empty($_POST['pp_submit']) || ! empty($_POST['pp_defaults']) || ! empty($_POST['pp_role_usage_defaults']) || ! empty($_REQUEST['pp_refresh_updates']) || ! empty($_REQUEST['pp_renewal']) || ! empty($_REQUEST['pp_upload_config']) || ! empty($_REQUEST['pp_support_forum']) ) {
+	if ( ! empty($_POST['pp_submit']) || ! empty($_POST['pp_defaults']) || ! empty($_POST['pp_role_usage_defaults']) || ! empty($_REQUEST['pp_refresh_updates']) || ! empty($_REQUEST['pp_renewal']) || ! empty($_REQUEST['pp_upload_config']) || ! empty($_REQUEST['pp_help_ticket']) ) {
 		// For 'settings' admin panels, handle updated options right after current_user load (and before pp_init).
 		// By then, check_admin_referer is available, but PP config and WP admin menu has not been loaded yet.
 		require_once( PPC_ABSPATH . '/submittee_pp.php');	

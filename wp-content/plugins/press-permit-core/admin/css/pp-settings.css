@@ -70,11 +70,12 @@ font-weight: bold;
 
 
 /* --- Install Tab --- */
+#pp-install_table span.publishpress,#pp-install_table span.publishpress a,#pp-install_table span.publishpress a:visited {color:#655997;font-weight:bold}
 #pp-install #support_key { width:325px }
-#pp-install .activating { border-width:1px;border-style:solid;padding:0 0.6em;margin:0.5em 0.5em 0 0;-moz-border-radius:3px;-khtml-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;background-color:#ffffe0;border-color:#e6db55; }
+#pp-install .activating, #tab-panel-pp .activating { border-width:1px;border-style:solid;padding:5px;margin:0.5em 0.5em 0 0;-moz-border-radius:3px;-khtml-border-radius:3px;-webkit-border-radius:3px;border-radius:3px;background-color:#ffffe0;border-color:#e6db55; }
+#tab-panel-pp .activating p {margin:0;padding-top:5px;padding-bottom:5px}
 #pp-install #activation-button{vertical-align: top}
 #pp-install .pp-key-active {font-weight:bold;color:#070;vertical-align:bottom;margin-right:0.5em}
-span.pp-key-expired {font-weight:bold;color:#c00;vertical-align:bottom;margin-right:0.5em}
 span.pp-key-warning {color:#c00; font-weight: normal}
 #pp-install .pp-install-list{margin:0.5em 0 1em 0}
 #pp-install .pp-install-list li{padding-left:1em}

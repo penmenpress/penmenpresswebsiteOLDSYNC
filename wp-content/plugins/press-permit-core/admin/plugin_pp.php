@@ -36,11 +36,8 @@ class PP_Plugin_Status {
 	// function callhome() derived from Gravity Forms and Shopp
 	public static function callhome( $request_topic, $request_vars = array(), $post_vars = false ) {
 		$request_vars = array_merge( self::get_remote_request_params(), (array) $request_vars, array( 'PPServerRequest' => $request_topic ) ); //, 'site' => urlencode( get_option('siteurl') ) ) );
-		//dump($request_vars);
-		//die('test');
-		
+
 		$query = http_build_query( $request_vars, '', '&' );
-		//pp_errlog($query);
 		
 		$args = array(
 			'headers' => array(
@@ -250,16 +247,16 @@ class PP_Plugin_Status {
 			) { 
 				$network = ( is_network_admin() ) ? 'network/' : '';
 				$details_url = admin_url("{$network}plugin-install.php?tab=plugin-information&plugin=$slug&TB_iframe=true&width=600&height=800");
-				$update_url = wp_nonce_url( "update.php?action=$slug&plugin=" . $plugin_file, 'upgrade-plugin_' . $slug );
+				$update_url = wp_nonce_url( "update.php?action=$slug&plugin=" . $plugin_file . '&TB_iframe=true&width=772&height=1014', 'upgrade-plugin_' . $slug );
 				
 				if ( ! $activated ) { // Key not active for extension update
 					if ( -1 == $key_status ) {
-						$message = sprintf(__('There is a new version of %1$s, but your support key has expired. You may <a href="%2$s">renew at a discounted rate</a> for Press Permit Pro extension updates and support resources. <a href="%3$s" class="thickbox" title="%4$s">View version %5$s details</a>.','pp'), $plugin_data['Name'], admin_url('admin.php?page=pp-settings&pp_tab=install'), $details_url, esc_attr($plugin_data['Name']), $version_info->new_version);
+						$message = sprintf(__('There is a new version of %1$s, but your support key has expired. <a href="%2$s">Please renew</a> for Press Permit extensions and priority support. <a href="%3$s" class="thickbox" title="%4$s">View version %5$s details</a>.','pp'), $plugin_data['Name'], admin_url('admin.php?page=pp-settings&pp_tab=install'), $details_url, esc_attr($plugin_data['Name']), $version_info->new_version);
 					} else {
 						$message = sprintf(__('There is a new version of %1$s, but <a href="%2$s">your support key</a> is not activated. <a href="%3$s">Purchase a Press Permit Pro support key</a> for one-click updates and support resources. <a href="%4$s" class="thickbox" title="%5$s">View version %6$s details</a>.','pp'), $plugin_data['Name'], admin_url('admin.php?page=pp-settings&pp_tab=install'), 'https://presspermit.com/' . 'purchase/', $details_url, esc_attr($plugin_data['Name']), $version_info->new_version);
 					}
 				} else {
-					$message = sprintf(_pp_('There is a new version of %1$s available. <a href="%2$s" class="thickbox" title="%3$s">View version %4$s details</a> or <a href="%5$s">update now</a>.'),$plugin_data['Name'],$details_url,esc_attr($plugin_data['Name']),$version_info->new_version,$update_url);
+					$message = sprintf(_pp_('There is a new version of %1$s available. <a href="%2$s" class="thickbox" title="%3$s">View version %4$s details</a> or <a href="%5$s" class="thickbox">update now</a>.'),$plugin_data['Name'],$details_url,esc_attr($plugin_data['Name']),$version_info->new_version,$update_url);
 				}
 				echo '<tr class="plugin-update-tr"><td colspan="3" class="plugin-update"><div class="update-message">'.$message.'</div></td></tr>';
 
@@ -282,11 +279,11 @@ class PP_Plugin_Status {
 	}
 	
 	public static function renewal_msg() {
-		return sprintf(__('Your support key has expired.  For support resources and updates to Press Permit Pro extensions, you may <a href="%1$s">renew at a discounted rate</a>.','pp'), admin_url( 'admin.php?page=pp-settings&pp_tab=install' ), 'https://presspermit.com/' . "purchase/" );
+		return sprintf(__('Your support key has expired.  For updates to Press Permit extensions and priority support, <a href="%1$s" target="_blank">please renew</a>.','pp'), admin_url( 'admin.php?page=pp-settings&pp_tab=install' ), 'https://presspermit.com/' . "purchase/" );
 	}
 	
 	public static function buy_msg() {
-		return sprintf(__('Activate your <a href="%1$s">support key</a> for Press Permit Pro extensions and support resources.','pp'), admin_url( 'admin.php?page=pp-settings&pp_tab=install' ), 'https://presspermit.com/' . "purchase/" );
+		return sprintf(__('Activate your <a href="%1$s">support key</a> for Press Permit extensions and priority support.','pp'), admin_url( 'admin.php?page=pp-settings&pp_tab=install' ), 'https://presspermit.com/' . "purchase/" );
 	}
 	
 	/**

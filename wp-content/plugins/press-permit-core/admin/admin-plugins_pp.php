@@ -21,8 +21,10 @@ class PP_Plugin_Admin {
 		}
 		
 		add_action( 'load-plugins.php', array( &$this, 'suppress_wp_update_msg' ) );
-
-		add_action( 'install_plugins_pre_plugin-information', array( &$this, 'changelog' ), 5 );
+		
+		$action = ( pp_wp_ver('5.0') ) ? 'load-plugin-install.php' : 'install_plugins_pre_plugin-information';
+		add_action( $action, array( &$this, 'changelog' ), 5 );
+		
 		add_action( 'plugins_api', array( &$this, 'disable_plugins_api' ), 10, 3 );
 	}
 	
@@ -86,8 +88,6 @@ class PP_Plugin_Admin {
 	// adds an Options link next to Deactivate, Edit in Plugins listing
 	function flt_plugin_action_links($links, $file) {
 		if ( $file == PPC_BASENAME ) {
-			$links[] = "<a href='https://presspermit.com/forums/'>" . _pp_('Support Forums') . "</a>";
-			
 			if ( ! is_network_admin() ) {
 			$page = 'pp-settings';
 			$links[] = "<a href='admin.php?page=$page'>" . _pp_('Settings') . "</a>";

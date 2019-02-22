@@ -5,8 +5,8 @@ Section II  : GNU General Public License
 
 Section I   : Credits
 =====================================================================
-Code contributors include (but not limited to):
-Kevin Behrens - Agapetry Creations LLC
+Code contributors include (but are not limited to):
+Kevin Behrens - PublishPress
 Jonathan Davis - Ingenesis Limited (as indicated in source code)
 
 Copyrights:

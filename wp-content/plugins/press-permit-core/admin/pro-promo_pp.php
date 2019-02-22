@@ -79,23 +79,23 @@ font-size: 1.5em;
 <a href="https://www.youtube.com/watch?v=v8VyKP3rIvk&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=8" target="_blank"><img class="cme-play" src="<?php echo $img_url;?>play.png" /></a></li>
 
 <li>
-<?php _e( "Regulate permissions for Edit Flow post statuses", $lang_id );?>
+<?php _e( "Regulate permissions for PublishPress or Edit Flow post statuses", $lang_id );?>
 <a href="https://www.youtube.com/watch?v=eeZ6CBC5kQI&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=11" target="_blank"><img class="cme-play" src="<?php echo $img_url;?>play.png" /></a></li>
 
 <li>
-<?php _e( "Customize the moderated editing of published content with Revisionary or Post Forking", $lang_id );?>
+<?php _e( "Customize the moderated editing of published content with Revisionary", $lang_id );?>
 <a href="https://www.youtube.com/watch?v=kCD6HQAjUXs&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=12" target="_blank"><img class="cme-play" src="<?php echo $img_url;?>play.png" /></a></li>
 
 <li>
-<?php _e( "Grant supplemental content permissions to a BuddyPress group <em>(Pro)</em>", $lang_id );?>
+<?php _e( "Grant supplemental content permissions to a BuddyPress group", $lang_id );?>
 <a href="https://www.youtube.com/watch?v=oABIT7wki_A&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=14" target="_blank"><img class="cme-play" src="<?php echo $img_url;?>play.png" /></a></li>
 
 <li>
-<?php _e( "WPML integration to mirror permissions to translations <em>(Pro)</em>", $lang_id );?>
+<?php _e( "WPML integration to mirror permissions to translations", $lang_id );?>
 </li>
 
 <li>
-<?php _e( "Member support forum", $lang_id );?>
+<?php _e( "Help ticket system", $lang_id );?>
 </li>
 </ul>
 
@@ -106,7 +106,7 @@ font-size: 1.5em;
 <li class="spacer">&bull;</li>
 <li><a href="https://presspermit.com/faqs" target="_blank"><?php _e('FAQs', 'pp');?></a></li>
 <li class="spacer">&bull;</li>
-<li><a href="https://presspermit.com/forums/forum/pre-sale-questions/" target="_blank"><?php _e('Pre-Sale Questions', 'pp');?></a></li>
+<li><a href="https://presspermit.com/contact/" target="_blank"><?php _e('Contact Us', 'pp');?></a></li>
 <li class="spacer">&bull;</li>
 <li><a href="https://presspermit.com/purchase/" target="_blank"><?php _e('Purchase', 'pp');?></a></li>
 <li class="spacer">&bull;</li>

@@ -21,7 +21,7 @@ do_action( 'pp_hardway' );
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2013, Agapetry Creations LLC
+ * @copyright Copyright (c) 2019, PublishPress
  *
  */	
 class PP_Hardway

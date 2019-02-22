@@ -1,28 +1,27 @@
 === Press Permit Core ===
-Contributors: kevinB
-Donate Link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JWZVFUDLLYQBA
+Contributors: publishpress, kevinB, stevejburge, andergmartins
 Tags: restrict, access, permissions, cms, user, private, category, pages, privacy, capabilities, role, scoper
-License: GPLv3
 Requires at least: 3.4
 Tested up to: 5.0.3
-Stable tag: 2.5.5
+Stable tag: 2.6
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Advanced yet accessible content permissions. Give users or groups type-specific roles. Enable or block access for specific posts or terms.
 
 == Description ==
 
-[Press Permit](https://presspermit.com) is an advanced content permissions system. It is derived from Role Scoper, but with extensive improvements in versatility, performance and user-friendliness. 
+[Press Permit](https://presspermit.com) is an advanced content permissions system, now part of the [PublishPress](https://publishpress.com) family of professional publishing tools.
 
 Core Features include:
 
-  * Permissions model is closely integrated with the WP capability system
+  * Permissions model extends the WordPress roles framework
   * Assign supplemental roles and exceptions for custom post types [youtube https://www.youtube.com/watch?v=v7jTkgmjHrw&rel=0&hd=1]
   
-  * For any user, group or WP role, customize reading access by specifying "also these", "not these" or "only these" posts or terms.
-  * Control reading access to specified categories [youtube https://www.youtube.com/watch?v=SMnybRf5neY&rel=0&hd=1] 
+  * Post-specific control for any user, group or WordPress role
+  * Control viewing access to specific categories [youtube https://www.youtube.com/watch?v=SMnybRf5neY&rel=0&hd=1] 
 
-  * Post and term edit screens get a straightforward and uncluttered UI to "enable" or "block" users, roles or groups
-  * Permission Groups integrate with [Eyes Only User Access Shortcodes](https://wordpress.org/plugins/eyes-only-user-access-shortcode/) for conditional display of content blocks within a post
+  * For any post or category, select who to enable or block
 
 Pro [extensions](https://presspermit.com/extensions) are [available](https://presspermit.com/purchase) for [additional access control and features](https://www.youtube.com/playlist?list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3):
 	
@@ -35,8 +34,8 @@ Pro [extensions](https://presspermit.com/extensions) are [available](https://pre
   * Date-limited membership in Permissions Groups - [video](https://www.youtube.com/watch?v=hMOVvCy_9Ws&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=7)
   
   * Moderation statuses control multi-step moderation - [video](https://www.youtube.com/watch?v=v8VyKP3rIvk&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=8)
-  * Edit Flow integration - [video](https://www.youtube.com/watch?v=eeZ6CBC5kQI&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=11)
-  * Revisionary and Post Forking: regulate moderated editing of published content - [video](https://www.youtube.com/watch?v=kCD6HQAjUXs&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=12)
+  * PublishPress or Edit Flow integration - [video](https://www.youtube.com/watch?v=eeZ6CBC5kQI&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=11)
+  * Revisionary: regulate moderated editing of published content - [video](https://www.youtube.com/watch?v=kCD6HQAjUXs&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=12)
   * BuddyPress Permission Groups for additional reading or editing access - [video](https://www.youtube.com/watch?v=oABIT7wki_A&list=PLyelWaWwt1HxuwrZDRBO_c70Tm8A7lfb3&index=14)
   * Circles: block access to content not authored by a fellow group member
   * WPML integration: mirror post/term permissions to translations
@@ -49,6 +48,13 @@ Pro [extensions](https://presspermit.com/extensions) are [available](https://pre
 Initial production release
 
 == Changelog ==
+
+= 2.6 - 21 Feb 2019 =
+* Compat : WP 5.0 - extension change logs were not displayed
+* Fixed : Extension updates on wp-admin Plugins screen did not launch in iframe
+* Change : Update copyrights, contributors for PublishPress ownership
+* Change : Purchase / renewal prompt captions and styling
+* Change : Update support links and captions for help ticket infrastructure
 
 = 2.5.5 - 21 Jan 2019 =
 * Fixed : On Edit Page screen, Groups and Users could not be selected for exceptions if WP_DEBUG was defined
@@ -579,19 +585,19 @@ Initial production release
 * Change : Info link on Install tab for screencast links and other PP Pro promotional info if support key inactive or expired
 * Lang : updated .po file
 
-== Installation ==
-
-Press Permit Core can be installed automatically via Plugins > Add New in your wp-admin panel.
-
-= To install manually instead: =
-
-1. Upload press-permit-core.zip to the /wp-content/plugins/ directory
-1. Extract the zip file. After extraction, you should have a "press-permit-core" folder in the plugins folder
-1. Activate the plugin through the 'Plugins' menu in WordPress
+== Setup ==
 
 After plugin activation, go to Permissions > Settings > Core. Select the post types and taxonomies for which permissions should be customized, then click the Update button.
 
 Permissions can be modified from post edit screens, term edit screens, or the plugin's Edit Permissions screens. The Edit Permissions screens are linked from Users, User Profile, and Permission Groups.
+
+== Compatibility Notes ==
+
+**caching plugins** : disable caching for logged users (unless you only use Press Permit to customize editing access).
+
+**Custom WP_Query calls** : Often, conflicts can be resolved by specifying a post_type argument. To prevent improper filtering of front-end ajax calls, pass required_operation=read or hook into the pp_unfiltered_ajax filter and add your action to the return array.
+
+**WPML Multilingual CMS** : plugin creates a separate post / page / category for each translation.  PP for WPML extension plugin is required to filter the Press Permit Exceptions item selection UI by language and (optionally) to enable mirroring of exceptions to translations.
 
 == Frequently Asked Questions ==
 
@@ -601,10 +607,9 @@ Press Permit's functionality is different from and complementary to a basic role
 
 Press Permit can assist you in turning the site-wide capability knobs for desired post types. But it also supercharges your permissions engine. Press Permit it is particularly useful when you want to customize access to a specific post, category or term.  Extension plugins add collaborative editing control, file filtering and other features which are not otherwise possible. The plugin will work with your WP roles as a starting point, whether customized by a role editor or not.  Users of the PP Collaborative Editing extension can (after activating advanced settings) navigate to Permissions > Settings > Role Usage to see (or modify) how Press Permit is using your WP role definitions. Press Permit's modifications remain only while it stays active.
 
+= What extra access control would Press Permit Pro give me? =
 
-= What extra access control would PP Pro give me? =
-
-For a detailed comparison, see the [RS/PP Feature Grid](https://presspermit.com/pp-rs-feature-grid). Here are some highlights:
+For a detailed comparison, see the [Role Scoper / Press Permit Feature Grid](https://presspermit.com/pp-rs-feature-grid). Here are some highlights:
 
 [youtube https://www.youtube.com/watch?v=0yOEBD8VE9c&rel=0&hd=1]
 Customize editing permissions for specific posts.
@@ -622,7 +627,7 @@ Define custom post statuses for access-controlled multi-step moderation.
 &nbsp;
 
 [youtube https://www.youtube.com/watch?v=eeZ6CBC5kQI&rel=0&hd=1]
-Edit Flow integration.
+PublishPress and Edit Flow integration.
 
 &nbsp;
 
@@ -633,9 +638,7 @@ Prevent inappropriate "back door" access by direct file url.
 
 = What about Role Scoper? =
 
-Moving forward, I do not plan any major development of the Role Scoper code base.  That plugin's compatibility with WordPress versions 3.7 and beyond will depend on the extent of changes related WordPress code.  I will consider consulting requests but will encourage migration to Press Permit - a superior platform with a sustainable funding model.
-
-If you encounter issues with Role Scoper and need to migrate to a different solution, [Press Permit Pro](https://presspermit.com) provides access to an import script which can (for most installations) automate the majority of your RS migration.
+Moving forward, we do not plan any major development of the Role Scoper code base.  If you encounter issues with Role Scoper and need to migrate to a different solution, [Press Permit Pro](https://presspermit.com) provides access to an import script which can (for most installations) automate the majority of your Role Scoper migration.
 
 For a detailed feature comparison, see the [RS/PP Feature Grid](https://presspermit.com/pp-rs-feature-grid).
 
@@ -661,30 +664,6 @@ Press Permit creates and uses the following tables: pp_groups, pp_group_members,
 6. Edit Permission Group (custom group enabled to read specific page)
 7. Edit Permission Group (WP role group with supplemental roles)
 8. Edit Permission Group (metagroup blocked from reading a category)
-9. PP Core Settings
-10. PP Advanced Settings
-11. PP Editing Settings (with pro extension PP Collaborative Editing)
-
-== Other Notes ==
-
-= Support Key Activation =
-
-Installation and updates of pro extensions, supplied directly from presspermit.com, are available for a specified duration after you activate the support key provided with a Press Permit Pro [purchase](https://presspermit.com/purchase). Single-site, 3-site and developer (25 sites) packages are available.
-
-Simply browse to Permissions > Settings > Support, paste in the key indicated on your Order Receipt, and click the Activate button.
-
-= Localization =
-
-Press Permit's menus, onscreen captions and inline descriptive footnotes can be translated using [poEdit](http://weblogtoolscollection.com/archives/2007/08/27/localizing-a-wordpress-plugin-using-poedit/).  
-	
-I will gladly include any user-contributed languages!
-
-= Plugin Compatibility Issues =
-
-**Custom WP_Query calls** : Often, conflicts can be resolved by specifying a post_type argument. To prevent improper filtering of front-end ajax calls, pass required_operation=read
-
-**WP Super Cache** : set WPSC option to disable caching for logged users (unless you only use Press Permit to customize editing access).
-
-**WPML Multilingual CMS** : plugin creates a separate post / page / category for each translation.  PP for WPML extension plugin is required to filter the PP Exceptions item selection UI by language and (optionally) to enable mirroring of exceptions to translations
-
- 
+9. Press Permit Core Settings
+10. Press Permit Advanced Settings
+11. Press Permit Editing Settings (with pro extension PP Collaborative Editing)

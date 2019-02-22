@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  *
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
+ * @copyright Copyright (c) 2019, PublishPress
  * 
  */
 if ( ! class_exists('PP_User') ) {

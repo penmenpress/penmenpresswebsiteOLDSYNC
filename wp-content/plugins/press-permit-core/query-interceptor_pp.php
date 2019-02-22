@@ -8,7 +8,7 @@ require_once( dirname(__FILE__).'/exceptions_pp.php' );
  * 
  * @package PP
  * @author Kevin Behrens <kevin@agapetry.net>
- * @copyright Copyright (c) 2011-2018, Agapetry Creations LLC
+ * @copyright Copyright (c) 2019, PublishPress
  * 
  */
 class PP_QueryInterceptor

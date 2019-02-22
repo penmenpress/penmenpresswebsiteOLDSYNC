@@ -36,7 +36,7 @@ class PP_Submittee {
 			exit;
 		}
 	
-		if ( ! empty( $_REQUEST['pp_upload_config'] ) || ! empty( $_REQUEST['pp_support_forum'] ) ) {
+		if ( ! empty( $_REQUEST['pp_upload_config'] ) || ! empty( $_REQUEST['pp_help_ticket'] ) ) {
 			require_once( dirname(__FILE__).'/admin/support_pp.php' );
 			$args = array();
 			if ( isset( $_REQUEST['post_id'] ) )
@@ -45,19 +45,23 @@ class PP_Submittee {
 			if ( isset( $_REQUEST['term_taxonomy_id'] ) )
 				$args['term_taxonomy_id'] = (int) $_REQUEST['term_taxonomy_id'];
 			
-			if ( ! empty( $_REQUEST['pp_support_forum'] ) ) {
-				//$forum = ( ! empty( $_REQUEST['pp_forum'] ) ) ? sanitize_url($_REQUEST['pp_forum']) : 'pp2-technical-issues';
-				$url = "https://presspermit.com/forums/";
+			$key = pp_get_option( 'support_key' );
+			
+			if ( ! empty( $_REQUEST['pp_help_ticket'] ) ) {
+				$url = "https://presspermit.com/contact/?pp_topic=press-permit";
 				
-				if ( ! empty( $_REQUEST['pp_topic'] ) )
-					$url = add_query_arg( 'pp_topic', $_REQUEST['pp_topic'], $url );
-
+				if ( $key && is_array( $key ) && ( 1 == $key[0] ) ) {  // note: this is only a hash
+					$url = add_query_arg( 'ppsh', $key[1], $url );
+				}
+				
 				wp_redirect( $url );
 			}
 			
-			$success = _pp_support_upload( $args );
+			if ( $key && is_array( $key ) && ! empty( $key[1] ) ) {
+				$success = _pp_support_upload( $args );
+			}
 			
-			if ( empty( $_REQUEST['pp_support_forum'] ) ) {
+			if ( empty( $_REQUEST['pp_help_ticket'] ) ) {
 				if ( -1 === $success )
 					$flag = 'pp_config_no_change';
 				elseif( $success )

@@ -36,9 +36,6 @@ class PP_AdminUI
 				$pp_term_edit_ui = new PP_TermEditUI();
 			}
 		}
-
-		if ( pp_is_user_administrator() || ( 0 === strpos( $pp_plugin_page, 'pp-' ) ) )
-			add_action('in_admin_footer', array(&$this, 'ui_admin_footer') );
 		
 		if ( 'users.php' == $pagenow ) {
 			require_once( dirname(__FILE__).'/users-ui_pp.php' );
@@ -73,9 +70,11 @@ class PP_AdminUI
 			if ( in_array( $pp_plugin_page, array( 'pp-edit-permissions' ) ) ) {  // pp-group-new
 				add_action( 'admin_head', array(&$this, 'load_scripts' ) );
 
-			} elseif ( in_array( $pp_plugin_page, array( 'pp-settings', 'pp-about' ) ) ) {
+			} elseif ( in_array( $pp_plugin_page, array( 'pp-settings' ) ) ) {
 				wp_enqueue_style( 'plugin-install' );
 				wp_enqueue_script( 'plugin-install' );
+				add_thickbox();
+			} elseif ( 'plugins.php' == $pagenow ) {
 				add_thickbox();
 			}
 		}
@@ -106,9 +105,6 @@ class PP_AdminUI
 
 		} elseif ( ( 'pp-settings' == $pp_plugin_page ) || ( ( 'plugin-install.php' == $pagenow ) && strpos( $_SERVER['HTTP_REFERER'], 'pp-settings' ) ) ) {
 			wp_enqueue_style( 'pp-settings', PP_URLPATH . '/admin/css/pp-settings.css', array(), PPC_VERSION );
-			
-		} elseif ( 'pp-about' == $pp_plugin_page ) {
-			wp_enqueue_style( 'pp-about', PP_URLPATH . '/admin/css/pp-about.css', array(), PPC_VERSION );
 		}
 		
 		global $pagenow;
@@ -145,7 +141,7 @@ class PP_AdminUI
 	function menu_handler() {
 		$pp_page = pp_sanitize_key($_GET['page']);
 		
-		if ( in_array( $pp_page, array( 'pp-settings', 'pp-groups', 'pp-users', 'pp-edit-permit', 'pp-edit-permissions', 'pp-group-new', 'pp-about', 'pp-attachments_utility' ) ) ) {
+		if ( in_array( $pp_page, array( 'pp-settings', 'pp-groups', 'pp-users', 'pp-edit-permit', 'pp-edit-permissions', 'pp-group-new', 'pp-attachments_utility' ) ) ) {
 			include_once( PPC_ABSPATH . "/admin/{$pp_page}.php" );
 			
 			if ( 'pp-settings' == $pp_page )
@@ -248,10 +244,6 @@ class PP_AdminUI
 		}
 
 		do_action( 'pp_admin_menu' );
-		
-		if ( ( 'pp-groups' == $pp_cred_menu ) && $do_settings ) {
-			add_submenu_page( $pp_cred_menu, __('About Press Permit', 'pp'), __('About', 'pp'), 'read', 'pp-about', array( &$this, 'menu_handler' ) );
-		}
 	}
 	
 	function ui_user() {
@@ -285,11 +277,6 @@ class PP_AdminUI
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 		wp_enqueue_script( 'pp-new-user', PP_URLPATH . "/admin/js/pp_new_user{$suffix}.js", array(), PPC_VERSION );
 		wp_localize_script( 'pp-new-user', 'ppUser', array( 'ajaxurl' => admin_url('') ) );
-	}
-	
-	function ui_admin_footer() {
-		if ( (false !== strpos($_SERVER['HTTP_USER_AGENT'], 'msie 7') ) )
-			echo '<span style="float:right; margin-left: 2em"><a href="https://presspermit.com/">' . __('Press Permit', 'pp') . '</a> ' . PPC_VERSION . ' | ' . '<a href="https://presspermit.com/forums/">' . _pp_('Support Forums', 'pp') . '</a>&nbsp;</span>';
 	}
 	
 	// support NextGenGallery uploader and other custom jquery calls which WP treats as index.php ( otherwise user_can_access_admin_page() fails )
