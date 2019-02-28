@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.3.2
+Version: 1.3.3
 Author URI: https://github.com/cyberscribe/login-recaptcha
 Text Domain: login_nocaptcha
 Domain Path: /languages/
@@ -197,7 +197,8 @@ class LoginNocaptcha {
             $secret = get_option('login_nocaptcha_secret');
             $payload = array('secret' => $secret, 'response' => $response, 'remoteip' => $remoteip);
             $result = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array('body' => $payload) );
-            if (is_wp_error('WP_Error')) { // disable SSL verification for older cURL clients
+            if (is_wp_error($result)) { // disable SSL verification for older clients and misconfigured TLS trust certificates
+                $error_msg = $result->get_error_message();
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -206,6 +207,7 @@ class LoginNocaptcha {
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
                 $result = curl_exec($ch);
                 $g_response = json_decode( $result );
+                update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha fell back to using cURL instead of wp_remote_post(). The error message was: %s.','login_nocaptcha'), $error_msg) );
             } else {
                 $g_response = json_decode($result['body']);
             }
