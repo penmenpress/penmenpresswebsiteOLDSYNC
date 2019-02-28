@@ -107,6 +107,7 @@
               }
             }
           }
+          jQuery(".edit-post-layout__content").css({"z-index":"9999","overflow":"visible"});
           var elem = el( 'form', { className: 'tw-container' }, el( 'div', { className: 'tw-container-wrap' + (pluginData.containerClass ? ' ' + pluginData.containerClass : '') }, el( 'span', {
             className: "media-modal-close",
             onClick: close
@@ -175,6 +176,7 @@
         }
 
         function close() {
+          jQuery(".edit-post-layout__content").css({"z-index":"0","overflow":"auto"});
           props.setAttributes( { popupOpened: false } );
         }
 

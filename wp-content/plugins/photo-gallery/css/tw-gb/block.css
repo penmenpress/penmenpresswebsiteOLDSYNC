@@ -3,12 +3,6 @@
  * version 2.0.4
  */
 
-@media (min-width: 782px) {
-  .edit-post-layout__content {
-    z-index: 9999;
-  }
-}
-
 .tw-container {
   position: fixed;
   top: 30px;

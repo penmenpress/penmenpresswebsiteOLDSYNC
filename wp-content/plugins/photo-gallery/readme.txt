@@ -3,7 +3,7 @@ Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
 Tested up to: 5.1 
-Stable tag: 1.5.16
+Stable tag: 1.5.17
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -306,6 +306,9 @@ Choose whether to display random or the first/last specific number of images.
 
 
 == Changelog ==
+
+= 1.5.17 =
+* Fixed: Shortcode popup opened from Gutenberg.
 
 = 1.5.16 =
 * Fixed: Shortcode popup opened from Gutenberg.    
@@ -1413,5 +1416,5 @@ This vulnerability was discovered by Fortinet's FortiGuard Labs.
 3.  Photo Gallery - Image Browser View 
 4.  Photo Gallery - Mansory View (Premium version)   
 5.  Photo Gallery - Mosaic View (Premium version) 
-6.  Photo Gallery - Edit Global Options   
-7.  Photo Gallery - Edit Watermark   
+6.  Photo Gallery - Shorecode popup   
+7.  Photo Gallery - Galleries list
