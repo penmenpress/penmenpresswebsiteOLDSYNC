@@ -208,6 +208,12 @@ class CapsmanHandler
 			unset($del_caps['manage_capabilities']);
 			ak_admin_error(__('You cannot remove Manage Capabilities from Administrators', 'capsman-enhanced'));
 		}
+		
+		// additional safeguard against removal of read capability
+		if ( isset( $del_caps['read'] ) && in_array( $role_name, $this->cm->core_roles ) ) {
+			unset( $del_caps['read'] );
+		}
+		
 		// Add new capabilities to role
 		foreach ( $add_caps as $cap => $grant ) {
 			if ( $is_administrator || current_user_can($cap) )

@@ -3,15 +3,14 @@
  * Capability Manager.
  * Plugin to create and manage roles and capabilities.
  *
- * @version		$Rev: 199485 $
- * @author		Jordi Canals
- * @copyright   Copyright (C) 2009, 2010 Jordi Canals; Copyright (C) 2012-2014 Kevin Behrens
+ * @author		Jordi Canals, Kevin Behrens
+ * @copyright   Copyright (C) 2009, 2010 Jordi Canals, (C) 2019 PublishPress
  * @license		GNU General Public License version 2
- * @link		http://agapetry.net
+ * @link		https://publishpress.com
  *
 
 	Copyright 2009, 2010 Jordi Canals <devel@jcanals.cat>
-	Modifications Copyright 2012-2018 Kevin Behrens <kevin@agapetry.net>
+	Modifications Copyright 2019, PublishPress <help@publishpress.com>
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -26,8 +25,6 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include_once ( AK_CLASSES . '/abstract/plugin.php' );
-
 add_action( 'init', 'cme_update_pp_usage' );  // update early so resulting post type cap changes are applied for this request's UI construction
 
 function cme_update_pp_usage() {
@@ -39,13 +36,13 @@ function cme_update_pp_usage() {
 
 
 /**
- * Class cmanCapsManager.
+ * Class CapabilityManager.
  * Sets the main environment for all Capability Manager components.
  *
  * @author		Jordi Canals, Kevin Behrens
- * @link		http://agapetry.net
+ * @link		https://publishpress.com
  */
-class CapabilityManager extends akPluginAbstract
+class CapabilityManager
 {
 	/**
 	 * Array with all capabilities to be managed. (Depends on user caps).
@@ -60,7 +57,12 @@ class CapabilityManager extends akPluginAbstract
 	 * @var array
 	 */
 	var $roles = array();
-
+	
+	/**
+	 * Roles to monitor for removal of essential capabilities
+	 */
+	var $core_roles = array();
+	
 	/**
 	 * Current role we are managing
 	 * @var string
@@ -77,21 +79,72 @@ class CapabilityManager extends akPluginAbstract
 	
 	var $message;
 	
-	function __construct( $mod_file, $ID = '' ) {
+	/**
+	 * Module ID. Is the module internal short name.
+	 *
+	 * @var string
+	 */
+	public $ID;
+
+	public function __construct()
+	{
 		$this->ID = 'capsman';
+		$this->mod_url = plugins_url( '', CME_FILE );
 		
-		parent::__construct( $mod_file, $ID );
+		$this->core_roles = apply_filters( 'pp_caps_core_roles', array( 'administrator', 'editor', 'revisor', 'author', 'contributor', 'subscriber' ) );
+		
+		$this->moduleLoad();
+		
+		add_action('admin_menu', array($this, 'adminMenus'), 5);  // execute prior to PP, to use menu hook
+
+		// Load styles
+		add_action('admin_print_styles', array($this, 'adminStyles'));
 	}
+
+    /**
+     * Enqueues administration styles.
+     *
+     * @hook action 'admin_print_styles'
+	 *
+     * @return void
+     */
+    function adminStyles()
+    {
+		if ( empty( $_REQUEST['page'] ) || ! in_array( $_REQUEST['page'], array( 'capsman', 'capsman-tool' ) ) )
+			return;
+		
+		wp_register_style( $this->ID . 'framework_admin', $this->mod_url . '/framework/styles/admin.css', false, CAPSMAN_ENH_VERSION);
+   		wp_enqueue_style( $this->ID . 'framework_admin');
+		
+   		wp_register_style( $this->ID . '_admin', $this->mod_url . '/admin.css', false, CAPSMAN_ENH_VERSION);
+   		wp_enqueue_style( $this->ID . '_admin');
+		
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+		$url = $this->mod_url . "/admin{$suffix}.js";
+		wp_enqueue_script( 'cme_admin', $url, array('jquery'), CAPSMAN_VERSION, true );
+		wp_localize_script( 'cme_admin', 'cmeAdmin', array( 
+			'negationCaption' => __( 'Explicity negate this capability by storing as disabled', 'capsman-enhanced' ),
+			'typeCapsNegationCaption' => __( 'Explicitly negate these capabilities by storing as disabled', 'capsman-enhanced' ),
+			'typeCapUnregistered' => __( 'Post type registration does not define this capability distinctly', 'capsman-enhanced' ),
+			'capNegated' => __( 'This capability is explicitly negated. Click to add/remove normally.', 'capsman-enhanced' ), 
+			'chkCaption' => __( 'Add or remove this capability from the WordPress role', 'capsman-enhanced' ), 
+			'switchableCaption' => __( 'Add or remove capability from the role normally', 'capsman-enhanced' ) ) 
+		);
+    }
 	
 	/**
 	 * Creates some filters at module load time.
-	 *
-	 * @see akPluginAbstract#moduleLoad()
 	 *
 	 * @return void
 	 */
     protected function moduleLoad ()
     {
+		$old_version = get_option($this->ID . '_version');
+		if ( version_compare( $old_version, CAPSMAN_ENH_VERSION, 'ne') ) {
+			update_option($this->ID . '_version', CAPSMAN_ENH_VERSION);
+			$this->pluginUpdate();
+		}
+		
         // Only roles that a user can administer can be assigned to others.
         add_filter('editable_roles', array($this, 'filterEditRoles'));
 
@@ -132,21 +185,11 @@ class CapabilityManager extends akPluginAbstract
 	}
 
 	/**
-	 * Activates the plugin and sets the new capability 'Manage Capabilities'
-	 *
-	 * @return void
-	 */
-	protected function pluginActivate ()
-	{
-		$this->setAdminCapability();
-	}
-
-	/**
 	 * Updates Capability Manager to a new version
 	 *
 	 * @return void
 	 */
-	protected function pluginUpdate ( $version )
+	protected function pluginUpdate ()
 	{
 		$backup = get_option($this->ID . '_backup');
 		if ( false === $backup ) {		// No previous backup found. Save it!
@@ -327,7 +370,7 @@ class CapabilityManager extends akPluginAbstract
 			$this->current = array_shift($roles);
 		}
 
-		include ( AK_CMAN_LIB . '/admin.php' );
+		include ( dirname(CME_FILE) . '/includes/admin.php' );
 	}
 
 	/**
@@ -474,6 +517,6 @@ class CapabilityManager extends akPluginAbstract
 			$cme_backup_handler->backupToolReset();
 		}
 
-		include ( AK_CMAN_LIB . '/backup.php' );
+		include ( dirname(CME_FILE) . '/includes/backup.php' );
 	}
 }

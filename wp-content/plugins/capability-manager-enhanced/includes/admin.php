@@ -3,15 +3,14 @@
  * General Admin for Capability Manager.
  * Provides admin pages to create and manage roles and capabilities.
  *
- * @version		$Rev: 198515 $
  * @author		Jordi Canals, Kevin Behrens
- * @copyright   Copyright (C) 2009, 2010 Jordi Canals, (C) 2012-2013 Kevin Behrens
+ * @copyright   Copyright (C) 2009, 2010 Jordi Canals, (C) 2019 PublishPress
  * @license		GNU General Public License version 2
- * @link		http://agapetry.net
+ * @link		https://publishpress.com
  *
 
 	Copyright 2009, 2010 Jordi Canals <devel@jcanals.cat>
-	Modifications Copyright 2012-2015, Kevin Behrens <kevin@agapetry.net>
+	Modifications Copyright 2019, PublishPress <help@publishpress.com>
 	
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -26,6 +25,14 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+if ( in_array( $this->current, $this->core_roles ) ) {
+	$role_obj = get_role( $this->current );
+	
+	if ( empty( $role_obj->capabilities['read'] ) ) {
+		ak_admin_error( sprintf( __( 'Warning: This role may not work correctly because it does not have the read capability. %1$sClick here to fix this now%2$s.', 'capsman-enhanced' ), '<a href="javascript:void(0)" class="cme-fix-read-cap">', '</a>' ) );
+	}
+}
+ 
 $roles = $this->roles;
 $default = $this->current;
 
@@ -58,6 +65,10 @@ if( defined('PP_ACTIVE') ) {
 		<dl>
 			<dt><?php printf(__('Capabilities for %s', 'capsman-enhanced'), $roles[$default]); ?></dt>
 			<dd>
+				<div style="float:right">
+				<input type="submit" name="SaveRole" value="<?php _e('Save Changes', 'capsman-enhanced') ?>" class="button-primary" /> &nbsp;
+				</div>
+			
 				<div>
 				<?php _e( 'View and modify capabilities WordPress associates with each role. Changes <strong>remain in the database</strong> even if you deactivate this plugin.', 'capsman-enhanced' ); ?>
 				</div>
@@ -65,22 +76,23 @@ if( defined('PP_ACTIVE') ) {
 				<?php
 				if ( defined( 'PP_ACTIVE' ) ) {
 					$pp_ui->show_capability_hints( $default );
-				} else {
+				} 
+	
 					global $capsman;
 					$img_url = $capsman->mod_url . '/images/';
-				
-					echo '<div style="margin-top:5px">';
-					_e( "To further customize editing or viewing access, consider stepping up to <a href='#pp-more'>Press Permit</a>.", 'capsman-enhanced' );
-					echo '</div>';
 					?>
+					<div style="margin-top:5px">
+					<span class="publishpress"><?php printf( __( 'Thanks for using the %1$sPublishPress%2$s family of professional publishing tools.', 'capsman-enhanced'), '<a href="https://publishpress.com/" target="_blank">', '</a>' );?></span>
+					</div>
+					
 					<script type="text/javascript">
 					/* <![CDATA[ */
 					jQuery(document).ready( function($) {
-						$('a[href=#pp-more]').click( function() {
+						$('a[href="#pp-more"]').click( function() {
 							$('#pp_features').show();
 							return false;
 						});
-						$('a[href=#pp-hide]').click( function() {
+						$('a[href="#pp-hide"]').click( function() {
 							$('#pp_features').hide();
 							return false;
 						});
@@ -161,7 +173,6 @@ if( defined('PP_ACTIVE') ) {
 					echo '&nbsp;&nbsp;&bull;&nbsp;&nbsp;';
 					echo '<a href="#pp-hide">hide</a>';
 					echo '</div></div>';
-				}
 				
 				if ( MULTISITE ) {
 					global $wp_roles;
@@ -179,8 +190,6 @@ if( defined('PP_ACTIVE') ) {
 				$capsman->reinstate_db_roles();
 				
 				$current = get_role($default);
-				
-				//print_r($current);
 				
 				$rcaps = $current->capabilities;
 
@@ -235,17 +244,12 @@ if( defined('PP_ACTIVE') ) {
 	
 				$stati = get_post_stati( array( 'internal' => false ) );
 	
-				//if ( count($stati) > 5 ) {
-					$cap_type_names = array(
-						'' => __( '&nbsp;', 'capsman-enhanced' ),
-						'read' => __( 'Reading', 'capsman-enhanced' ),
-						'edit' => __( 'Editing Capabilities', 'capsman-enhanced' ),
-						'delete' => __( 'Deletion Capabilities', 'capsman-enhanced' )
-					);
-	
-				//} else {
-					
-				//}
+				$cap_type_names = array(
+					'' => __( '&nbsp;', 'capsman-enhanced' ),
+					'read' => __( 'Reading', 'capsman-enhanced' ),
+					'edit' => __( 'Editing Capabilities', 'capsman-enhanced' ),
+					'delete' => __( 'Deletion Capabilities', 'capsman-enhanced' )
+				);
 	
 				$cap_tips = array( 
 					'read_private' => __( 'can read posts which are currently published with private visibility', 'capsman-enhanced' ),
@@ -455,6 +459,21 @@ if( defined('PP_ACTIVE') ) {
 					
 					$disabled = '';
 					$checked = checked(1, ! empty($rcaps[$cap_name]), false );
+					$lock_capability = false;
+					
+					if ( 'read' == $cap_name ) {
+						if ( in_array( $default, $this->core_roles ) ) {
+							// prevent the read capability from being removed from a core role, but don't force it to be added
+							if ( $checked || apply_filters( 'pp_caps_force_capability_storage', false, 'read', $default ) ) {
+								if ( apply_filters( 'pp_caps_lock_capability', true, 'read', $default ) ) {
+									$lock_capability = true;
+									$class .= ' cap-locked';
+									$disabled = 'disabled="disabled"';
+								}
+							}
+						}
+					}
+					
 					?>
 					<td class="<?php echo $class; ?>"><span class="cap-x">X</span><label for="caps[<?php echo $cap_name; ?>]" title="<?php echo $title_text;?>"><input id=caps[<?php echo $cap_name; ?>] type="checkbox" name="caps[<?php echo $cap_name; ?>]" value="1" <?php echo $checked . $disabled;?> />
 					<span>
@@ -468,6 +487,11 @@ if( defined('PP_ACTIVE') ) {
 					</td>
 				
 					<?php
+					
+					if ( $lock_capability ) {
+						echo '<input type="hidden" name="caps[' . $cap_name . ']" value="1" />';
+					}
+					
 					++$i;
 				}
 				
@@ -634,14 +658,8 @@ if( defined('PP_ACTIVE') ) {
 			<?php endif; ?>
 		</p>
 		
-		<br />
-		<?php agp_admin_footer(); ?>
-		<br />
-		
 		</td>
 		<td class="sidebar">
-			<?php agp_admin_authoring($this->ID); ?>
-
 			<dl>
 				<dt><?php if ( defined('WPLANG') && WPLANG ) _e('Select New Role', 'capsman-enhanced'); else echo('Select Role to View / Edit'); ?></dt>
 				<dd style="text-align:center;">
@@ -703,6 +721,31 @@ if( defined('PP_ACTIVE') ) {
 				</dd>
 			</dl>
 			
+			<dl>
+				<dt><?php _e('Backup Tool', 'capsman-enhanced'); ?></dt>
+				<dd style="text-align:center;">
+					<p><a href="tools.php?page=capsman-tool"><?php _e('Backup / Restore Roles', 'capsman-enhanced');?></a></p>
+				</dd>
+			</dl>
+			
+			<dl>
+				<dt><?php _e('Related Permissions Plugins', 'capsman-enhanced'); ?></dt>
+				<ul>
+					<?php $_url = "plugin-install.php?tab=plugin-information&plugin=publishpress&TB_iframe=true&width=640&height=678";
+					$url = ( is_multisite() ) ? network_admin_url($_url) : admin_url($_url);
+					?>
+					<li><a class="thickbox" href="<?php echo $url;?>"><?php _e('PublishPress', 'capsman-enhanced');?></a></li>
+					
+					<li><a href="#pp-more"><?php _e('Press Permit', 'capsman-enhanced');?></a>
+					</li>
+					
+					<?php $_url = "plugin-install.php?tab=plugin-information&plugin=revisionary&TB_iframe=true&width=640&height=678";
+					$url = ( is_multisite() ) ? network_admin_url($_url) : admin_url($_url);
+					?>
+					<li><a class="thickbox" href="<?php echo $url;?>"><?php _e('Revisionary', 'capsman-enhanced');?></a></li>
+				</ul>
+			</dl>
+			
 			<?php if ( defined('PP_ACTIVE') )
 				$pp_ui->pp_types_ui( $defined );
 			?>
@@ -738,5 +781,6 @@ function cme_network_role_ui( $default ) {
 }
 
 function cme_plugin_info_url( $plugin_slug ) {
-	return self_admin_url( "plugin-install.php?tab=plugin-information&plugin=$plugin_slug&TB_iframe=true&width=640&height=678" );
+	$_url = "plugin-install.php?tab=plugin-information&plugin=$plugin_slug&TB_iframe=true&width=640&height=678";
+	return ( is_multisite() ) ? network_admin_url($_url) : admin_url($_url);
 }

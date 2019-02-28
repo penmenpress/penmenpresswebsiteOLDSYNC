@@ -26,17 +26,8 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* =========================================================== SETTINGS */
-
-#icon-capsman-admin {
-	background: transparent url('images/cman32.png') no-repeat;
-	}
 
 /* ====================================================== SIDEBAR ICONS */
-
-td.sidebar a.capsman {
-	background-image: url('images/capsman.png');
-	}
 
 a.cap_type {
 	text-decoration: none;
@@ -142,18 +133,8 @@ td.cap-neg  a.neg-cap {
 display:none;
 }
 
-/*
-span.cme-drop-cap {
-color: #aaa;
-}
-*/
-
 td.cap-metagroup label span {
 color: #080 !important;
-}
-
-td.cap-locked label input {
-display: inline !important;
 }
 
 td.cap-locked a.neg-cap {
@@ -195,13 +176,8 @@ font-style: italic;
 margin-top:5px;
 }
 
-/*
-#wpbody-content{
-padding-bottom: 30px;
-}
-*/
-
 td.cm-has-via-pp {
 background-color: #7f7;
 }
-/* EOF */
+
+#akmin span.publishpress,#akmin span.publishpress a,#akmin span.publishpress a:visited {color:#655997;font-weight:bold}

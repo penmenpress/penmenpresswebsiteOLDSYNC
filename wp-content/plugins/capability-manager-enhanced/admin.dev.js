@@ -66,4 +66,10 @@ jQuery(document).ready( function($) {
 		
 		$(this).prop('checked_all',check_val);
 	});
+	
+	$('a.cme-fix-read-cap').click(function(){
+		$('input[name="caps[read]"]').prop('checked', true);
+		$('input[name="SaveRole"]').trigger('click');
+		return false;
+	});
 });

@@ -65,35 +65,12 @@ table#akmin dl dt {
 	font-weight: bold;
 	margin: 0;
 	padding: 4px 10px 4px 10px;
-	background: #dfdfdf url('images/dl-bg-gray.png') repeat-x left top;
+	background: #dfdfdf;
 	}
 
 table#akmin p {
 	padding: 5px 0 5px 0;
 	margin: 0;
-	}
-
-table#akmin .footer {
-	text-align: center;
-	font-size: 10.5px;
-	}
-			
-table#akmin .footer a {
-	font-size: 10.5px;
-	text-decoration: none;
-	}
-	
-table#akmin .footer a:hover {
-	text-decoration: underline;
-	}
-table#akmin td small {
-	font-size: 10.5px;
-	}
-	
-table#akmin hr {
-	border: none 0;
-	border-top: 1px solid #bbbbbb;
-	height: 1px;
 	}
 
 table#akmin ul {
@@ -102,11 +79,6 @@ table#akmin ul {
 	
 table#akmin ul.ul-disc {
 	list-style: disc outside;
-	}
-	
-table#akmin ul.bullet {
-	list-style-type: disc;
-	padding-left: 20px;
 	}
 
 /* ====================================================== ADMIN CONTENT */
@@ -151,20 +123,3 @@ table#akmin td.sidebar dd {
 	margin: 0;
 	padding: 5px 10px 5px 10px;
 	}
-
-/* ====================================================== SIDEBAR ICONS */
-
-td.sidebar a.docs {
-	background-image: url('images/docs.png');
-}
-
-td.sidebar a.help {
-	background-image: url('images/help.png');
-	}
-	
-td.sidebar a.home {
-
-	}
-
-	
-/* EOF */

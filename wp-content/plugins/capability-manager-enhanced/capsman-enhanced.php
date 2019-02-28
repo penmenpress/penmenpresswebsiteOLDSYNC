@@ -1,31 +1,34 @@
 <?php
 /**
- * Capability Manager. Main Plugin File.
- * Plugin to create and manage Roles and Capabilities.
+ * Plugin Name: Capability Manager Enhanced
+ * Plugin URI: https://publishpress.com
+ * Description: Manage WordPress role definitions, per-site or network-wide. Organizes post capabilities by post type and operation.
+ * Version: 1.6.1
+ * Author: PublishPress
+ * Author URI: https://publishpress.com
+ * Text Domain: capsman-enhanced
+ * Domain Path: /lang/
+ * License: GPLv3
+ *
+ * Copyright (c) 2019 PublishPress
+ *
+ * ------------------------------------------------------------------------------
+ * Based on Capability Manager
+ * Author: Jordi Canals
+ * Copyright (c) 2009, 2010 Jordi Canals
+ * ------------------------------------------------------------------------------
  *
  * @package 	capability-manager-enhanced
- * @author		Jordi Canals, Kevin Behrens
- * @copyright   Copyright (C) 2009, 2010 Jordi Canals; modifications Copyright (C) 2012-2018 Kevin Behrens
+ * @author		PublishPress
+ * @copyright   Copyright (C) 2009, 2010 Jordi Canals; modifications Copyright (C) 2019 PublishPress
  * @license		GNU General Public License version 3
- * @link		http://agapetry.net
- * @version 	1.5.11
+ * @link		https://publishpress.com
+ * @version 	1.6.1
  */
 
-/*
-Plugin Name: Capability Manager Enhanced
-Plugin URI: http://presspermit.com/capability-manager
-Description: Manage WordPress role definitions, per-site or network-wide. Organizes post capabilities by post type and operation.
-Version: 1.5.11
-Author: Jordi Canals, Kevin Behrens
-Author URI: http://agapetry.net
-Text Domain: capsman-enhanced
-Domain Path: /lang/
-License: GPLv3
-*/
-
 if ( ! defined( 'CAPSMAN_VERSION' ) ) {
-	define( 'CAPSMAN_VERSION', '1.5.11' );
-	define( 'CAPSMAN_ENH_VERSION', '1.5.11' );
+	define( 'CAPSMAN_VERSION', '1.6.1' );
+	define( 'CAPSMAN_ENH_VERSION', '1.6.1' );
 }
 
 if ( cme_is_plugin_active( 'capsman.php' ) ) {
@@ -37,8 +40,6 @@ if ( cme_is_plugin_active( 'capsman.php' ) ) {
 	return;
 } else {
 	define ( 'CME_FILE', __FILE__ );
-	define ( 'AK_CMAN_PATH', dirname(__FILE__) );
-	define ( 'AK_CMAN_LIB', AK_CMAN_PATH . '/includes' );
 
 	/**
 	 * Sets an admin warning regarding required PHP version.
@@ -75,9 +76,11 @@ if ( cme_is_plugin_active( 'capsman.php' ) ) {
 			global $capsman;
 			
 			// Run the plugin
-			include_once ( AK_CMAN_PATH . '/framework/loader.php' );
-			include ( AK_CMAN_LIB . '/manager.php' );
-			$capsman = new CapabilityManager(__FILE__, 'capsman');
+			require_once ( dirname(__FILE__) . '/framework/lib/formating.php' );
+			require_once ( dirname(__FILE__) . '/framework/lib/users.php' );
+			
+			require_once ( dirname(__FILE__) . '/includes/manager.php' );
+			$capsman = new CapabilityManager();
 			
 			if ( isset($_REQUEST['page']) && ( 'capsman' == $_REQUEST['page'] ) ) {
 				add_action( 'admin_enqueue_scripts', '_cme_pp_scripts' );
@@ -89,11 +92,18 @@ if ( cme_is_plugin_active( 'capsman.php' ) ) {
 	}
 }
 
+add_action( 'init', '_cme_init' );
 add_action( 'plugins_loaded', '_cme_act_pp_active', 1 );
 
 function _cme_act_pp_active() {
 	if ( defined('PP_VERSION') || defined('PPC_VERSION') )
 		define( 'PP_ACTIVE', true );
+}
+
+function _cme_init() {
+	require_once ( dirname(__FILE__) . '/includes/filters.php' );	
+
+	load_plugin_textdomain('capsman-enhanced', false, dirname(__FILE__) . '/lang');
 }
 
 function _cme_pp_scripts() {
@@ -140,4 +150,4 @@ function _cme_pp_default_pattern_role( $role ) {
 }
 
 if ( is_multisite() )
-	require_once ( AK_CMAN_PATH . '/includes/network.php' );
+	require_once ( dirname(__FILE__) . '/includes/network.php' );

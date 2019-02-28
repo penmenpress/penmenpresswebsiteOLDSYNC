@@ -65,7 +65,7 @@ function _cme_new_blog( $new_blog_id ) {
 		if ( defined('PP_ACTIVE') )
 			pp_update_option( 'supplemental_role_defs', $blog_pp_only );
 		
-		switch_to_blog($restore_blog_id);
+		restore_current_blog();
 		( method_exists( $wp_roles, 'for_site' ) ) ? $wp_roles->for_site() : $wp_roles->reinit();
 		
 		if ( defined('PP_ACTIVE') )
