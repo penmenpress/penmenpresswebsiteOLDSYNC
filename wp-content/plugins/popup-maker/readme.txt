@@ -7,7 +7,7 @@ Tags:  marketing, popup, popups, optin, advertising, conversion, responsive popu
 Requires at least: 4.1
 Tested up to: 5.1
 Requires PHP: 5.2.17
-Stable tag: 1.8.0
+Stable tag: 1.8.3
 License: GPLv2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +102,16 @@ There are several common causes for this which include:
 9. Create any popup imaginable using our color pickers and sliders!
 
 == Changelog ==
+
+= v1.8.3 - 02/27/2019 =
+* Fix: Added back deprecated function that got truncated previously.
+
+= v1.8.2 - 02/25/2019 =
+* Fix: Bug on older versions of PHP due to usage of [] rather than array().
+
+= v1.8.1 - 02/22/2019 =
+* Fix: Error on older versions of PHP when calling get_plugin_data on a plugin that wasn't installed.
+* Fix: "Fatal error: Can not use method return value in write context" on older versions of PHP.
 
 = v1.8.0 - 02/20/2019 =
 * Feature: New popup theme settings:
