@@ -1,9 +1,10 @@
 === Press Permit Core ===
 Contributors: publishpress, kevinB, stevejburge, andergmartins
 Tags: restrict, access, permissions, cms, user, private, category, pages, privacy, capabilities, role, scoper
-Requires at least: 3.4
-Tested up to: 5.0.3
-Stable tag: 2.6
+Requires at least: 4.7
+Requires PHP: 5.4
+Tested up to: 5.1
+Stable tag: 2.6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -49,12 +50,17 @@ Initial production release
 
 == Changelog ==
 
+= 2.6.1 - 22 Feb 2019 =
+* Fixed : PHP Notice on Plugins > Add New
+
 = 2.6 - 21 Feb 2019 =
 * Compat : WP 5.0 - extension change logs were not displayed
 * Fixed : Extension updates on wp-admin Plugins screen did not launch in iframe
 * Change : Update copyrights, contributors for PublishPress ownership
 * Change : Purchase / renewal prompt captions and styling
 * Change : Update support links and captions for help ticket infrastructure
+* Change : Minimum WordPress version 4.7
+* Change : Minimum PHP version 5.4
 
 = 2.5.5 - 21 Jan 2019 =
 * Fixed : On Edit Page screen, Groups and Users could not be selected for exceptions if WP_DEBUG was defined

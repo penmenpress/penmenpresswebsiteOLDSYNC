@@ -79,7 +79,7 @@ class PP_Plugin_Admin {
 	
 	function changelog() {
 		global $pp_extensions;
-		if ( ! empty( $pp_extensions[ $_REQUEST["plugin"] ] ) ) {
+		if ( ! empty( $_REQUEST["plugin"] ) && ! empty( $pp_extensions[ $_REQUEST["plugin"] ] ) ) {
 			require_once( dirname(__FILE__).'/plugin_pp.php' );
 			PP_Plugin_Status::changelog();
 		}

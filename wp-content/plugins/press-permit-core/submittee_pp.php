@@ -48,7 +48,7 @@ class PP_Submittee {
 			$key = pp_get_option( 'support_key' );
 			
 			if ( ! empty( $_REQUEST['pp_help_ticket'] ) ) {
-				$url = "https://presspermit.com/contact/?pp_topic=press-permit";
+				$url = "https://presspermit.com/contact/?pp_topic=press-permit&via=wp-admin";
 				
 				if ( $key && is_array( $key ) && ( 1 == $key[0] ) ) {  // note: this is only a hash
 					$url = add_query_arg( 'ppsh', $key[1], $url );
