@@ -9,12 +9,6 @@
  * @since 1.0.0
  */
 
-add_action( 'widgets_init', 'editorial_register_ads_banner_widget' );
-
-function editorial_register_ads_banner_widget() {
-	register_widget( 'Editorial_Ads_Banner' );
-}
-
 class Editorial_Ads_Banner extends WP_widget {
 
 	/**
@@ -35,9 +29,10 @@ class Editorial_Ads_Banner extends WP_widget {
     private function widget_fields() {
         
         $ads_size = array(
-                    'leaderboard'   => __( 'Leaderboard (728x90)', 'editorial' ),
-                    'large'         => __( 'Large (300x250)', 'editorial' )
-                    );
+            'leaderboard'   => __( 'Leaderboard (728x90)', 'editorial' ),
+            'large'         => __( 'Large (300x250)', 'editorial' )
+        );
+
         $fields = array(
 
             'banner_title' => array(
@@ -47,17 +42,17 @@ class Editorial_Ads_Banner extends WP_widget {
             ),
 
             'banner_size' => array(
-                'editorial_widgets_name' => 'banner_size',
-                'editorial_widgets_title' => __( 'Ads Size', 'editorial' ),
-                'editorial_widgets_default' => 'leaderboard',
-                'editorial_widgets_field_type' => 'radio',
+                'editorial_widgets_name'        => 'banner_size',
+                'editorial_widgets_title'       => __( 'Ads Size', 'editorial' ),
+                'editorial_widgets_default'     => 'leaderboard',
+                'editorial_widgets_field_type'  => 'radio',
                 'editorial_widgets_field_options' => $ads_size
             ),
 
             'banner_image' => array(
-                'editorial_widgets_name' => 'banner_image',
-                'editorial_widgets_title' => __( 'Add Image', 'editorial' ),
-                'editorial_widgets_field_type' => 'upload',
+                'editorial_widgets_name'        => 'banner_image',
+                'editorial_widgets_title'       => __( 'Add Image', 'editorial' ),
+                'editorial_widgets_field_type'  => 'upload',
             ),
 
             'banner_url' => array(

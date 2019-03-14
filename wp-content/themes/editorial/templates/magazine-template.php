@@ -25,25 +25,27 @@ get_header(); ?>
 	        ?>
 		
 	</div><!-- .featured-slider-section -->
+
 	<div class="home-content-wrapper clearfix">
 		
-			<div class="home-primary-wrapper">
-					<?php
-			        	if( is_active_sidebar( 'editorial_home_content_area' ) ) {
-			            	if ( !dynamic_sidebar( 'editorial_home_content_area' ) ):
-			            	endif;
-			         	}
-			        ?>
-			        
-			</div><!-- .home-primary-wrapper -->
-			<div class="home-secondary-wrapper">
+		<div class="home-primary-wrapper">
 				<?php
-		        	if( is_active_sidebar( 'editorial_home_sidebar' ) ) {
-		            	if ( !dynamic_sidebar( 'editorial_home_sidebar' ) ):
+		        	if( is_active_sidebar( 'editorial_home_content_area' ) ) {
+		            	if ( !dynamic_sidebar( 'editorial_home_content_area' ) ):
 		            	endif;
 		         	}
 		        ?>
-			</div><!-- .home-secondary-wrapper -->
+		        
+		</div><!-- .home-primary-wrapper -->
+		
+		<div class="home-secondary-wrapper">
+			<?php
+	        	if( is_active_sidebar( 'editorial_home_sidebar' ) ) {
+	            	if ( !dynamic_sidebar( 'editorial_home_sidebar' ) ):
+	            	endif;
+	         	}
+	        ?>
+		</div><!-- .home-secondary-wrapper -->
 		
 	</div><!-- .home-content-wrapper -->
 <?php

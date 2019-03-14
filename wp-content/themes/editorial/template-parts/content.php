@@ -13,7 +13,7 @@
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<?php if( has_post_thumbnail() ) { ?>
 			<div class="post-image">
-				<a href="<?php the_permalink();?>" title="<?php the_title();?>">
+				<a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
 					<figure><?php the_post_thumbnail( 'editorial-single-large' ); ?></figure>
 				</a>
 			</div>
@@ -31,8 +31,10 @@
 			?>
 		</header><!-- .entry-header -->
 		<div class="entry-meta">
-			<?php editorial_posted_on(); ?>
-			<?php editorial_post_comment(); ?>
+			<?php
+				editorial_posted_on();
+				editorial_post_comment();
+			?>
 		</div><!-- .entry-meta -->
 		<div class="entry-content">
 			<?php the_excerpt(); ?>

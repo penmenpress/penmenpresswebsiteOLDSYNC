@@ -20,8 +20,10 @@
 		<?php do_action( 'editorial_post_categories' ); ?>
 		<h1 class="entry-title"><?php the_title();?></h1>
 		<div class="entry-meta">
-			<?php editorial_posted_on(); ?>
-			<?php editorial_post_comment(); ?>
+			<?php
+				editorial_posted_on();
+				editorial_post_comment();
+			?>
 		</div><!-- .entry-meta -->
 	</header><!-- .entry-header -->
 

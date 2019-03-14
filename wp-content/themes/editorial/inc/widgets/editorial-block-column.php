@@ -9,12 +9,6 @@
  * @since 1.0.0
  */
 
-add_action( 'widgets_init', 'editorial_register_block_column_widget' );
-
-function editorial_register_block_column_widget() {
-    register_widget( 'Editorial_Block_Column' );
-}
-
 class Editorial_Block_Column extends WP_Widget {
 
 	/**
@@ -45,10 +39,10 @@ class Editorial_Block_Column extends WP_Widget {
             ),
 
             'editorial_block_cat_id' => array(
-                'editorial_widgets_name' => 'editorial_block_cat_id',
-                'editorial_widgets_title' => __( 'Category for Block Post', 'editorial' ),
+                'editorial_widgets_name'         => 'editorial_block_cat_id',
+                'editorial_widgets_title'        => __( 'Category for Block Post', 'editorial' ),
                 'editorial_widgets_default'      => 0,
-                'editorial_widgets_field_type' => 'select',
+                'editorial_widgets_field_type'   => 'select',
                 'editorial_widgets_field_options' => $editorial_category_dropdown
             ),
 
@@ -76,9 +70,9 @@ class Editorial_Block_Column extends WP_Widget {
             return ;
         }
 
-        $editorial_block_title      = empty( $instance['editorial_block_title'] ) ? '' : $instance['editorial_block_title'];
-        $editorial_block_cat_id     = intval( empty( $instance['editorial_block_cat_id'] ) ? '' : $instance['editorial_block_cat_id'] );
-        $editorial_block_posts_count    = intval ( empty( $instance['editorial_block_posts_count'] ) ? 4 : $instance['editorial_block_posts_count'] );
+        $editorial_block_title       = empty( $instance['editorial_block_title'] ) ? '' : $instance['editorial_block_title'];
+        $editorial_block_cat_id      = intval( empty( $instance['editorial_block_cat_id'] ) ? '' : $instance['editorial_block_cat_id'] );
+        $editorial_block_posts_count = intval ( empty( $instance['editorial_block_posts_count'] ) ? 4 : $instance['editorial_block_posts_count'] );
         echo $before_widget;
     ?>
     	<div class="block-column-wrapper">
@@ -105,7 +99,7 @@ class Editorial_Block_Column extends WP_Widget {
                 ?>
                 			<div class="single-post-wrapper <?php echo esc_attr( $post_class ); ?> clearfix">
                                 <div class="post-thumb-wrapper">
-                                    <a href="<?php the_permalink();?>" title="<?php the_title();?>">
+                                    <a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
                                         <figure><?php echo $image_path; ?></figure>
                                     </a>
                                 </div><!-- .post-thumb-wrapper -->

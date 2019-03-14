@@ -7,6 +7,8 @@
  * @since 1.0.0
  */
 
+/*----------------------------------------------------------------------------------------------------------------*/
+
 /**
  * Enqueue Scripts and styles for admin
  */
@@ -14,26 +16,50 @@ function editorial_admin_scripts_style( $hook ) {
 
 	global $editorial_version;
 
-	if ( 'widgets.php' != $hook && 'customize.php' != $hook ) {
+	if( 'widgets.php' != $hook && 'customize.php' != $hook && 'edit.php' != $hook && 'post.php' != $hook && 'post-new.php' != $hook ) {
         return;
     }
 
-	if ( function_exists( 'wp_enqueue_media' ) ) {
-        wp_enqueue_media();
-	}
+	wp_enqueue_style( 'editorial-admin-style', get_template_directory_uri() .'/assets/css/admin-style.css', array(), esc_attr( $editorial_version ) );
 
-    wp_register_script( 'editorial-media-uploader', get_template_directory_uri() . '/inc/admin/js/media-uploader.js', array('jquery'), 1.70 );
-    wp_enqueue_script( 'editorial-media-uploader' );
-    wp_localize_script( 'editorial-media-uploader', 'editorial_l10n', array(
-        'upload' => __( 'Upload', 'editorial' ),
-        'remove' => __( 'Remove', 'editorial' )
-    ));
-
-	wp_enqueue_script( 'editorial-admin-script', get_template_directory_uri() .'/inc/admin/js/admin-script.js', array('jquery'), esc_attr( $editorial_version ), true );
-
-	wp_enqueue_style( 'editorial-admin-style', get_template_directory_uri() .'/inc/admin/css/admin-style.css', array(), esc_attr( $editorial_version ) );
+	wp_enqueue_script( 'editorial-admin-script', get_template_directory_uri() .'/assets/js/admin-script.js', array( 'jquery' ), esc_attr( $editorial_version ), true );
 }
 add_action( 'admin_enqueue_scripts', 'editorial_admin_scripts_style' );
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+/**
+ * Register Google fonts
+ *
+ * @return string Google fonts URL for the theme.
+ * @since 1.0.0
+ */
+if ( ! function_exists( 'editorial_fonts_url' ) ) :
+    function editorial_fonts_url() {
+        $fonts_url = '';
+        $font_families = array();
+
+        /*
+         * Translators: If there are characters in your language that are not supported
+         * by Titillium Web, translate this to 'off'. Do not translate into your own language.
+         */
+        if ( 'off' !== _x( 'on', 'Titillium Web font: on or off', 'editorial' ) ) {
+            $font_families[] = 'Titillium Web:400,600,700,300';
+        }       
+
+        if( $font_families ) {
+            $query_args = array(
+                'family' => urlencode( implode( '|', $font_families ) ),
+                'subset' => urlencode( 'latin,latin-ext' ),
+            );
+
+            $fonts_url = add_query_arg( $query_args, 'https://fonts.googleapis.com/css' );
+        }
+
+        return $fonts_url;
+    }
+endif;
+
+/*----------------------------------------------------------------------------------------------------------------*/
 
 /**
  * Enqueue scripts and styles.
@@ -42,13 +68,9 @@ function editorial_scripts() {
 
 	global $editorial_version;
 
-	$query_args = array(
-            'family' => 'Titillium+Web:400,600,700,300&subset=latin,latin-ext',
-        );
+	wp_enqueue_style( 'font-awesome', get_template_directory_uri().'/assets/library/font-awesome/css/font-awesome.min.css', array(), '4.7.0' );
 
-	wp_enqueue_style( 'font-awesome', get_template_directory_uri().'/assets/library/font-awesome/css/font-awesome.min.css', array(), '4.5.0' );
-
-	wp_enqueue_style( 'editorial-google-font', add_query_arg( $query_args, "//fonts.googleapis.com/css" ) );
+	wp_enqueue_style( 'editorial-google-font', editorial_fonts_url(), array(), null );
 
 	wp_enqueue_style( 'editorial-style', get_stylesheet_uri(), array(), esc_attr( $editorial_version ) );
     
@@ -71,7 +93,7 @@ function editorial_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'editorial_scripts' );
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Current date at top header
  */
@@ -89,7 +111,7 @@ if( ! function_exists( 'editorial_current_date_hook' ) ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * News Ticker
  */
@@ -126,7 +148,7 @@ if( ! function_exists( 'editorial_news_ticker_hook' ) ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Define categories lists in array
  * 
@@ -161,13 +183,13 @@ endif;
 
 //no of columns
 $editorial_grid_columns = array(
-		''	=> __( 'Select No. of Columns', 'editorial' ),
-		'2' => __( '2 Columns', 'editorial' ),
-		'3'	=> __( '3 Columns', 'editorial' ),
-		'4'	=> __( '4 Columns', 'editorial' )
-	);
+	''	=> __( 'Select No. of Columns', 'editorial' ),
+	'2' => __( '2 Columns', 'editorial' ),
+	'3'	=> __( '3 Columns', 'editorial' ),
+	'4'	=> __( '4 Columns', 'editorial' )
+);
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Custom function for wp_query args 
  */
@@ -175,22 +197,22 @@ if( ! function_exists( 'editorial_query_args' ) ):
 	function editorial_query_args( $cat_id, $post_count = null ) {
 		if( !empty( $cat_id ) ) {
 			$editorial_args = array(
-						'post_type' 	=> 'post',
-						'cat'	=> absint( $cat_id ),
-						'posts_per_page'=> intval( $post_count )
-					);
+				'post_type' 	=> 'post',
+				'cat'	=> absint( $cat_id ),
+				'posts_per_page'=> intval( $post_count )
+			);
 		} else {
 			$editorial_args = array(
-						'post_type'		=> 'post',
-						'posts_per_page'=> intval( $post_count ),
-						'ignore_sticky_posts' => 1
-					);
+				'post_type'		=> 'post',
+				'posts_per_page'=> intval( $post_count ),
+				'ignore_sticky_posts' => 1
+			);
 		}
 		return $editorial_args;
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * block widget title
  */
@@ -227,7 +249,7 @@ if( ! function_exists( 'editorial_block_title' ) ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Posts Categories with dynamic colors
  */
@@ -256,7 +278,7 @@ if( ! function_exists( 'editorial_post_categories_hook' ) ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * widget posts excerpt in words
  */
@@ -269,7 +291,7 @@ if( ! function_exists( 'editorial_post_excerpt' ) ):
     }
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Define function to show the social media icons
  */
@@ -335,7 +357,7 @@ if( ! function_exists( 'editorial_social_icons' ) ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Top header social icon section
  */
@@ -353,20 +375,20 @@ if( ! function_exists('editorial_top_social_icons_hook'  ) ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Add cat id in menu class
  */
 function editorial_category_nav_class( $classes, $item ){
     if( 'category' == $item->object ){
         $category = get_category( $item->object_id );
-        $classes[] = 'mt-cat-' . $category->term_id;
+        $classes[] = 'mt-cat-' . esc_attr( $category->term_id );
     }
     return $classes;
 }
 add_filter( 'nav_menu_css_class', 'editorial_category_nav_class', 10, 2 );
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Generate darker color
  * Source: http://stackoverflow.com/questions/3512311/how-to-generate-lighter-darker-color-with-php
@@ -396,7 +418,7 @@ if( ! function_exists( 'editorial_hover_color' ) ) :
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Function define about page/post/archive sidebar
  */
@@ -446,7 +468,7 @@ if( ! function_exists( 'editorial_sidebar' ) ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Get author info
  */
@@ -475,7 +497,7 @@ if( ! function_exists('editorial_author_box_hook') ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Related articles
  */
@@ -497,8 +519,7 @@ if( ! function_exists( 'editorial_related_articles_hook' ) ):
 	                }
 
 	                $editorial_related_type = get_theme_mod( 'editorial_related_articles_type', 'category' );
-	                $related_post_count = 3;
-	                $related_post_count = apply_filters( 'related_posts_count', $related_post_count );
+	                $related_post_count = apply_filters( 'related_posts_count', 3 );
 
 	                // Define related post arguments
 	                $related_args = array(
@@ -540,7 +561,7 @@ if( ! function_exists( 'editorial_related_articles_hook' ) ):
 				?>
 							<div class="single-post-wrap">
 	                            <div class="post-thumb-wrapper">
-                                    <a href="<?php the_permalink();?>" title="<?php the_title();?>">
+                                    <a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
                                         <figure><?php the_post_thumbnail( 'editorial-block-medium' ); ?></figure>
                                     </a>
                                 </div><!-- .post-thumb-wrapper -->
@@ -565,18 +586,20 @@ if( ! function_exists( 'editorial_related_articles_hook' ) ):
 	}
 endif;
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Filter the category title
  */
-add_filter( 'get_the_archive_title', function ( $title ) {
+add_filter( 'get_the_archive_title', 'editorial_archive_title_prefix' );
+
+function editorial_archive_title_prefix( $title ) {
     if( is_category() ) {
         $title = single_cat_title( '', false );
     }
     return $title;
-});
+};
 
-/*------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Adds custom contain in head sections
  *
@@ -593,9 +616,9 @@ if( ! function_exists( 'editorial_dynamic_styles' ) ):
 
         foreach( $get_categories as $category ){
 
-            $cat_color = esc_attr( get_theme_mod( 'editorial_category_color_'.strtolower( $category->name ), $mt_theme_color ) );
+            $cat_color 		 = esc_attr( get_theme_mod( 'editorial_category_color_'.strtolower( $category->name ), $mt_theme_color ) );
             $cat_hover_color = esc_attr( editorial_hover_color( $cat_color, '-50' ) );
-            $cat_id = esc_attr( $category->term_id );
+            $cat_id 		 = esc_attr( $category->term_id );
             
             if( !empty( $cat_color ) ) {
                 $output_css .= ".category-button.mt-cat-".$cat_id." a { background: ". $cat_color ."}\n";
@@ -633,7 +656,7 @@ if( ! function_exists( 'editorial_dynamic_styles' ) ):
     }
 endif;
 
-/*-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------*/
 /**
  * Get minified css and removed space
  *

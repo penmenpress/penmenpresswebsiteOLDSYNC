@@ -1,9 +1,9 @@
 === Editorial ===
 
-Contributors:       Mystery Themes Team
+Contributors:       mysterythemes
 Requires at least:  WordPress 4.0
 Tested up to:       WordPress 4.9
-Version:            1.3.5
+Version:            1.3.8
 License:            GPLv3 or later
 License URI:        http://www.gnu.org/licenses/gpl-3.0.html
 Tags:               news, grid-layout, custom-colors, one-column, two-columns, three-columns, left-sidebar, right-sidebar, footer-widgets, full-width-template, theme-options, translation-ready, rtl-language-support
@@ -58,9 +58,22 @@ Editorial bundles the following third-party resources:
        	https://pixabay.com/en/girl-studio-light-beauty-fashion-1262801/
        	https://pixabay.com/en/wanderer-backpack-hike-away-path-455338/
 
-
-
 == Changelog ==
+
+= 1.3.8 =
+    * Fixed bugs at widget area.
+    * Changed/Managed the files path inside theme folder.
+    * Added customizer control script file.
+    * Updated font-awesome files.
+    * Removed unused function and files.
+
+= 1.3.7 =
+    * Fixed variable prefix on comments.php
+
+= 1.3.6 =
+    * Fixed bugs at cusotmizer class file.
+    * Fixed the escaping and typo in various files.
+    * Used the title attribute in required places.
 
 = 1.3.5 =
     * Fixed bugs at bxslider js file.

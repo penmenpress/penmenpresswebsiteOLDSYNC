@@ -63,9 +63,9 @@ function editorial_setup() {
 
 	// This theme uses wp_nav_menu() in one location.
 	register_nav_menus( array(
-		'primary' => esc_html__( 'Primary Menu', 'editorial' ),
+		'primary' 	 => esc_html__( 'Primary Menu', 'editorial' ),
 		'top-header' => esc_html__( 'Top Header Menu', 'editorial' ),
-		'footer' => esc_html__( 'Footer Menu', 'editorial' ),
+		'footer' 	 => esc_html__( 'Footer Menu', 'editorial' ),
 	) );
 
 	/*
@@ -78,18 +78,6 @@ function editorial_setup() {
 		'comment-list',
 		'gallery',
 		'caption',
-	) );
-
-	/*
-	 * Enable support for Post Formats.
-	 * See https://developer.wordpress.org/themes/functionality/post-formats/
-	 */
-	add_theme_support( 'post-formats', array(
-		'aside',
-		'image',
-		'video',
-		'quote',
-		'link',
 	) );
 
 	// Set up the WordPress core custom background feature.
@@ -145,7 +133,7 @@ require get_template_directory() . '/inc/extras.php';
 /**
  * Customizer additions.
  */
-require get_template_directory() . '/inc/customizer.php';
+require get_template_directory() . '/inc/customizer/customizer.php';
 
 /**
  * Editorial custom functions
@@ -165,19 +153,9 @@ require get_template_directory() . '/inc/widgets/editorial-widgets-area.php';
 /**
  * Load metabox
  */
-require get_template_directory() . '/inc/admin/assets/metaboxes/editorial-post-metabox.php';
-
-/**
- * Load customizer custom classes
- */
-require get_template_directory() . '/inc/admin/assets/editorial-custom-classes.php'; //custom classes
-
-/**
- * Load customizer sanitize
- */
-require get_template_directory() . '/inc/admin/assets/editorial-sanitize.php'; //custom classes
+require get_template_directory() . '/inc/metaboxes/editorial-post-metabox.php';
 
 /**
  * Load theme about page
  */
-require get_template_directory(). '/inc/admin/about-theme/editorial-about.php';
+require get_template_directory(). '/inc/about-theme/editorial-about.php';

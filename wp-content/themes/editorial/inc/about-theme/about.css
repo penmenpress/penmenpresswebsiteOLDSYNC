@@ -211,3 +211,7 @@ table tr .btn-wrapper .button:hover {
         width: 100%;
     }
 }
+
+.theme-browser .theme .theme-actions, .theme-browser .theme.active .theme-actions {
+    top: 93%;
+}

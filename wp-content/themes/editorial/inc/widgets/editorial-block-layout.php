@@ -9,12 +9,6 @@
  * @since 1.0.0
  */
 
-add_action( 'widgets_init', 'editorial_register_block_layout_widget' );
-
-function editorial_register_block_layout_widget() {
-	register_widget( 'Editorial_Block_Layout' );
-}
-
 class Editorial_Block_Layout extends WP_widget {
 
 	/**
@@ -44,10 +38,10 @@ class Editorial_Block_Layout extends WP_widget {
             ),
 
             'editorial_block_cat_id' => array(
-                'editorial_widgets_name' => 'editorial_block_cat_id',
-                'editorial_widgets_title' => __( 'Category for Block Layout', 'editorial' ),
-                'editorial_widgets_default'      => 0,
-                'editorial_widgets_field_type' => 'select',
+                'editorial_widgets_name'          => 'editorial_block_cat_id',
+                'editorial_widgets_title'         => __( 'Category for Block Layout', 'editorial' ),
+                'editorial_widgets_default'       => 0,
+                'editorial_widgets_field_type'    => 'select',
                 'editorial_widgets_field_options' => $editorial_category_dropdown
             ),
 
@@ -112,7 +106,7 @@ class Editorial_Block_Layout extends WP_widget {
                 ?>
                             <div class="single-post-wrapper clearfix <?php echo esc_attr( $post_class ); ?>">
                                 <div class="post-thumb-wrapper">
-                                    <a href="<?php the_permalink();?>" title="<?php the_title();?>">
+                                    <a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
                                         <figure><?php echo $image_path ; ?></figure>
                                     </a>
                                 </div><!-- .post-thumb-wrapper -->
@@ -120,8 +114,10 @@ class Editorial_Block_Layout extends WP_widget {
                                     <?php if( $post_count == 1 ) { do_action( 'editorial_post_categories' ); } ?>
                                     <h3 class="post-title"><a href="<?php the_permalink();?>"><?php the_title(); ?></a></h3>
                                     <div class="post-meta-wrapper">
-                                        <?php editorial_posted_on(); ?>
-                                        <?php editorial_post_comment(); ?>
+                                        <?php
+                                            editorial_posted_on();
+                                            editorial_post_comment();
+                                        ?>
                                     </div>
                                     <?php if( $post_count == 1 ) { the_excerpt(); } ?>
                                 </div><!-- .post-meta-wrapper -->

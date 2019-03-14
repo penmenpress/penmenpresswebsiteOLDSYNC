@@ -29,26 +29,23 @@ if ( post_password_required() ) {
 	if ( have_comments() ) : ?>
 		<h2 class="comments-title">
 			<?php
-				$comments_number = get_comments_number();
-				if ( '1' === $comments_number ) {
-					/* translators: %s: post title */
-					printf( _x( 'One thought on &ldquo;%s&rdquo;', 'comments title', 'editorial' ), get_the_title() );
-				} else {
-					printf(
-						/* translators: 1: number of comments, 2: post title */
-						_nx(
-							'%1$s thought on &ldquo;%2$s&rdquo;',
-							'%1$s thoughts on &ldquo;%2$s&rdquo;',
-							$comments_number,
-							'comments title',
-							'editorial'
-						),
-						number_format_i18n( $comments_number ),
-						get_the_title()
-					);
-				}
+			$editorial_comment_count = get_comments_number();
+			if ( '1' === $editorial_comment_count ) {
+				printf(
+					/* translators: 1: title. */
+					esc_html__( 'One thought on &ldquo;%1$s&rdquo;', 'editorial' ),
+					'<span>' . get_the_title() . '</span>'
+				);
+			} else {
+				printf( // WPCS: XSS OK.
+					/* translators: 1: comment count number, 2: title. */
+					esc_html( _nx( '%1$s thought on &ldquo;%2$s&rdquo;', '%1$s thoughts on &ldquo;%2$s&rdquo;', $editorial_comment_count, 'comments title', 'editorial' ) ),
+					number_format_i18n( $editorial_comment_count ),
+					'<span>' . get_the_title() . '</span>'
+				);
+			}
 			?>
-		</h2>
+		</h2><!-- .comments-title -->
 
 		<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // Are there comments to navigate through? ?>
 		<nav id="comment-nav-above" class="navigation comment-navigation" role="navigation">

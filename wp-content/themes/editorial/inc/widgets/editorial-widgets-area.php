@@ -112,6 +112,37 @@ function editorial_widgets_init() {
 }
 add_action( 'widgets_init', 'editorial_widgets_init' );
 
+/**
+ * register widgets
+ */
+
+add_action( 'widgets_init', 'editorial_register_widgets' );
+
+function editorial_register_widgets() {
+	
+	// Ads Banner
+	register_widget( 'Editorial_Ads_Banner' );
+
+	// Block Column
+	register_widget( 'Editorial_Block_Column' );
+
+	// Block Grid
+	register_widget( 'Editorial_Block_Grid' );
+
+	// Block Layout
+	register_widget( 'Editorial_Block_Layout' );
+
+	// Block List
+	register_widget( 'Editorial_Block_List' );
+
+	// Featured Slider
+	register_widget( 'Editorial_Featured_Slider' );
+
+	// Posts List
+	register_widget( 'Editorial_Posts_List' );
+
+}
+
 
 /**
  * Load widgets files

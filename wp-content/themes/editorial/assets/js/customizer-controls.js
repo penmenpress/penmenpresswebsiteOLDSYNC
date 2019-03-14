@@ -16,7 +16,7 @@
 jQuery(document).ready(function($) {
     "use strict";
 
-    /**
+	/**
      * Script for switch option
      */
     $('.switch_options').each(function() {
@@ -40,7 +40,7 @@ jQuery(document).ready(function($) {
     /**
      * Script for image selected from radio option
      */
-     $('.controls#editorial-img-container li img').click(function(){
+    $('.controls#editorial-img-container li img').click(function(){
         $('.controls#editorial-img-container li').each(function(){
             $(this).find('img').removeClass ('editorial-radio-img-selected') ;
         });

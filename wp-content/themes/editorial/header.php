@@ -101,8 +101,11 @@
 			<?php do_action( 'editorial_news_ticker' ); ?>
 			
 	</header><!-- #masthead -->
-	<?php do_action( 'editorial_after_header' ); ?>
-	<?php do_action( 'editorial_before_main' ); ?>
+	
+	<?php
+		do_action( 'editorial_after_header' );
+		do_action( 'editorial_before_main' );
+	?>
 
 	<div id="content" class="site-content">
 		<div class="mt-container">

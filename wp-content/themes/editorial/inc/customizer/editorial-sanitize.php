@@ -7,11 +7,6 @@
  * @since 1.0.0
  */
 
-//Text
-function editorial_sanitize_text( $input ) {
-    return wp_kses_post( force_balance_tags( $input ) );
-}
-
 //Check box
 function editorial_sanitize_checkbox( $input ) {
     if ( $input == 1 ) {
@@ -21,17 +16,11 @@ function editorial_sanitize_checkbox( $input ) {
     }
 }
 
-// Number
-function editorial_sanitize_number( $input ) {
-    $output = intval($input);
-     return $output;
-}
-
 // site layout
 function editorial_sanitize_site_layout($input) {
     $valid_keys = array(
         'fullwidth_layout' => __( 'Fullwidth Layout', 'editorial' ),
-        'boxed_layout' => __( 'Boxed Layout', 'editorial' )
+        'boxed_layout'     => __( 'Boxed Layout', 'editorial' )
         );
     if ( array_key_exists( $input, $valid_keys ) ) {
         return $input;
@@ -43,8 +32,8 @@ function editorial_sanitize_site_layout($input) {
 // Switch option (enable/disable)
 function editorial_enable_switch_sanitize($input) {
     $valid_keys = array(
-        'enable' => __( 'Enable', 'editorial' ),
-        'disable' => __( 'Disable', 'editorial' )
+        'enable'    => __( 'Enable', 'editorial' ),
+        'disable'   => __( 'Disable', 'editorial' )
         );
     if ( array_key_exists( $input, $valid_keys ) ) {
         return $input;
@@ -82,9 +71,9 @@ function editorial_sanitize_archive_layout($input) {
 //Post/Page sidebar layout
 function editorial_page_layout_sanitize( $input ) {
     $valid_keys = array(
-            'right_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/right-sidebar.png',
-            'left_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/left-sidebar.png',
-            'no_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar.png',
+            'right_sidebar'     => get_template_directory_uri() . '/inc/admin/assets/images/right-sidebar.png',
+            'left_sidebar'      => get_template_directory_uri() . '/inc/admin/assets/images/left-sidebar.png',
+            'no_sidebar'        => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar.png',
             'no_sidebar_center' => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar-center.png'
         );
     if ( array_key_exists( $input, $valid_keys ) ) {
@@ -112,8 +101,8 @@ function editorial_footer_widget_sanitize( $input ) {
 //Related posts type
 function editorial_sanitize_related_type( $input ) {
     $valid_keys = array(
-            'category'   => __( 'by Category', 'editorial' ),
-            'tag'   => __( 'by Tags', 'editorial' )
+            'category'  => __( 'by Category', 'editorial' ),
+            'tag'       => __( 'by Tags', 'editorial' )
         );
     if ( array_key_exists( $input, $valid_keys ) ) {
         return $input;

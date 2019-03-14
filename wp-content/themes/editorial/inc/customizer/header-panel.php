@@ -175,7 +175,7 @@ function editorial_header_settings_register( $wp_customize ) {
               'default' => __( 'Latest', 'editorial' ),
               'capability' => 'edit_theme_options',
               'transport'=> 'postMessage',
-              'sanitize_callback' => 'editorial_sanitize_text',
+              'sanitize_callback' => 'sanitize_text_field',
             )
     );
     $wp_customize->add_control(

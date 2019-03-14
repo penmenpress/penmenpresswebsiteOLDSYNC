@@ -86,7 +86,7 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
                     <?php 
                         $show_choices = $this->choices;
                         foreach ( $show_choices as $key => $value ) {
-                            echo '<span class="switch_part '.$key.'" data-switch="'.$key.'">'. $value.'</span>';
+                            echo '<span class="switch_part '. esc_attr( $key ) .'" data-switch="'. esc_attr( $key ) .'">'. esc_html( $value ) .'</span>';
                         }
                     ?>
                     <input type="hidden" id="enable_switch_option" <?php $this->link(); ?> value="<?php echo $this->value(); ?>" />
@@ -95,6 +95,25 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
     <?php
         }
     }
+
+/*---------------------------------------------------------------------------------------------------------------*/
+    /**
+     * Theme Info Content
+     */
+    class Editorial_Info_Content extends WP_Customize_Control {
+        public $type = 'mt-info';
+        public function render_content() {
+    ?>
+            
+            <span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
+            <div class="description customize-control-description"><?php echo wp_kses_post($this->description); ?></div>
+    <?php
+        }
+    }
+
+}
+
+if ( class_exists( 'WP_Customize_Section' ) ) {
 
 /*---------------------------------------------------------------------------------------------------------------*/
     /**
@@ -168,20 +187,4 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
             </li>
         <?php }
     }
-
-/*---------------------------------------------------------------------------------------------------------------*/
-    /**
-     * Theme Info Content
-     */
-    class Editorial_Info_Content extends WP_Customize_Control {
-        public $type = 'mt-info';
-        public function render_content() {
-    ?>
-            
-            <span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
-            <div class="description customize-control-description"><?php echo wp_kses_post($this->description); ?></div>
-    <?php
-        }
-    }
-
 }

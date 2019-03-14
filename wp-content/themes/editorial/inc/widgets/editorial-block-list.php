@@ -9,12 +9,6 @@
  * @since 1.0.0
  */
 
-add_action( 'widgets_init', 'editorial_register_block_list_widget' );
-
-function editorial_register_block_list_widget() {
-	register_widget( 'Editorial_Block_List' );
-}
-
 class Editorial_Block_List extends WP_widget {
 
 	/**
@@ -44,10 +38,10 @@ class Editorial_Block_List extends WP_widget {
             ),
 
             'editorial_block_cat_id' => array(
-                'editorial_widgets_name' => 'editorial_block_cat_id',
-                'editorial_widgets_title' => __( 'Category for Block Layout', 'editorial' ),
-                'editorial_widgets_default'      => 0,
-                'editorial_widgets_field_type' => 'select',
+                'editorial_widgets_name'          => 'editorial_block_cat_id',
+                'editorial_widgets_title'         => __( 'Category for Block Layout', 'editorial' ),
+                'editorial_widgets_default'       => 0,
+                'editorial_widgets_field_type'    => 'select',
                 'editorial_widgets_field_options' => $editorial_category_dropdown
             ),
 
@@ -95,7 +89,7 @@ class Editorial_Block_List extends WP_widget {
                     ?>
                                 <div class="single-post-wrapper clearfix">
                                     <div class="post-thumb-wrapper">
-                                        <a href="<?php the_permalink();?>" title="<?php the_title();?>">
+                                        <a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
                                             <figure><?php the_post_thumbnail( 'editorial-block-medium' ); ?></figure>
                                         </a>
                                     </div>

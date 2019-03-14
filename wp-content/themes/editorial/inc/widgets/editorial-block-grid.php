@@ -9,12 +9,6 @@
  * @since 1.0.0
  */
 
-add_action( 'widgets_init', 'editorial_register_block_grid_widget' );
-
-function editorial_register_block_grid_widget() {
-    register_widget( 'Editorial_Block_Grid' );
-}
-
 class Editorial_Block_Grid extends WP_Widget {
 
 	/**
@@ -46,18 +40,18 @@ class Editorial_Block_Grid extends WP_Widget {
             ),
 
             'editorial_block_cat_id' => array(
-                'editorial_widgets_name' => 'editorial_block_cat_id',
-                'editorial_widgets_title' => __( 'Category for Block Post', 'editorial' ),
+                'editorial_widgets_name'         => 'editorial_block_cat_id',
+                'editorial_widgets_title'        => __( 'Category for Block Post', 'editorial' ),
                 'editorial_widgets_default'      => 0,
-                'editorial_widgets_field_type' => 'select',
+                'editorial_widgets_field_type'   => 'select',
                 'editorial_widgets_field_options' => $editorial_category_dropdown
             ),
 
             'editorial_block_grid_column' => array(
-                'editorial_widgets_name' => 'editorial_block_grid_column',
-                'editorial_widgets_title' => __( 'No. of Columns', 'editorial' ),
+                'editorial_widgets_name'         => 'editorial_block_grid_column',
+                'editorial_widgets_title'        => __( 'No. of Columns', 'editorial' ),
                 'editorial_widgets_default'      => 2,
-                'editorial_widgets_field_type' => 'select',
+                'editorial_widgets_field_type'   => 'select',
                 'editorial_widgets_field_options' => $editorial_grid_columns
             ),
 
@@ -104,7 +98,7 @@ class Editorial_Block_Grid extends WP_Widget {
                             $block_grid_query->the_post();
                 ?>
                             <div class="single-post-wrapper">
-                                <a href="<?php the_permalink();?>" title="<?php the_title();?>">
+                                <a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
                                     <figure><?php the_post_thumbnail( 'editorial-block-medium' ); ?></figure>
                                 </a>
                                 <div class="post-content-wrapper">

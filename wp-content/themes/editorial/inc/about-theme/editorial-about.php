@@ -85,7 +85,7 @@ class Editorial_About {
 		?>
 		<div id="message" class="updated editorial-message">
 			<a class="editorial-message-close notice-dismiss" href="<?php echo esc_url( wp_nonce_url( remove_query_arg( array( 'activated' ), add_query_arg( 'editorial-hide-notice', 'welcome' ) ), 'editorial_hide_notices_nonce', '_editorial_notice_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'editorial' ); ?></a>
-			<p><?php printf( esc_html__( 'Welcome! Thank you for choosing editorial! To fully take advantage of the best our theme can offer please make sure you visit our %swelcome page%s.', 'editorial' ), '<a href="' . esc_url( admin_url( 'themes.php?page=editorial-welcome' ) ) . '">', '</a>' ); ?></p>
+			<p><?php printf( esc_html__( 'Welcome! Thank you for choosing editorial! To fully take advantage of the best our theme can offer please make sure you visit our %1$s welcome page %2$s.', 'editorial' ), '<a href="' . esc_url( admin_url( 'themes.php?page=editorial-welcome' ) ) . '">', '</a>' ); ?></p>
 			<p class="submit">
 				<a class="button-secondary" href="<?php echo esc_url( admin_url( 'themes.php?page=editorial-welcome' ) ); ?>"><?php esc_html_e( 'Get started with editorial', 'editorial' ); ?></a>
 			</p>
@@ -102,18 +102,15 @@ class Editorial_About {
 		global $editorial_version;
 		$theme = wp_get_theme( get_template() );
 
-		// Drop minor version if 0
-		//$major_version = substr( $editorial_version, 0, 3 );
-		?>
+		$theme_name = $theme->get( 'Name' );
+		$theme_description = $theme->get( 'Description' );
+		$theme_uri = $theme->get( 'ThemeURI' );
+	?>
 		<div class="editorial-theme-info">
-				<h1>
-					<?php esc_html_e('About', 'editorial'); ?>
-					<?php echo $theme->display( 'Name' ); ?>
-					<?php printf( '%s', $editorial_version ); ?>
-				</h1>
-
+			<h1> <?php echo esc_html( 'About ', 'editorial' ).' '. esc_html( $theme_name ).' '.esc_html( $editorial_version ); ?> </h1>
+				
 			<div class="welcome-description-wrap">
-				<div class="about-text"><?php echo $theme->display( 'Description' ); ?></div>
+				<div class="about-text"><?php echo wp_kses_post( $theme_description ); ?></div>
 
 				<div class="editorial-screenshot">
 					<img src="<?php echo esc_url( get_template_directory_uri() ) . '/screenshot.jpg'; ?>" />
@@ -133,7 +130,7 @@ class Editorial_About {
 
 		<h2 class="nav-tab-wrapper">
 			<a class="nav-tab <?php if ( empty( $_GET['tab'] ) && $_GET['page'] == 'editorial-welcome' ) echo 'nav-tab-active'; ?>" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'editorial-welcome' ), 'themes.php' ) ) ); ?>">
-				<?php echo $theme->display( 'Name' ); ?>
+				<?php echo esc_html( $theme->display( 'Name' ) ); ?>
 			</a>
 			
 			<a class="nav-tab <?php if ( isset( $_GET['tab'] ) && $_GET['tab'] == 'free_vs_pro' ) echo 'nav-tab-active'; ?>" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'editorial-welcome', 'tab' => 'free_vs_pro' ), 'themes.php' ) ) ); ?>">
@@ -181,7 +178,7 @@ class Editorial_About {
 					<div class="col">
 						<h3><?php esc_html_e( 'Theme Customizer', 'editorial' ); ?></h3>
 						<p><?php esc_html_e( 'All Theme Options are available via Customize screen.', 'editorial' ) ?></p>
-						<p><a href="<?php echo admin_url( 'customize.php' ); ?>" class="button button-secondary"><?php esc_html_e( 'Customize', 'editorial' ); ?></a></p>
+						<p><a href="<?php echo esc_url( admin_url( 'customize.php' ) ); ?>" class="button button-secondary"><?php esc_html_e( 'Customize', 'editorial' ); ?></a></p>
 					</div>
 
 					<div class="col">
@@ -209,20 +206,10 @@ class Editorial_About {
 					</div>
 
 					<div class="col">
-						<h3>
-							<?php
-							esc_html_e( 'Translate', 'editorial' );
-							echo ' ' . $theme->display( 'Name' );
-							?>
-						</h3>
+						<h3> <?php printf( esc_html__( 'Translate %1$s', 'editorial' ), esc_html( $theme_name ) ); ?> </h3>
 						<p><?php esc_html_e( 'Click below to translate this theme into your own language.', 'editorial' ) ?></p>
 						<p>
-							<a href="<?php echo esc_url( 'http://translate.wordpress.org/projects/wp-themes/editorial' ); ?>" class="button button-secondary" target="_blank">
-								<?php
-								esc_html_e( 'Translate', 'editorial' );
-								echo ' ' . $theme->display( 'Name' );
-								?>
-							</a>
+							<a href="<?php echo esc_url( 'https://translate.wordpress.org/projects/wp-themes/editorial' ); ?>" class="button button-secondary" target="_blank"><?php printf( esc_html__( 'Translate %1$s', 'editorial' ), esc_html( $theme_name ) ); ?></a>
 						</p>
 					</div>
 				</div>
@@ -270,13 +257,13 @@ class Editorial_About {
 						foreach ( $themes->themes as $theme ) {
 							if( $active_theme == $theme->name ) { ?>
 
-								<div id="<?php echo $theme->slug; ?>" class="theme active">
+								<div id="<?php echo esc_attr( $theme->slug ); ?>" class="theme active">
 									<div class="theme-screenshot">
-										<img src="<?php echo $theme->screenshot_url ?>"/>
+										<img src="<?php echo esc_url( $theme->screenshot_url ); ?>"/>
 									</div>
-									<h3 class="theme-name" id="editorial-name"><strong><?php _e( 'Active', 'editorial' ); ?></strong>: <?php echo $theme->name; ?></h3>
+									<h3 class="theme-name" id="editorial-name"><strong><?php esc_html_e( 'Active', 'editorial' ); ?></strong>: <?php echo esc_html( $theme->name ); ?></h3>
 									<div class="theme-actions">
-										<a class="button button-primary customize load-customize hide-if-no-customize" href="<?php echo get_site_url(). '/wp-admin/customize.php' ?>"><?php _e( 'Customize', 'editorial' ); ?></a>
+										<a class="button button-primary customize load-customize hide-if-no-customize" href="<?php echo esc_url( get_site_url(). '/wp-admin/customize.php' ); ?>"><?php esc_html_e( 'Customize', 'editorial' ); ?></a>
 									</div>
 								</div><!-- .theme active -->
 							<?php
@@ -301,18 +288,18 @@ class Editorial_About {
 								);
 								$theme_details = $this->editorial_get_themes( $request );
 							?>
-								<div id="<?php echo $theme->slug; ?>" class="theme">
+								<div id="<?php echo esc_attr( $theme->slug ); ?>" class="theme">
 									<div class="theme-screenshot">
-										<img src="<?php echo $theme->screenshot_url ?>"/>
+										<img src="<?php echo esc_url( $theme->screenshot_url ); ?>"/>
 									</div>
 
-									<h3 class="theme-name"><?php echo $theme->name; ?></h3>
+									<h3 class="theme-name"><?php echo esc_html( $theme->name ); ?></h3>
 
 									<div class="theme-actions">
 										<?php if( wp_get_theme( $theme->slug )->exists() ) { ?>											
 											<!-- Activate Button -->
 											<a  class="button button-secondary activate"
-												href="<?php echo wp_nonce_url( admin_url( 'themes.php?action=activate&amp;stylesheet=' . urlencode( $theme->slug ) ), 'switch-theme_' . $theme->slug );?>" ><?php _e( 'Activate', 'editorial' ) ?></a>
+												href="<?php echo wp_nonce_url( admin_url( 'themes.php?action=activate&amp;stylesheet=' . urlencode( $theme->slug ) ), 'switch-theme_' . $theme->slug );?>" ><?php esc_html_e( 'Activate', 'editorial' ) ?></a>
 										<?php } else {
 											// Set the install url for the theme.
 											$install_url = add_query_arg( array(
@@ -321,13 +308,13 @@ class Editorial_About {
 												), self_admin_url( 'update.php' ) );
 										?>
 											<!-- Install Button -->
-											<a data-toggle="tooltip" data-placement="bottom" title="<?php echo 'Downloaded ' . number_format( $theme_details->downloaded ) . ' times'; ?>" class="button button-secondary activate" href="<?php echo esc_url( wp_nonce_url( $install_url, 'install-theme_' . $theme->slug ) ); ?>" ><?php _e( 'Install Now', 'editorial' ); ?></a>
+											<a data-toggle="tooltip" data-placement="bottom" title="<?php printf( esc_html__( 'Downloaded %1$s times', 'editorial' ), number_format( $theme_details->downloaded ) ); ?>" class="button button-secondary activate" href="<?php echo esc_url( wp_nonce_url( $install_url, 'install-theme_' . $theme->slug ) ); ?>" ><?php esc_html_e( 'Install Now', 'editorial' ); ?></a>
 										<?php } ?>
 
-										<a class="button button-primary load-customize hide-if-no-customize" target="_blank" href="<?php echo $theme->preview_url; ?>"><?php _e( 'Live Preview', 'editorial' ); ?></a>
+										<a class="button button-primary load-customize hide-if-no-customize" target="_blank" href="<?php echo esc_url( $theme->preview_url ); ?>"><?php esc_html_e( 'Live Preview', 'editorial' ); ?></a>
 									</div>
 								</div><!-- .theme -->
-								<?php
+					<?php
 							}
 						}
 

@@ -9,12 +9,6 @@
  * @since 1.0.0
  */
 
-add_action( 'widgets_init', 'editorial_register_featured_slider_widget' );
-
-function editorial_register_featured_slider_widget() {
-    register_widget( 'Editorial_Featured_Slider' );
-}
-
 class Editorial_Featured_Slider extends WP_Widget {
 
 	/**
@@ -107,7 +101,7 @@ class Editorial_Featured_Slider extends WP_Widget {
                             $slider_query->the_post();
                     ?>
                             <li>
-                                <a href="<?php the_permalink();?>" title="<?php the_title(); ?>">
+                                <a href="<?php the_permalink();?>" title="<?php the_title_attribute(); ?>">
                                     <figure><?php the_post_thumbnail( 'editorial-slider-large' ); ?></figure>
                                 </a>
                                 <div class="slider-content-wrapper">
@@ -147,7 +141,7 @@ class Editorial_Featured_Slider extends WP_Widget {
                         }
             ?>
                     <div class="single-featured-wrap">
-                        <a href="<?php the_permalink();?>" title="<?php the_title(); ?>">
+                        <a href="<?php the_permalink();?>" title="<?php the_title_attribute(); ?>">
                             <figure><?php echo $image_path; ?></figure>
                         </a>
                         <div class="featured-content-wrapper">

@@ -45,8 +45,8 @@ function editorial_customize_register( $wp_customize ) {
     $wp_customize->add_section(
         'editorial_imp_link_section',
         array(
-            'title'             => __( 'Important Theme Links', 'editorial' ),
-            'priority'          => 30
+            'title'      => __( 'Important Theme Links', 'editorial' ),
+            'priority'   => 30
         )
     );
 
@@ -86,6 +86,8 @@ function editorial_customize_register( $wp_customize ) {
 }
 add_action( 'customize_register', 'editorial_customize_register' );
 
+/*-----------------------------------------------------------------------------------------------------------------------*/
+
 /**
  * Binds JS handlers to make Theme Customizer preview reload changes asynchronously.
  */
@@ -94,6 +96,24 @@ function editorial_customize_preview_js() {
 	wp_enqueue_script( 'editorial_customizer', get_template_directory_uri() . '/assets/js/customizer.js', array( 'customize-preview' ), esc_attr( $editorial_version ), true );
 }
 add_action( 'customize_preview_init', 'editorial_customize_preview_js' );
+
+/*-----------------------------------------------------------------------------------------------------------------------*/
+/**
+ * Enqueue required scripts/styles for customizer panel
+ *
+ * @since 1.3.7
+ */
+function editorial_customize_backend_scripts() {
+
+    wp_enqueue_style( 'font-awesome', get_template_directory_uri() . '/assets/library/font-awesome/css/font-awesome.min.css', array(), '4.7.0' );
+
+    wp_enqueue_style( 'editorial_admin_customizer_style', get_template_directory_uri() . '/assets/css/customizer-style.css' );
+
+    wp_enqueue_script( 'editorial_admin_customizer', get_template_directory_uri() . '/assets/js/customizer-controls.js', array( 'jquery', 'customize-controls' ), '20170616', true );
+}
+add_action( 'customize_controls_enqueue_scripts', 'editorial_customize_backend_scripts', 10 );
+
+/*-----------------------------------------------------------------------------------------------------------------------*/
 
 /**
  * Customizer Callback functions
@@ -106,10 +126,18 @@ function editorial_related_articles_option_callback( $control ) {
     }
 }
 
+/*-----------------------------------------------------------------------------------------------------------------------*/
+
 /**
  * Load customizer panels
  */
-require get_template_directory() . '/inc/admin/assets/panels/general-panel.php'; //General settings panel
-require get_template_directory() . '/inc/admin/assets/panels/header-panel.php'; //header settings panel
-require get_template_directory() . '/inc/admin/assets/panels/design-panel.php'; //Design Settings panel
-require get_template_directory() . '/inc/admin/assets/panels/additional-panel.php'; //Additional settings panel
+require get_template_directory() . '/inc/customizer/general-panel.php'; //General settings panel
+require get_template_directory() . '/inc/customizer/header-panel.php'; //header settings panel
+require get_template_directory() . '/inc/customizer/design-panel.php'; //Design Settings panel
+require get_template_directory() . '/inc/customizer/additional-panel.php'; //Additional settings panel
+
+/**
+ * Load customizer custom classes
+ */
+require get_template_directory() . '/inc/customizer/editorial-custom-classes.php'; //custom classes
+require get_template_directory() . '/inc/customizer/editorial-sanitize.php'; //sanitize

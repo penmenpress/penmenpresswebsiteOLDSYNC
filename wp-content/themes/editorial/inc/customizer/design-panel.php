@@ -57,10 +57,10 @@ function editorial_design_settings_register( $wp_customize ) {
             'section'       => 'editorial_archive_section',
             'priority'      => 4,
             'choices'       => array(
-                    'right_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/right-sidebar.png',
-                    'left_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/left-sidebar.png',
-                    'no_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar.png',
-                    'no_sidebar_center' => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar-center.png'
+                    'right_sidebar'     => get_template_directory_uri() . '/assets/images/right-sidebar.png',
+                    'left_sidebar'      => get_template_directory_uri() . '/assets/images/left-sidebar.png',
+                    'no_sidebar'        => get_template_directory_uri() . '/assets/images/no-sidebar.png',
+                    'no_sidebar_center' => get_template_directory_uri() . '/assets/images/no-sidebar-center.png'
                 )
            )
         )
@@ -122,10 +122,10 @@ function editorial_design_settings_register( $wp_customize ) {
             'section'       => 'editorial_single_post_section',
             'priority'      => 4,
             'choices'       => array(
-                    'right_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/right-sidebar.png',
-                    'left_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/left-sidebar.png',
-                    'no_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar.png',
-                    'no_sidebar_center' => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar-center.png'
+                    'right_sidebar'     => get_template_directory_uri() . '/assets/images/right-sidebar.png',
+                    'left_sidebar'      => get_template_directory_uri() . '/assets/images/left-sidebar.png',
+                    'no_sidebar'        => get_template_directory_uri() . '/assets/images/no-sidebar.png',
+                    'no_sidebar_center' => get_template_directory_uri() . '/assets/images/no-sidebar-center.png'
                 )
            )
         )
@@ -190,17 +190,17 @@ function editorial_design_settings_register( $wp_customize ) {
               'default' => __( 'Related Articles', 'editorial' ),
               'capability' => 'edit_theme_options',
               'transport'=> 'postMessage',
-              'sanitize_callback' => 'editorial_sanitize_text',
+              'sanitize_callback' => 'sanitize_text_field',
             )
     );
     $wp_customize->add_control(
         'editorial_related_articles_title', 
         array(
-              'type' => 'text',
-              'label' => __( 'Section Title', 'editorial' ),
-              'section' => 'editorial_single_post_section',
+              'type'        => 'text',
+              'label'       => __( 'Section Title', 'editorial' ),
+              'section'     => 'editorial_single_post_section',
               'active_callback'   => 'editorial_related_articles_option_callback',
-              'priority' => 8
+              'priority'    => 8
             )
     );
 
@@ -260,10 +260,10 @@ function editorial_design_settings_register( $wp_customize ) {
             'section'       => 'editorial_single_page_section',
             'priority'      => 4,
             'choices'       => array(
-                    'right_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/right-sidebar.png',
-                    'left_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/left-sidebar.png',
-                    'no_sidebar' => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar.png',
-                    'no_sidebar_center' => get_template_directory_uri() . '/inc/admin/assets/images/no-sidebar-center.png'
+                    'right_sidebar'     => get_template_directory_uri() . '/assets/images/right-sidebar.png',
+                    'left_sidebar'      => get_template_directory_uri() . '/assets/images/left-sidebar.png',
+                    'no_sidebar'        => get_template_directory_uri() . '/assets/images/no-sidebar.png',
+                    'no_sidebar_center' => get_template_directory_uri() . '/assets/images/no-sidebar-center.png'
                 )
            )
         )
@@ -340,7 +340,7 @@ function editorial_design_settings_register( $wp_customize ) {
               'default' => __( '2017 editorial', 'editorial' ),
               'capability' => 'edit_theme_options',
               'transport'=> 'postMessage',
-              'sanitize_callback' => 'editorial_sanitize_text',
+              'sanitize_callback' => 'sanitize_text_field',
             )
     );
     $wp_customize->add_control(

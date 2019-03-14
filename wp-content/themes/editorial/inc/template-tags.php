@@ -9,6 +9,8 @@
  * @since 1.0.0
  */
 
+/*----------------------------------------------------------------------------------------------------------------*/
+
 if ( ! function_exists( 'editorial_posted_on' ) ) :
 /**
  * Prints HTML with meta information for the current post-date/time and author.
@@ -27,12 +29,12 @@ function editorial_posted_on() {
 	);
 
 	$posted_on = sprintf(
-		esc_html_x( '%s', 'post date', 'editorial' ),
+		esc_html_x( ' %s', 'post date', 'editorial' ),
 		'<a href="' . esc_url( get_permalink() ) . '" rel="bookmark">' . $time_string . '</a>'
 	);
 
 	$byline = sprintf(
-		esc_html_x( '%s', 'post author', 'editorial' ),
+		esc_html_x( ' %s', 'post author', 'editorial' ),
 		'<span class="author vcard"><a class="url fn n" href="' . esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ) . '">' . esc_html( get_the_author() ) . '</a></span>'
 	);
 
@@ -40,6 +42,8 @@ function editorial_posted_on() {
 
 }
 endif;
+
+/*----------------------------------------------------------------------------------------------------------------*/
 
 if( ! function_exists( 'editorial_post_comment' ) ) :
 	/**
@@ -53,6 +57,8 @@ if( ! function_exists( 'editorial_post_comment' ) ) :
 	}
 
 endif;
+
+/*----------------------------------------------------------------------------------------------------------------*/
 
 if ( ! function_exists( 'editorial_entry_footer' ) ) :
 /**
@@ -79,6 +85,8 @@ function editorial_entry_footer() {
 	);
 }
 endif;
+
+/*----------------------------------------------------------------------------------------------------------------*/
 
 /**
  * Returns true if a blog has more than 1 category.
@@ -109,6 +117,8 @@ function editorial_categorized_blog() {
 		return false;
 	}
 }
+
+/*----------------------------------------------------------------------------------------------------------------*/
 
 /**
  * Flush out the transients used in editorial_categorized_blog.
