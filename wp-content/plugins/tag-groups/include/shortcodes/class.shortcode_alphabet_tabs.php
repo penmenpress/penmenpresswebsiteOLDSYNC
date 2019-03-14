@@ -30,23 +30,10 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
 
       }
 
-      /**
-      * In case we use the WPML plugin: consider the language
-      */
-      if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-
-        $wpml_language = (string) ICL_LANGUAGE_CODE;
-
-      } else {
-
-        $wpml_language = '';
-
-      }
-
-      $key = md5( 'alphabet-tabs' . serialize( $key_array ) . '-' . $wpml_language );
+      $cache_key = md5( 'alphabet-tabs' . serialize( $key_array ) );
 
       // check for a cached version (premium plugin)
-      $html = apply_filters( 'tag_groups_hook_cache_get', false, $key );
+      $html = apply_filters( 'tag_groups_hook_cache_get', false, $cache_key );
 
       if ( $html ) {
 
@@ -205,6 +192,12 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
 
         $posttags = array();
 
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+          error_log( '[Tag Groups] Error retrieving tags with get_terms.' );
+
+        }
+
       }
 
       /**
@@ -278,7 +271,9 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
               $found = true;
 
               break;
+
             }
+
           }
 
           if ( ! empty( $assigned_class ) ) {
@@ -326,13 +321,15 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
       $alphabet = self::extract_alphabet( $posttags );
 
       /**
-      * Use provided list
+      * Use provided list to include
       */
-      if ( $include_letters !== '' ) {
+      $include_letters = str_replace( ' ', '', $include_letters );
+
+      if ( $include_letters != '' ) { // don't use empty()
 
         $include_letters_array = array();
 
-        $include_letters = mb_strtoupper( str_replace( ' ', '', $include_letters ) );
+        $include_letters = mb_strtoupper( $include_letters );
 
         for ( $i = 0; $i < mb_strlen( $include_letters ); $i++ ) {
 
@@ -344,11 +341,16 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
 
       }
 
-      if ( $exclude_letters !== '' ) {
+      /**
+      * Use provided list to exclude
+      */
+      $exclude_letters = str_replace( ' ', '', $exclude_letters );
+
+      if ( $exclude_letters != '' ) { // don't use empty()
 
         $exclude_letters_array = array();
 
-        $exclude_letters = mb_strtoupper( str_replace( ' ', '', $exclude_letters ) );
+        $exclude_letters = mb_strtoupper( $exclude_letters );
 
         for ( $i = 0; $i < mb_strlen( $exclude_letters ); $i++ ) {
 
@@ -393,7 +395,7 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
 
         $html_tags[ $i ] = '';
 
-        foreach ( $posttags as $tag ) {
+        foreach ( $posttags as $key => $tag ) {
 
           $other_tag_classes = '';
 
@@ -424,6 +426,7 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
                   $tag_link = esc_url( $tag_link . '&' . $link_append );
 
                 }
+
               }
 
               $font_size = self::font_size( $tag_count, $min_max[ $letter ]['min'], $min_max[ $letter ]['max'], $smallest, $largest );
@@ -465,6 +468,7 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
                 $tag_count_brackets = $show_tag_count ? '(' . $tag_count . ')' : '';
 
                 $title = $description . $tag_count_brackets;
+
               }
 
               // replace placeholders in prepend and append
@@ -514,10 +518,11 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
 
             }
 
+            unset( $posttags[ $key ] ); // We don't need to look into that one again, since it can only appear under on tab
+
           }
 
         }
-
 
         if ( $hide_empty_tabs && ! $count_amount ) {
 
@@ -550,7 +555,7 @@ if ( ! class_exists('TagGroups_Shortcode_Alphabet_Tabs') ) {
       $html .= self::custom_js_tabs( $div_id, $mouseover, $collapsible, $active );
 
       // create a cached version (premium plugin)
-      do_action( 'tag_groups_hook_cache_set', $key, $html );
+      do_action( 'tag_groups_hook_cache_set', $cache_key, $html );
 
       return $html;
 

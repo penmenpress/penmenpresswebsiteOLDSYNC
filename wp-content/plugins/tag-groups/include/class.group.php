@@ -1266,7 +1266,15 @@ if ( ! class_exists('TagGroups_Group') ) {
 
       }
 
-      $language = (string) ICL_LANGUAGE_CODE;
+      if ( 'all' == ICL_LANGUAGE_CODE ) {
+
+        $language = (string) apply_filters( 'wpml_default_language', NULL );
+
+      } else {
+
+        $language = (string) ICL_LANGUAGE_CODE;
+
+      }
 
       /**
       * Make sure we can delete this option during uninstallation

@@ -30,23 +30,10 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
 
       }
 
-      /**
-      * In case we use the WPML plugin: consider the language
-      */
-      if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-
-        $wpml_language = (string) ICL_LANGUAGE_CODE;
-
-      } else {
-
-        $wpml_language = '';
-
-      }
-
-      $key = md5( 'tabs' . serialize( $key_array ) . var_export( $return_array, true ) . '-' . $wpml_language );
+      $cache_key = md5( 'tabs' . serialize( $key_array ) . var_export( $return_array, true ) );
 
       // check for a cached version (premium plugin)
-      $html = apply_filters( 'tag_groups_hook_cache_get', false, $key );
+      $html = apply_filters( 'tag_groups_hook_cache_get', false, $cache_key );
 
       if ( $html ) {
 
@@ -216,6 +203,12 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
       if ( ! is_array( $posttags ) ) {
 
         $posttags = array();
+
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+          error_log( '[Tag Groups] Error retrieving tags with get_terms.' );
+
+        }
 
       }
 
@@ -532,7 +525,7 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
         }
 
         // create a cached version (premium plugin)
-        do_action( 'tag_groups_hook_cache_set', $key, $output );
+        do_action( 'tag_groups_hook_cache_set', $cache_key, $output );
 
         return $output;
 
@@ -785,7 +778,7 @@ if ( ! class_exists('TagGroups_Shortcode_Tabs') ) {
         $html .= self::custom_js_tabs( $div_id, $mouseover, $collapsible, $active );
 
         // create a cached version (premium plugin)
-        do_action( 'tag_groups_hook_cache_set', $key, $html );
+        do_action( 'tag_groups_hook_cache_set', $cache_key, $html );
 
         return $html;
       }

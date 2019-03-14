@@ -70,6 +70,8 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       add_action( 'wp_ajax_tg_ajax_get_feed', array( 'TagGroups_Admin', 'ajax_get_feed' ) );
 
+      add_action( 'admin_notices', array( 'TagGroups_Admin', 'add_language_notice' ) );
+
     }
 
 
@@ -259,12 +261,6 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
           $post_type_a = array();
 
-          // if ( 'post_tag' == $taxonomy ) {
-          //
-          //   $post_type_a = array( 'post' );
-          //
-          // } else {
-
             $taxonomy_o = get_taxonomy( $taxonomy );
 
             /**
@@ -275,7 +271,6 @@ if ( ! class_exists('TagGroups_Admin') ) {
               $post_type_a = $taxonomy_o->object_type;
 
             }
-          // }
 
           if ( ! empty( $post_type_a ) ) {
 
@@ -1963,7 +1958,15 @@ if ( ! class_exists('TagGroups_Admin') ) {
       */
       if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
 
-        $wpml_piece = '&lang=' . (string) ICL_LANGUAGE_CODE;
+        if ( 'all' == ICL_LANGUAGE_CODE ) {
+
+          $wpml_piece = '&lang=' . (string) apply_filters( 'wpml_default_language', NULL );
+
+        } else {
+
+          $wpml_piece = '&lang=' . (string) ICL_LANGUAGE_CODE;
+
+        }
 
       } else {
 
@@ -1978,6 +1981,21 @@ if ( ! class_exists('TagGroups_Admin') ) {
 
       <div class='wrap'>
         <h2><?php _e( 'Tag Groups', 'tag-groups' ) ?></h2>
+
+        <?php
+        if ( defined( 'ICL_LANGUAGE_CODE' ) && ICL_LANGUAGE_CODE == 'all' ) {
+
+          echo '<div class="notice notice-warning" style="clear:both;">
+          <p>';
+
+          _e( 'Please select one of the languages above before editing a group name!', 'tag-groups' );
+
+          echo '</p>
+          <div style="clear:both;"></div>
+          </div>';
+
+        }
+        ?>
 
         <p><?php
         _e( 'On this page you can define tag groups. Tags (or terms) can be assigned to these groups on the page where you edit the tags (terms).', 'tag-groups' ); ?></p>
@@ -2537,6 +2555,48 @@ if ( ! class_exists('TagGroups_Admin') ) {
         }
 
         return $items_per_page;
+
+      }
+
+
+      /**
+       * Add a warning if the WPML/Polylang language switch is set to "all"
+       *
+       *
+       * @param void
+       * @return void
+       */
+      public static function add_language_notice()
+      {
+
+        $screen = get_current_screen();
+
+        if ( ! $screen || ( 'edit-tags' !== $screen->base && 'term' !== $screen->base ) ) {
+
+          return;
+
+        }
+
+        $enabled_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
+
+        if ( ! in_array( $screen->taxonomy, $enabled_taxonomies ) ) {
+
+          return;
+
+        }
+
+        if ( defined( 'ICL_LANGUAGE_CODE' ) && ICL_LANGUAGE_CODE == 'all' ) {
+
+          echo '<div class="notice notice-warning" style="clear:both;">
+          <p>';
+
+          _e( 'Please select one of the languages above to see the correct tag groups!', 'tag-groups' );
+
+          echo '</p>
+          <div style="clear:both;"></div>
+          </div>';
+
+        }
 
       }
 

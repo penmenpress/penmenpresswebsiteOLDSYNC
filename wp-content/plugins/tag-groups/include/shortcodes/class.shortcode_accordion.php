@@ -29,23 +29,10 @@ if ( ! class_exists('TagGroups_Shortcode_Accordion') ) {
 
       }
 
-      /**
-      * In case we use the WPML plugin: consider the language
-      */
-      if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
-
-        $wpml_language = (string) ICL_LANGUAGE_CODE;
-
-      } else {
-
-        $wpml_language = '';
-
-      }
-
-      $key = md5( 'accordion' . serialize( $key_array ) . '-' . $wpml_language );
+      $cache_key = md5( 'accordion' . serialize( $key_array ) );
 
       // check for a cached version (premium plugin)
-      $html = apply_filters( 'tag_groups_hook_cache_get', false, $key );
+      $html = apply_filters( 'tag_groups_hook_cache_get', false, $cache_key );
 
       if ( $html ) {
 
@@ -212,6 +199,12 @@ if ( ! class_exists('TagGroups_Shortcode_Accordion') ) {
       if ( ! is_array( $posttags ) ) {
 
         $posttags = array();
+
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+          error_log( '[Tag Groups] Error retrieving tags with get_terms.' );
+
+        }
 
       }
 
@@ -655,7 +648,7 @@ if ( ! class_exists('TagGroups_Shortcode_Accordion') ) {
       $html .= self::custom_js_accordion( $div_id, $mouseover, $collapsible, $active, $heightstyle );
 
       // create a cached version (premium plugin)
-      do_action( 'tag_groups_hook_cache_set', $key, $html );
+      do_action( 'tag_groups_hook_cache_set', $cache_key, $html );
 
       return $html;
 

@@ -172,8 +172,24 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
       }
 
+      if ( defined( 'ICL_LANGUAGE_CODE' ) && ICL_LANGUAGE_CODE == 'all' ) {
 
-      if ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+        echo '<div class="notice notice-warning" style="clear:both;">
+        <p>';
+
+        _e( 'Please select one of the languages above to see the correct group names!', 'tag-groups' );
+
+        echo '</p>
+        <div style="clear:both;"></div>
+        </div>';
+
+      }
+
+      if ( function_exists( 'pll_get_post_language' ) ) {
+
+        $alerts[] = __( 'We detected Polylang. Your tag group names are translatable.', 'tag-groups' );
+
+      } elseif ( defined( 'ICL_LANGUAGE_CODE' ) ) {
 
         $alerts[] = __( 'We detected WPML. Your tag group names are translatable.', 'tag-groups' );
 
@@ -1046,6 +1062,10 @@ if ( ! class_exists('TagGroups_Settings') ) {
 
           $html .= '<tr><td>PHP Memory Limit</td><td>' . ini_get('memory_limit') . '</td></tr>';
 
+          $html .= '<tr><td>PHP Max Execution Time</td><td>' . ini_get('max_execution_time') . ' secs</td></tr>';
+
+          $html .= '<tr><td>PHP Post Max Size</td><td>' . ini_get('post_max_size') . '</td></tr>';
+
           $html .= '</table></div>';
 
           $html .= '<div class="tg_admin_accordion" >
@@ -1063,6 +1083,19 @@ if ( ! class_exists('TagGroups_Settings') ) {
           <input type="button" id="chatty-mango-help-button-ajax" class="button button-primary chatty-mango-help-icon" style="display:none;float:right;" value="'. __( 'Show the Response', 'tag-groups' ) .  '" data-topic="ajax">
           <div id="ajax_error_field" class="chatty-mango-help-container chatty-mango-help-container-ajax" style="display:none;"></div>
           </td></tr>';
+
+          if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
+
+            $html .= '<tr><td>WPML Version</td><td>' . ICL_SITEPRESS_VERSION . '</td></tr>';
+
+          }
+
+          if ( function_exists( 'pll_the_languages' ) ) {
+
+            // TODO: Can we get the version?
+            $html .= '<tr><td>Polylang detected</td><td></td></tr>';
+
+          }
 
           $html .= '</table></div>';
 

@@ -3,8 +3,8 @@ Contributors: camthor
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FD5ZU4EEBGSC8
 Tags: cloud, tags, tag cloud, tabs, accordion, taxonomy, tag, woocommerce
 Requires at least: 4.0
-Tested up to: 5.1.0
-Stable tag: 0.42.1
+Tested up to: 5.1.1
+Stable tag: 0.42.2
 Requires PHP: 5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -124,6 +124,14 @@ This plugin does not collect or process any personal user data.
 
 == Changelog ==
 
+= 0.42.2 =
+
+OTHER
+
+* Added warning if language selector is set to "all languages" (WPML, Polylang)
+* More system information
+* Improved caching (premium)
+
 = 0.42.1 =
 
 BUG FIXES
@@ -147,66 +155,6 @@ BUG FIXES
 OTHER
 
 * Added shortcode [tag_groups_alphabet_tabs] to help screen in the settings.
-
-= 0.41.0 =
-
-FEATURES
-
-* Added experimental shortcode [tag_groups_alphabet_tabs] to show first letters of tags instead of groups (beta). Try parameters include_letters and exclude_letters="abc". Not yet available as Gutenberg block.
-
-BUG FIXES
-
-* Fixed issues in class.group.php (credits @luke4roads)
-* Fixed issues in determining number of tags per posts for a particular group
-
-= 0.40.4 =
-
-BUG FIXES
-
-* Fixed issue when default post_tag taxonomy is used with custom posts
-
-OTHER
-
-* Debugging messages during uninstallation
-
-= 0.40.3 =
-
-OTHER
-
-* Fixed compatibility issues with the latest version of Gutenberg
-
-= 0.40.2 =
-
-BUG FIXES
-
-* Fixed an occasional error when Gutenberg is not installed
-
-OTHER
-
-* Get the latest 100 posts to Gutenberg block
-
-= 0.40.1 =
-
-OTHER
-
-* Adjustments for changes in Gutenberg API (apiFetch replacing wp.api)
-
-= 0.40.0 =
-
-FEATURES
-
-* Compatibility with WPML: Group names can now be translated.
-
-BUG FIXES
-
-* Fixed wrong entry in help search index.
-* Fixed wrong HTML structure in settings.
-
-OTHER
-
-* Enhanced keyword search on settings home.
-* Some refactoring and removed old WPML function calls.
-* Encouragement in system information to upgrade PHP if using an outdated version.
 
 
 = Older Versions =
