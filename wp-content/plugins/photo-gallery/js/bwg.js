@@ -398,6 +398,16 @@ function spider_ajax_save(form_id, tr_group) {
 
       /* Change the popup dimensions. */
       bwg_tb_window("#images_table");
+
+      /* Show popup for install manager if first gallery inserted */
+      var popup_status = jQuery(data).find('#twbb_layout').attr("data-status");
+      if(popup_status == 1) {
+        var win_height = jQuery( window ).height();
+        if( win_height < 500 ) {
+          jQuery("#twbb_layout_container").css('height', (win_height-35));
+        }
+        jQuery("#twbb_layout").removeClass("hide");
+      }
     }
   });
 

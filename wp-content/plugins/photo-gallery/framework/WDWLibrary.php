@@ -2811,4 +2811,130 @@ class WDWLibrary {
       exit;
     }
   }
+
+  public static function twbb_install_button() {
+    $prefix = BWG()->prefix;
+    $slug = '10web-manager';
+    $install_url = esc_url(wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $slug), 'install-plugin_' . $slug));
+    $activation_url = na_action_link($slug.'/10web-manager.php', 'activate');
+    $tenweb_url = admin_url( 'admin.php?page=tenweb_menu' );
+    $plugin_dir = WP_PLUGIN_DIR . '/10web-manager/';
+    $dismiss_url = add_query_arg(array( 'action' => 'wd_tenweb_dismiss' ), admin_url('admin-ajax.php'));
+    if ( is_dir($plugin_dir) && !is_plugin_active( '10web-manager/manager.php' ) ) {
+      ?>
+      <a class="button tenweb_activaion" id="activate_now" data-tenweb-url="<?php echo $tenweb_url; ?>" data-install-url="<?php echo $install_url; ?>" data-activate-url="<?php echo $activation_url; ?>">
+        <?php _e("ACTIVATION", $prefix); ?>
+        <span class="spinner" id="loading"></span>
+      </a>
+      <span class="error_activate hide"><?php _e("Activation failed, please try again.", $prefix); ?></span>
+      <?php
+    } else if( ! is_dir($plugin_dir) ) {
+      ?>
+      <a class="button tenweb_activaion" id="install_now" data-install-url="<?php echo $install_url; ?>" data-activate-url="<?php echo $activation_url; ?>"><?php _e("Install Free", $prefix); ?>
+        <span class="spinner" id="loading"></span>
+      </a>
+      <a class="button tenweb_activaion hide" id="activate_now" data-tenweb-url="<?php echo $tenweb_url; ?>" data-install-url="<?php echo $install_url; ?>" data-activate-url="<?php echo $activation_url; ?>"><?php _e("Activation", $prefix); ?>
+        <span class="spinner" id="loading"></span>
+      </a>
+
+      <span class="error_install hide tenweb_active"><?php _e("Installation failed, please try again.", $prefix); ?></span>
+      <?php
+    }
+	?>
+	<script>
+	var url = jQuery(".tenweb_activaion").attr("data-install-url");
+	var activate_url = jQuery(".tenweb_activaion").attr("data-activate-url");
+
+	function install_tenweb_plugin() {
+	  jQuery("#loading").addClass('is-active');
+	  jQuery(this).prop('disable',true);
+	  var io_plugin_url = '<?php echo plugins_url('10web-manager/10web-manager.php');?>'; // Getting 10web manager plugin url
+
+	  jQuery.ajax({
+		method: "POST",
+		url: url,
+	  }).done(function() {
+		// Check if plugin installed
+		jQuery.ajax({
+		  type: 'POST',
+		  dataType: 'json',
+		  url: jQuery("#verifyUrl").attr('data-url'),
+		  error: function()
+		  {
+			jQuery("#loading").removeClass('is-active');
+			jQuery(".error_install").show();
+		  },
+		  success: function(response)
+		  {
+			if ( response.status_install == 1 ) {
+			  jQuery('#install_now').addClass('hide');
+			  jQuery('#activate_now').removeClass('hide');
+
+			  activate_tenweb_plugin();
+			}
+			else {
+			  jQuery("#loading").removeClass('is-active');
+			  jQuery(".error_install").removeClass('hide');
+			}
+		  }
+		});
+	  })
+		.fail(function() {
+		  jQuery("#loading").removeClass('is-active');
+		  jQuery(".error_install").removeClass('hide');
+		});
+	}
+
+	function activate_tenweb_plugin() {
+	  jQuery("#activate_now #loading").addClass('is-active');
+	  jQuery.ajax({
+		method: "POST",
+		url: activate_url,
+	  }).done(function() {
+		jQuery("#loading").removeClass('is-active');
+		var data_tenweb_url = '';
+		// Check if plugin installed
+		jQuery.ajax({
+		  type: 'POST',
+		  dataType: 'json',
+		  url: jQuery("#verifyUrl").attr('data-url'),
+		  error: function()
+		  {
+			jQuery("#loading").removeClass('is-active');
+			jQuery(".error_activate").removeClass('hide');
+		  },
+		  success: function(response)
+		  {
+			if ( response.status_active == 0 ) {
+			  jQuery('#install_now').addClass('hide');
+			  data_tenweb_url = jQuery('#activate_now').attr('data-tenweb-url');
+			  jQuery.post('<?php echo $dismiss_url; ?>');
+			}
+			else {
+			  jQuery("#loading").removeClass('is-active');
+			  jQuery(".error_activate").removeClass('hide');
+			}
+		  },
+		  complete : function() {
+			if ( data_tenweb_url != '' ) {
+			  window.location.href = data_tenweb_url;
+			}
+		  }
+		});
+	  })
+			.fail(function() {
+			  jQuery("#loading").removeClass('is-active');
+			});
+	}
+
+	jQuery("#install_now").on("click",function(){
+	  install_tenweb_plugin();
+	});
+	jQuery("#activate_now").on("click",function(){
+	  activate_tenweb_plugin();
+	});
+	</script>
+
+	<?php
+  }
 }

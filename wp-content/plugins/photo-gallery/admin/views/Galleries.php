@@ -168,6 +168,7 @@ class GalleriesView_bwg extends AdminView_bwg {
     );
 
     echo $this->form(ob_get_clean(), $form_attr);
+
   }
 
   /**

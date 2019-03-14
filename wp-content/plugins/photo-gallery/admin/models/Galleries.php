@@ -1031,9 +1031,6 @@ class GalleriesModel_bwg {
    * @return int
    */
   public function image_edit_alt( $id, $gallery_id = 0, $all = FALSE ) {
-    var_dump($id);
-    var_dump($gallery_id);
-
     if ( $gallery_id == 0 ) {
       $gallery_id = (int) WDWLibrary::get('current_id', 0);
     }

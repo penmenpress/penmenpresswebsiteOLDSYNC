@@ -338,7 +338,8 @@ class GalleriesController_bwg {
     $params['rows'] = $this->model->get_image_rows_data($id, $params);
     $params['pager'] = 0;
     $params['facebook_embed'] = $this->get_facebook_embed();
-	$this->view->edit( $params );
+
+    $this->view->edit( $params );
   }
 
   /**
@@ -348,8 +349,8 @@ class GalleriesController_bwg {
    * @param boolean $all
    */
   public function save( $id = 0, $all = FALSE ) {
-    // Save gallery and images.
     $data = $this->model->save();
+
     $message = array('gallery_message' => $data['saved'], 'image_message' => '');
 
     $ajax_task = WDWLibrary::get('ajax_task', '');
