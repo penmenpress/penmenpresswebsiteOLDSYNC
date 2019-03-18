@@ -123,7 +123,7 @@ class WPMediaFolders
                         $this->options = get_option('wp-media-folders-options');
                         $this->disclaimer = get_option('wp-media-folders-disclaimer-confirmed');
                         // phpcs:ignore WordPress.WP.PreparedSQL.NotPrepared -- No variable needs to be prepared
-                        $this->fields = WPMediaFoldersHelper::getDbColumns();
+                        $this->fields = WPMediaFoldersHelper::getDbColumns(true);
 
                         include_once dirname($this->plugin_main_file) . DIRECTORY_SEPARATOR . 'settings_view.php';
                     }

@@ -3,8 +3,10 @@ jQuery(document).ready(function($){
     {
         if (this.checked) {
             $('#table_replace').hide();
+            $('#full_search').show();
         } else {
             $('#table_replace').show();
+            $('#full_search').hide();
         }
     });
 

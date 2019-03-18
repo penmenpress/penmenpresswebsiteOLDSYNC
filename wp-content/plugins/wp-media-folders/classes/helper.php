@@ -595,13 +595,26 @@ class WPMediaFoldersHelper
     /**
      * Get all text assimilated columns from database
      *
+     * @param $all boolean Retrive only prefix tables or not
+     *
      * @return array|null|object
      */
-    public static function getDbColumns()
+    public static function getDbColumns($all)
     {
         global $wpdb;
+        $extra_query = '';
+
+        // Not forced to retrieve all tables
+        if (!$all) {
+            // If option not set to look for all tables
+            $options = get_option('wp-media-folders-options');
+            if (!isset($options['search_full_database'])) {
+                $extra_query = ' AND TABLE_NAME LIKE "'.$wpdb->prefix.'%" ';
+            }
+        }
+
         // phpcs:ignore WordPress.WP.PreparedSQL.NotPrepared -- Nothing to prepare
-        return $wpdb->get_results('SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE DATA_TYPE IN ("varchar", "text", "tinytext", "mediumtext", "longtext") AND TABLE_SCHEMA = "'.DB_NAME.'" ORDER BY TABLE_NAME', OBJECT);
+        return $wpdb->get_results('SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE DATA_TYPE IN ("varchar", "text", "tinytext", "mediumtext", "longtext") AND TABLE_SCHEMA = "'.DB_NAME.'" '.$extra_query.' ORDER BY TABLE_NAME', OBJECT);
     }
 
 
@@ -612,7 +625,7 @@ class WPMediaFoldersHelper
      */
     public static function getDefaultDbColumns()
     {
-        $columns = self::getDbColumns();
+        $columns = self::getDbColumns(false);
 
         $final_columns = array();
 

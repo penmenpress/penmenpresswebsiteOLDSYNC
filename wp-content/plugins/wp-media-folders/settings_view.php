@@ -4,6 +4,7 @@ defined('ABSPATH') || die('No direct script access allowed!');
 
 wp_enqueue_style('wp-media-folders-settings', plugins_url(null, __FILE__).'/assets/css/settings.css');
 wp_enqueue_script('wp-media-folders-settings', plugins_url(null, __FILE__).'/assets/js/settings.js');
+global $wpdb;
 ?>
 
 <script>var wpmfs_nonce = "<?php echo wp_create_nonce('wpmfs_nonce'); ?>";</script>
@@ -130,7 +131,26 @@ wp_enqueue_script('wp-media-folders-settings', plugins_url(null, __FILE__).'/ass
             </div>
         </div>
 
-        <h2>Debug</h2>
+        <div id="full_search" style="<?php echo !isset($this->options['auto_detect_tables'])?'display:none':''; ?>">
+            <h2><?php esc_html_e('Advanced settings', 'wp-media-folders'); ?></h2>
+            <div class="container">
+                <input
+                        type="checkbox"
+                        name="wp-media-folders-options[search_full_database]"
+                    <?php echo isset($this->options['search_full_database'])?'checked':''; ?>
+                />
+                <strong><?php echo sprintf(esc_html('Search into full database instead of only "%s" prefixed tables', 'wp-media-folders'), $wpdb->prefix); ?></strong>
+                <p class="hint">
+                    <?php
+                    echo esc_html__('If checked, the plugin will not only replace content in your wordpress tables but in all the table it will find in the database.', 'wp-media-folders').'<br/>';
+                    echo esc_html__('It could be usefull if you use your attachments links in another cms or custom script.', 'wp-media-folders').'<br/>';
+                    echo esc_html__('If you don\'t specifically need it, leave this option unchecked ', 'wp-media-folders').'<br/>';
+                    ?>
+                </p>
+            </div>
+        </div>
+
+        <h2><?php esc_html_e('Debug', 'wp-media-folders'); ?></h2>
 
         <div class="container">
             <input

@@ -3,8 +3,8 @@ Contributors: dbarrere
 Tags: media, folder, real media folders, media library, real media library
 Requires at least: 3.5.1
 Requires PHP: 5.4
-Tested up to: 4.9.8
-Stable tag: 1.1.2
+Tested up to: 5.1.1
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,11 @@ Always make sure all the WP Media Folders tasks are finished before editing any 
 
 == Changelog ==
 
+= Version 1.1.4 =
+ * [fix] Fix thumbnail generation on upload not always working
+
+= Version 1.1.3 =
+ * [feature] Ability to choose replacing content in only worpdress installation tables or all database tables
 
 = Version 1.1.2 =
  * [fix] Double replacement in some cases

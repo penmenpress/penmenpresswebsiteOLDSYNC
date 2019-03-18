@@ -30,7 +30,10 @@ class WPMediaFoldersWPMF
             function ($attachment_id, $folder) {
                 $folders = WPMediaFoldersHelper::getParentTerms($folder);
                 WPMediaFoldersQueue::addToQueue($attachment_id, implode(DIRECTORY_SEPARATOR, $folders), false);
-                WPMediaFoldersQueue::proceedQueueAsync();
+                // Move files at the end of the script to avoid thumbnails generation issues
+                add_action('shutdown', function () {
+                    WPMediaFoldersQueue::proceedQueueAsync();
+                });
             },
             10,
             2
