@@ -1,49 +1,72 @@
-<div class="rule closed" id="wp-version">
-    <div class="rule-title" role="link" tabindex="0">
-		<?php if ( $controller->check() == false ): ?>
-            <i class="def-icon icon-warning" aria-hidden="true"></i>
-		<?php else: ?>
-            <i class="def-icon icon-tick" aria-hidden="true"></i>
-		<?php endif; ?>
-		<?php _e( "Update WordPress to latest version", "defender-security" ) ?>
+<?php
+$checked = $controller->check();
+?>
+<div id="wp-version" class="sui-accordion-item <?php echo $controller->getCssClass() ?>">
+    <div class="sui-accordion-item-header">
+        <div class="sui-accordion-item-title">
+            <i aria-hidden="true" class="<?php echo $checked ? 'sui-icon-check-tick sui-success'
+				: 'sui-icon-warning-alert sui-warning' ?>"></i>
+			<?php _e( "WordPress Version", "defender-security" ) ?>
+        </div>
+        <div class="sui-accordion-col-4">
+            <button class="sui-button-icon sui-accordion-open-indicator" aria-label="Open item">
+                <i class="sui-icon-chevron-down" aria-hidden="true"></i>
+            </button>
+        </div>
     </div>
-    <div class="rule-content">
-        <h3><?php _e( "Overview", "defender-security" ) ?></h3>
-        <div class="line">
-			<?php _e( "WordPress is an extremely popular platform, and with that popularity comes hackers that increasingly want to exploit WordPress based websites. Leaving your WordPress installation out of date is an almost guaranteed way to get hacked!", "defender-security" ) ?>
-        </div>
-        <div class="columns version-col">
-            <div class="column">
-                <strong><?php _e( "Current version", "defender-security" ) ?></strong>
-			    <?php $class = $controller->check() ? 'def-tag tag-success' : 'def-tag tag-error' ?>
-                <span class="<?php echo $class ?>">
-                    <?php echo \WP_Defender\Behavior\Utils::instance()->getWPVersion() ?>
-                </span>
+    <div class="sui-accordion-item-body">
+        <div class="sui-box">
+            <div class="sui-box-body">
+                <strong>
+					<?php _e( "Overview", "defender-security" ) ?>
+                </strong>
+                <p>
+					<?php _e( "WordPress is an extremely popular platform, and with that popularity comes hackers that increasingly want to exploit WordPress based websites. Leaving your WordPress installation out of date is an almost guaranteed way to get hacked as you’re missing out on the latest security patches. ", "defender-security" ) ?>
+                </p>
+                <strong>
+					<?php _e( "Status", "defender-security" ) ?>
+                </strong>
+				<?php if ( $checked ): ?>
+                    <div class="sui-notice sui-notice-success">
+                        <p>
+							<?php _e( "You have the latest version of WordPress installed, good stuff!", "defender-security" ) ?>
+                        </p>
+                    </div>
+				<?php else: ?>
+                    <div class="sui-border-frame">
+                        <div class="sui-row">
+                            <div class="sui-col">
+                                <strong><?php _e( "Current WordPress version", "defender-security" ) ?></strong>
+                                <span class="sui-tag <?php echo $checked ? 'sui-tag-success' : 'sui-tag-warning' ?>"><?php echo \WP_Defender\Behavior\Utils::instance()->getWPVersion() ?></span>
+                            </div>
+                            <div class="sui-col">
+                                <strong><?php _e( "Recommended", "defender-security" ) ?></strong>
+                                <span class="sui-tag"><?php echo $controller->getService()->getLatestVersion() ?></span>
+                            </div>
+                        </div>
+                    </div>
+                    <p>
+						<?php printf( __( "Your current WordPress version is out of date, which means you could be missing out on the latest security patches in v%s", "defender-security" ), $controller->getService()->getLatestVersion() ) ?>
+                    </p>
+                    <strong>
+						<?php _e( "How to fix", "defender-security" ) ?>
+                    </strong>
+                    <p>
+						<?php _e( "We recommend you update your version to the latest stable release, and maintain updating it regularly. Alternately, you can ignore this upgrade if you don’t require the latest version.", "defender-security" ) ?>
+                    </p>
+				<?php endif; ?>
             </div>
-            <div class="column">
-                <strong><?php _e( "Recommend Version", "defender-security" ) ?></strong>
-                <span><?php echo $controller->getService()->getLatestVersion() ?></span>
-            </div>
-        </div>
-        <h3>
-			<?php _e( "How to fix", "defender-security" ) ?>
-        </h3>
-        <div class="well">
-			<?php if ( $controller->check() ): ?>
-				<?php _e( "You have the latest WordPress version installed.", "defender-security" ) ?>
-			<?php else: ?>
-                <form method="post" class="hardener-frm">
-					<?php $controller->createNonceField(); ?>
-                    <input type="hidden" name="action" value="processHardener"/>
-                    <input type="hidden" name="slug" value="<?php echo $controller::$slug ?>"/>
-                    <a href="<?php echo network_admin_url('update-core.php') ?>" class="button float-r">
+            <div class="sui-box-footer">
+                <div class="sui-actions-left">
+					<?php $controller->showIgnoreForm() ?>
+                </div>
+                <div class="sui-actions-right">
+                    <a href="<?php echo network_admin_url( 'update-core.php' ) ?>"
+                       class="sui-button sui-button-ghost">
 						<?php esc_html_e( "Update WordPress", "defender-security" ) ?>
                     </a>
-                </form>
-				<?php $controller->showIgnoreForm() ?>
-                <div class="clear"></div>
-			<?php endif; ?>
+                </div>
+            </div>
         </div>
-        <div class="clear"></div>
     </div>
 </div>

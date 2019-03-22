@@ -1,129 +1,140 @@
-<div class="dev-box">
-    <div class="box-title">
-        <h3><?php esc_html_e( "NOTIFICATIONS", "defender-security" ) ?></h3>
+<div class="sui-box">
+    <div class="sui-box-header">
+        <h3 class="sui-box-title"><?php _e( "Notification", "defender-security" ) ?></h3>
     </div>
-    <div class="box-content">
-        <form method="post" id="settings-frm" class="ip-frm">
-            <div class="columns">
-                <div class="column is-one-third">
-                    <label>
-						<?php esc_html_e( "Send email notifications", "defender-security" ) ?>
-                    </label>
-                    <span class="sub">
-                        <?php esc_html_e( "Choose which lockout notifications you wish to be notified about. These are sent instantly.", "defender-security" ) ?>
-					</span>
-                </div>
-                <div class="column">
-                    <span
-                            tooltip="<?php echo esc_attr( __( "Enable Login Protection", "defender-security" ) ) ?>"
-                            class="toggle float-l">
-                            <input type="hidden" name="login_lockout_notification" value="0"/>
-                            <input type="checkbox"
-                                   name="login_lockout_notification" <?php checked( 1, $settings->login_lockout_notification ) ?>
-                                   value="1" class="toggle-checkbox"
-                                   id="toggle_login_protection"/>
-                            <label class="toggle-label" for="toggle_login_protection"></label>
-                        </span>
-                    <label for="toggle_login_protection" role="checkbox" aria-checked="<?php echo $settings->login_lockout_notification?'true':'false';?>"><?php esc_html_e( "Login Protection Lockout", "defender-security" ) ?></label>
-                    <span class="sub inpos">
-                        <?php esc_html_e( "When a user or IP is locked out for trying to access your login area.", "defender-security" ) ?>
+    <form method="post" id="settings-frm" class="ip-frm">
+        <div class="sui-box-body">
+            <div class="sui-box-settings-row">
+                <div class="sui-box-settings-col-1">
+                    <span class="sui-settings-label">
+                        <?php esc_html_e( "Email Notifications", "defender-security" ) ?>
                     </span>
-                    <div class="clear mline"></div>
-                    <span
-                            tooltip="<?php echo esc_attr( __( "Enable 404 Detection", "defender-security" ) ) ?>"
-                            class="toggle float-l">
+                    <span class="sui-description">
+                        <?php esc_html_e( "Choose which lockout notifications you wish to be notified about. These are sent instantly.", "defender-security" ) ?>
+                    </span>
+                </div>
+
+                <div class="sui-box-settings-col-2">
+                    <div class="sui-form-field">
+                        <label class="sui-toggle">
+                            <input type="hidden" name="login_lockout_notification" value="0"/>
+                            <input role="presentation" type="checkbox" name="login_lockout_notification"
+                                   class="toggle-checkbox"
+                                   id="login_lockout_notification" value="1"
+								<?php checked( true, $settings->login_lockout_notification ) ?>/>
+                            <span class="sui-toggle-slider"></span>
+                        </label>
+                        <label for="login_lockout_notification" class="sui-toggle-label">
+							<?php esc_html_e( "Login Protection Lockout", "defender-security" ) ?>
+                        </label>
+                        <p class="sui-description">
+							<?php esc_html_e( "When a user or IP is locked out for trying to access your login area.", "defender-security" ) ?>
+                        </p>
+                    </div>
+                    <div class="sui-form-field">
+                        <label class="sui-toggle">
                             <input type="hidden" name="ip_lockout_notification" value="0"/>
-                            <input type="checkbox" name="ip_lockout_notification"
-                                   value="1" <?php checked( 1, $settings->ip_lockout_notification ) ?>
-                                   class="toggle-checkbox" id="toggle_404_detection"/>
-                            <label class="toggle-label" for="toggle_404_detection"></label>
-                        </span>
-                    <label for="toggle_404_detection" role="checkbox" aria-checked="<?php echo $settings->ip_lockout_notification?'true':'false';?>">
-						<?php esc_html_e( "404 Detection Lockout", "defender-security" ) ?>
-                    </label>
-                    <span class="sub inpos"><?php esc_html_e( "When a user or IP is locked out for repeated hits on non-existent files.", "defender-security" ) ?></span>
-                </div>
-            </div>
-            <div class="columns">
-                <div class="column is-one-third">
-                    <label>
-						<?php esc_html_e( "Email recipients", "defender-security" ) ?>
-                    </label>
-                    <span class="sub">
-						<?php esc_html_e( "Choose which of your website's users will receive scan report results via email.", "defender-security" ) ?>
-					</span>
-                </div>
-                <div class="column">
-					<?php
-					$email_search->renderInput() ?>
-                </div>
-            </div>
-            <div class="columns">
-                <div class="column is-one-third">
-                    <label>
-						<?php esc_html_e( "Repeat Lockouts", "defender-security" ) ?>
-                    </label>
-                    <span class="sub">
-                        <?php esc_html_e( "If you’re getting too many emails from IPs who are repeatedly being locked out you can turn them off for a period of time.", "defender-security" ) ?>
-					</span>
-                </div>
-                <div class="column">
-                    <span class="toggle float-l">
-                            <input type="hidden" name="cooldown_enabled" value="0"/>
-                            <input type="checkbox"
-                                   name="cooldown_enabled" <?php checked( 1, $settings->cooldown_enabled ) ?>
-                                   value="1" class="toggle-checkbox"
-                                   id="cooldown_enabled"/>
-                            <label class="toggle-label" for="cooldown_enabled"></label>
-                        </span>
-                    <label for="cooldown_enabled" role="checkbox" aria-checked="<?php echo $settings->cooldown_enabled?'true':'false';?>"><?php _e( "Limit email notifications for repeat lockouts", "defender-security" ) ?></label>
-                    <div class="well well-white schedule-box">
-                        <label><strong><?php _e( "Threshold", "defender-security" ) ?></strong>
-                            - <?php _e( "The number of lockouts before we turn off emails", "defender-security" ) ?>
+                            <input role="presentation" type="checkbox" name="ip_lockout_notification"
+                                   class="toggle-checkbox"
+                                   id="ip_lockout_notification" value="1"
+								<?php checked( true, $settings->ip_lockout_notification ) ?>/>
+                            <span class="sui-toggle-slider"></span>
                         </label>
-                        <select name="cooldown_number_lockout">
-                            <option <?php selected( '1', $settings->cooldown_number_lockout ) ?> value="1">1
-                            </option>
-                            <option <?php selected( '3', $settings->cooldown_number_lockout ) ?> value="3">3
-                            </option>
-                            <option <?php selected( '5', $settings->cooldown_number_lockout ) ?> value="5">5
-                            </option>
-                            <option <?php selected( '10', $settings->cooldown_number_lockout ) ?> value="10">10
-                            </option>
-                        </select>
-                        <label><strong><?php _e( "Cool Off Period", "defender-security" ) ?></strong>
-                            - <?php _e( "For how long should we turn them off?", "defender-security" ) ?>
+                        <label for="ip_lockout_notification" class="sui-toggle-label">
+							<?php esc_html_e( "404 Detection Lockout", "defender-security" ) ?>
                         </label>
-                        <select name="cooldown_period" class="mline">
-                            <option <?php selected( '1', $settings->cooldown_period ) ?>
-                                    value="1"><?php _e( "1 hour", "defender-security" ) ?></option>
-                            <option <?php selected( '2', $settings->cooldown_period ) ?>
-                                    value="2"><?php _e( "2 hours", "defender-security" ) ?></option>
-                            <option <?php selected( '6', $settings->cooldown_period ) ?>
-                                    value="6"><?php _e( "6 hours", "defender-security" ) ?></option>
-                            <option <?php selected( '12', $settings->cooldown_period ) ?>
-                                    value="12"><?php _e( "12 hours", "defender-security" ) ?></option>
-                            <option <?php selected( '24', $settings->cooldown_period ) ?>
-                                    value="24"><?php _e( "24 hours", "defender-security" ) ?></option>
-                            <option <?php selected( '36', $settings->cooldown_period ) ?>
-                                    value="36"><?php _e( "36 hours", "defender-security" ) ?></option>
-                            <option <?php selected( '48', $settings->cooldown_period ) ?>
-                                    value="48"><?php _e( "48 hours", "defender-security" ) ?></option>
-                            <option <?php selected( '168', $settings->cooldown_period ) ?>
-                                    value="168"><?php _e( "7 days", "defender-security" ) ?></option>
-                            <option <?php selected( '720', $settings->cooldown_period ) ?>
-                                    value="720"><?php _e( "30 days", "defender-security" ) ?></option>
-                        </select>
+                        <p class="sui-description">
+							<?php esc_html_e( "When a user or IP is locked out for repeated hits on non-existent files.", "defender-security" ) ?>
+                        </p>
                     </div>
                 </div>
             </div>
-            <div class="clear line"></div>
-			<?php wp_nonce_field( 'saveLockoutSettings' ) ?>
+            <div class="sui-box-settings-row">
+                <div class="sui-box-settings-col-1">
+                    <span class="sui-settings-label">
+                        <?php esc_html_e( "Email Recipients", "defender-security" ) ?>
+                    </span>
+                    <span class="sui-description">
+                        <?php esc_html_e( "Choose which of your website’s users will receive lockout notifications via email.", "defender-security" ) ?>
+                    </span>
+                </div>
+
+                <div class="sui-box-settings-col-2">
+					<?php $email_search->renderInput() ?>
+                </div>
+            </div>
+            <div class="sui-box-settings-row">
+                <div class="sui-box-settings-col-1">
+                    <span class="sui-settings-label">
+                        <?php esc_html_e( "Repeat Lockouts", "defender-security" ) ?>
+                    </span>
+                    <span class="sui-description">
+                        <?php esc_html_e( "If you’re getting too many emails from IPs who are repeatedly being locked out you can turn them off for a period of time.", "defender-security" ) ?>
+                    </span>
+                </div>
+
+                <div class="sui-box-settings-col-2">
+                    <label class="sui-toggle">
+                        <input type="hidden" name="cooldown_enabled" value="0"/>
+                        <input role="presentation" type="checkbox" name="cooldown_enabled"
+                               class="toggle-checkbox"
+                               id="cooldown_enabled" value="1"
+							<?php checked( true, $settings->cooldown_enabled ) ?>/>
+                        <span class="sui-toggle-slider"></span>
+                    </label>
+                    <label for="ip_lockout_notification" class="sui-toggle-label">
+						<?php esc_html_e( "Limit email notifications for repeat lockouts", "defender-security" ) ?>
+                    </label>
+                    <div class="sui-border-frame sui-toggle-content">
+                        <div class="sui-form-field">
+                            <label class="sui-label"><?php _e( "<strong>Threshold</strong> - The number of lockouts before we turn off emails" ) ?></label>
+                            <select name="cooldown_number_lockout">
+                                <option <?php selected( '1', $settings->cooldown_number_lockout ) ?> value="1">1
+                                </option>
+                                <option <?php selected( '3', $settings->cooldown_number_lockout ) ?> value="3">3
+                                </option>
+                                <option <?php selected( '5', $settings->cooldown_number_lockout ) ?> value="5">5
+                                </option>
+                                <option <?php selected( '10', $settings->cooldown_number_lockout ) ?> value="10">10
+                                </option>
+                            </select>
+                        </div>
+                        <div class="sui-form-field">
+                            <label class="sui-label"><?php _e( "<strong>Cool Off Period</strong> - For how long should we turn them off?" ) ?></label>
+                            <select name="cooldown_period">
+                                <option <?php selected( '1', $settings->cooldown_period ) ?>
+                                        value="1"><?php _e( "1 hour", "defender-security" ) ?></option>
+                                <option <?php selected( '2', $settings->cooldown_period ) ?>
+                                        value="2"><?php _e( "2 hours", "defender-security" ) ?></option>
+                                <option <?php selected( '6', $settings->cooldown_period ) ?>
+                                        value="6"><?php _e( "6 hours", "defender-security" ) ?></option>
+                                <option <?php selected( '12', $settings->cooldown_period ) ?>
+                                        value="12"><?php _e( "12 hours", "defender-security" ) ?></option>
+                                <option <?php selected( '24', $settings->cooldown_period ) ?>
+                                        value="24"><?php _e( "24 hours", "defender-security" ) ?></option>
+                                <option <?php selected( '36', $settings->cooldown_period ) ?>
+                                        value="36"><?php _e( "36 hours", "defender-security" ) ?></option>
+                                <option <?php selected( '48', $settings->cooldown_period ) ?>
+                                        value="48"><?php _e( "48 hours", "defender-security" ) ?></option>
+                                <option <?php selected( '168', $settings->cooldown_period ) ?>
+                                        value="168"><?php _e( "7 days", "defender-security" ) ?></option>
+                                <option <?php selected( '720', $settings->cooldown_period ) ?>
+                                        value="720"><?php _e( "30 days", "defender-security" ) ?></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sui-box-footer">
+	        <?php wp_nonce_field( 'saveLockoutSettings' ) ?>
             <input type="hidden" name="action" value="saveLockoutSettings"/>
-            <button type="submit" class="button button-primary float-r">
-				<?php esc_html_e( "UPDATE SETTINGS", "defender-security" ) ?>
-            </button>
-            <div class="clear"></div>
-        </form>
-    </div>
+            <div class="sui-actions-right">
+                <button type="submit" class="sui-button sui-button-blue">
+                    <i class="sui-icon-save" aria-hidden="true"></i>
+			        <?php _e( "Save Changes", "defender-security" ) ?>
+                </button>
+            </div>
+        </div>
+    </form>
 </div>

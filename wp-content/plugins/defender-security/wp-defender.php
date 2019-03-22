@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Defender
  * Plugin URI: https://premium.wpmudev.org/project/wp-defender/
- * Version:     2.0.1
+ * Version:     2.1.1.1
  * Description: Get regular security scans, vulnerability reports, safety recommendations and customized hardening for your site in just a few clicks. Defender is the analyst and enforcer who never sleeps.
  * Author:      WPMU DEV
  * Author URI:  http://premium.wpmudev.org/
@@ -95,6 +95,8 @@ class WP_Defender_Free {
 			include_once $this->getPluginPath() . 'legacy-activator.php';
 			$this->global['bootstrap'] = new WD_Legacy_Activator( $this );
 		}
+		//for the new SUI
+		add_filter( 'admin_body_class', array( &$this, 'adminBodyClasses' ) );
 	}
 
 	public function loadTextdomain() {
@@ -117,8 +119,6 @@ class WP_Defender_Free {
 		if ( version_compare( $phpVersion, '5.3', '>=' ) ) {
 			include_once $this->plugin_path . 'vendor' . DIRECTORY_SEPARATOR . 'hammer' . DIRECTORY_SEPARATOR . 'bootstrap.php';
 		}
-
-		include_once $this->plugin_path . 'shared-ui/plugin-ui.php';
 	}
 
 	/**
@@ -128,6 +128,12 @@ class WP_Defender_Free {
 		spl_autoload_register( array( &$this, '_autoload' ) );
 	}
 
+	public function adminBodyClasses( $classes ) {
+		$classes .= ' sui-2-3-15 ';
+
+		return $classes;
+	}
+
 	/**
 	 * Register globally css, js will be load on each module
 	 */
@@ -135,7 +141,8 @@ class WP_Defender_Free {
 		wp_enqueue_style( 'defender-menu', $this->getPluginUrl() . 'assets/css/defender-icon.css' );
 
 		$css_files = array(
-			'defender' => $this->plugin_url . 'assets/css/styles.css'
+			'wpmudev-sui' => $this->plugin_url . 'sui/css/shared-ui.css',
+			'defender'    => $this->plugin_url . 'assets/css/styles.css'
 		);
 
 		foreach ( $css_files as $slug => $file ) {
@@ -143,11 +150,12 @@ class WP_Defender_Free {
 		}
 
 		$js_files = array(
-			'defender' => $this->plugin_url . 'assets/js/scripts.js'
+			'wpmudev-sui' => $this->plugin_url . 'sui/js/shared-ui.js',
+			'defender'    => $this->plugin_url . 'assets/js/scripts.js',
 		);
 
 		foreach ( $js_files as $slug => $file ) {
-			wp_register_script( $slug, $file, array(), $this->version );
+			wp_register_script( $slug, $file, array(), $this->version, true );
 		}
 
 		do_action( 'defender_enqueue_assets' );
