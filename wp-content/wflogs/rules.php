@@ -1856,4 +1856,16 @@ wfWAFRuleComparisonSubject::create($this, array (
 ), array (
 )))), new wfWAFRuleLogicalOperator('AND'), new wfWAFRuleComparison($this, 'currentUserIsNot', 'administrator', array(wfWAFRuleComparisonSubject::create($this, 'server.empty', array (
 ))))));
+$this->rules[132] = wfWAFRule::create($this, 132, NULL, 'privesc', NULL, 'Freemius SDK < 2.2.2 - Authenticated Arbitrary Options Update', 1, 'block', new wfWAFRuleComparisonGroup(new wfWAFRuleComparison($this, 'match', '/\\/wp\\-admin[\\/]+admin\\-ajax\\.php/i', array(wfWAFRuleComparisonSubject::create($this, 'server.script_filename', array (
+)))), new wfWAFRuleLogicalOperator('AND'), new wfWAFRuleComparison($this, 'match', '/^fs_set_db_option$/i', array(wfWAFRuleComparisonSubject::create($this, array (
+  0 => 'request.body',
+  1 => 'action',
+), array (
+)),
+wfWAFRuleComparisonSubject::create($this, array (
+  0 => 'request.queryString',
+  1 => 'action',
+), array (
+)))), new wfWAFRuleLogicalOperator('AND'), new wfWAFRuleComparison($this, 'currentUserIsNot', 'administrator', array(wfWAFRuleComparisonSubject::create($this, 'server.empty', array (
+))))));
 ?>
