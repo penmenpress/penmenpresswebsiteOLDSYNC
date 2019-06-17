@@ -1897,6 +1897,11 @@ $this->rules[14] = wfWAFRule::create($this, 14, NULL, 'xxe', NULL, 'XXE: Externa
 )),
 wfWAFRuleComparisonSubject::create($this, 'request.queryString', array (
 ))))));
+$this->rules[146] = wfWAFRule::create($this, 146, NULL, 'obji', NULL, 'PHAR Deserialization Attack', 1, 'block', new wfWAFRuleComparisonGroup(new wfWAFRuleComparison($this, 'match', '/phar:\\/\\//i', array(wfWAFRuleComparisonSubject::create($this, 'request.body', array (
+)),
+wfWAFRuleComparisonSubject::create($this, 'request.queryString', array (
+)))), new wfWAFRuleLogicalOperator('AND'), new wfWAFRuleComparison($this, 'currentUserIsNot', 'administrator', array(wfWAFRuleComparisonSubject::create($this, 'server.empty', array (
+))))));
 $this->rules[120] = wfWAFRule::create($this, 120, NULL, 'privesc', NULL, 'WP GDPR Compliance <= 1.4.2 - Update Any Option / Call Any Action', 1, 'block', new wfWAFRuleComparisonGroup(new wfWAFRuleComparison($this, 'match', '/^(?:nopriv_)?wpgdprc_process_action$/i', array(wfWAFRuleComparisonSubject::create($this, array (
   0 => 'request.body',
   1 => 'action',
