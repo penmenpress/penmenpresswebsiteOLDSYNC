@@ -4,7 +4,7 @@ Tags: security, firewall, malware scanner, web application firewall, two factor 
 Requires at least: 3.9
 Requires PHP: 5.3
 Tested up to: 5.2
-Stable tag: 7.3.5
+Stable tag: 7.3.6
 
 Secure your website with the most comprehensive WordPress security plugin. Firewall, malware scan, blocking, live traffic, login security & more.
 
@@ -184,6 +184,17 @@ Secure your website with Wordfence.
 9. Logging in is easy with Wordfence 2FA.
 
 == Changelog ==
+
+= 7.3.6 - July 31, 2019 =
+* Improvement: Multiple "php.ini file in core directory" issues are now consolidated into a single issue for clearer scan results.
+* Improvement: The AJAX error detection for false positive WAF blocks now better detects and processes the response for presenting the whitelisting prompt.
+* Improvement: Added overdue cron detection and highlighting to diagnostics to help identify issues.
+* Improvement: Added the necessary directives to exclude backwards compatibility code from creating warnings with phpcs for future compatibility with WP Tide.
+* Improvement: Normalized all PHP require/include calls to use full paths for better code quality.
+* Change: Removed deprecated high sensitivity scan option since current signatures are more accurate.
+* Fix: Fixed the status circle tooltips not showing.
+* Fix: IP detection at the WAF level better mirrors the main plugin exactly when using the automatic setting.
+* Fix: Fixed a currently-unused code path in email address verification for the strict check.
 
 = 7.3.5 - July 16, 2019 =
 * Improvement: Improved tagging of the login endpoint for brute force protection.
