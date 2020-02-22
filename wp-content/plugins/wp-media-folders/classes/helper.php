@@ -665,4 +665,30 @@ class WPMediaFoldersHelper
         }
         return $randomString;
     }
+
+    /**
+     * Delete a folder
+     *
+     * @param WP_Term $folder_term
+     *
+     * @return void
+     */
+    public static function deleteFolder($folder_term)
+    {
+        // Sanitize folder path
+        $folders_path = [];
+        if ($folder_term->parent !== 0) {
+            $folders_path = self::getParentTerms($folder_term->parent);
+        }
+        $folders_path[] = $folder_term->name;
+        $folders_path_string = implode(DIRECTORY_SEPARATOR, $folders_path);
+
+        $wp_uploads = wp_upload_dir();
+        $folder = $wp_uploads['basedir'] . DIRECTORY_SEPARATOR . self::sanitizePath($folders_path_string);
+        try {
+            rmdir($folder);
+        } catch (Exception $e) {
+            WP_Media_Folders_Debug::log('Error : directory doesn\'t exist or is not empty ');
+        }
+    }
 }

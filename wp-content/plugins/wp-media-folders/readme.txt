@@ -3,8 +3,8 @@ Contributors: dbarrere
 Tags: media, folder, real media folders, media library, real media library
 Requires at least: 3.5.1
 Requires PHP: 5.4
-Tested up to: 5.1.1
-Stable tag: 1.1.4
+Tested up to: 5.2
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,13 @@ Always make sure all the WP Media Folders tasks are finished before editing any 
 1. Start the WP Media Folder media import
 
 == Changelog ==
+
+= Version 1.1.6 =
+ * [fix] Elementor 401 error (due to wrong usage of heartbeat filter)
+
+= Version 1.1.5 =
+ * [fix] 500 error when deleting WP Media Folder plugin folders
+ * [fix] Error on WP Media Folder ftp import
 
 = Version 1.1.4 =
  * [fix] Fix thumbnail generation on upload not always working

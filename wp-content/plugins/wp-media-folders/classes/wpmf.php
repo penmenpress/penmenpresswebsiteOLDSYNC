@@ -47,7 +47,7 @@ class WPMediaFoldersWPMF
         add_action(
             'wpmf_add_attachment',
             function ($attachment_id, $folder_id) {
-                $folders = WPMediaFoldersHelper::getParentTerms($folder);
+                $folders = WPMediaFoldersHelper::getParentTerms($folder_id);
                 WPMediaFoldersQueue::addToQueue($attachment_id, implode(DIRECTORY_SEPARATOR, $folders), false);
             },
             10,
@@ -84,8 +84,8 @@ class WPMediaFoldersWPMF
          */
         add_action(
             'wpmf_delete_folder',
-            function ($folder_id) {
-                WPMediaFoldersHelper::deleteFolder($folder_id);
+            function ($folder_term) {
+                WPMediaFoldersHelper::deleteFolder($folder_term);
             },
             2,
             2
@@ -102,5 +102,15 @@ class WPMediaFoldersWPMF
 
             exit(0);
         });
+
+        add_filter('http_request_args', function($r, $url) {
+                if (is_array($r["body"]) && !empty($r["body"]['action']) && $r["body"]['action']==='wp_async_wp_generate_attachment_metadata' && is_array($r["body"]['metadata'])) {
+                    unset($r["body"]['metadata']);
+                }
+                return $r;
+            },
+            10,
+            2
+        );
     }
 }

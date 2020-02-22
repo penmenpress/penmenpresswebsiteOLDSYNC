@@ -56,7 +56,7 @@ class WPMediaFoldersQueue
 
         // Check if queue is currently running for less than 30 seconds
         if ($queue_length && $queue_running + 30 < time()) {
-            wp_remote_head(admin_url('admin-ajax.php').'?action=wpmfs_proceed&token='.get_option('wp-media-folders-token'));
+            wp_remote_head(admin_url('admin-ajax.php').'?action=wpmfs_proceed&wpmfs_token='.get_option('wp-media-folders-token'));
         }
     }
 
@@ -178,7 +178,7 @@ class WPMediaFoldersQueue
 
         add_action('wp_ajax_nopriv_wpmfs_proceed', function () {
             // phpcs:ignore WordPress.CSRF.NonceVerification -- No action and a custom token is used
-            if (!isset($_REQUEST['token']) || $_REQUEST['token'] !== get_option('wp-media-folders-token')) {
+            if (!isset($_REQUEST['wpmfs_token']) || $_REQUEST['wpmfs_token'] !== get_option('wp-media-folders-token')) {
                 exit(0);
             }
 
@@ -210,10 +210,11 @@ class WPMediaFoldersQueue
      */
     public static function initHeartbeat()
     {
-        add_filter('heartbeat_received', function () {
+        add_filter('heartbeat_received', function ($response) {
             if (self::getQueueLength()) {
                 self::proceedQueueAsync();
             }
-        }, 10, 2);
+            return $response;
+        }, 10);
     }
 }
