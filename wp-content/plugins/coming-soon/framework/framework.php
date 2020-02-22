@@ -43,6 +43,9 @@ class SEED_CSP4_ADMIN
             add_action('admin_init', array( &$this, 'create_settings' ));
             add_filter('plugin_action_links', array( &$this, 'plugin_action_links' ), 10, 2);
             add_filter('tmp_grunion_allow_editor_view', '__return_false');
+            if(version_compare(phpversion(), '5.3.3', '>=')){
+                add_action( 'wpms_tgmpa_register', 'coming_soon_init_recommendations' );
+            }
         }
 
         if (defined('DOING_AJAX')) {
@@ -158,14 +161,17 @@ class SEED_CSP4_ADMIN
         wp_enqueue_script('wp-lists');
         wp_enqueue_script('seed_csp4-framework-js', SEED_CSP4_PLUGIN_URL . 'framework/settings-scripts.js', array( 'jquery' ), $this->plugin_version);
         wp_enqueue_script('seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/jquery.magnific-popup.min.js', array( 'jquery' ), $this->plugin_version);
+        wp_enqueue_script('seed_csp4-tingle', SEED_CSP4_PLUGIN_URL . 'public/vendor/tingle/tingle.min.js', array(), $this->plugin_version);
         wp_enqueue_script('theme-preview');
         wp_enqueue_style('thickbox');
         wp_enqueue_style('media-upload');
         wp_enqueue_style('wp-color-picker');
         wp_enqueue_style('seed_csp4-framework-css', SEED_CSP4_PLUGIN_URL . 'framework/settings-style.css', false, $this->plugin_version);
         wp_enqueue_style('font-awesome-solid', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/solid.min.css', false, $this->plugin_version, false, $this->plugin_version);
+        wp_enqueue_style('font-awesome-brands', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/brands.min.css', false, $this->plugin_version, false, $this->plugin_version);
         wp_enqueue_style('font-awesome', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/fontawesome.min.css', false, $this->plugin_version, false, $this->plugin_version);
         wp_enqueue_style('seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/magnific-popup.css', false, $this->plugin_version, false, $this->plugin_version);
+        wp_enqueue_style('seed_csp4-tingle-css', SEED_CSP4_PLUGIN_URL . 'public/vendor/tingle/tingle.min.css', false, $this->plugin_version, false, $this->plugin_version);
     }
 
     /**
@@ -213,6 +219,8 @@ class SEED_CSP4_ADMIN
             'seed_csp4_stockimages',
             array( &$this , 'stockimages_page' )
         );
+
+
             
         add_submenu_page(
                 'seed_csp4',
@@ -222,6 +230,18 @@ class SEED_CSP4_ADMIN
                 'seed_csp4_subscribers',
                 array( &$this , 'subscribers_page' )
                 );
+
+        $plugins = seed_csp4_plugins_active();
+        if($plugins['rafflepress-pro'] == 'Not Installed'){
+                add_submenu_page(
+                    'seed_csp4',
+                    __("Giveaways", 'coming-soon'),
+                    __("Giveaways", 'coming-soon'),
+                    'manage_options',
+                    'seed_csp4_giveaways',
+                    array( &$this , 'giveaways_page' )
+                );
+        }
         
         add_submenu_page(
             'seed_csp4',
@@ -230,6 +250,15 @@ class SEED_CSP4_ADMIN
             'manage_options',
             'seed_csp4_addons',
             array( &$this , 'addons_page' )
+            );
+    
+        add_submenu_page(
+            'seed_csp4',
+            __("Suggest a Feature", 'coming-soon'),
+            __("Suggest a Feature &raquo;", 'coming-soon'),
+            'manage_options',
+            'seed_csp4_suggest',
+            array( &$this , 'suggest_page' )
             );
     }
 
@@ -243,6 +272,11 @@ class SEED_CSP4_ADMIN
         include SEED_CSP4_PLUGIN_PATH.'resources/views/stockimages.php';
     }
 
+    public function giveaways_page()
+    {
+        include SEED_CSP4_PLUGIN_PATH.'resources/views/giveaways.php';
+    }
+
     public function subscribers_page()
     {
         include SEED_CSP4_PLUGIN_PATH.'resources/views/subscribers.php';
@@ -251,6 +285,17 @@ class SEED_CSP4_ADMIN
     public function addons_page()
     {
         include SEED_CSP4_PLUGIN_PATH.'resources/views/addons.php';
+    }
+
+    public function suggest_page()
+    {
+        ?>
+        <script>
+        window.open('https://www.seedprod.com/suggest-a-feature/', '_blank');
+        window.location.href = "admin.php?page=seed_csp4";
+        </script>
+
+        <?php
     }
 
 
@@ -371,6 +416,7 @@ class SEED_CSP4_ADMIN
 
 <div class="wrap columns-2 seed-csp4">
     <div id="seed_csp4_header">
+        <?php include SEED_CSP4_PLUGIN_PATH.'resources/views/quicklinks.php'; ?>
         <h1>
             <img style="width:150px;margin-right:10px;margin-bottom: -2px;vertical-align: text-bottom;"
                 src="<?php echo SEED_CSP4_PLUGIN_URL ?>public/images/seedprod-logo.png">
@@ -859,4 +905,88 @@ function seed_csp4_set_user_settings()
         update_user_option($user_id, 'user-settings', http_build_query($user_settings), false);
         update_user_option($user_id, 'user-settings-time', time(), false);
     }
+}
+
+
+function seed_csp4_plugins_active(){
+// check if plugin is installed
+$am_plugins = array(
+    'rafflepress/rafflepress.php' => 'rafflepress' ,
+    'rafflepress-pro/rafflepress-pro.php' => 'rafflepress-pro' ,
+);
+$all_plugins = get_plugins();
+
+$response = array();
+
+foreach ($am_plugins as $slug => $label) {
+    if (array_key_exists($slug, $all_plugins)) {
+        if (is_plugin_active($slug)) {
+            $response[$label] = 'Active';
+        } else {
+            $response[$label] = 'Inactive';
+        }
+    } else {
+        $response[$label]= 'Not Installed';
+    }
+}
+return $response;
+}
+
+
+function seed_csp4_disable_admin_notices()
+{
+    global $wp_filter;
+	if ( ! empty( $wp_filter['user_admin_notices']->callbacks ) && is_array( $wp_filter['user_admin_notices']->callbacks ) ) {
+		foreach ( $wp_filter['user_admin_notices']->callbacks as $priority => $hooks ) {
+			foreach ( $hooks as $name => $arr ) {
+				if ( is_object( $arr['function'] ) && $arr['function'] instanceof Closure ) {
+					unset( $wp_filter['user_admin_notices']->callbacks[ $priority ][ $name ] );
+					continue;
+				}
+				if ( ! empty( $arr['function'][0] ) && is_object( $arr['function'][0] ) && strpos( strtolower( get_class( $arr['function'][0] ) ), 'TGM' ) !== false ) {
+					continue;
+				}
+				if ( ! empty( $name ) && strpos( $name, 'TGM' ) === false ) {
+					unset( $wp_filter['user_admin_notices']->callbacks[ $priority ][ $name ] );
+				}
+			}
+		}
+	}
+
+	if ( ! empty( $wp_filter['admin_notices']->callbacks ) && is_array( $wp_filter['admin_notices']->callbacks ) ) {
+		foreach ( $wp_filter['admin_notices']->callbacks as $priority => $hooks ) {
+			foreach ( $hooks as $name => $arr ) {
+				if ( is_object( $arr['function'] ) && $arr['function'] instanceof Closure ) {
+					unset( $wp_filter['admin_notices']->callbacks[ $priority ][ $name ] );
+					continue;
+				}
+				if ( ! empty( $arr['function'][0] ) && is_object( $arr['function'][0] ) && strpos( strtolower( get_class( $arr['function'][0] ) ), 'TGM' ) !== false ) {
+					continue;
+				}
+				if ( ! empty( $name ) && strpos( $name, 'TGM' ) === false ) {
+					unset( $wp_filter['admin_notices']->callbacks[ $priority ][ $name ] );
+				}
+			}
+		}
+	}
+
+	if ( ! empty( $wp_filter['all_admin_notices']->callbacks ) && is_array( $wp_filter['all_admin_notices']->callbacks ) ) {
+		foreach ( $wp_filter['all_admin_notices']->callbacks as $priority => $hooks ) {
+			foreach ( $hooks as $name => $arr ) {
+				if ( is_object( $arr['function'] ) && $arr['function'] instanceof Closure ) {
+					unset( $wp_filter['all_admin_notices']->callbacks[ $priority ][ $name ] );
+					continue;
+				}
+				if ( ! empty( $arr['function'][0] ) && is_object( $arr['function'][0] ) && strpos( strtolower( get_class( $arr['function'][0] ) ), 'TGM' ) !== false ) {
+					continue;
+				}
+				if ( ! empty( $name ) && strpos( $name, 'TGM' ) === false ) {
+					unset( $wp_filter['all_admin_notices']->callbacks[ $priority ][ $name ] );
+				}
+			}
+		}
+	}
+}
+if (!empty($_GET['page']) && strpos($_GET['page'], 'seed_csp4') !==  false) {
+    //add_action('admin_print_scripts', 'seed_csp4_disable_admin_notices');
 }

@@ -296,7 +296,12 @@ function seed_csp4_description() {
 	$output = '';
 
 	if ( !empty( $description ) ) {
-		$output .= '<div id="seed-csp4-description">'.shortcode_unautop(wpautop(convert_chars(wptexturize($description)))).'</div>';
+		if(has_shortcode( $description,'rafflepress')){
+			$output .= '<div id="seed-csp4-description">'.do_shortcode(shortcode_unautop(wpautop(convert_chars(wptexturize($description))))).'</div>';
+		}else{
+			$output .= '<div id="seed-csp4-description">'.shortcode_unautop(wpautop(convert_chars(wptexturize($description)))).'</div>';
+		}
+		
 	}
 
 	return  $output;
