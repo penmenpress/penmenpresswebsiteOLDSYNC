@@ -17,7 +17,7 @@ if ( ! is_active_sidebar( 'sidebar-1' ) ) {
 <aside id="secondary" class="widget-area" role="complementary">
 	<?php
 		do_action( 'editorial_before_sidebar' );
-			dynamic_sidebar( 'sidebar-1' );
+		dynamic_sidebar( 'sidebar-1' );
 		do_action( 'editorial_before_sidebar' );
 	?>
 </aside><!-- #secondary -->

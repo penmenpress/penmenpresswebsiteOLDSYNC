@@ -31,30 +31,30 @@ function editorial_sidebar_callback( $post ) {
 
     // Setup our options.
     $editorial_page_sidebar_option = array(
-    'default-sidebar' => array(
-        'id'        => 'default-sidebar',
-        'value'     => 'default_sidebar',
-        'label'     => __( 'Default Layout', 'editorial' ),
+        'default-sidebar' => array(
+            'id'        => 'default-sidebar',
+            'value'     => 'default_sidebar',
+            'label'     => __( 'Default Layout', 'editorial' ),
         ),
-    'right-sidebar' => array(
-        'id'        => 'rigth-sidebar',
-        'value'     => 'right_sidebar',
-        'label'     => __( 'Right Sidebar', 'editorial' ),
+        'right-sidebar' => array(
+            'id'        => 'rigth-sidebar',
+            'value'     => 'right_sidebar',
+            'label'     => __( 'Right Sidebar', 'editorial' ),
         ),
-    'left-sidebar' => array(
-        'id'        => 'left-sidebar',
-        'value'     => 'left_sidebar',
-        'label'     => __( 'Left Sidebar', 'editorial' ),
+        'left-sidebar' => array(
+            'id'        => 'left-sidebar',
+            'value'     => 'left_sidebar',
+            'label'     => __( 'Left Sidebar', 'editorial' ),
         ),
-    'no-sidebar-full-width' => array(
-        'id'        => 'no-sidebar',
-        'value'     => 'no_sidebar',
-        'label'     => __( 'No Sidebar Full Width', 'editorial' ),
+        'no-sidebar-full-width' => array(
+            'id'        => 'no-sidebar',
+            'value'     => 'no_sidebar',
+            'label'     => __( 'No Sidebar Full Width', 'editorial' ),
         ),
-    'no-sidebar-content-centered' => array(
-        'id'        => 'no-sidebar-center',
-        'value'     => 'no_sidebar_center',
-        'label'     => __( 'No Sidebar Content Centered', 'editorial' ),
+        'no-sidebar-content-centered' => array(
+            'id'        => 'no-sidebar-center',
+            'value'     => 'no_sidebar_center',
+            'label'     => __( 'No Sidebar Content Centered', 'editorial' ),
         ),
     );
 
@@ -66,12 +66,12 @@ function editorial_sidebar_callback( $post ) {
     // Create our nonce field.
     wp_nonce_field( 'editorial_nonce_' . basename( __FILE__ ) , 'editorial_sidebar_location_nonce' );
     foreach ( $editorial_page_sidebar_option as $field ) {
-    ?>
+?>
         <div class="meta-radio-wrap">
             <input id="<?php echo esc_attr( $field['id'] ); ?>" type="radio" name="editorial_sidebar_location" value="<?php echo esc_attr( $field['value'] ); ?>" <?php checked( $field['value'], $location ); ?>/>
             <label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['label'] ); ?></label>
         </div>
-    <?php
+<?php
     }
 }
 

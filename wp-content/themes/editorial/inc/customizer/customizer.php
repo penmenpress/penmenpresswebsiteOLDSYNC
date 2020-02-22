@@ -41,48 +41,6 @@ function editorial_customize_register( $wp_customize ) {
             )
         )
     );
-
-    $wp_customize->add_section(
-        'editorial_imp_link_section',
-        array(
-            'title'      => __( 'Important Theme Links', 'editorial' ),
-            'priority'   => 30
-        )
-    );
-
-    $wp_customize->add_setting(
-        'editorial_imp_links',
-        array(
-            'sanitize_callback' => 'editorial_sanitize_text'
-        )
-    );
-
-    $wp_customize->add_control( new Editorial_Info_Content(
-        $wp_customize,
-            'editorial_imp_links',
-            array(
-                'section'       => 'editorial_imp_link_section',
-                'description'   => '<a class="mt-imp-link" href="http://docs.mysterythemes.com/editorial/" target="_blank">'.__( 'Documentation', 'editorial' ).'</a><a class="mt-imp-link" href="http://demo.mysterythemes.com/editorial/" target="_blank">'.__( 'Live Demo', 'editorial' ).'</a><a class="mt-imp-link" href="https://mysterythemes.com/support/forum/themes/free-themes/editorial/" target="_blank">'.__( 'Support Forum', 'editorial' ).'</a><a class="mt-imp-link" href="https://www.facebook.com/mysterythemes/" target="_blank">'.__( 'Like Us in Facebook', 'editorial' ).'</a><a class="mt-imp-link" href="https://mysterythemes.com/wp-themes/editorial-pro/" target="_blank">'.__( 'Upgrade to Pro', 'editorial' ).'</a>',
-            )
-        )
-    );
-
-    $wp_customize->add_setting(
-        'editorial_rate_us',
-        array(
-            'sanitize_callback' => 'editorial_sanitize_text'
-        )
-    );
-
-    $wp_customize->add_control( new Editorial_Info_Content( 
-        $wp_customize,
-            'editorial_rate_us',
-            array(
-                'section'       => 'editorial_imp_link_section',
-                'description'   => sprintf(__( 'Please do rate our theme if you liked it %s', 'editorial' ), '<a class="mt-imp-link" href="https://wordpress.org/support/theme/editorial/reviews/?filter=5" target="_blank">Rate/Review</a>' ),
-            )
-        )
-    );
 }
 add_action( 'customize_register', 'editorial_customize_register' );
 

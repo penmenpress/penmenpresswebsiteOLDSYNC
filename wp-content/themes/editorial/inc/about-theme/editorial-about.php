@@ -20,8 +20,16 @@ class Editorial_About {
 	 */
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'wp_loaded', array( __CLASS__, 'hide_notices' ) );
 		add_action( 'load-themes.php', array( $this, 'admin_notice' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'about_theme_styles' ) );
+		add_filter( 'admin_footer_text', array( $this, 'editorial_admin_footer_text' ) );
+
+		add_action( 'wp_ajax_editorial_notice_dissmiss', array( $this, 'editorial_hide_notices' ) );
+        add_action( 'wp_ajax_nopriv_editorial_notice_dissmiss', array( $this, 'editorial_hide_notices' ) );
+
+		//about theme review notice
+        add_action( 'after_setup_theme', array( $this, 'editorial_theme_rating_notice' ) );
+		add_action( 'switch_theme', array( $this, 'editorial_theme_rating_notice_data_remove' ) );
 	}
 
 	/**
@@ -31,28 +39,34 @@ class Editorial_About {
 		$theme = wp_get_theme( get_template() );
 
 		$page = add_theme_page( esc_html__( 'About', 'editorial' ) . ' ' . $theme->display( 'Name' ), esc_html__( 'About', 'editorial' ) . ' ' . $theme->display( 'Name' ), 'activate_plugins', 'editorial-welcome', array( $this, 'welcome_screen' ) );
-		add_action( 'admin_print_styles-' . $page, array( $this, 'enqueue_styles' ) );
 	}
 
 	/**
 	 * Enqueue styles.
 	 */
-	public function enqueue_styles() {
+	public function about_theme_styles( $hook ) {
 		global $editorial_version;
 
-		wp_enqueue_style( 'editorial-about-theme', get_template_directory_uri() . '/inc/admin/about-theme/about.css', array(), $editorial_version );
+		wp_enqueue_style( 'mt-theme-review-notice', get_template_directory_uri() . '/inc/about-theme/theme-review-notice.css', array(), esc_attr( $editorial_version ) );
+
+		if( 'appearance_page_editorial-welcome' != $hook && 'themes.php' != $hook ) {
+			return;
+		}
+
+		wp_enqueue_style( 'editorial-theme-style', get_template_directory_uri() . '/inc/about-theme/about.css', array(), $editorial_version );
+
+		wp_enqueue_script( 'editorial-theme-script', get_template_directory_uri() . '/inc/about-theme/about.js', array('jquery'), esc_attr( $editorial_version ), true );
 	}
 
 	/**
 	 * Add admin notice.
 	 */
 	public function admin_notice() {
-		global $editorial_version, $pagenow;
+		global $pagenow;
 
 		// Let's bail on theme activation.
 		if ( 'themes.php' == $pagenow && isset( $_GET['activated'] ) ) {
 			add_action( 'admin_notices', array( $this, 'welcome_notice' ) );
-			update_option( 'editorial_admin_notice_welcome', 1 );
 
 		// No option? Let run the notice wizard again..
 		} elseif( ! get_option( 'editorial_admin_notice_welcome' ) ) {
@@ -63,34 +77,38 @@ class Editorial_About {
 	/**
 	 * Hide a notice if the GET variable is set.
 	 */
-	public static function hide_notices() {
-		if ( isset( $_GET['editorial-hide-notice'] ) && isset( $_GET['_editorial_notice_nonce'] ) ) {
-			if ( ! wp_verify_nonce( $_GET['_editorial_notice_nonce'], 'editorial_hide_notices_nonce' ) ) {
-				wp_die( __( 'Action failed. Please refresh the page and retry.', 'editorial' ) );
-			}
+	public static function editorial_hide_notices() {
+		$output = array();
+        $output['status'] = false;
 
-			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_die( __( 'Cheatin&#8217; huh?', 'editorial' ) );
-			}
+        $wpnonce = ( isset( $_GET['_wpnonce'] ) ) ? esc_attr( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 
-			$hide_notice = sanitize_text_field( $_GET['editorial-hide-notice'] );
-			update_option( 'editorial_admin_notice_' . $hide_notice, 1 );
-		}
+        if ( ! wp_verify_nonce( $wpnonce, 'editorial_dismiss_welcome_nonce' ) ) {
+        	wp_send_json( $output );
+        }
+
+        update_option( 'editorial_admin_notice_welcome', 1 );
+
+        $output['status'] = true;
+
+        wp_send_json( $output );
 	}
 
 	/**
 	 * Show welcome notice.
 	 */
 	public function welcome_notice() {
-		?>
-		<div id="message" class="updated editorial-message">
-			<a class="editorial-message-close notice-dismiss" href="<?php echo esc_url( wp_nonce_url( remove_query_arg( array( 'activated' ), add_query_arg( 'editorial-hide-notice', 'welcome' ) ), 'editorial_hide_notices_nonce', '_editorial_notice_nonce' ) ); ?>"><?php esc_html_e( 'Dismiss', 'editorial' ); ?></a>
-			<p><?php printf( esc_html__( 'Welcome! Thank you for choosing editorial! To fully take advantage of the best our theme can offer please make sure you visit our %1$s welcome page %2$s.', 'editorial' ), '<a href="' . esc_url( admin_url( 'themes.php?page=editorial-welcome' ) ) . '">', '</a>' ); ?></p>
+		$theme 		= wp_get_theme( get_template() );
+		$theme_name = $theme->get( 'Name' );
+?>
+		<div id="mt-theme-message" class="updated editorial-message notice is-dismissible" data-nonce="<?php echo esc_attr( wp_create_nonce( 'editorial_dismiss_welcome_nonce' ) ); ?>">
+			<h2 class="welcome-title"><?php printf( esc_html__( 'Welcome to %s', 'editorial' ), $theme_name ); ?></h2>
+			<p><?php printf( esc_html__( 'Welcome! Thank you for choosing %1$s! To fully take advantage of the best our theme can offer please make sure you visit our %2$s welcome page %3$s.', 'editorial' ), '<strong>'. esc_html( $theme_name ) .'</strong>', '<a href="' . esc_url( admin_url( 'themes.php?page=editorial-welcome' ) ) . '">', '</a>' ); ?></p>
 			<p class="submit">
-				<a class="button-secondary" href="<?php echo esc_url( admin_url( 'themes.php?page=editorial-welcome' ) ); ?>"><?php esc_html_e( 'Get started with editorial', 'editorial' ); ?></a>
+				<a class="button button-primary button-hero" href="<?php echo esc_url( admin_url( 'themes.php?page=editorial-welcome' ) ); ?>"><?php printf( esc_html__( 'Get started with %1$s', 'editorial' ), esc_html( $theme_name ) ); ?></a>
 			</p>
 		</div>
-		<?php
+<?php
 	}
 
 	/**
@@ -102,18 +120,23 @@ class Editorial_About {
 		global $editorial_version;
 		$theme = wp_get_theme( get_template() );
 
-		$theme_name = $theme->get( 'Name' );
-		$theme_description = $theme->get( 'Description' );
-		$theme_uri = $theme->get( 'ThemeURI' );
+		$theme_name 		= $theme->get( 'Name' );
+		$theme_description 	= $theme->get( 'Description' );
+		$theme_uri 			= $theme->get( 'ThemeURI' );
+		$author_uri 		= $theme->get( 'AuthorURI' );
+		$author_name 		= $theme->get( 'Author' );
 	?>
 		<div class="editorial-theme-info">
-			<h1> <?php echo esc_html( 'About ', 'editorial' ).' '. esc_html( $theme_name ).' '.esc_html( $editorial_version ); ?> </h1>
-				
+			<h1><?php printf( esc_html( 'About %1$s', 'editorial' ), esc_html( $theme_name ) ); ?></h1>
+			<div class="author-credit">
+				<span class="theme-version"><?php printf( esc_html__( 'Version: %1$s', 'editorial' ), $editorial_version ); ?></span>
+				<span class="author-link"><?php printf( wp_kses_post( 'By <a href="%1$s" target="_blank">%2$s</a>', 'editorial' ), $author_uri, $author_name ); ?></span>
+			</div>
 			<div class="welcome-description-wrap">
 				<div class="about-text"><?php echo wp_kses_post( $theme_description ); ?></div>
 
 				<div class="editorial-screenshot">
-					<img src="<?php echo esc_url( get_template_directory_uri() ) . '/screenshot.jpg'; ?>" />
+					<img src="<?php echo esc_url( get_template_directory_uri() ) . '/screenshot.png'; ?>" />
 				</div>
 			</div>
 		</div>
@@ -121,14 +144,17 @@ class Editorial_About {
 		<p class="editorial-actions">
 			<a href="<?php echo esc_url( 'https://mysterythemes.com/wp-themes/editorial/' ); ?>" class="button button-secondary" target="_blank"><?php esc_html_e( 'Theme Info', 'editorial' ); ?></a>
 
-			<a href="<?php echo esc_url( apply_filters( 'editorial_pro_theme_url', 'http://demo.mysterythemes.com/editorial/' ) ); ?>" class="button button-secondary docs" target="_blank"><?php esc_html_e( 'View Demo', 'editorial' ); ?></a>
+			<a href="<?php echo esc_url( apply_filters( 'editorial_demo_url', 'https://demo.mysterythemes.com/editorial/' ) ); ?>" class="button button-secondary docs" target="_blank"><?php esc_html_e( 'View Demo', 'editorial' ); ?></a>
 
 			<a href="<?php echo esc_url( apply_filters( 'editorial_pro_theme_url', 'https://mysterythemes.com/wp-themes/editorial-pro/' ) ); ?>" class="button button-primary docs" target="_blank"><?php esc_html_e( 'View PRO version', 'editorial' ); ?></a>
 
-			<a href="<?php echo esc_url( apply_filters( 'editorial_pro_theme_url', 'https://wordpress.org/support/theme/editorial/reviews/?filter=5' ) ); ?>" class="button button-secondary docs" target="_blank"><?php esc_html_e( 'Rate this theme', 'editorial' ); ?></a>
+			<a href="<?php echo esc_url( apply_filters( 'editorial_support_url', 'https://wordpress.org/support/theme/editorial/reviews/?filter=5' ) ); ?>" class="button button-secondary docs" target="_blank"><?php esc_html_e( 'Rate this theme', 'editorial' ); ?></a>
+
+			<a href="<?php echo esc_url( apply_filters( 'editorial_wp_tutorials', 'https://wpallresources.com/' ) ); ?>" class="button button-secondary docs" target="_blank"><?php esc_html_e( 'More Tutorials', 'editorial' ); ?></a>
+
 		</p>
 
-		<h2 class="nav-tab-wrapper">
+		<div class="nav-tab-wrapper">
 			<a class="nav-tab <?php if ( empty( $_GET['tab'] ) && $_GET['page'] == 'editorial-welcome' ) echo 'nav-tab-active'; ?>" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'editorial-welcome' ), 'themes.php' ) ) ); ?>">
 				<?php echo esc_html( $theme->display( 'Name' ) ); ?>
 			</a>
@@ -144,8 +170,8 @@ class Editorial_About {
 			<a class="nav-tab <?php if ( isset( $_GET['tab'] ) && $_GET['tab'] == 'changelog' ) echo 'nav-tab-active'; ?>" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'editorial-welcome', 'tab' => 'changelog' ), 'themes.php' ) ) ); ?>">
 				<?php esc_html_e( 'Changelog', 'editorial' ); ?>
 			</a>
-		</h2>
-		<?php
+		</div><!-- .nav-tab-wrapper -->
+<?php
 	}
 
 	/**
@@ -168,12 +194,13 @@ class Editorial_About {
 	 */
 	public function about_screen() {
 		$theme = wp_get_theme( get_template() );
-		?>
+		$theme_name = $theme->get( 'Name' );
+	?>
 		<div class="wrap about-wrap">
 
 			<?php $this->intro(); ?>
 
-			<div class="changelog point-releases">
+			<div class="changelog">
 				<div class="under-the-hood two-col">
 					<div class="col">
 						<h3><?php esc_html_e( 'Theme Customizer', 'editorial' ); ?></h3>
@@ -184,7 +211,7 @@ class Editorial_About {
 					<div class="col">
 						<h3><?php esc_html_e( 'Documentation', 'editorial' ); ?></h3>
 						<p><?php esc_html_e( 'Please view our documentation page to setup the theme.', 'editorial' ) ?></p>
-						<p><a href="<?php echo esc_url( 'http://docs.mysterythemes.com/editorial/' ); ?>" class="button button-secondary" target="_blank"><?php esc_html_e( 'Documentation', 'editorial' ); ?></a></p>
+						<p><a href="<?php echo esc_url( 'https://docs.mysterythemes.com/editorial/' ); ?>" class="button button-secondary" target="_blank"><?php esc_html_e( 'Documentation', 'editorial' ); ?></a></p>
 					</div>
 
 					<div class="col">
@@ -213,7 +240,7 @@ class Editorial_About {
 						</p>
 					</div>
 				</div>
-			</div>
+			</div><!-- .changelog -->
 
 			<div class="return-to-dashboard editorial">
 				<?php if ( current_user_can( 'update_core' ) && isset( $_GET['updated'] ) ) : ?>
@@ -223,8 +250,9 @@ class Editorial_About {
 				<?php endif; ?>
 				<a href="<?php echo esc_url( self_admin_url() ); ?>"><?php is_blog_admin() ? esc_html_e( 'Go to Dashboard &rarr; Home', 'editorial' ) : esc_html_e( 'Go to Dashboard', 'editorial' ); ?></a>
 			</div>
-		</div>
-		<?php
+
+		</div><!-- .about-wrap -->
+<?php
 	}
 
 	/**
@@ -241,6 +269,7 @@ class Editorial_About {
 						// Set the argument array with author name.
 						$args = array(
 							'author' => 'mysterythemes',
+							'per_page' => 100
 						);
 						// Set the $request array.
 						$request = array(
@@ -287,34 +316,36 @@ class Editorial_About {
 									)
 								);
 								$theme_details = $this->editorial_get_themes( $request );
+								if( empty( $theme_details->template ) ) {
 							?>
-								<div id="<?php echo esc_attr( $theme->slug ); ?>" class="theme">
-									<div class="theme-screenshot">
-										<img src="<?php echo esc_url( $theme->screenshot_url ); ?>"/>
-									</div>
+									<div id="<?php echo esc_attr( $theme->slug ); ?>" class="theme">
+										<div class="theme-screenshot">
+											<img src="<?php echo esc_url( $theme->screenshot_url ); ?>"/>
+										</div>
 
-									<h3 class="theme-name"><?php echo esc_html( $theme->name ); ?></h3>
+										<h3 class="theme-name"><?php echo esc_html( $theme->name ); ?></h3>
 
-									<div class="theme-actions">
-										<?php if( wp_get_theme( $theme->slug )->exists() ) { ?>											
-											<!-- Activate Button -->
-											<a  class="button button-secondary activate"
-												href="<?php echo wp_nonce_url( admin_url( 'themes.php?action=activate&amp;stylesheet=' . urlencode( $theme->slug ) ), 'switch-theme_' . $theme->slug );?>" ><?php esc_html_e( 'Activate', 'editorial' ) ?></a>
-										<?php } else {
-											// Set the install url for the theme.
-											$install_url = add_query_arg( array(
-													'action' => 'install-theme',
-													'theme'  => $theme->slug,
-												), self_admin_url( 'update.php' ) );
-										?>
-											<!-- Install Button -->
-											<a data-toggle="tooltip" data-placement="bottom" title="<?php printf( esc_html__( 'Downloaded %1$s times', 'editorial' ), number_format( $theme_details->downloaded ) ); ?>" class="button button-secondary activate" href="<?php echo esc_url( wp_nonce_url( $install_url, 'install-theme_' . $theme->slug ) ); ?>" ><?php esc_html_e( 'Install Now', 'editorial' ); ?></a>
-										<?php } ?>
+										<div class="theme-actions">
+											<?php if( wp_get_theme( $theme->slug )->exists() ) { ?>											
+												<!-- Activate Button -->
+												<a  class="button button-secondary activate"
+													href="<?php echo wp_nonce_url( admin_url( 'themes.php?action=activate&amp;stylesheet=' . urlencode( $theme->slug ) ), 'switch-theme_' . $theme->slug );?>" ><?php esc_html_e( 'Activate', 'editorial' ) ?></a>
+											<?php } else {
+												// Set the install url for the theme.
+												$install_url = add_query_arg( array(
+														'action' => 'install-theme',
+														'theme'  => $theme->slug,
+													), self_admin_url( 'update.php' ) );
+											?>
+												<!-- Install Button -->
+												<a data-toggle="tooltip" data-placement="bottom" title="<?php printf( esc_html__( 'Downloaded %1$s times', 'editorial' ), number_format( $theme_details->downloaded ) ); ?>" class="button button-secondary activate" href="<?php echo esc_url( wp_nonce_url( $install_url, 'install-theme_' . $theme->slug ) ); ?>" ><?php esc_html_e( 'Install Now', 'editorial' ); ?></a>
+											<?php } ?>
 
-										<a class="button button-primary load-customize hide-if-no-customize" target="_blank" href="<?php echo esc_url( $theme->preview_url ); ?>"><?php esc_html_e( 'Live Preview', 'editorial' ); ?></a>
-									</div>
-								</div><!-- .theme -->
+											<a class="button button-primary load-customize hide-if-no-customize" target="_blank" href="<?php echo esc_url( $theme->preview_url ); ?>"><?php esc_html_e( 'Live Preview', 'editorial' ); ?></a>
+										</div>
+									</div><!-- .theme -->
 					<?php
+								}
 							}
 						}
 
@@ -518,8 +549,162 @@ class Editorial_About {
 			</table>
 
 		</div>
-		<?php
+<?php
 	}
+
+	/**
+	 * Set the required option value as needed for theme review notice.
+	 */
+	public function editorial_theme_rating_notice() {
+
+		// Set the installed time in `editorial_theme_installed_time` option table.
+		$option = get_option( 'editorial_theme_installed_time' );
+
+		if ( ! $option ) {
+			update_option( 'editorial_theme_installed_time', time() );
+		}
+
+		add_action( 'admin_notices', array( $this, 'editorial_theme_review_notice' ), 0 );
+		add_action( 'admin_init', array( $this, 'editorial_ignore_theme_review_notice' ), 0 );
+		add_action( 'admin_init', array( $this, 'editorial_ignore_theme_review_notice_partially' ), 0 );
+
+	}
+
+	/**
+	 * Display the theme review notice.
+	 */
+	public function editorial_theme_review_notice() {
+
+		global $current_user;
+		$user_id                  = $current_user->ID;
+		$ignored_notice           = get_user_meta( $user_id, 'editorial_ignore_theme_review_notice', true );
+		$ignored_notice_partially = get_user_meta( $user_id, 'mt_editorial_ignore_theme_review_notice_partially', true );
+
+		/**
+		 * Return from notice display if:
+		 *
+		 * 1. The theme installed is less than 15 days ago.
+		 * 2. If the user has ignored the message partially for 15 days.
+		 * 3. Dismiss always if clicked on 'I Already Did' button.
+		 */
+		if ( ( get_option( 'editorial_theme_installed_time' ) > strtotime( '- 15 days' ) ) || ( $ignored_notice_partially > time() ) || ( $ignored_notice ) ) {
+			return;
+		}
+?>
+
+		<div class="notice updated theme-review-notice">
+			<p>
+				<?php
+					printf( esc_html__( 'Howdy, %1$s! It seems that you have been using this theme for more than 15 days. We hope you are happy with everything that the theme has to offer. If you can spare a minute, please help us by leaving a 5-star review on WordPress.org.  By spreading the love, we can continue to develop new amazing features in the future, for free!', 'editorial'
+						), '<strong>' . esc_html( $current_user->display_name ) . '</strong>' );
+				?>
+			</p>
+
+			<div class="links">
+				<a href="https://wordpress.org/support/theme/editorial/reviews/?filter=5#new-post" class="btn button-primary" target="_blank">
+					<span class="dashicons dashicons-thumbs-up"></span>
+					<span><?php esc_html_e( 'Sure', 'editorial' ); ?></span>
+				</a>
+
+				<a href="?mt_editorial_ignore_theme_review_notice_partially=0" class="btn button-secondary">
+					<span class="dashicons dashicons-calendar"></span>
+					<span><?php esc_html_e( 'Maybe later', 'editorial' ); ?></span>
+				</a>
+
+				<a href="?mt_editorial_ignore_theme_review_notice=0" class="btn button-secondary">
+					<span class="dashicons dashicons-smiley"></span>
+					<span><?php esc_html_e( 'I already did', 'editorial' ); ?></span>
+				</a>
+
+				<a href="<?php echo esc_url( 'https://wordpress.org/support/theme/editorial/' ); ?>" class="btn button-secondary" target="_blank">
+					<span class="dashicons dashicons-edit"></span>
+					<span><?php esc_html_e( 'Got theme support question?', 'editorial' ); ?></span>
+				</a>
+			</div>
+
+			<a class="notice-dismiss" href="?mt_editorial_ignore_theme_review_notice_partially=0"></a>
+		</div>
+
+<?php
+	}
+
+	/**
+	 * Function to remove the theme review notice permanently as requested by the user.
+	 */
+	public function editorial_ignore_theme_review_notice() {
+
+		global $current_user;
+		$user_id = $current_user->ID;
+
+		/* If user clicks to ignore the notice, add that to their user meta */
+		if ( isset( $_GET['mt_editorial_ignore_theme_review_notice'] ) && '0' == $_GET['mt_editorial_ignore_theme_review_notice'] ) {
+			add_user_meta( $user_id, 'editorial_ignore_theme_review_notice', 'true', true );
+		}
+
+	}
+
+	/**
+	 * Function to remove the theme review notice partially as requested by the user.
+	 */
+	public function editorial_ignore_theme_review_notice_partially() {
+
+		global $current_user;
+		$user_id = $current_user->ID;
+
+		/* If user clicks to ignore the notice, add that to their user meta */
+		if ( isset( $_GET['mt_editorial_ignore_theme_review_notice_partially'] ) && '0' == $_GET['mt_editorial_ignore_theme_review_notice_partially'] ) {
+			update_user_meta( $user_id, 'mt_editorial_ignore_theme_review_notice_partially', strtotime( '+ 7 days' ) );
+		}
+
+	}
+
+	/**
+	 * Remove the data set after the theme has been switched to other theme.
+	 */
+	public function editorial_theme_rating_notice_data_remove() {
+
+		global $current_user;
+		$user_id                  = $current_user->ID;
+		$theme_installed_time     = get_option( 'editorial_theme_installed_time' );
+		$ignored_notice           = get_user_meta( $user_id, 'editorial_ignore_theme_review_notice', true );
+		$ignored_notice_partially = get_user_meta( $user_id, 'mt_editorial_ignore_theme_review_notice_partially', true );
+
+		// Delete options data.
+		if ( $theme_installed_time ) {
+			delete_option( 'editorial_theme_installed_time' );
+		}
+
+		// Delete permanent notice remove data.
+		if ( $ignored_notice ) {
+			delete_user_meta( $user_id, 'editorial_ignore_theme_review_notice' );
+		}
+
+		// Delete partial notice remove data.
+		if ( $ignored_notice_partially ) {
+			delete_user_meta( $user_id, 'mt_editorial_ignore_theme_review_notice_partially' );
+		}
+
+	}
+
+	/**
+     * Display custom text on theme welcome page
+     *
+     * @param string $text
+     */
+    public function editorial_admin_footer_text( $text ) {
+        $screen = get_current_screen();
+
+        if ( 'appearance_page_editorial-welcome' == $screen->id ) {
+
+        	$theme = wp_get_theme( get_template() );
+			$theme_name = $theme->get( 'Name' );
+
+            $text = sprintf( __( 'If you like <strong>%1$s</strong> please leave us a %2$s rating. A huge thank you from <strong>Mystery Themes</strong> in advance!', 'editorial' ), esc_html( $theme_name ), '<a href="https://wordpress.org/support/theme/editorial/reviews/?filter=5#new-post" class="theme-rating" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a>' );
+
+        }
+
+        return $text;
+    }
 }
 
 endif;

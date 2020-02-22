@@ -20,7 +20,7 @@
 		<div id="bottom-footer" class="sub-footer-wrapper clearfix">
 			<div class="mt-container">
 				<div class="site-info">
-					<span class="copy-info"><?php echo esc_html( get_theme_mod( 'editorial_copyright_text', __( '2017 editorial', 'editorial' ) ) ); ?></span>
+					<span class="copy-info"><?php echo esc_html( get_theme_mod( 'editorial_copyright_text', __( '2020 editorial', 'editorial' ) ) ); ?></span>
 					<span class="sep"> | </span>
 					<?php 
 						$editorial_theme_author = 'https://mysterythemes.com/';

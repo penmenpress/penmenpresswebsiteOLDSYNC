@@ -35,36 +35,24 @@
                 <div class="mt-footer-widget-wrapper clearfix">
 
                     <div class="mt-first-footer-widget mt-footer-widget">
-                        <?php
-                            if ( !dynamic_sidebar( 'editorial_footer_one' ) ):
-                            endif;
-                        ?>
+                        <?php dynamic_sidebar( 'editorial_footer_one' ); ?>
                     </div>
 
                     <?php if( $editorial_footer_layout != 'column1' ){ ?>
                         <div class="mt-second-footer-widget mt-footer-widget">
-                            <?php
-                                if ( !dynamic_sidebar( 'editorial_footer_two' ) ):
-                                endif;
-                            ?>
+                            <?php dynamic_sidebar( 'editorial_footer_two' ); ?>
                         </div>
                     <?php } ?>
 
                     <?php if( $editorial_footer_layout == 'column3' || $editorial_footer_layout == 'column4' ){ ?>
                         <div class="mt-third-footer-widget mt-footer-widget">
-                            <?php
-                                if ( !dynamic_sidebar( 'editorial_footer_three' ) ):
-                                endif;
-                            ?>
+                            <?php dynamic_sidebar( 'editorial_footer_three' ); ?>
                         </div>
                     <?php } ?>
 
                     <?php if( $editorial_footer_layout == 'column4' ){ ?>
                         <div class="mt-fourth-footer-widget mt-footer-widget">
-                            <?php
-                                if ( !dynamic_sidebar( 'editorial_footer_four' ) ):
-                                endif;
-                            ?>
+                            <?php dynamic_sidebar( 'editorial_footer_four' ); ?>
                         </div>
                     <?php } ?>
 

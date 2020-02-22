@@ -85,6 +85,10 @@ function editorial_scripts() {
           wp_enqueue_script( 'editorial-sticky-menu-setting', get_template_directory_uri(). '/assets/library/sticky/sticky-setting.js', array( 'jquery-sticky' ), '20150309', true );
     }
 
+    wp_enqueue_script( 'editorial-navigation', get_template_directory_uri() . '/assets/js/navigation.js', array(), esc_attr( $editorial_version ), true );
+
+    wp_enqueue_script( 'editorial-skip-link-focus-fix', get_template_directory_uri() . '/assets/js/skip-link-focus-fix.js', array(), esc_attr( $editorial_version ), true );
+
 	wp_enqueue_script( 'editorial-custom-script', get_template_directory_uri() . '/assets/js/custom-script.js', array( 'jquery' ), esc_attr( $editorial_version ), true );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -615,7 +619,6 @@ if( ! function_exists( 'editorial_dynamic_styles' ) ):
         $output_css = '';
 
         foreach( $get_categories as $category ){
-
             $cat_color 		 = esc_attr( get_theme_mod( 'editorial_category_color_'.strtolower( $category->name ), $mt_theme_color ) );
             $cat_hover_color = esc_attr( editorial_hover_color( $cat_color, '-50' ) );
             $cat_id 		 = esc_attr( $category->term_id );
@@ -651,12 +654,14 @@ if( ! function_exists( 'editorial_dynamic_styles' ) ):
             .archive-columns .entry-title a:hover,.related-posts-wrapper .post-title a:hover,.block-header .block-title a:hover,.widget .widget-title a:hover,.related-articles-wrapper .related-title a:hover { color:". $mt_theme_color ."}\n";
 
         $refine_output_css = editorial_css_strip_whitespace( $output_css );
-
         wp_add_inline_style( 'editorial-style', $refine_output_css );
     }
 endif;
 
 /*----------------------------------------------------------------------------------------------------------------*/
+add_action( 'editorial_before_page', 'wp_body_open', 10 );
+/*----------------------------------------------------------------------------------------------------------------*/
+
 /**
  * Get minified css and removed space
  *
@@ -687,3 +692,24 @@ function editorial_css_strip_whitespace( $css ){
 
     return trim( $css );
 }
+
+/*---------------------------------------------------------------------------------------------------------------*/
+
+add_filter( 'wp_kses_allowed_html', 'editorial_required_data_attributes' , 10, 4 );
+
+if( ! function_exists( 'editorial_required_data_attributes' ) ) :
+    
+    /**
+     * Added required attributes while using wp_kses by using `wp_kses_allowed_html` filter.
+     *
+     * @since 1.1.19
+     */
+    function editorial_required_data_attributes( $required_attributes, $context ) {
+
+        $required_attributes['time']['class'] = true;
+        $required_attributes['time']['datetime'] = true;
+
+        return $required_attributes;
+    }
+
+endif;

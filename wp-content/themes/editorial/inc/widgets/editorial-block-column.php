@@ -99,16 +99,18 @@ class Editorial_Block_Column extends WP_Widget {
                 ?>
                 			<div class="single-post-wrapper <?php echo esc_attr( $post_class ); ?> clearfix">
                                 <div class="post-thumb-wrapper">
-                                    <a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
+                                    <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
                                         <figure><?php echo $image_path; ?></figure>
                                     </a>
                                 </div><!-- .post-thumb-wrapper -->
                                 <div class="post-content-wrapper">
                                     <?php if( $post_count == 1 ) { do_action( 'editorial_post_categories' ); } ?>
-                                    <h3 class="post-title"><a href="<?php the_permalink();?>"><?php the_title(); ?></a></h3>
+                                    <h3 class="post-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                                     <div class="post-meta-wrapper">
-                                        <?php editorial_posted_on(); ?>
-                                        <?php editorial_post_comment(); ?>
+                                        <?php
+                                            editorial_posted_on();
+                                            editorial_post_comment();
+                                        ?>
                                     </div>
                                     <?php  if( $post_count == 1 ) { the_excerpt(); } ?>
                                 </div><!-- .post-meta-wrapper -->

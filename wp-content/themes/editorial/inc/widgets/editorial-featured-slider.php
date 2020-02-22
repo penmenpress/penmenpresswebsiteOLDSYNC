@@ -33,38 +33,38 @@ class Editorial_Featured_Slider extends WP_Widget {
     	$fields = array(
 
             'slider_header_section' => array(
-                'editorial_widgets_name' => 'slider_header_section',
-                'editorial_widgets_title' => __( 'Slider Section', 'editorial' ),
-                'editorial_widgets_field_type' => 'widget_section_header'
+                'editorial_widgets_name'            => 'slider_header_section',
+                'editorial_widgets_title'           => __( 'Slider Section', 'editorial' ),
+                'editorial_widgets_field_type'      => 'widget_section_header'
             ),
 
             'editorial_slider_category' => array(
-                'editorial_widgets_name' => 'editorial_slider_category',
-                'editorial_widgets_title' => __( 'Category for Slider', 'editorial' ),
-                'editorial_widgets_default'      => 0,
-                'editorial_widgets_field_type' => 'select',
-                'editorial_widgets_field_options' => $editorial_category_dropdown
+                'editorial_widgets_name'            => 'editorial_slider_category',
+                'editorial_widgets_title'           => __( 'Category for Slider', 'editorial' ),
+                'editorial_widgets_default'         => 0,
+                'editorial_widgets_field_type'      => 'select',
+                'editorial_widgets_field_options'   => $editorial_category_dropdown
             ),
 
             'editorial_slide_count' => array(
-                'editorial_widgets_name' => 'editorial_slide_count',
-                'editorial_widgets_title' => __( 'No. of slides', 'editorial' ),
-                'editorial_widgets_default' => 5,
-                'editorial_widgets_field_type' => 'number'
+                'editorial_widgets_name'            => 'editorial_slide_count',
+                'editorial_widgets_title'           => __( 'No. of slides', 'editorial' ),
+                'editorial_widgets_default'         => 5,
+                'editorial_widgets_field_type'      => 'number'
             ),
 
             'featured_header_section' => array(
-                'editorial_widgets_name' => 'featured_header_section',
-                'editorial_widgets_title' => __( 'Featured Posts Section', 'editorial' ),
-                'editorial_widgets_field_type' => 'widget_section_header'
+                'editorial_widgets_name'            => 'featured_header_section',
+                'editorial_widgets_title'           => __( 'Featured Posts Section', 'editorial' ),
+                'editorial_widgets_field_type'      => 'widget_section_header'
             ),
 
             'editorial_featured_category' => array(
-                'editorial_widgets_name' => 'editorial_featured_category',
-                'editorial_widgets_title' => __( 'Category for Featured Posts', 'editorial' ),
-                'editorial_widgets_default'      => 0,
-                'editorial_widgets_field_type' => 'select',
-                'editorial_widgets_field_options' => $editorial_category_dropdown
+                'editorial_widgets_name'            => 'editorial_featured_category',
+                'editorial_widgets_title'           => __( 'Category for Featured Posts', 'editorial' ),
+                'editorial_widgets_default'         => 0,
+                'editorial_widgets_field_type'      => 'select',
+                'editorial_widgets_field_options'   => $editorial_category_dropdown
             ),
 
         );
@@ -101,15 +101,17 @@ class Editorial_Featured_Slider extends WP_Widget {
                             $slider_query->the_post();
                     ?>
                             <li>
-                                <a href="<?php the_permalink();?>" title="<?php the_title_attribute(); ?>">
+                                <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
                                     <figure><?php the_post_thumbnail( 'editorial-slider-large' ); ?></figure>
                                 </a>
                                 <div class="slider-content-wrapper">
                                     <?php do_action( 'editorial_post_categories' ); ?>
-                                    <h3 class="slide-title"><a href="<?php the_permalink();?>"><?php the_title(); ?></a></h3>
+                                    <h3 class="slide-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                                     <div class="post-meta-wrapper">
-                                        <?php editorial_posted_on(); ?>
-                                        <?php editorial_post_comment(); ?>
+                                        <?php
+                                            editorial_posted_on();
+                                            editorial_post_comment();
+                                        ?>
                                     </div>
                                 </div><!-- .post-meta-wrapper -->
                             </li>

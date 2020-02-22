@@ -22,6 +22,7 @@ jQuery(document).ready(function($) {
         controls: true,
         prevText: '<i class="fa fa-chevron-left"> </i>',
         nextText: '<i class="fa fa-chevron-right"> </i>',
+        touchEnabled: false,
         onSliderLoad: function() {
             $('.editorialSlider').removeClass('cS-hidden');
         }

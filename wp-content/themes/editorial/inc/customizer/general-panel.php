@@ -11,13 +11,13 @@ add_action( 'customize_register', 'editorial_general_settings_register' );
 
 function editorial_general_settings_register( $wp_customize ) {
 
-	$wp_customize->get_section( 'title_tagline' )->panel = 'editorial_general_settings_panel';
-    $wp_customize->get_section( 'title_tagline' )->priority = '3';
-    $wp_customize->get_section( 'colors' )->panel = 'editorial_general_settings_panel';
-    $wp_customize->get_section( 'colors' )->priority = '4';
-    $wp_customize->get_section( 'background_image' )->panel = 'editorial_general_settings_panel';
-    $wp_customize->get_section( 'background_image' )->priority = '5';
-    $wp_customize->get_section( 'static_front_page' )->panel = 'editorial_general_settings_panel';
+	$wp_customize->get_section( 'title_tagline' )->panel        = 'editorial_general_settings_panel';
+    $wp_customize->get_section( 'title_tagline' )->priority     = '3';
+    $wp_customize->get_section( 'colors' )->panel               = 'editorial_general_settings_panel';
+    $wp_customize->get_section( 'colors' )->priority            = '4';
+    $wp_customize->get_section( 'background_image' )->panel     = 'editorial_general_settings_panel';
+    $wp_customize->get_section( 'background_image' )->priority  = '5';
+    $wp_customize->get_section( 'static_front_page' )->panel    = 'editorial_general_settings_panel';
     $wp_customize->get_section( 'static_front_page' )->priority = '6';
 
     /**
@@ -30,8 +30,8 @@ function editorial_general_settings_register( $wp_customize ) {
             'capability'     => 'edit_theme_options',
             'theme_supports' => '',
             'title'          => __( 'General Settings', 'editorial' ),
-            ) 
-        );
+        ) 
+    );
 
 /*---------------------------------------------------------------------------------------------------------------*/
     //Theme color
@@ -48,7 +48,6 @@ function editorial_general_settings_register( $wp_customize ) {
             'editorial_theme_color',
             array(
                 'label'         => __( 'Theme color', 'editorial' ),
-                /*'description'   => __( 'Choose color to make different your website.', 'editorial' ),*/
                 'section'       => 'colors',
                 'priority'      => 5
             )
@@ -84,8 +83,8 @@ function editorial_general_settings_register( $wp_customize ) {
             'label' => __( 'Site Layout', 'editorial' ),
             'section' => 'editorial_site_layout',
             'choices' => array(
-                'fullwidth_layout' => __( 'FullWidth Layout', 'editorial' ),
-                'boxed_layout' => __( 'Boxed Layout', 'editorial' )
+                'fullwidth_layout'  => __( 'FullWidth Layout', 'editorial' ),
+                'boxed_layout'      => __( 'Boxed Layout', 'editorial' )
             ),
         )
     );

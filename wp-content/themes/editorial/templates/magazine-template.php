@@ -16,33 +16,27 @@
 get_header(); ?>
 
 	<div class="featured-slider-section clearfix">
-		
-			<?php
-	        	if( is_active_sidebar( 'editorial_home_slider_area' ) ) {
-	            	if ( !dynamic_sidebar( 'editorial_home_slider_area' ) ):
-	            	endif;
-	         	}
-	        ?>
-		
+		<?php
+        	if( is_active_sidebar( 'editorial_home_slider_area' ) ) {
+        		dynamic_sidebar( 'editorial_home_slider_area' );
+         	}
+        ?>
 	</div><!-- .featured-slider-section -->
 
 	<div class="home-content-wrapper clearfix">
 		
 		<div class="home-primary-wrapper">
-				<?php
-		        	if( is_active_sidebar( 'editorial_home_content_area' ) ) {
-		            	if ( !dynamic_sidebar( 'editorial_home_content_area' ) ):
-		            	endif;
-		         	}
-		        ?>
-		        
+			<?php
+	        	if( is_active_sidebar( 'editorial_home_content_area' ) ) {
+					dynamic_sidebar( 'editorial_home_content_area' );
+	         	}
+	        ?>
 		</div><!-- .home-primary-wrapper -->
 		
 		<div class="home-secondary-wrapper">
 			<?php
 	        	if( is_active_sidebar( 'editorial_home_sidebar' ) ) {
-	            	if ( !dynamic_sidebar( 'editorial_home_sidebar' ) ):
-	            	endif;
+	            	dynamic_sidebar( 'editorial_home_sidebar' );
 	         	}
 	        ?>
 		</div><!-- .home-secondary-wrapper -->

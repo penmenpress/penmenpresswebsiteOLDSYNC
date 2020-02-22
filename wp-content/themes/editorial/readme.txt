@@ -2,8 +2,9 @@
 
 Contributors:       mysterythemes
 Requires at least:  WordPress 4.0
-Tested up to:       WordPress 4.9
-Version:            1.3.8
+Tested up to:       WordPress 5.3.2
+Requires PHP:       5.2.4
+Stable tag:         1.4.2
 License:            GPLv3 or later
 License URI:        http://www.gnu.org/licenses/gpl-3.0.html
 Tags:               news, grid-layout, custom-colors, one-column, two-columns, three-columns, left-sidebar, right-sidebar, footer-widgets, full-width-template, theme-options, translation-ready, rtl-language-support
@@ -33,7 +34,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
-Editorial bundles the following third-party resources:
+== Resources ==
 
 	Font Awesome by Dave Gandy
     Licenses: SIL OFL 1.1, MIT, CC BY 3.0
@@ -49,16 +50,38 @@ Editorial bundles the following third-party resources:
 
    	Screenshot Images 
     Licenses: CCO Public Domain
-       	https://pixabay.com/en/village-india-hills-landscape-1192158/
-       	https://pixabay.com/en/jet-ski-water-sport-water-bike-1125329/
-       	https://pixabay.com/en/woman-cyclist-tattoos-arms-skin-984021/
-       	https://pixabay.com/en/iphone-template-mockup-mock-up-500291/
-       	https://pixabay.com/en/fitness-coach-girl-woman-gym-719539/
-       	https://pixabay.com/en/mountains-landscape-valley-grass-926672/
-       	https://pixabay.com/en/girl-studio-light-beauty-fashion-1262801/
-       	https://pixabay.com/en/wanderer-backpack-hike-away-path-455338/
+       	
+        https://pxhere.com/en/photo/1224015
+        https://pxhere.com/en/photo/666293
+        https://pxhere.com/en/photo/846958
+        https://pxhere.com/en/photo/779616
+        https://pxhere.com/en/photo/826577       	
+        https://pxhere.com/en/photo/698698
+        https://pxhere.com/en/photo/813116
+        https://pxhere.com/en/photo/934320
 
 == Changelog ==
+
+= 1.4.2 - December 20, 2019 - =
+    * Fixed bugs at wp_kses_post by adding allowed attributes.
+    * Added TGM plugin activation code.
+    * Updated .pot file.
+
+= 1.4.1 - November 14, 2019 - =
+    * Code filters
+    * added wp_body_open hook.
+    
+
+= 1.4.0 - August 23, 2019 - =
+    * Added - Skip links to content area.
+    * Added - Required js for navigation and skip links.
+    * Fixed - Design at welcome page.
+    * Removed - Extra links from customizer panel.
+    * Updated - .pot file.  
+    * Changed - Screenshot image.
+
+= 1.3.9 =
+    * Fixed bxslider bugs in google chrome browser.
 
 = 1.3.8 =
     * Fixed bugs at widget area.
@@ -207,10 +230,10 @@ Editorial bundles the following third-party resources:
     * Fixed the theme prefix at functions/variable.
   
 = 1.0.2 =
-	* Fixed some homepage section.
-	* Added some widgets.
-	* Design edits done
-	* Fixed the layout of archive.
+    * Fixed some homepage section.
+    * Added some widgets.
+    * Design edits done
+    * Fixed the layout of archive.
 	
 = 1.0 - May 12 2015 =
-	* Initial release.
+    * Initial release.

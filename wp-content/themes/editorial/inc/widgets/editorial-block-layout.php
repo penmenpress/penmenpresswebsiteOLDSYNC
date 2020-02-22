@@ -106,13 +106,13 @@ class Editorial_Block_Layout extends WP_widget {
                 ?>
                             <div class="single-post-wrapper clearfix <?php echo esc_attr( $post_class ); ?>">
                                 <div class="post-thumb-wrapper">
-                                    <a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
+                                    <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
                                         <figure><?php echo $image_path ; ?></figure>
                                     </a>
                                 </div><!-- .post-thumb-wrapper -->
                                 <div class="post-content-wrapper">
                                     <?php if( $post_count == 1 ) { do_action( 'editorial_post_categories' ); } ?>
-                                    <h3 class="post-title"><a href="<?php the_permalink();?>"><?php the_title(); ?></a></h3>
+                                    <h3 class="post-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                                     <div class="post-meta-wrapper">
                                         <?php
                                             editorial_posted_on();

@@ -89,13 +89,13 @@ class Editorial_Block_List extends WP_widget {
                     ?>
                                 <div class="single-post-wrapper clearfix">
                                     <div class="post-thumb-wrapper">
-                                        <a href="<?php the_permalink();?>" title="<?php the_title_attribute();?>">
+                                        <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
                                             <figure><?php the_post_thumbnail( 'editorial-block-medium' ); ?></figure>
                                         </a>
                                     </div>
                                     <div class="post-content-wrapper">
                                         <?php do_action( 'editorial_post_categories' ); ?>
-                                        <h3 class="post-title"><a href="<?php the_permalink();?>"><?php the_title(); ?></a></h3>
+                                        <h3 class="post-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                                         <div class="post-meta-wrapper">
                                             <?php editorial_posted_on(); ?>
                                         </div><!-- .post-meta-wrapper -->
