@@ -2,7 +2,7 @@
 
 namespace AC;
 
-class ScreenController {
+class ScreenController implements Registrable {
 
 	/** @var ListScreen */
 	private $list_screen;
@@ -10,12 +10,18 @@ class ScreenController {
 	/** @var array */
 	private $headings = array();
 
+	/** @var DefaultColumns */
+	private $default_columns;
+
 	/**
 	 * @param ListScreen $list_screen
 	 */
 	public function __construct( ListScreen $list_screen ) {
 		$this->list_screen = $list_screen;
+		$this->default_columns = new DefaultColumns();
+	}
 
+	public function register() {
 		// Headings
 		add_filter( $this->list_screen->get_heading_hookname(), array( $this, 'add_headings' ), 200 );
 
@@ -26,20 +32,18 @@ class ScreenController {
 	}
 
 	/**
-	 * @since 2.0
-	 *
 	 * @param $columns
 	 *
 	 * @return array
+	 * @since 2.0
 	 */
 	public function add_headings( $columns ) {
 		if ( empty( $columns ) ) {
 			return $columns;
 		}
 
-		// Store default headings
 		if ( ! AC()->is_doing_ajax() ) {
-			$this->list_screen->save_default_headings( $columns );
+			$this->default_columns->update( $this->list_screen->get_key(), $columns );
 		}
 
 		// Run once
@@ -55,13 +59,6 @@ class ScreenController {
 		// Add mandatory checkbox
 		if ( isset( $columns['cb'] ) ) {
 			$this->headings['cb'] = $columns['cb'];
-		}
-
-		// On first visit 'columns' can be empty, because they were put in memory before 'default headings'
-		// were stored. We force get_columns() to be re-populated.
-		if ( ! $this->list_screen->get_columns() ) {
-			$this->list_screen->reset();
-			$this->list_screen->reset_original_columns();
 		}
 
 		foreach ( $this->list_screen->get_columns() as $column ) {

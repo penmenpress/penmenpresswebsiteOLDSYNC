@@ -8,11 +8,12 @@ use AC\Form;
 use AC\ListScreen;
 use AC\Registrable;
 use AC\Settings;
+use WP_Post;
 
 final class Screen implements Registrable {
 
 	/**
-	 * @var ListScreen $list_screen
+	 * @var ListScreen $list_screen|null
 	 */
 	private $list_screen;
 
@@ -29,7 +30,7 @@ final class Screen implements Registrable {
 	/**
 	 * @param ListScreen $list_screen
 	 */
-	public function __construct( ListScreen $list_screen ) {
+	public function __construct( $list_screen ) {
 		$this->list_screen = $list_screen;
 	}
 
@@ -37,7 +38,10 @@ final class Screen implements Registrable {
 	 * Register hooks
 	 */
 	public function register() {
-		new AC\ScreenController( $this->list_screen );
+		if ( $this->list_screen ) {
+			$controller = new AC\ScreenController( $this->list_screen );
+			$controller->register();
+		}
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 		add_action( 'admin_footer', array( $this, 'admin_footer_scripts' ) );
@@ -47,6 +51,20 @@ final class Screen implements Registrable {
 		add_filter( 'list_table_primary_column', array( $this, 'set_primary_column' ), 20 );
 		add_action( 'admin_footer', array( $this, 'render_actions' ) );
 		add_filter( 'screen_settings', array( $this, 'screen_options' ) );
+
+		$this->register_first_visit_notice();
+	}
+
+	private function register_first_visit_notice() {
+		if ( 'first-visit' !== filter_input( INPUT_GET, 'ac_action' ) ) {
+			return;
+		}
+
+		$link = sprintf( '<a href="%s">%s</a>', $this->list_screen->get_edit_link(), __( 'the settings page', 'codepress-admin-columns' ) );
+		$message = sprintf( __( 'The available columns are loaded. You can now return to %s.', 'codepress-admin-columns' ), $link );
+
+		$notice = new AC\Message\Notice( $message );
+		$notice->register();
 	}
 
 	/**
@@ -78,11 +96,11 @@ final class Screen implements Registrable {
 
 	/**
 	 * Set the primary columns for the Admin Columns columns. Used to place the actions bar.
-	 * @since 2.5.5
 	 *
 	 * @param $default
 	 *
 	 * @return int|null|string
+	 * @since 2.5.5
 	 */
 	public function set_primary_column( $default ) {
 		if ( $this->list_screen ) {
@@ -102,7 +120,7 @@ final class Screen implements Registrable {
 						add_filter( 'media_row_actions', array( $this, 'set_media_row_actions' ), 10, 2 );
 					}
 				}
-			};
+			}
 
 			// Set inline edit data if the default column (title) is not present
 			if ( $this->list_screen instanceof ListScreen\Post && 'title' !== $default ) {
@@ -123,7 +141,7 @@ final class Screen implements Registrable {
 	 * Add a download link to the table screen
 	 *
 	 * @param array    $actions
-	 * @param \WP_Post $post
+	 * @param WP_Post $post
 	 *
 	 * @return array
 	 */
@@ -141,7 +159,7 @@ final class Screen implements Registrable {
 	 * Sets the inline data when the title columns is not present on a AC\ListScreen_Post screen
 	 *
 	 * @param array    $actions
-	 * @param \WP_Post $post
+	 * @param WP_Post $post
 	 *
 	 * @return array
 	 */
@@ -166,11 +184,11 @@ final class Screen implements Registrable {
 
 	/**
 	 * Adds a body class which is used to set individual column widths
-	 * @since 1.4.0
 	 *
 	 * @param string $classes body classes
 	 *
 	 * @return string
+	 * @since 1.4.0
 	 */
 	public function admin_class( $classes ) {
 		$classes .= " ac-" . $this->list_screen->get_key();
@@ -182,7 +200,17 @@ final class Screen implements Registrable {
 	 * @since 3.2.5
 	 */
 	public function register_settings_button() {
-		$edit_link = $this->get_edit_link();
+		if ( ! current_user_can( Capabilities::MANAGE ) ) {
+			return;
+		}
+
+		$button = new Settings\Admin\General\ShowEditButton();
+
+		if ( ! $button->show_button() ) {
+			return;
+		}
+
+		$edit_link = $this->list_screen->get_edit_link();
 
 		if ( ! $edit_link ) {
 			return;
@@ -209,25 +237,27 @@ final class Screen implements Registrable {
 		wp_enqueue_script( 'ac-table', AC()->get_url() . "assets/js/table.js", array( 'jquery', 'jquery-qtip2' ), AC()->get_version() );
 		wp_enqueue_style( 'ac-table', AC()->get_url() . "assets/css/table.css", array(), AC()->get_version() );
 
-		wp_localize_script( 'ac-table', 'AC', array(
-				'list_screen'  => $this->list_screen->get_key(),
-				'layout'       => $this->list_screen->get_layout_id(),
-				'column_types' => $this->get_column_types_mapping(),
-				'ajax_nonce'   => wp_create_nonce( 'ac-ajax' ),
-				'table_id'     => $this->list_screen->get_table_attr_id(),
-				'screen'       => $this->get_current_screen_id(),
-				'meta_type'    => $this->list_screen->get_meta_type(),
-			)
-		);
+		if ( $this->list_screen ) {
+			wp_localize_script( 'ac-table', 'AC', array(
+					'list_screen'  => $this->list_screen->get_key(),
+					'layout'       => $this->list_screen->get_layout_id(),
+					'column_types' => $this->get_column_types_mapping(),
+					'ajax_nonce'   => wp_create_nonce( 'ac-ajax' ),
+					'table_id'     => $this->list_screen->get_table_attr_id(),
+					'screen'       => $this->get_current_screen_id(),
+					'meta_type'    => $this->list_screen->get_meta_type(),
+				)
+			);
 
-		/**
-		 * @param ListScreen $list_screen
-		 */
-		do_action( 'ac/table_scripts', $this->list_screen, $this );
+			/**
+			 * @param ListScreen $list_screen
+			 */
+			do_action( 'ac/table_scripts', $this->list_screen, $this );
 
-		// Column specific scripts
-		foreach ( $this->list_screen->get_columns() as $column ) {
-			$column->scripts();
+			// Column specific scripts
+			foreach ( $this->list_screen->get_columns() as $column ) {
+				$column->scripts();
+			}
 		}
 	}
 
@@ -257,8 +287,8 @@ final class Screen implements Registrable {
 	}
 
 	/**
-	 * @deprecated 3.2.5
 	 * @return ListScreen
+	 * @deprecated 3.2.5
 	 */
 	public function get_current_list_screen() {
 		_deprecated_function( __METHOD__, '3.2.5', 'AC\Table\Screen::get_list_screen()' );
@@ -312,23 +342,6 @@ final class Screen implements Registrable {
 	}
 
 	/**
-	 * @return string|false
-	 */
-	private function get_edit_link() {
-		if ( ! current_user_can( Capabilities::MANAGE ) ) {
-			return false;
-		}
-
-		$button = new Settings\Admin\General\ShowEditButton();
-
-		if ( ! $button->show_button() ) {
-			return false;
-		}
-
-		return $this->list_screen->get_edit_link();
-	}
-
-	/**
 	 * Admin header scripts
 	 * @since 3.1.4
 	 */
@@ -337,10 +350,11 @@ final class Screen implements Registrable {
 
 		/**
 		 * Add header scripts that only apply to column screens.
-		 * @since 3.1.4
 		 *
 		 * @param ListScreen
 		 * @param self
+		 *
+		 * @since 3.1.4
 		 */
 		do_action( 'ac/admin_head', $this->list_screen, $this );
 	}
@@ -352,10 +366,11 @@ final class Screen implements Registrable {
 	public function admin_footer_scripts() {
 		/**
 		 * Add footer scripts that only apply to column screens.
-		 * @since 2.3.5
 		 *
 		 * @param ListScreen
 		 * @param self
+		 *
+		 * @since 2.3.5
 		 */
 		do_action( 'ac/admin_footer', $this->list_screen, $this );
 	}

@@ -95,11 +95,8 @@ abstract class Meta extends Column {
 		return true;
 	}
 
-	/**
-	 * Get temp cache
-	 */
 	private function get_cache() {
-		wp_cache_get( $this->get_cache_key(), $this->get_cache_group() );
+		return wp_cache_get( $this->get_cache_key(), $this->get_cache_group() );
 	}
 
 	/**
@@ -195,7 +192,7 @@ abstract class Meta extends Column {
 
 		// Place the hidden group at the end
 		if ( isset( $grouped['_'] ) ) {
-			array_push( $grouped, $grouped['_'] );
+			$grouped[] = $grouped['_'];
 
 			unset( $grouped['_'] );
 		}
