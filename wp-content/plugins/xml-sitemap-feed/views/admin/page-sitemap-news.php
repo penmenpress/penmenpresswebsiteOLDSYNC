@@ -1,5 +1,5 @@
 <style type="text/css">
-<?php include XMLSF_DIR . '/views/styles/admin.css'; ?>
+<?php include XMLSF_DIR . '/assets/styles/admin.css'; ?>
 </style>
 <div class="wrap">
 
@@ -47,19 +47,21 @@
 		<form action="" method="post">
 			<?php wp_nonce_field( XMLSF_BASENAME.'-help', '_xmlsf_help_nonce' ); ?>
 			<p>
-				<input type="submit" name="xmlsf-check-conflicts" class="button button-small" value="<?php _e( 'Check for conflicts', 'xml-sitemap-feed' ); ?>" />
+				<input type="submit" name="xmlsf-ping-sitemap-news" class="button button-small" value="<?php _e( 'Ping Google News', 'xml-sitemap-feed' ); ?>" />
 			</p>
 			<p>
 				<input type="submit" name="xmlsf-flush-rewrite-rules" class="button button-small" value="<?php _e( 'Flush rewrite rules', 'xml-sitemap-feed' ); ?>" />
 			</p>
 			<p>
-				<input type="submit" name="xmlsf-ping-sitemap-news" class="button button-small" value="<?php _e( 'Ping Google News', 'xml-sitemap-feed' ); ?>" />
+				<input type="submit" name="xmlsf-check-conflicts" class="button button-small" value="<?php _e( 'Check for conflicts', 'xml-sitemap-feed' ); ?>" />
 			</p>
 			<p>
 				<input type="hidden" name="xmlsf-clear-settings" value="sitemap-news" />
 				<input type="submit" name="xmlsf-clear-settings-submit" class="button button-small button-link-delete" value="<?php _e( 'Reset settings', 'xml-sitemap-feed' ); ?>" onclick="javascript:return confirm('<?php _e('This will revert your sitemap settings to the plugin defaults.','xml-sitemap-feed'); ?>\n\n<?php echo translate('Are you sure you want to do this?'); ?>')" />
 			</p>
 		</form>
+
+		<?php include XMLSF_DIR . '/views/admin/sidebar-news-links.php'; ?>
 
 		<?php include XMLSF_DIR . '/views/admin/sidebar-help.php'; ?>
 

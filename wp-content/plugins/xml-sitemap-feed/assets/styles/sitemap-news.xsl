@@ -2,8 +2,7 @@
 <xsl:stylesheet version="2.0"
 	xmlns:html="http://www.w3.org/TR/REC-html40"
 	xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9"
-		xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-		xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+	xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method="html" version="1.0" encoding="UTF-8" indent="yes"/>
 <xsl:template match="/">
@@ -17,8 +16,6 @@
 	<h1>Google News Sitemap Feed</h1>
 	<div id="header">
 		<p>This is a <a href="https://support.google.com/news/publisher/answer/75717" target="_blank">Google News Sitemap</a> to aid <a href="https://news.google.com" target="_blank">Google News</a> finding news on your website. Please note that <strong><em>only posts from the last 48 hours</em></strong> will be processed by Google News.</p>
-		<p>Follow the guidelines on <a href="https://support.google.com/news/publisher/answer/40787" target="_blank">Getting into Google News</a> and when you're ready, apply for inclusion within the <a href="https://partnerdash.google.com/partnerdash/d/news#p:id=pfehome">Google News Publisher Center</a>.
-		For general questions about Google News, please see the <a href="https://groups.google.com/a/googleproductforums.com/forum/#!categories/news/google-news-publishers" target="_blank">Publisher Help Forum</a>.</p>
 	</div>
 	<div id="content">
 		<table cellpadding="5">
@@ -26,10 +23,9 @@
 				<th>#</th>
 				<th>Title</th>
 				<th>Language</th>
-				<th>Image(s)</th>
 				<th>Keyword(s)</th>
 				<th>Stock(s)</th>
-				<th>Publication Date (GMT)</th>
+				<th>Publication Date</th>
 			</tr>
 <xsl:variable name="lower" select="'abcdefghijklmnopqrstuvwxyz'"/>
 <xsl:variable name="upper" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
@@ -40,10 +36,9 @@
 					<a href="{$itemURL}"><xsl:value-of select="news:news/news:title"/></a>
 				</td>
 				<td><xsl:value-of select="news:news/news:publication/news:language"/></td>
-				<td><xsl:value-of select="count(image:image)"/></td>
 				<td><xsl:value-of select="news:news/news:keywords"/></td>
 				<td><xsl:value-of select="news:news/news:stock_tickers"/></td>
-				<td><xsl:value-of select="concat(substring(news:news/news:publication_date,0,11),concat(' ', substring(news:news/news:publication_date,12,8)))"/></td>
+				<td><xsl:value-of select="concat(substring(news:news/news:publication_date,0,11),concat(' ', substring(news:news/news:publication_date,12,8)))"/> (<xsl:value-of select="substring(news:news/news:publication_date,20,6)"/>)</td>
 			</tr>
 </xsl:for-each>
 		</table>

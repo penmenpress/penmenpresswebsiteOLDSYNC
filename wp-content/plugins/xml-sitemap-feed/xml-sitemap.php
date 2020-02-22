@@ -2,15 +2,16 @@
 /*
 Plugin Name: XML Sitemap & Google News
 Plugin URI: http://status301.net/wordpress-plugins/xml-sitemap-feed/
-Description: Feed the  hungry spiders in compliance with the XML Sitemap and Google News protocols. Happy with the results? Please leave me a <strong><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ravanhagen%40gmail%2ecom&item_name=XML%20Sitemap%20Feed">tip</a></strong> for continued development and support. Thanks :)
+Description: Feed the hungry spiders in compliance with the XML Sitemap and Google News protocols. Happy with the results? Please leave me a <strong><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ravanhagen%40gmail%2ecom&item_name=XML%20Sitemap%20Feed">tip</a></strong> for continued development and support. Thanks :)
+Version: 5.2.7
 Text Domain: xml-sitemap-feed
-Version: 5.1.1
+Requires at least: 4.6
 Requires PHP: 5.4
 Author: RavanH
 Author URI: http://status301.net/
 */
 
-define( 'XMLSF_VERSION', '5.1.1' );
+define( 'XMLSF_VERSION', '5.2.7' );
 
 /*  Copyright 2019 RavanH
     http://status301.net/
@@ -57,17 +58,31 @@ define( 'XMLSF_VERSION', '5.1.1' );
  *	xmlsf_news_post_types     -> Filters the post types array for the Google News sitemap settings page.
  *
  *	ACTIONS
- *	xmlsf_ping                 -> Fires hen a search engine has been pinged. Carries four arguments:
+ *	xmlsf_ping                 -> Fires when a search engine has been pinged. Carries four arguments:
  *								                search engine (google|bing), sitemap name, full ping url, ping repsonse code.
+ *	xmlsf_urlset               -> Fired inside each sitemap urlset tag. Can be used to
+ *	                              echo additional XML namespaces. Passes parameter home|post_type|taxonomy|custom
+ *                                to allow identification of the current sitemap.
+ *	xmlsf_tags_after           -> Fired inside the XML Sitemap loop at the end of the tags, just before each
+ *	                              closing </url> is generated. Can be used to echo custom tags or trigger another
+ *	                              action in the background. Passes parameter home|post_type|taxonomy|custom
+ *                                to allow identification of the current sitemap.
+ *	xmlsf_url_after            -> Fired inside the XML Sitemap loop after each url node. Can be used to append
+ *	                              alternative url or trigger another action in the background. Passes parameter
+ *                                home|post_type|taxonomy|custom to allow identification of the current sitemap.
+ *	xmlsf_news_urlset          -> Fired inside the Google News Sitemap urlset tag. Can be used to
+ *	                              echo additional XML namespaces.
  *	xmlsf_news_tags_after      -> Fired inside the Google News Sitemap loop at the end of the news
  *	                              tags, just before each closing </news:news> is generated. Can be used to
  *	                              echo custom tags or trigger another action in the background.
+ *	xmlsf_news_url_after       -> Fired inside the Google News Sitemap loop after each news url node.
+ *	                              Can be used to append alternative url or trigger another action in the background.
  *	xmlsf_news_settings_before -> Fired before the Google News Sitemap settings form
  *	xmlsf_news_settings_after  -> Fired after the Google News Sitemap settings form
  *
- * --------------------
+ * ---------------------
  *  AVAILABLE FUNCTIONS
- * --------------------
+ * ---------------------
  *
  *  is_sitemap() -> conditional, returns bolean, true if the request is for an xml sitemap
  *  is_news()    -> conditional, returns bolean, true if the request is for an xml news sitemap
@@ -81,9 +96,13 @@ define( 'XMLSF_DIR', dirname(__FILE__) );
 
 define( 'XMLSF_BASENAME', plugin_basename(__FILE__) );
 
-require XMLSF_DIR . '/models/global.php';
+require XMLSF_DIR . '/models/functions.php';
 
-require XMLSF_DIR . '/controllers/global.php';
+require XMLSF_DIR . '/controllers/functions.php';
+
+if ( is_admin() ) {
+  require XMLSF_DIR . '/controllers/class.xmlsf-admin.php';
+}
 
 // main plugin init
 add_action( 'init', 'xmlsf_init' );

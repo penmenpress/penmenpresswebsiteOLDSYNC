@@ -8,6 +8,31 @@ function xmlsf_add_action_link( $links ) {
 	return $links;
 }
 
+function xmlsf_plugin_meta_links( $links, $file ) {
+  $support_link = '<a target="_blank" href="https://wordpress.org/support/plugin/xml-sitemap-feed/">' . __('Support','xml-sitemap-feed') . '</a>';
+  $rate_link = '<a target="_blank" href="https://wordpress.org/support/plugin/xml-sitemap-feed/reviews/?filter=5#new-post">' . __('Rate ★★★★★','xml-sitemap-feed') . '</a>';
+
+  if ( $file == XMLSF_BASENAME ) {
+    $links[] = $support_link;
+    $links[] = $rate_link;
+  }
+
+  return $links;
+}
+
+function xmlsf_verify_nonce( $context ) {
+
+	if ( isset( $_POST['_xmlsf_'.$context.'_nonce'] ) && wp_verify_nonce( $_POST['_xmlsf_'.$context.'_nonce'], XMLSF_BASENAME.'-'.$context ) )
+		return true;
+
+	// Still here? Then add security check failed error message and return false.
+	add_settings_error( 'security_check_failed', 'security_check_failed', translate('Security check failed.') );
+
+	return false;
+}
+
+// sanitization
+
 class XMLSF_Admin_Sanitize
 {
 
@@ -54,7 +79,7 @@ class XMLSF_Admin_Sanitize
 		  $new = array_filter($new);
 		  $new = reset($new);
 		}
-		$input = $new ? explode( PHP_EOL, sanitize_textarea_field( $new ) ) : array();
+		$input = $new ? explode( PHP_EOL, strip_tags( $new ) ) : array();
 
 		// build sanitized output
 		$sanitized = array();
@@ -97,6 +122,6 @@ class XMLSF_Admin_Sanitize
 		if ( empty($old) && !empty($new) )
 			set_transient('xmlsf_check_static_files','');
 
-		return sanitize_textarea_field( $new );
+		return strip_tags( $new );
 	}
 }

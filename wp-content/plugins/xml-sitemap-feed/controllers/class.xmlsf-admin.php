@@ -3,8 +3,14 @@
  *      XMLSF Admin CLASS
  * ------------------------------ */
 
-class XMLSF_Admin_Controller
+class XMLSF_Admin
 {
+	/**
+	 * Sitemaps settings
+	 * @var array
+	 */
+	private $sitemaps = array();
+
 	/**
 	 * Static files conflicting with this plugin
 	 * @var array
@@ -19,28 +25,28 @@ class XMLSF_Admin_Controller
 
 	/**
 	 * CONSTRUCTOR
-	 * Runs on init
 	 */
 
 	function __construct()
 	{
-		require XMLSF_DIR . '/models/admin/main.php';
-		require XMLSF_DIR . '/controllers/admin/notices.php';
+		require XMLSF_DIR . '/models/functions.admin.php';
+		require XMLSF_DIR . '/controllers/class.xmlsf-admin-notices.php';
 
 		$this->sitemaps = (array) get_option( 'xmlsf_sitemaps', array() );
 
 		if ( isset($this->sitemaps['sitemap']) ) {
-			require XMLSF_DIR . '/models/admin/sitemap.php';
-			require XMLSF_DIR . '/controllers/admin/sitemap.php';
+			require XMLSF_DIR . '/models/class.xmlsf-admin-sitemap-sanitize.php';
+			require XMLSF_DIR . '/controllers/class.xmlsf-admin-sitemap.php';
 		}
 
 		if ( isset($this->sitemaps['sitemap-news']) ) {
-			require XMLSF_DIR . '/models/admin/sitemap-news.php';
-			require XMLSF_DIR . '/controllers/admin/sitemap-news.php';
+			require XMLSF_DIR . '/models/class.xmlsf-admin-sitemap-news-sanitize.php';
+			require XMLSF_DIR . '/controllers/class.xmlsf-admin-sitemap-news.php';
 		}
 
 		// ACTION LINK
 		add_filter( 'plugin_action_links_' . XMLSF_BASENAME, 'xmlsf_add_action_link' );
+		add_filter( 'plugin_row_meta', 'xmlsf_plugin_meta_links', 10, 2);
 
 		add_action( 'admin_init', array( $this, 'notices_actions' ) );
 		add_action( 'admin_init', array( $this, 'transients_actions' ) );
@@ -48,9 +54,8 @@ class XMLSF_Admin_Controller
 
 		// ACTIONS & CHECKS
 		add_action( 'admin_init', array( $this, 'tools_actions' ) );
-		if ( ( !is_multisite() && current_user_can( 'manage_options' ) ) || is_super_admin() )
-			add_action( 'admin_init', array( $this, 'static_files' ) );
-		add_action( 'admin_init', array( $this, 'check_theme_conflicts' ) );
+		add_action( 'admin_init', array( $this, 'static_files' ) );
+		add_action( 'admin_init', array( $this, 'check_conflicts' ), 11 );
 	}
 
 	/**
@@ -259,6 +264,8 @@ class XMLSF_Admin_Controller
 	 */
 	public function static_files()
 	{
+		if ( ( is_multisite() && ! is_super_admin() ) || ! current_user_can( 'manage_options' ) ) return;
+
 		if ( null === self::$static_files )
 			self::$static_files = get_transient( 'xmlsf_static_files' );
 
@@ -280,7 +287,7 @@ class XMLSF_Admin_Controller
 		}
 
 		foreach ( $check_for as $name => $pretty ) {
-			if ( file_exists( $home_path . $pretty ) ) {
+			if ( ! empty( $pretty ) && file_exists( $home_path . $pretty ) ) {
 				self::$static_files[$pretty] = $home_path . $pretty;
 			}
 		}
@@ -296,34 +303,44 @@ class XMLSF_Admin_Controller
 	 * Check for conflicting themes and their settings
 	 */
 
-	public function check_theme_conflicts()
+	public function check_conflicts()
 	{
 		// Catch Box Pro feed redirect
-		if ( !in_array( 'catchbox_feed_redirect', self::$dismissed ) && function_exists( 'catchbox_is_feed_url_present' ) && catchbox_is_feed_url_present(null) ) {
+		if ( /*!in_array( 'catchbox_feed_redirect', self::$dismissed ) &&*/ function_exists( 'catchbox_is_feed_url_present' ) && catchbox_is_feed_url_present(null) ) {
 			add_action( 'admin_notices', array( 'XMLSF_Admin_Notices', 'notice_catchbox_feed_redirect' ) );
+		}
+
+		// Ad Inserter XML setting incompatibility warning
+    if ( /*!in_array( 'ad_inserter_feed', parent::$dismissed ) &&*/ is_plugin_active('ad-inserter/ad-inserter.php') ) {
+      $adsettings = get_option( 'ad_inserter' );
+			if ( is_array($adsettings) && !empty($adsettings) ) {
+        foreach ( $adsettings as $ad => $settings ) {
+					// check rss feed setting
+          if ( !empty( $settings['code'] ) && empty( $settings['disable_insertion'] ) && !empty( $settings['enable_feed'] ) ) {
+            add_action( 'admin_notices', array( 'XMLSF_Admin_Notices', 'notice_ad_inserter_feed' ) );
+            break;
+          }
+        }
+			}
 		}
 	}
 
 	public function tools_actions()
 	{
 		if ( isset( $_POST['xmlsf-clear-settings-submit'] ) && isset( $_POST['xmlsf-clear-settings'] ) ) {
-			if ( isset( $_POST['_xmlsf_help_nonce'] ) && wp_verify_nonce( $_POST['_xmlsf_help_nonce'], XMLSF_BASENAME.'-help' ) ) {
+			if ( xmlsf_verify_nonce('help') ) {
 				$this->clear_settings( $_POST['xmlsf-clear-settings'] );
-			} else {
-				add_settings_error( 'clear_settings', 'clear_settings_failed', translate('Security check failed.') );
 			}
 		}
 
 		if ( isset( $_POST['xmlsf-delete-submit'] ) ) {
-			if ( isset( $_POST['_xmlsf_notice_nonce'] ) && wp_verify_nonce( $_POST['_xmlsf_notice_nonce'], XMLSF_BASENAME.'-notice' ) ) {
+			if ( xmlsf_verify_nonce('help') ) {
 				$this->delete_static_files();
-			} else {
-				add_settings_error( 'delete_files', 'delete_files_failed', translate('Security check failed.') );
 			}
 		}
 
 		if ( isset( $_POST['xmlsf-check-conflicts'] ) ) {
-			if ( isset( $_POST['_xmlsf_help_nonce'] ) && wp_verify_nonce( $_POST['_xmlsf_help_nonce'], XMLSF_BASENAME.'-help' ) ) {
+			if ( xmlsf_verify_nonce('help') ) {
 				// reset ignored warnings
 				delete_user_meta( get_current_user_id(), 'xmlsf_dismissed' );
 				self::$dismissed = array();
@@ -331,20 +348,43 @@ class XMLSF_Admin_Controller
 				$this->check_static_files();
 				if ( empty( self::$static_files ) )
 					add_settings_error( 'static_files_notice', 'static_files', __('No conflicting static files found.','xml-sitemap-feed'), 'notice-info');
-			} else {
-				add_settings_error( 'check_conflicts', 'check_conflicts_failed', translate('Security check failed.') );
 			}
 		}
 
 		if ( isset( $_POST['xmlsf-flush-rewrite-rules'] ) ) {
-			if ( isset( $_POST['_xmlsf_help_nonce'] ) && wp_verify_nonce( $_POST['_xmlsf_help_nonce'], XMLSF_BASENAME.'-help' ) ) {
+			if ( xmlsf_verify_nonce('help') ) {
 				// flush rewrite rules
 				flush_rewrite_rules();
 				add_settings_error( 'flush_admin_notice', 'flush_admin_notice', __('WordPress rewrite rules have been flushed.','xml-sitemap-feed'), 'updated' );
-			} else {
-				add_settings_error( 'flush_rewrite_rules', 'flush_rewrite_rules_failed', translate('Security check failed.') );
 			}
 		}
+
+		if ( isset( $_POST['xmlsf-clear-term-meta'] ) ) {
+			if ( xmlsf_verify_nonce('help') ) {
+				// remove metadata
+				global $wpdb;
+		  	// terms meta
+		  	$wpdb->delete( $wpdb->prefix.'termmeta', array( 'meta_key' => 'term_modified' ) );
+				add_settings_error( 'clear_meta_notice', 'clear_meta_notice', __('Sitemap term meta cache has been cleared.','xml-sitemap-feed'), 'updated' );
+			}
+		}
+
+		if ( isset( $_POST['xmlsf-clear-post-meta'] ) ) {
+			if ( xmlsf_verify_nonce('help') ) {
+				// remove metadata
+				global $wpdb;
+				// images meta
+		  	$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => '_xmlsf_image_attached' ) );
+		  	$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => '_xmlsf_image_featured' ) );
+				update_option( 'xmlsf_images_meta_primed', array() );
+				// comments meta
+		    $wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => '_xmlsf_comment_date' ) );
+				update_option( 'xmlsf_comments_meta_primed', array() );
+
+				add_settings_error( 'clear_meta_notice', 'clear_meta_notice', __('Sitemap post meta caches have been cleared.','xml-sitemap-feed'), 'updated' );
+			}
+		}
+
 	}
 
 	public function notices_actions()
@@ -352,11 +392,9 @@ class XMLSF_Admin_Controller
 		self::$dismissed = (array) get_user_meta( get_current_user_id(), 'xmlsf_dismissed' );
 
 		if ( isset( $_POST['xmlsf-dismiss-submit'] ) && isset( $_POST['xmlsf-dismiss'] ) ) {
-			if ( isset( $_POST['_xmlsf_notice_nonce'] ) && wp_verify_nonce( $_POST['_xmlsf_notice_nonce'], XMLSF_BASENAME.'-notice' ) ) {
+			if ( xmlsf_verify_nonce('notice') ) {
 				add_user_meta( get_current_user_id(), 'xmlsf_dismissed', $_POST['xmlsf-dismiss'], false );
 				self::$dismissed[] = $_POST['xmlsf-dismiss'];
-			} else {
-				add_settings_error( 'dismiss_notice', 'dismiss_notice_failed', translate('Security check failed.') );
 			}
 		}
 	}
@@ -364,18 +402,12 @@ class XMLSF_Admin_Controller
 	public function transients_actions()
 	{
 		// CATCH TRANSIENT for flushing rewrite rules after the sitemaps setting has changed
-		if ( delete_transient('xmlsf_flush_rewrite_rules') ) {
-			flush_rewrite_rules();
-			if ( defined('WP_DEBUG') && WP_DEBUG == true ) {
-				error_log('Rewrite rules flushed by XML Sitemap Feeds.');
-			}
-		}
+		delete_transient('xmlsf_flush_rewrite_rules') && flush_rewrite_rules();
 
 		// CATCH TRANSIENT for static file check
-		if ( delete_transient('xmlsf_check_static_files') ) {
-			$this->check_static_files();
-		}
+		delete_transient('xmlsf_check_static_files') && $this->check_static_files();
 	}
+
 }
 
-new XMLSF_Admin_Controller();
+new XMLSF_Admin();

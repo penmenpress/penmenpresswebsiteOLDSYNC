@@ -4,14 +4,14 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ravan
 Tags: sitemap, xml sitemap, news sitemap, sitemap.xml, robots.txt, Google, Google News, Yahoo, Bing, Yandex, Baidu, seo, feed, Polylang, WPML, image sitemap
 Requires at least: 4.4
 Requires PHP: 5.4
-Tested up to: 5.1
-Stable tag: 5.1.1
+Tested up to: 5.3
+Stable tag: 5.2.7
 
 XML and Google News Sitemaps to feed the hungry spiders. Multisite, WP Super Cache, Polylang and WPML compatible.
 
 == Description ==
 
-This plugin dynamically creates feeds that comply with the **XML Sitemap** and the **Google News Sitemap** protocol. **Multisite**, **Polylang** and **WPML** compatible and there are no files created. There are options to control which sitemaps are enabled, which Post and Taxonomy types are included, how Priority and Lastmod are calculated, who to ping and a possibility to set additional robots.txt rules from within the WordPress admin.
+This plugin dynamically creates feeds that comply with the **XML Sitemap** and the **Google News Sitemap** protocol. **Multisite**, **Polylang** and **WPML** compatible and there are no files created. There are options to control which sitemaps are enabled, which Post types are included, how Priority and Lastmod are calculated, who to ping and a possibility to set additional robots.txt rules from within the WordPress admin.
 
 The main advantage of this plugin over other XML Sitemap plugins is **simplicity**. No need to change file or folder permissions, move files or spend time tweaking difficult plugin options.
 
@@ -42,21 +42,23 @@ Please read the FAQ's for info on how to get your articles listed on Google News
 * Custom/static sitemaps can be added to the index.
 * Works out-of-the-box, even on **Multisite** installations.
 * Optionally include Image tags with caption and title for featured images or attached images.
-* Pings Google, Bing & Yahoo on new post publication.
-* Options to define which post types and if taxonomies get included in the sitemap
+* Pings Google, Bing & Yahoo on new post publication, once per hour.
+* Options to define which post types and taxonomies get included in the sitemap
 * Updates Lastmod on post modification or on comments.
 * Set Priority per post type, per taxonomy and per individual post.
 * Exclude individual posts and pages.
 
 **Google News Sitemap**
 
-* Optionally include Image tags with caption and title for featured images or attached images.
-* Options to: set a different News Publication Name, include custom post types or limit inclusion to certain post categories.
-* Pings both Google and Bing on new publications.
+* Required news sitemap tags: Publication name, language, title and publication date.
+* Set a News Publication Name or uses site name.
+* Supports custom post types.
+* Limit inclusion to certain post categories.
+* Pings Google on new publications, once per 5 minutes.
 
 = Pro Features =
 
-**[Google News Advanced](https://premium.status301.net/downloads/google-news-advanced/)**
+**[Google News Advanced](https://premium.status301.com/downloads/google-news-advanced/)**
 
 * Multiple post types - Include more than one post type in the same News Sitemap.
 * Keywords - Add the keywords tag to your News Sitemap. Keywords can be created from Tags, Categories or a dedicated Keywords taxonomy.
@@ -124,7 +126,7 @@ Installed alongside [WordPress MU Sitewide Tags Pages](http://wordpress.org/plug
 
 = Uninstallation =
 
-Upon uninstalling the plugin from the Admin > Plugins page, most plugins options will be cleared from the database. Only specific per post settings like post priority or explude option, and taxonomy term lastmod dates will remain dormant in the database. See notes in the uninstall.php file.
+Upon uninstalling the plugin from the Admin > Plugins page, plugin options and meta data will be cleared from the database. See notes in the uninstall.php file.
 
 On multisite, the uninstall.php *can* loop through all sites in the network to perform the uninstalltion process for each site. However, this does not scale for large networks so it *only* does a per-site uninstallation when `define('XMLSF_MULTISITE_UNINSTALL', true);` is explicitly set in wp-config.php.
 
@@ -196,7 +198,7 @@ You can also choose to notify major search engines of your new XML sitemap manua
 
 = Can I change the sitemap name/URL? =
 
-No. If you have fancy URL's turned ON in WordPress (Permalinks), the sitemap url that you manually submit to Google (if you are impatient) should be `yourblogurl.tld/sitemap.xml` but if you have the Permalinks' Default option set the feed is only available via `yourblog.url/?feed=sitemap`.
+No. If you have fancy URL's turned ON in WordPress (Permalinks), the sitemap url is `yourblogurl.tld/sitemap.xml` but if you have the Permalink Default option set the feed is only available via `yourblog.url/?feed=sitemap`.
 
 = I see no sitemap.xml file in my site root! =
 
@@ -289,12 +291,62 @@ Yes. In fact, it has been designed for it. Tested on WPMU 2.9.2 and WPMS 3+ both
 
 == Upgrade Notice ==
 
-= 5.1.1 =
+= 5.2.8 =
 
-Bugfix release: options page and news pings.
 
 
 == Changelog ==
+
+= 5.2.8 =
+* Revisit fix: invalid form control not focusable when meta box is hidden
+* Revisit fix: force Status 200 response
+
+= 5.2.7 =
+* NEW: Ad Inserter compatibility check
+* NEW: xmlsf_urlset and xmlsf_news_urlset action hooks, thanks to Stanislav Khromov (@khromov)
+* Exclude hierarchical post types from news sitemap
+
+= 5.2.6 =
+* NEW: xmlsf_tags_after, xmlsf_url_after and xmlsf_news_url_after action hooks
+* Make stylesheet paths relative to prevent exclusion when using different language domains
+* FIX: Taxonomy selection not available to new installs
+
+= 5.2.4 =
+* NEW Rank Math incompatibility admin warnings
+* FIX undefined index
+* FIX invalid form control
+
+= 5.2.3 =
+* FIX Cannot use return value in write context
+* FIX issue #30 for sql_mode=ONLY_FULL_GROUP_BY, thanks @silvios
+* FIX invalid form control not focusable when meta box is hidden
+
+= 5.2.2 =
+* FIX invalid date format on some PHP versions
+* FIX Can't use function return value in write context
+* FIX non-cyrillic URLs stripped from External Web Pages field
+* FIX Call to undefined function xmlsf_cache_get_archives()
+
+= 5.2 =
+* Image query optimization and meta caching
+* Last comment date meta caching
+* Lastmod and publication dates in local time
+* Removed ignored image tag from news sitemap
+* Max memory limit for post type and taxonomy term sitemaps
+* Prevent CDN file urls
+* Zlib before GZhandler on .gz request
+* FIX: don't ping for excluded posts
+* FIX: traditional and simplified Chinese with WPML
+* FIX: redundant front page url
+* FIX: array_filter() expects parameter 1 to be array
+* FIX: possible division by zero
+* FIX: update_term_modified_meta
+* FIX: rewrite rules on deactivate/uninstall
+
+= 5.1.2 =
+* FIX: admin notice dismiss button failing
+* FIX: date archive redirect notice showing for inactive post types
+* Plugin support and rate links on plugins page
 
 = 5.1.1 =
 * FIX options page not found
@@ -337,7 +389,7 @@ Bugfix release: options page and news pings.
 * NEW Filters for post types: xmlsf_post_types and xmlsf_news_post_types
 * NEW Filters for priority values: xmlsf_post_priority and xmlsf_term_priority
 * Removal of Genre, Keywords and Access tags as Google dropped support
-* Taxonomy term sitemaps speed improvent: get lastmod date from database
+* Taxonomy term sitemaps speed improvement: get lastmod date from database
 * Exclude Woocommerce product_shipping_class taxonomy
 * PHP 7.2+ compat: create_function deprecated
 * No more domain filtering for custom URLs and sitemaps
