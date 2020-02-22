@@ -23,8 +23,8 @@ function dmb_tmm_help_display() { ?>
 				global $post;
 				$slug = '';
 				$slug = $post->post_name;
-				$shortcode = '<span style="display:inline-block;border:solid 2px lightgray; background:white; padding:0 8px; font-size:13px; line-height:25px; vertical-align:middle;">[tmm name="'.$slug.'"]</span>';
-				$shortcode_unpublished = "<span style='display:inline-block;color:#849d3a'>" . /* translators: Leave HTML tags */ __("<strong>Publish</strong> your team before you can see you shortcode.", TMM_TXTDM ) . "</span>";
+				$shortcode = '<span style="display:inline-block;border:solid 2px #999999; background:white; padding:0 8px 2px; font-size:14px; line-height:25px; vertical-align:middle;">[tmm name="'.$slug.'"]</span>';
+				$shortcode_unpublished = "<span style='display:inline-block;color:#e17055'>" . /* translators: Leave HTML tags */ __("<strong>Publish</strong> your team before you can see you shortcode here!", TMM_TXTDM ) . "</span>";
 				echo ($slug != '') ? $shortcode : $shortcode_unpublished;
 			?>
 		</p>
@@ -37,8 +37,8 @@ function dmb_tmm_help_display() { ?>
 		<div class="dmb_help_title">
 			Get support
 		</div>
-		<a target="_blank" href="https://wpdarko.com/ask-for-support/">Submit a ticket</a><br/>
-		<a target="_blank" href="https://wpdarko.com/docs/guide-team-members/">View documentation</a>
+		<a target="_blank" href="https://wpdarko.com/support/submit-a-request/">Submit a ticket</a><br/>
+		<a target="_blank" href="https://wpdarko.com/support">View documentation</a>
 	</div>
 
 <?php } ?>

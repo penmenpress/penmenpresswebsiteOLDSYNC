@@ -15,7 +15,8 @@ function dmb_tmm_social_links_options() {
 		__('Tumblr', TMM_TXTDM ) => 'tumblr',
 		__('Research Gate', TMM_TXTDM ) => 'researchgate',
     __('Email', TMM_TXTDM ) => 'email',
-    __('Website', TMM_TXTDM ) => 'website',
+		__('Website', TMM_TXTDM ) => 'website',
+		__('Phone', TMM_TXTDM ) => 'phone',
     __('Other links', TMM_TXTDM ) => 'customlink'
   );
 	return $options;
@@ -27,7 +28,7 @@ add_action('admin_init', 'dmb_tmm_add_team', 1);
 function dmb_tmm_add_team() {
 	add_meta_box( 
 		'tmm', 
-		'<span class="dashicons dashicons-edit"></span> '.__('Team editor', TMM_TXTDM ), 
+		__('Manage your team', TMM_TXTDM ), 
 		'dmb_tmm_team_display', // Below
 		'tmm', 
 		'normal', 
@@ -63,7 +64,7 @@ function dmb_tmm_team_display() {
 
 	<div id="dmb_preview_team">
 		<!-- Closes preview button. -->
-		<a class="dmb_preview_button dmb_preview_team_close" href="#">
+		<a class="dmb_button dmb_button_huge dmb_button_gold dmb_preview_team_close" href="#">
 			<?php _e('Close preview', TMM_TXTDM ) ?>
 		</a>
 	</div>
@@ -73,10 +74,10 @@ function dmb_tmm_team_display() {
 	<div id="dmb_unique_editor">
 		<?php wp_editor( '', 'dmb_editor', array('editor_height' => '300px' ) );  ?>
 		<br/>
-		<a class="dmb_big_button_primary dmb_ue_update" href="#">
-			<?php _e('Update', TMM_TXTDM ) ?>
+		<a class="dmb_button dmb_button_huge dmb_button_blue dmb_ue_update" href="#">
+			<?php _e('Update biography', TMM_TXTDM ) ?>
 		</a>
-		<a class="dmb_big_button_secondary dmb_ue_cancel" href="#">
+		<a class="dmb_button dmb_button_huge dmb_ue_cancel" href="#">
 			<?php _e('Cancel', TMM_TXTDM ) ?>
 		</a>
 	</div>
@@ -85,12 +86,10 @@ function dmb_tmm_team_display() {
 
 	<!-- Toolbar for member metabox -->
 	<div class="dmb_toolbar">
-		<div class="dmb_toolbar_inner">
-			<a class="dmb_big_button_secondary dmb_expand_rows" href="#"><span class="dashicons dashicons-editor-expand"></span> <?php _e('Expand all', TMM_TXTDM ) ?>&nbsp;</a>&nbsp;&nbsp;
-			<a class="dmb_big_button_secondary dmb_collapse_rows" href="#"><span class="dashicons dashicons-editor-contract"></span> <?php _e('Collapse all', TMM_TXTDM ) ?>&nbsp;</a>&nbsp;&nbsp;
-			<a class="dmb_show_preview_team dmb_preview_button"><span class="dashicons dashicons-admin-appearance"></span> <?php _e('Instant preview', TMM_TXTDM ) ?>&nbsp;</a>
-			<div class="dmb_clearfix"></div>
-		</div>
+		<a class="dmb_button dmb_button_large dmb_expand_rows" href="#"><span class="dashicons dashicons-editor-expand"></span> <?php _e('Expand all', TMM_TXTDM ) ?></a>
+		<a class="dmb_button dmb_button_large dmb_collapse_rows" href="#"><span class="dashicons dashicons-editor-contract"></span> <?php _e('Collapse all', TMM_TXTDM ) ?></a>
+		<a class="dmb_show_preview_team dmb_button dmb_button_huge dmb_button_gold"><?php _e('Instant preview', TMM_TXTDM ) ?></a>
+		<div class="dmb_clearfix"></div>
 	</div>
 
 	<?php if ( $team ) {
@@ -115,11 +114,11 @@ function dmb_tmm_team_display() {
 
 				<!-- Member handle bar -->
 				<div class="dmb_handle">
-					<a class="dmb_big_button_secondary dmb_move_row_up" href="#" title="Move up"><span class="dashicons dashicons-arrow-up-alt2"></span></a>
-					<a class="dmb_big_button_secondary dmb_move_row_down" href="#" title="Move down"><span class="dashicons dashicons-arrow-down-alt2"></span></a>
+					<a class="dmb_button dmb_button_large dmb_button_compact dmb_move_row_up" href="#" title="Move up"><span class="dashicons dashicons-arrow-up-alt2"></span></a>
+					<a class="dmb_button dmb_button_large dmb_button_compact dmb_move_row_down" href="#" title="Move down"><span class="dashicons dashicons-arrow-down-alt2"></span></a>
 					<div class="dmb_handle_title"></div>
-					<a class="dmb_big_button_secondary dmb_remove_row_btn" href="#" title="Remove"><span class="dashicons dashicons-no-alt"></span></a>
-					<a class="dmb_big_button_secondary dmb_clone_row" href="#" title="Clone"><span class="dashicons dashicons-admin-page"></span><?php _e('Clone', TMM_TXTDM ); ?></a>
+					<a class="dmb_button dmb_button_large dmb_button_compact dmb_remove_row_btn" href="#" title="Remove"><span class="dashicons dashicons-trash"></span></a>
+					<a class="dmb_button dmb_button_large dmb_clone_row" href="#" title="Clone"><span class="dashicons dashicons-admin-page"></span><?php _e('Clone', TMM_TXTDM ); ?></a>
 					<div class="dmb_clearfix"></div>
 				</div>
 
@@ -178,8 +177,8 @@ function dmb_tmm_team_display() {
 						<div class="dmb_clearfix"></div>
 
 						<?php if( !class_exists('acf') ) { ?>
-							<div class="dmb_edit_description_of_member dmb_small_button_primary">
-								<span class="dashicons dashicons-edit"></span> <?php _e('Edit biography', TMM_TXTDM ) ?>&nbsp;
+							<div class="dmb_edit_description_of_member dmb_button dmb_button_large dmb_button_blue">
+								<?php _e('Edit biography', TMM_TXTDM ) ?>
 							</div>
 						<?php } ?>
 
@@ -218,7 +217,7 @@ function dmb_tmm_team_display() {
 						<input class="dmb_field dmb_scl_url1_of_member" type="text" value="<?php echo $member['_tmm_sc_url1']; ?>" placeholder="<?php _e('e.g. http://fb.com/member-profile', TMM_TXTDM ) ?>" />
           </div>
 
-          <div class="dmb_clearfix"></div>
+          <div class="dmb_clearfix" style="margin-bottom:6px"></div>
           
           <div class="dmb_grid dmb_grid_33 dmb_grid_first">
             <select class="dmb_scl_type_select dmb_scl_type2_of_member">
@@ -236,7 +235,7 @@ function dmb_tmm_team_display() {
 						<input class="dmb_field dmb_scl_url2_of_member" type="text" value="<?php echo $member['_tmm_sc_url2']; ?>" placeholder="<?php _e('e.g. http://tw.com/member-profile', TMM_TXTDM ) ?>" />
           </div>
 
-          <div class="dmb_clearfix"></div>
+          <div class="dmb_clearfix" style="margin-bottom:6px"></div>
 
           <div class="dmb_grid dmb_grid_33 dmb_grid_first dmb_grid_first">
             <select class="dmb_scl_type_select dmb_scl_type3_of_member">
@@ -257,7 +256,8 @@ function dmb_tmm_team_display() {
 					<div class="dmb_clearfix"></div>
 
 					<div class="dmb_tip">
-						<span class="dashicons dashicons-yes"></span> Links with the email type open your visitors' mail client. <a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('Your member\'s email address must be entered in the Link URL field. Title attribute can be left blank.', TMM_TXTDM ) ?>">[?]</a>
+						<span class="dashicons dashicons-yes"></span> <?php _e('Links with the email type open your visitors\' mail client.', TMM_TXTDM ); ?> <a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('Your member\'s email address must be entered in the Link URL field. Title attribute can be left blank.', TMM_TXTDM ) ?>">[?]</a>
+						<br/><span class="dashicons dashicons-yes"></span> <?php _e('Links with the <strong>phone</strong> type open your visitors\' default phone app.', TMM_TXTDM ) ?> <a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('Your member\'s phone number must be entered in the Link URL field (e.g. tel:+11234567890). Title attribute can be left blank.', TMM_TXTDM ) ?>">[?]</a>
 					</div>
 
 					<div class="dmb_clearfix"></div>
@@ -270,20 +270,20 @@ function dmb_tmm_team_display() {
 		
 						<div class="dmb_field_title">
 							<?php _e('Member\'s photo', TMM_TXTDM ) ?>
-							<a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('We recommend square images (e.g. 250x250px).', TMM_TXTDM ) ?>">[?]</a>
+							<a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('We recommend that all photos are the same sizes.', TMM_TXTDM ) ?>">[?]</a>
 						</div>
 		
-						<div>
-							<div class="dmb_field_title dmb_img_data_url dmb_photo_of_member" data-img="<?php echo $member['_tmm_photo']; ?>"></div>
-							<div class="dmb_upload_img_btn dmb_small_button_primary">
-								<span class="dashicons dashicons-upload"></span> 
-								<?php _e('Upload photo', TMM_TXTDM ) ?>&nbsp;
+						<div class="dmb_photo_of_member">
+							<div class="dmb_field_title dmb_img_data_url" data-img="<?php echo $member['_tmm_photo']; ?>">
+						</div>
+							<div class="dmb_upload_img_btn dmb_button dmb_button_large dmb_button_blue">
+								<?php _e('Upload photo', TMM_TXTDM ) ?>
 							</div>
 						</div>
 		
 					</div>
 
-					<div class="dmb_grid dmb_grid_100 dmb_grid_first dmb_grid_last">
+					<div class="dmb_grid dmb_grid_100 dmb_grid_first dmb_grid_last" style="margin-top:7px;">
 						<div class="dmb_field_title">
 							<?php _e('Photo link', TMM_TXTDM ) ?>
 							<a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('Your visitors will be redirected to this link if they click the member\'s photo.', TMM_TXTDM ) ?>">[?]</a>
@@ -291,7 +291,7 @@ function dmb_tmm_team_display() {
 						<input class="dmb_field dmb_photo_url_of_member" type="text" value="<?php echo $member['_tmm_photo_url']; ?>" placeholder="<?php _e('e.g. http://your-site.com/full-member-page/', TMM_TXTDM ) ?>" />
           </div>
 
-					<div class="dmb_clearfix"></div>	
+					<div class="dmb_clearfix" style="margin-bottom:6px"></div>	
 
 				<!-- END inner -->
 				</div>
@@ -310,11 +310,11 @@ function dmb_tmm_team_display() {
 
 		<!-- Member handle bar -->
 		<div class="dmb_handle">
-			<a class="dmb_big_button_secondary dmb_move_row_up" href="#" title="Move up"><span class="dashicons dashicons-arrow-up-alt2"></span></a>
-			<a class="dmb_big_button_secondary dmb_move_row_down" href="#" title="Move down"><span class="dashicons dashicons-arrow-down-alt2"></span></a>
+			<a class="dmb_button dmb_button_large dmb_button_compact dmb_move_row_up" href="#" title="Move up"><span class="dashicons dashicons-arrow-up-alt2"></span></a>
+			<a class="dmb_button dmb_button_large dmb_button_compact dmb_move_row_down" href="#" title="Move down"><span class="dashicons dashicons-arrow-down-alt2"></span></a>
 			<div class="dmb_handle_title"></div>
-			<a class="dmb_big_button_secondary dmb_remove_row_btn" href="#" title="Remove"><span class="dashicons dashicons-no-alt"></span></a>
-			<a class="dmb_big_button_secondary dmb_clone_row" href="#" title="Clone"><span class="dashicons dashicons-admin-page"></span><?php _e('Clone', TMM_TXTDM ); ?></a>
+			<a class="dmb_button dmb_button_large dmb_button_compact dmb_remove_row_btn" href="#" title="Remove"><span class="dashicons dashicons-trash"></span></a>
+			<a class="dmb_button dmb_button_large dmb_clone_row" href="#" title="Clone"><span class="dashicons dashicons-admin-page"></span><?php _e('Clone', TMM_TXTDM ); ?></a>
 			<div class="dmb_clearfix"></div>
 		</div>
 
@@ -372,8 +372,8 @@ function dmb_tmm_team_display() {
 			<div class="dmb_clearfix"></div>
 
 			<?php if( !class_exists('acf') ) { ?>
-				<div class="dmb_edit_description_of_member dmb_small_button_primary">
-					<span class="dashicons dashicons-edit"></span> <?php _e('Edit biography', TMM_TXTDM ) ?>&nbsp;
+				<div class="dmb_edit_description_of_member dmb_button dmb_button_large dmb_button_blue">
+					<?php _e('Edit biography', TMM_TXTDM ) ?>
 				</div>
 			<?php } ?>
 
@@ -415,7 +415,7 @@ function dmb_tmm_team_display() {
         <input class="dmb_field dmb_scl_url1_of_member" type="text" value="" placeholder="<?php _e('e.g. http://fb.com/member-profile', TMM_TXTDM ) ?>" />
       </div>
 
-      <div class="dmb_clearfix"></div>
+      <div class="dmb_clearfix" style="margin-bottom:6px"></div>
 
       <div class="dmb_grid dmb_grid_33 dmb_grid_first">
         <select class="dmb_scl_type_select dmb_scl_type2_of_member">
@@ -433,7 +433,7 @@ function dmb_tmm_team_display() {
         <input class="dmb_field dmb_scl_url2_of_member" type="text" value="" placeholder="<?php _e('e.g. http://tw.com/member-profile', TMM_TXTDM ) ?>" />
       </div>
 
-      <div class="dmb_clearfix"></div>
+      <div class="dmb_clearfix" style="margin-bottom:6px"></div>
 
       <div class="dmb_grid dmb_grid_33 dmb_grid_first">
         <select class="dmb_scl_type_select dmb_scl_type3_of_member">
@@ -467,20 +467,19 @@ function dmb_tmm_team_display() {
 
 				<div class="dmb_field_title">
 					<?php _e('Member\'s photo', TMM_TXTDM ) ?>
-					<a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('We recommend square images (e.g. 250x250px).', TMM_TXTDM ) ?>">[?]</a>
+					<a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('We recommend that all photos are the same sizes.', TMM_TXTDM ) ?>">[?]</a>
 				</div>
 
-				<div>
-					<div class="dmb_field_title dmb_img_data_url dmb_photo_of_member" data-img=""></div>
-					<div class="dmb_upload_img_btn dmb_small_button_primary">
-						<span class="dashicons dashicons-upload"></span> 
-						<?php _e('Upload photo', TMM_TXTDM ) ?>&nbsp;
+				<div class="dmb_photo_of_member">
+					<div class="dmb_field_title dmb_img_data_url" data-img=""></div>
+					<div class="dmb_upload_img_btn dmb_button dmb_button_large dmb_button_blue">
+						<?php _e('Upload photo', TMM_TXTDM ) ?>
 					</div>
 				</div>
 
 			</div>
 
-			<div class="dmb_grid dmb_grid_100 dmb_grid_first dmb_grid_last">
+			<div class="dmb_grid dmb_grid_100 dmb_grid_first dmb_grid_last" style="margin-top:7px;">
 				<div class="dmb_field_title">
 					<?php _e('Photo link', TMM_TXTDM ) ?>
 					<a class="dmb_inline_tip dmb_tooltip_large" data-tooltip="<?php _e('Your visitors will be redirected to this link if they click the member\'s photo.', TMM_TXTDM ) ?>">[?]</a>
@@ -488,7 +487,7 @@ function dmb_tmm_team_display() {
 				<input class="dmb_field dmb_photo_url_of_member" type="text" value="" placeholder="<?php _e('e.g. http://your-site.com/full-member-page/', TMM_TXTDM ) ?>" />
 			</div>
 
-			<div class="dmb_clearfix"></div>
+			<div class="dmb_clearfix" style="margin-bottom:6px"></div>
 
 		<!-- END inner -->
 		</div>
@@ -499,13 +498,12 @@ function dmb_tmm_team_display() {
 	<div class="dmb_clearfix"></div>
 
 	<div class="dmb_no_row_notice">
-		<?php /* translators: Leave HTML tags */ _e('Create your team by <strong>adding members</strong> to it.<br/>Click the button below to get started.', TMM_TXTDM ) ?>
+		<?php /* translators: Leave HTML tags */ _e('Click the <strong>Add a member</strong> button below to get started.', TMM_TXTDM ) ?>
 	</div>
 
 	<!-- Add row button -->
-	<a class="dmb_big_button_primary dmb_add_row" href="#">
-		<span class="dashicons dashicons-plus"></span> 
-		<?php _e('Add a member', TMM_TXTDM ) ?>&nbsp;
+	<a class="dmb_button dmb_button_huge dmb_button_green dmb_add_row" href="#">
+		<?php _e('Add a member', TMM_TXTDM ) ?>
 	</a>
 
 <?php }

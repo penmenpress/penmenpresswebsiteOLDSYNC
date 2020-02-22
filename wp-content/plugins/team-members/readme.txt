@@ -2,7 +2,7 @@
 Contributors: spwebguy
 Tags: team, teams, meet the team, shortcode, responsive, members, staff, people
 Requires at least: 3.6
-Tested up to: 4.9
+Tested up to: 5.3
 Stable tag: trunk
 License: GPL2
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -15,8 +15,6 @@ This plugin adds a “Teams” section to the admin panel which allows you to sh
 = No limitation for the Free version =
 The free version of the Team Members plugin is **not limited**.
 
-The [PRO version](https://wpdarko.com/items/team-members-pro/) adds new features: New picture on hover, member height equalizing, full-width pictures, additional info. box, picture filters, per-member color and two more social links for each member.
-
 = Available fields =
 * Firstname
 * Lastname
@@ -28,11 +26,24 @@ The [PRO version](https://wpdarko.com/items/team-members-pro/) adds new features
 * Number of members to show per line (1 to 5)
 * Color
 
+= PRO features =
+* New picture on hover
+* Member height equalizing
+* Import/export members from one team to another
+* Full-width pictures
+* Hide members
+* More info reveal box
+* Picture filters
+* Per-member color
+* Two more social links per member
+
+Check out our [PRO version](https://wpdarko.com/items/team-members-pro/), see all these features in action.
+
 = Usage =
-Go to [the plugin's documentation](https://wpdarko.zendesk.com/hc/en-us/articles/206303627-Get-started-with-the-Team-Members-plugin) if you need more information on how to use this plugin.
+Go to [the plugin's documentation](https://wpdarko.com/support/docs/get-started-with-the-team-members-plugin/) if you need more information on how to use this plugin.
 
 = Support =
-Find help in [our forums](https://wpdarko.com/ask-for-support/) for this plugin (we’ll answer you fast, promise).
+Find help on [our support platform](https://wpdarko.com/support) for this plugin (we’ll answer you fast, promise).
 
 == Installation ==
 
@@ -43,50 +54,72 @@ Find help in [our forums](https://wpdarko.com/ask-for-support/) for this plugin 
 4. Activate the plugin
 
 = Usage =
-Go to [the plugin's documentation](https://wpdarko.zendesk.com/hc/en-us/articles/206303627-Get-started-with-the-Team-Members-plugin) for information on how to use it.
+Go to [the plugin's documentation](https://wpdarko.com/support/docs/get-started-with-the-team-members-plugin/) for information on how to use it.
 
 == Frequently Asked Questions ==
+
+= Getting your member photos to display nicely =
+A few things have changed since version 5.0.0, if you have any issue with how you member photos are displaying, check this [article](https://wpdarko.com/support/docs/getting-your-member-photos-to-display-nicely/). 
 
 = No limitation for the Free version =
 The free version of the Team Members plugin is **not limited**.
 
-The [PRO version](https://wpdarko.com/items/team-members-pro/) adds new features: New picture on hover, member height equalizing, full-width pictures, additional info. box, picture filters, per-member color and two more social links for each member.
+= PRO features =
+* New picture on hover
+* Member height equalizing
+* Import/export members from one team to another
+* Full-width pictures
+* Hide members
+* More info reveal box
+* Picture filters
+* Per-member color
+* Two more social links per member
 
-= Ready for translation =
-* POT files included (/lang/)
-* French translation included
-* Spanish translation included
+Check out our [PRO version](https://wpdarko.com/items/team-members-pro/), see all these features in action.
 
 = Usage =
-Go to [the plugin's documentation](https://wpdarko.zendesk.com/hc/en-us/articles/206303627-Get-started-with-the-Team-Members-plugin) if you need more information on how to use this plugin.
+Go to [the plugin's documentation](https://wpdarko.com/support/docs/get-started-with-the-team-members-plugin/) if you need more information on how to use this plugin.
 
 = Support =
-Find help in [our forums](https://wpdarko.com/ask-for-support/) for this plugin (we’ll answer you fast, promise).
+Find help on [our support platform](https://wpdarko.com/support) for this plugin (we’ll answer you fast, promise).
 
 == Screenshots ==
 1. Team Members (front view - 3 per line)
 2. Team Members (front view - 4 per line)
 3. Creating members (admin view)
-4. Creating members 2 (admin view)
-5. Team settings (admin view)
+4. Team settings (admin view)
 6. Finding the shortcode (admin view)
 
 == Changelog ==
+= 5.0.3 =
+* Various styling fixes
+
+= 5.0.0 =
+* CSS rewrite to match WordPress 5.3's new admin styles
+* Improved Instant Preview mode
+* Improved member photo sizes (photos needs to be the same size)
+* Added Phone link for opening calling apps (Skype etc.)
+* Fixed issue with how photos display in the back end
+* Fixed issue with photo uploading
+* Fixed error when typing in firstname field
+* Fixed an issue with biography words being cut
+* Fixed various styling issue
+
 = 4.1.2 =
-* Replaces deprecated jQuery methods.
+* Replaced deprecated jQuery methods.
 
 = 4.1.1 =
-* Fixes team edit issue for IE browsers.
+* Fixed team edit issue for IE browsers
 
 = 4.1.0 =
-* Fixes upload media issues with Link URL.
-* Fixes plugin conflict with ACF.
+* Fixed upload media issues with Link URL
+* Fixed plugin conflict with ACF
 
 = 4.0.0 =
-* Automatically even out your members (just enable the equalizer).
-* Add complementary info in a clean toggle box.
-* Instantly preview your changes (see video below).
-* Choose between floating, inside-the-box and full-width pictures.
+* Automatically even out your members (just enable the equalizer)
+* Added complementary info in a clean toggle box
+* Instantly preview your changes (see video below)
+* Choose between floating, inside-the-box and full-width pictures
 
 = 3.0.1 =
 * Fixed minor CSS bugs

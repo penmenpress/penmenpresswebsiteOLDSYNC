@@ -112,7 +112,7 @@ $(document).ready(function (){
   $('.dmb_img_data_url').each(function(i, obj) {
     var imgUrl = $(this).attr("data-img");
     if (imgUrl != ''){
-      $("<a class='dmb_remove_img_btn dmb_small_button_secondary' href='#'><span class='dashicons dashicons-no-alt'></span></a><img src='"+imgUrl+"' class='dmb_img'/>").insertAfter($(this).parent().find('.dmb_upload_img_btn'));
+      $("<a class='dmb_remove_img_btn dmb_button dmb_button_large dmb_button_compact' href='#'><span class='dashicons dashicons-trash'></span></a><img src='"+imgUrl+"' class='dmb_img'/>").insertAfter($(this).parent().find('.dmb_upload_img_btn'));
     }
   });
 
@@ -186,8 +186,9 @@ $(document).ready(function (){
 			},
 			multiple: false // for multiple image selection set to true
 		}).on('select', function() { // it also has "open" and "close" events 
-			var attachment = custom_uploader.state().get('selection').first().toJSON();
-			$("<a class='dmb_remove_img_btn dmb_small_button_secondary' href='#'><span class='dashicons dashicons-no-alt'></span></a><img src='"+attachment.url+"' class='dmb_img'/>").insertAfter(button);
+      var attachment = custom_uploader.state().get('selection').first().toJSON();
+      button.siblings('img, .dmb_remove_img_btn, .dashicons-trash').remove();
+			$("<a class='dmb_remove_img_btn dmb_button dmb_button_large dmb_button_compact' href='#'><span class='dashicons dashicons-trash'></span></a><img src='"+attachment.url+"' class='dmb_img'/>").insertAfter(button);
       button.siblings('.dmb_img_data_url').attr('data-img', attachment.url).trigger('change');
     })
 		.open();
@@ -231,7 +232,7 @@ $(document).ready(function (){
   });
 
 
-  /* Expands/collapses row. */
+  /* Expands/collapses handle. */
   $('.dmb_handle').click(function(e) {
     
     $(this).siblings('.dmb_inner').slideToggle(50);
@@ -355,7 +356,7 @@ $(document).ready(function (){
 
     if (!wasCloned) { wasCloned = false; }
 
-    /* Gets current title. */
+    /* Makes current title. */
     var firstnameField = firstnameField,
     lastname = firstnameField.closest('.dmb_main').find('.dmb_lastname_of_member').val() || '';
     handleTitle = firstnameField.closest('.dmb_main').find('.dmb_handle_title');
@@ -371,7 +372,7 @@ $(document).ready(function (){
 
 
   /* Watches member firstname/lastname and updates handle. */
-  $('.dmb_firstname_of_member').on('keyup', '.dmb_firstname_of_member', function(e) { updateHandleTitle($(this)); });
+  $('body').on('keyup', '.dmb_firstname_of_member', function(e) { updateHandleTitle($(this)); });
   $('body').on('keyup', '.dmb_lastname_of_member', function(e) {
     firstnameField = $(this).closest('.dmb_main').find('.dmb_firstname_of_member');
     updateHandleTitle(firstnameField);
@@ -396,7 +397,7 @@ $(document).ready(function (){
 
     /* Prepares the output. */
     preview_html += '<div class="tmm" style="margin-top: 100px;">';
-      preview_html += '<div class="tmm_' + settings.columns + '_columns tmm_wrap ' + team.ori_f + '">';
+      preview_html += '<div class="tmm_' + settings.columns + '_columns tmm_wrap tmm_plugin_f">';
 
         $('.dmb_main').not('.dmb_empty_row').each(function(i, obj){
 
@@ -444,8 +445,8 @@ $(document).ready(function (){
             if (fields.photoLinkUrl)
               preview_html += '<a ' + settings.piclink_beh + ' href="' + fields.photoLinkUrl + '" title="' + fields.firstname + ' ' + fields.lastname + '">';
 
-            if (fields.photoUrl)
-              preview_html += '<div class="tmm_photo" style="background: url(' + fields.photoUrl + '); margin-left:auto; margin-right:auto; background-size:cover !important;"></div>';
+              if (fields.photoUrl)
+              preview_html += '<div class="tmm_photo tmm_pic_' + i + '" style="background: url(' + fields.photoUrl + '); margin-left: auto; margin-right:auto; background-size:cover !important;"></div>';
 
             if (fields.photoLinkUrl)
               preview_html += '</a>';
@@ -583,7 +584,7 @@ $(document).ready(function (){
 
 
   /* Debounce function for fallback keyup. */
-  //http://davidwalsh.name/javascript-debounce-function
+  // http://davidwalsh.name/javascript-debounce-function
   function debounce(func, wait, immediate) {
     var timeout;
     return function() {

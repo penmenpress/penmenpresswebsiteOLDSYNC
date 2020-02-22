@@ -3,8 +3,8 @@
 /* Defines force font select options. */
 function dmb_tmm_force_fonts_options() {
 	$options = array ( 
-		__('Theme\'s font', TMM_TXTDM ) => 'no',
-		__('Default font', TMM_TXTDM ) => 'yes'
+		__('Use plugin defaults', TMM_TXTDM ) => 'yes',
+		__('Use fonts from my theme', TMM_TXTDM ) => 'no'
 	);
 	return $options;
 }
@@ -75,8 +75,10 @@ function dmb_tmm_settings_display() {
 
 	$settings['_tmm_columns'] = get_post_meta( $post->ID, '_tmm_columns', true );
 	if (!$settings['_tmm_columns']) { $settings['_tmm_columns'] = '3'; }
+
 	$settings['_tmm_color'] = get_post_meta( $post->ID, '_tmm_color', true );
 	if (!$settings['_tmm_color']) { $settings['_tmm_color'] = '#333333'; }
+
 	$settings['_tmm_bio_alignment'] = get_post_meta( $post->ID, '_tmm_bio_alignment', true );
 
 	/* Checks if member links open in new window. */
@@ -85,11 +87,11 @@ function dmb_tmm_settings_display() {
 
 	/* Checks if forcing original fonts. */
 	$settings['_tmm_original_font'] = get_post_meta( $post->ID, '_tmm_original_font', true );
-	(($settings['_tmm_original_font'] == 'no' || $settings['_tmm_original_font'] != true) ? $settings['_tmm_original_font'] = 'no' : $settings['_tmm_original_font'] = 'yes');
+	if (!$settings['_tmm_original_font']) { $settings['_tmm_original_font'] = 'yes'; }
 
 	?>
 
-	<div class="dmb_settings_box">
+	<div class="dmb_settings_box dmb_sidebar">
 
 		<div class="dmb_section_title">
 			<?php /* translators: General settings */ _e('General', TMM_TXTDM) ?>
@@ -102,25 +104,13 @@ function dmb_tmm_settings_display() {
 			</div>
 			<select class="dmb_side_select" name="team_columns">
 				<?php foreach ( $team_columns as $label => $value ) { ?>
-					<option value="<?php echo $value; ?>"<?php selected( (isset($settings['_tmm_columns'])) ? $settings['_tmm_columns'] : '2', $value ); ?>><?php echo $label; ?></option>
-				<?php } ?>
-			</select>
-		</div>
-
-		<!-- Bio alignment -->
-		<div class="dmb_grid dmb_grid_50 dmb_grid_last">
-			<div class="dmb_field_title">
-				<?php _e('Desc. alignment', TMM_TXTDM ) ?>
-			</div>
-			<select class="dmb_side_select" name="team_bio_align">
-				<?php foreach ( $team_bio_align as $label => $value ) { ?>
-				<option value="<?php echo $value; ?>"<?php selected( (isset($settings['_tmm_bio_alignment'])) ? $settings['_tmm_bio_alignment'] : 'center', $value ); ?>><?php echo $label; ?></option>
+					<option value="<?php echo $value; ?>"<?php selected( (isset($settings['_tmm_columns'])) ? $settings['_tmm_columns'] : '3', $value ); ?>><?php echo $label; ?></option>
 				<?php } ?>
 			</select>
 		</div>
 
 		<!-- Photo link behavior -->
-		<div class="dmb_grid dmb_grid_50 dmb_grid_first">
+		<div class="dmb_grid dmb_grid_50 dmb_grid_last">
 			<div class="dmb_field_title">
 				<?php _e('Photo link behavior', TMM_TXTDM ) ?>
 			</div>
@@ -131,14 +121,14 @@ function dmb_tmm_settings_display() {
 			</select>
 		</div>
 
-		<!-- Font option -->
-		<div class="dmb_grid dmb_grid_50 dmb_grid_last">
+			<!-- Font option -->
+			<div class="dmb_grid dmb_grid_100 dmb_grid_first dmb_grid_last">
 			<div class="dmb_field_title">
-				<?php _e('Font to use', TMM_TXTDM ) ?>
+				<?php _e('Fonts to use', TMM_TXTDM ) ?>
 			</div>
 			<select class="dmb_side_select" name="team_force_font">
 				<?php foreach ( $team_force_font as $label => $value ) { ?>
-					<option value="<?php echo $value; ?>"<?php selected( (isset($settings['_tmm_original_font'])) ? $settings['_tmm_original_font'] : 'no', $value ); ?>><?php echo $label; ?></option>
+					<option value="<?php echo $value; ?>"<?php selected( (isset($settings['_tmm_original_font'])) ? $settings['_tmm_original_font'] : 'yes', $value ); ?>><?php echo $label; ?></option>
 				<?php } ?>
 			</select>
 		</div>
@@ -148,7 +138,7 @@ function dmb_tmm_settings_display() {
 			<div class="dmb_field_title">
 				<?php _e('Main color', TMM_TXTDM) ?>
 			</div>
-			<input class="dmb_color_picker dmb_field dmb_color_of_team" name="team_color" type="text" value="<?php echo (isset($settings['_tmm_color'])) ? $settings['_tmm_color'] : '#444444'; ?>" />
+			<input class="dmb_color_picker dmb_field dmb_color_of_team" name="team_color" type="text" value="<?php echo (isset($settings['_tmm_color'])) ? $settings['_tmm_color'] : '#333333'; ?>" />
 		</div>
 
 		<div class="dmb_clearfix"></div>

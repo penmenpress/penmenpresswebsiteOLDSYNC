@@ -14,25 +14,19 @@
   clear:both;
   height:100px;
   border-radius:4px;
-  margin-top:2px;
-}
+  margin-top:2px;}
 
 /* Fields. */
 .dmb_feature_dump{
   display:none;}
-
-.dmb_field, 
+ 
 .dmb_main select,
 .dmb_side_select{
-  font-size:12px;
-  width:100%; 
-  border-radius:4px;
+  width:100%;
   margin-bottom:5px;}
   
 .dmb_field{
-  width:100%; 
-  padding:4px 8px; 
-  font-size:13px;}
+  width:100%;}
 
 .dmb_data_dump{
   display:none;}
@@ -45,28 +39,30 @@
 
 .dmb_img{
   max-width:100%;
+  max-height: 160px;
   margin-top:8px; /* Top space once the img has been updated. */
   display:block;}
 
 
 /* Headings. */
 .dmb_section_title{
-  font-size: 15px;
-  color:#497bad;
+  font-size: 20px;
+  color:#7a7a78;
   padding-bottom:4px;
   margin: 15px 2px 2px;
   border-bottom:3px dashed #ddd;
   text-align: left;}
 
+.dmb_sidebar .dmb_field_title{ font-size:13px; }
 .dmb_field_title{
   margin-top: 10px;
   margin-bottom:3px;
   color: #555;
-  font-size: 12px;
+  font-size: 15px;
   padding-left: 2px;
   display: inline-block;
   font-weight: 400;
-  line-height: 15px;}
+  line-height: 19px;}
 
   
 /* Placeholders. */
@@ -78,62 +74,28 @@
 
 /* Metaboxes. */
 .dmb_main{ /* Main metabox. */
-  border-radius: 4px;
   margin-top: 10px;}
 
 .dmb_main .dmb_inner{
   background:whitesmoke; 
   padding:4px 10px 8px;
   border: 1px solid #ddd;
-  border-bottom-left-radius:3px;
-  border-bottom-right-radius:3px;}
+  border-top:none;}
 
 .dmb_main .dmb_handle{
-  padding: 7px 7px 7px 10px;
-  background: #aea8a0;
-  border: 1px solid #96938e !important;
-  display:block; 
-  border-top-right-radius:3px; 
-  border-top-left-radius:3px}
-
-.dmb_main .dmb_handle .dmb_big_button_secondary { /* Darker button in the handle. */
-  float:right; 
-  margin-left:8px;
-  font-size: 12px; /* Smaller. */
-  line-height: 20px;
-  border-bottom:2px solid #ccc;
-  border-right:1px solid #ccc;}
-
-.dmb_main .dmb_handle .dmb_move_row_up,
-.dmb_main .dmb_handle .dmb_move_row_down{
-  padding:3px;
-  float:left; 
-  margin-left:0px;
-  margin-right:8px;}
-
-.dmb_main .dmb_handle .dmb_move_row_up{
-  margin-right:0px;
-  border-bottom-right-radius:0px;
-  border-top-right-radius:0px;}
-
-.dmb_main .dmb_handle .dmb_move_row_down{
-  border-bottom-left-radius:0px;
-  border-top-left-radius:0px;}
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ccd0d4 !important;
+  display:block;}
 
 .dmb_main .dmb_handle.closed{
-  border-radius:3px; 
-  border-bottom: none;}
-
-.dmb_main .dmb_handle.closed{
-  border-radius:3px; 
   border-bottom: none;}
   
 .dmb_main .dmb_handle .dmb_handle_title{
   margin-top: 4px;
   float:left;
-  color: white;
-  text-shadow: 0 -1px 1px #8b847d,1px 0 1px #8b847d,0 1px 1px #8b847d,-1px 0 1px #8b847d;
-  font-weight:300;
+  color: #23282d;
+  font-weight:400;
   font-size: 18px;
   box-sizing: border-box;}
 
@@ -147,44 +109,53 @@
   bottom:0%; 
   left: 0%;
   right: 0%;
-  background: #ddd; 
+  padding-bottom:90px;
+  background: #eee; 
   z-index: 100000;
   padding: 0 15%;
   text-align: center;
   box-shadow: -1px 0px 204px -6px rgba(0,0,0,0.75);}
 
 .dmb_accuracy_preview_notice{
-  text-align:center; 
-  line-height:25px; 
-  background:white; 
-  border-radius:4px; 
-  padding:14px 30px; 
-  max-width: 500px; 
-  margin:0 auto; 
-  font-size:15px; 
-  margin-top:60px; 
-  margin-bottom:80px;}
+  background: white;
+  padding: 20px 30px;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 17px;
+  line-height: 27px;
+  font-weight: 400;
+  border: 1px solid #ddd;
+  margin-top: 60px;
+  margin-bottom: 80px;
+  max-width: 550px;
+  margin: 0 auto;}
 
 .dmb_no_row_preview_notice{
-  background:white; 
-  border-radius:4px; 
-  padding:20px 40px; 
-  max-width: 500px; 
-  margin:0 auto; 
-  font-size:20px; 
+  background: white;
+  padding: 20px 30px;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 17px;
+  line-height: 27px;
+  font-weight: 400;
+  border: 1px solid #ddd;
+  margin-top: 60px;
+  margin-bottom: 80px;
+  max-width: 550px;
+  margin: 0 auto;
   margin-top:120px;}
 
 
 /* Tips. */
 .dmb_tip{
   padding-left:2px;
-  font-size:12px;
+  font-size:14px;
   color:#999;
-  line-height:15px;
+  line-height:23px;
   margin-top:8px;}
 
 .dmb_tip .dashicons{
-  font-size:17px;
+  font-size:24px;
   height:17px;}
 
 .dmb_tip a, .dmb_inline_tip{
@@ -192,142 +163,117 @@
   cursor: pointer;}
 
 
-/* Buttons. */
-.dmb_big_button_primary{ /* Adds a row/Go PRO buttons. */
-  text-shadow: 0 -1px 1px #849d3a,1px 0 1px #849d3a,0 1px 1px #849d3a,-1px 0 1px #849d3a;
-  padding:8px 6px 5px 10px;
-  font-size:14px;
-  background: #ACCE45;
-  color:white;
-  text-decoration:none;
-  border-radius:3px;
-  border:1px solid #8ea93d;
-  border-bottom:2px solid #8ea93d;
-  border-right:1px solid #8ea93d;
-  line-height:15px;}
-.dmb_big_button_primary:hover,
-.dmb_big_button_primary:focus{
+  /* Buttons */
+.dmb_button{ /* Upload img buttons. */
+  font-size: 13px;
+  line-height: 2;
+  padding: 2px 10px 3px;
+  display: inline-block;
+  text-decoration: none;
+  margin: 0;
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+  -webkit-appearance: none;
+  border-radius: 3px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  min-height: 30px;
+  text-decoration: none;
+  text-shadow: none;
+  background: whitesmoke;
+  border-color: lightgrey;
+  color: #23282d;}
+.dmb_button:hover,
+.dmb_button:active,
+.dmb_button:focus{
   background-image: none;
   outline: 0;
   -webkit-box-shadow: none;
   box-shadow: none;
-  background: #b1d34a;
+  background: #eceaea;
+  color:#23282d;}
+
+/* Sizes */
+.dmb_button_large .dashicons {
+  position: relative; top: 4px;}
+.dmb_button_large {
+  font-size: 13px;
+  line-height: 2.15384615;
+  padding: 0 12px 2px;}
+
+.dmb_button_huge {
+  font-size: 16px;
+  line-height: 2.28384615;
+  padding: 0 15px 3px}
+
+/* i.e. Icon buttons */
+.dmb_button_compact{
+  padding: 0 4px 2px;}
+
+/* Colors */
+.dmb_button_blue {
+  background: #007cba;
+  border-color: #007cba;
+  color: #fff; }
+.dmb_button_blue:active,
+.dmb_button_blue:hover,
+.dmb_button_blue:focus{
+  background: #00669b;
+  color:white;}
+  
+.dmb_button_green {
+  background: #81c240;
+  border-color: #81c240;
+  color: #fff; }
+.dmb_button_green:active,
+.dmb_button_green:hover,
+.dmb_button_green:focus{
+  background: #75b03a;
   color:white;}
 
-.dmb_big_button_secondary{ /* Handle/toolbar buttons. */
-  padding:3px 10px;
-  font-size:13px;
-  background: #fff;
-  font-weight:500;
-  color:#333;
-  text-decoration:none;
-  border-radius:3px;
-  border-bottom:2px solid #ddd;
-  border-right:1px solid #ddd;}
-.dmb_big_button_secondary:hover,
-.dmb_big_button_secondary:focus{
-  background-image: none;
-  outline: 0;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  color:#555;}
-.dmb_big_button_secondary.dmb_remove_row_btn{ /* Fixes remove row handle button. */
-  padding: 3px 3px 3px 4px}
-
-.dmb_small_button_primary{ /* Upload img buttons. */
-  margin:5px 1px;
-  text-shadow: 0 -1px 1px #497bad,1px 0 1px #497bad,0 1px 1px #497bad,-1px 0 1px #497bad;
-  padding:4px 4px 1px;
-  line-height:17px;
-  font-size:12px;
-  background: #5690CA;
-  color:white;
-  text-decoration:none;
-  border-radius:3px;
-  border:1px solid #497bad;
-  border-bottom:2px solid #497bad;
-  border-right:1px solid #497bad;}
-.dmb_small_button_primary:hover,
-.dmb_small_button_primary:focus{
-  background-image: none;
-  outline: 0;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  background: #5a97d4;
+.dmb_button_gold {
+  background: #edb50c;
+  border-color: #edb50c;
+  color: #fff; }
+.dmb_button_gold:hover,
+.dmb_button_gold:hover,
+.dmb_button_gold:focus{
+  background: #e3ab02;
   color:white;}
 
-.dmb_preview_button{ /* Handle/toolbar buttons. */
-  text-shadow: 0 0px 0px #a18023,1px 0 0px #a18023,0 1px 1px #a18023,0px 0 1px #a18023;
-  padding:3px 10px;
-  font-size:13px;
-  background: #f5c542;
-  font-weight:400;
-  cursor:pointer;
-  color:white;
-  text-decoration:none;
-  border-radius:3px;
-  border:1px solid #c39d2c;
-  border-bottom:2px solid #c39d2c;
-  border-right:1px solid #c39d2c;}
-.dmb_preview_button:hover,
-.dmb_preview_button:focus{
-  background-image: none;
-  background:#ffcd43;
-  outline: 0;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  color:white;}
+/* Specifics */
+.dmb_ue_update {
+  margin-right:10px;}
 
-.dmb_preview_button.dmb_preview_team_close{
+#dmb_preview_team .dmb_preview_team_close{
   position:fixed; 
   top:20px; 
   right:40px; 
-  z-index:1;
-  padding: 10px 20px 13px;
-  font-size:20px;}
+  z-index:1;}
 
-.dmb_preview_button.dmb_preview_team_close .dashicons{
-  font-size:20px;}
+.dmb_clone_row, 
+.dmb_remove_row_btn {
+  float:right;}
 
-.dmb_small_button_secondary{ /* Remove img button. */
-  padding:2px; 
-  margin-top:1px;
-  line-height:18px;
-  font-size:12px;
-  background: #fff;
-  font-weight:500;
-  color:#333;
-  text-decoration:none;
-  border-radius:3px;
-  border-bottom:2px solid #ddd;
-  border-right:1px solid #ddd;}
-.dmb_small_button_secondary:hover,
-.dmb_small_button_secondary:focus{
-  background-image: none;
-  outline: 0;
-  opacity:1;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  color:#555;}
-.dmb_small_button_secondary.dmb_remove_feature_btn{
-  position:relative;
-  top:4px;
-  padding:11px 2px 0px 3px;}
+.dmb_move_row_up,
+.dmb_move_row_down{
+  float:left;}
 
-.dmb_upload_img_btn{
-  display:inline-block; 
-  cursor:pointer;
-  margin-bottom:0px;}
+.dmb_move_row_down {
+  margin-left:7px; 
+  margin-right:12px;}
 
-.dmb_upload_img_btn .dashicons{ /* Fix for upload button icon. */
-  position:relative; 
-  top:-2px;}
+.dmb_remove_row_btn {
+  margin-left:7px;}
 
-.dmb_remove_img_btn{ /* Uploaded img remove button. */
-  display:inline-block; 
-  position:relative; 
-  top:-2px; 
-  margin-left:3px;}
+.dmb_see_pro {
+  margin-top:10px;}
+
+.dmb_upload_img_btn {
+  margin-top:4px;}
+.dmb_remove_img_btn{ 
+  margin-left:7px;}
 
 .dmb_add_row{
   margin:0 auto;
@@ -336,12 +282,12 @@
 
 .dmb_no_row_notice{
   background: whitesmoke;
-  border-radius: 4px;
-  padding: 30px 10px;
+  padding: 50px 10px;
   margin-top: 10px;
   text-align: center;
-  font-size: 14px;
-  line-height: 25px;
+  font-size: 20px;
+  line-height: 36px;
+  font-weight: 400;
   border:1px solid #ddd;}
 
 .dmb_add_feature{
@@ -366,7 +312,8 @@
 .dmb_grid_60{width:60%;}
 .dmb_grid_100{width:99%;}
 
-.dmb_description_of_member{width:100% !important;}
+.dmb_description_of_member{
+  width:100% !important;}
 
 .dmb_grid_first{
   padding-left:0;}
@@ -390,28 +337,20 @@
 
 /* Toolbar. */
 .dmb_toolbar{
+  padding-top:4px;
   display:block;
-  text-align:left;
-  background:whitesmoke;
-  margin-top:10px;
-  border-radius: 4px;
-  border:1px solid #ddd;}
+  text-align:left;}
 
-.dmb_toolbar .dmb_toolbar_inner{
-  display:block;
-  padding: 7px 7px 6px;}
-
-.dmb_toolbar .dmb_toolbar_inner .dmb_collapse_rows,
-.dmb_toolbar .dmb_toolbar_inner .dmb_expand_rows {
+.dmb_toolbar .dmb_expand_rows {margin-right:10px;}
+.dmb_toolbar .dmb_collapse_rows,
+.dmb_toolbar .dmb_expand_rows {
   float:left;
-  margin-right:7px;}
+  margin-right:7px;
+  margin-top:9px;}
 
-.dmb_toolbar .dmb_toolbar_inner .dmb_preview_button {
+.dmb_toolbar .dmb_show_preview_team {
   float:right;
   margin-left:7px;}
-
-.dmb_toolbar .dashicons{
-  line-height:20px !important;}
 
 
 /* Side block. */
@@ -421,21 +360,21 @@
   margin-top:4px;
   margin-bottom: 2px; 
   font-weight: 500;
-  color: #222;}
+  color: #555;}
+
+.dmb_side_block_title {
+  font-weight: 400;
+}
 
 .dmb_help_title{ /* Fixes title spacing. */
   margin-bottom: 10px;}
 
 .dmb_side_block{
+  padding-bottom: 2px;
   margin-top:10px;}
 
 .dmb_side_block a{
   text-decoration:none;}
-
-.dmb_see_pro {
-  display:inline-block; 
-  margin-top:10px; 
-  padding-bottom:8px;}
 
 
 /* Tooltips. */
@@ -510,23 +449,8 @@
   .dmb_grid_100{
     padding-right:0px;
     padding-left:0px;
-    width:100%;}
-}
+    width:100%;}}
 
-
-/* WordPress CSS tweak (PRO side metabox). */
-#tmm_pro h2.hndle {
-  background:#ACCE45;
-  color:white;
-  font-weight:400;
-  border: 1px solid #9ebd43 !important;
-  text-shadow: 0 0px 1px #849d3a, 0px 0 1px #849d3a, 0 1px 1px #849d3a, 0px 0 1px #849d3a;}
-
-#tmm_pro h2.hndle .dashicons{
-  color:white !important;}
-
-#tmm_pro .toggle-indicator{
-  color:white !important;}
 
 /* Unique editor. */
 #dmb_unique_editor {
@@ -545,61 +469,9 @@
   text-align: center;
   box-shadow: -1px 0px 204px -6px rgba(0,0,0,0.75);}
 
-#wp-dmb_editor-wrap {
+#wp-dmb_editor-wrap { /* Container for the editor. */
   padding: 20px;
   background: rgba(255,255,255,0.5);}
-
-.dmb_ue_update{
-  margin-top:2px;
-  text-shadow: 0 0px 0px #a18023,1px 0 0px #a18023,0 1px 1px #a18023,0px 0 1px #a18023;
-  background: #f5c542;
-  font-weight:400;
-  cursor:pointer;
-  color:white;
-  text-decoration:none;
-  border-radius:3px;
-  border:1px solid #c39d2c;
-  border-bottom:2px solid #c39d2c;
-  border-right:1px solid #c39d2c;
-  padding: 10px 20px;
-  display:inline-block;
-  font-size:20px;}
-  
-.dmb_ue_update:hover,
-.dmb_ue_update:focus{
-  background-image: none;
-  background:#ffcd43;
-  outline: 0;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  color:white;}
-
-.dmb_ue_cancel{
-  margin-top:2px;
-  margin-left:20px;
-  background: #fff;
-  font-weight:400;
-  cursor:pointer;
-  color:#444;
-  text-decoration:none;
-  border-radius:3px;
-  border:1px solid #ccc;
-  border-bottom:2px solid #bbb;
-  border-right:1px solid #ccc;
-  padding: 10px 20px;
-  display:inline-block;
-  font-size:20px;}
-  
-.dmb_ue_cancel:hover,
-.dmb_ue_cancel:focus{
-  background-image: none;
-  outline: 0;
-  -webkit-box-shadow: none;
-  box-shadow: none;}
-
-.dmb_edit_description_of_member{
-  display:inline-block;
-  cursor:pointer;}
 
 .dmb_description_of_member{
   border: 1px solid #e2e2e2;
@@ -610,12 +482,32 @@
   padding: 10px 20px;
   min-height: 30px;
   background: white;
-  border-radius: 0;
   max-height: 240px;
   width:99%;
-  overflow-y: scroll;
-  border-radius: 3px;}
+  overflow-y: scroll;}
 
-.dmb_edit_description_of_member .dashicons {
-  position:relative;
-  top:-2px;}
+.dmb_edit_description_of_member {
+  margin-top:7px !important; }
+
+.dmb_discount_box_pushr {height:60px;}
+.dmb_discount_box {
+  background: whitesmoke;
+  border-top: 1px solid #ddd;
+  padding: 2px 16px 8px 11px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;}
+
+
+  #tmm_pro .hndle {
+    padding: 8px 12px;
+    background:#81c240;
+    color:white;
+  }
+
+  #tmm_pro strong {
+     color:black;
+  }
+
+  #tmm_pro .toggle-indicator{   color:white !important; }

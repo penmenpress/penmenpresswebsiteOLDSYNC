@@ -27,7 +27,12 @@ function tmm_sc($atts) {
 
     /* Checks if forcing original fonts. */
     $original_font = get_post_meta( $post->ID, '_tmm_original_font', true );
-    ($original_font && $original_font != 'no' ? $ori_f = 'tmm_ori_f' : $ori_f = '');
+    if ($original_font) {
+      if ($original_font == "no") { $ori_f = 'tmm_theme_f'; }
+      else if ($original_font == "yes") { $ori_f = 'tmm_plugin_f'; }
+    } else {
+      $ori_f = 'tmm_plugin_f';
+    }
 
     $team_view = '';
     $team_view .= '<div class="tmm tmm_'.$name.'">';
@@ -55,9 +60,9 @@ function tmm_sc($atts) {
                 $team_view .= '<a '.$tmm_plb.' href="'.$member['_tmm_photo_url'].'" title="'.$member['_tmm_firstname'].' '.$member['_tmm_lastname'].'">';
 
                 if (!empty($member['_tmm_photo']))
-                  $team_view .= '<div class="tmm_photo tmm_phover_'.$name.'_'.$key.'" style="background: url('.$member['_tmm_photo'].'); margin-left:auto; margin-right:auto; background-size:cover !important;"></div>';
-
-              if (!empty($member['_tmm_photo_url'])) 
+                  $team_view .= '<div class="tmm_photo tmm_pic_'.$name.'_'.$key.'" style="background: url('.$member['_tmm_photo'].'); margin-left: auto; margin-right:auto; background-size:cover !important;"></div>';
+                  
+              if (!empty($member['_tmm_photo_url']))
                 $team_view .= '</a>';
 
               /* Creates text block. */
