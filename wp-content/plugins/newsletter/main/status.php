@@ -1,7 +1,5 @@
 <?php
-if (!defined('ABSPATH'))
-    exit;
-
+defined('ABSPATH') || exit;
 
 @include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $module = Newsletter::instance();
@@ -10,10 +8,12 @@ $controls = new NewsletterControls();
 
 
 $wp_cron_calls = get_option('newsletter_diagnostic_cron_calls', array());
+$total = 0;
+$wp_cron_calls_max = 0;
+$wp_cron_calls_min = 0;
+$wp_cron_calls_avg = 0;
 if (count($wp_cron_calls) > 20) {
-    $total = 0;
-    $wp_cron_calls_max = 0;
-    $wp_cron_calls_min = 0;
+    
     for ($i = 1; $i < count($wp_cron_calls); $i++) {
         $diff = $wp_cron_calls[$i] - $wp_cron_calls[$i - 1];
         $total += $diff;
@@ -49,6 +49,28 @@ if ($controls->is_action('trigger')) {
     $controls->messages = 'Triggered';
 }
 
+if ($controls->is_action('conversion')) {
+    $this->logger->info('Maybe convert to utf8mb4');
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    if (function_exists('maybe_convert_table_to_utf8mb4')) {
+        $r = maybe_convert_table_to_utf8mb4(NEWSLETTER_EMAILS_TABLE);
+        if (!$r) {
+            $controls->errors .= 'It was not possible to run the conversion for the table ' . NEWSLETTER_EMAILS_TABLE . ' - ';
+            $controls->errors .= $wpdb->last_error . '<br>';
+        }
+        $r = maybe_convert_table_to_utf8mb4(NEWSLETTER_USERS_TABLE);
+        if (!$r) {
+            $controls->errors .= 'It was not possible to run the conversion for the table ' . NEWSLETTER_EMAILS_TABLE . ' - ';
+            $controls->errors .= $wpdb->last_error . '<br>';
+        }
+        $controls->messages = 'Done.';
+    } else {
+        $controls->errors = 'Table conversion function not available';
+    }
+    Newsletter::instance()->hook_newsletter();
+    $controls->messages = 'Triggered';
+}
+
 if ($controls->is_action('test')) {
 
     if (!NewsletterModule::is_email($controls->data['test_email'])) {
@@ -63,49 +85,30 @@ if ($controls->is_action('test')) {
             $controls->messages .= '<strong>Warning:</strong> you are using as test email the same address configured as sender in main configuration. Test can fail because of that.<br>';
         }
 
-        // Newsletter mail 
-        $text = array();
-        $text['html'] = '<p>This is an <b>HTML</b> test email sent using the sender data set on Newsletter main setting. <a href="https://www.thenewsletterplugin.com">This is a link to an external site</a>.</p>';
-        $text['text'] = 'This is a textual test email part sent using the sender data set on Newsletter main setting.';
-        $r = $module->mail($controls->data['test_email'], 'Newsletter test email at ' . date(DATE_ISO8601), $text);
+        $message = new TNP_Mailer_Message();
+        $message->body = '<p>This is an <b>HTML</b> test email sent using the sender data set on Newsletter main setting. <a href="https://www.thenewsletterplugin.com">This is a link to an external site</a>.</p>';
+        $message->body_text = 'This is a textual test email part sent using the sender data set on Newsletter main setting.';
+        $message->to = $controls->data['test_email'];
+        $message->subject = 'Newsletter test email at ' . date(DATE_ISO8601);
+        $message->from = $module->options['sender_email'];
+        $message->from_name = $module->options['sender_name'];
+        
+        $r = $module->deliver($message);
 
-        $controls->messages .= 'Email sent with Newsletter';
-        if ($module->the_mailer) {
-            $controls->messages .= ' (with a mailer extension)';
-        } else if ($module->mail_method) {
-            $controls->messages .= ' (with a mail delivery extension)';
-        } else {
-            $smtp_options = $module->get_smtp_options();
-
-            if (!empty($smtp_options['enabled'])) {
-                $controls->messages .= ' (with an SMTP)';
-            }
-        }
-        $controls->messages .= ': ';
-
-        if ($r) {
+        if (!is_wp_error($r)) {
             $options['mail'] = 1;
             $controls->messages .= '<strong>SUCCESS</strong><br>';
         } else {
             $options['mail'] = 0;
-            $options['mail_error'] = $module->mail_last_error;
+            $options['mail_error'] = $r->get_error_message();
 
-            $controls->messages .= '<strong>FAILED</strong> (' . $module->mail_last_error . ')<br>';
-
-            if ($module->mail_method) {
-                $controls->messages .= '- You are using a mail delivery extension. Check and test its configuration.<br>';
-            } else {
-                $smtp_options = $module->get_smtp_options();
-                if (!empty($smtp_options['enabled'])) {
-                    $controls->messages .= '- You are using an SMTP (' . $smtp_options['host'] . '). Check its configuration on main configuration or on SMTP Newsletter extensions if used.<br>';
-                }
-            }
+            $controls->errors .= '<strong>FAILED</strong> (' .  $r->get_error_message() . ')<br>';
 
             if (!empty($module->options['return_path'])) {
-                $controls->messages .= '- Try to remove the return path on main settings.<br>';
+                $controls->errors .= '- Try to remove the return path on main settings.<br>';
             }
 
-            $controls->messages .= '<a href="https://www.thenewsletterplugin.com/documentation/email-sending-issues" target="_blank"><strong>' . __('Read more', 'newsletter') . '</strong></a>.';
+            $controls->errors .= '<a href="https://www.thenewsletterplugin.com/documentation/email-sending-issues" target="_blank"><strong>' . __('Read more', 'newsletter') . '</strong></a>.';
 
             $parts = explode('@', $module->options['sender_email']);
             $sitename = strtolower($_SERVER['SERVER_NAME']);
@@ -113,7 +116,7 @@ if ($controls->is_action('test')) {
                 $sitename = substr($sitename, 4);
             }
             if (strtolower($sitename) != strtolower($parts[1])) {
-                $controls->messages .= '- Try to set on main setting a sender address with the same domain of your blog: ' . $sitename . ' (you are using ' . $module->options['sender_email'] . ')<br>';
+                $controls->errors .= '- Try to set on main setting a sender address with the same domain of your blog: ' . $sitename . ' (you are using ' . $module->options['sender_email'] . ')<br>';
             }
         }
         $module->save_options($options, 'status');
@@ -209,6 +212,28 @@ $speed = Newsletter::$instance->options['scheduler_max'];
 
                     </tr>
                     <tr>
+                        <td>Mailer</td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <?php
+                            $mailer = Newsletter::instance()->get_mailer();
+                            $name = 'Unknown';
+                            if (is_object($mailer)) {
+                            if (method_exists($mailer, 'get_description')) {
+                                $name = $mailer->get_description();
+                            } else {
+                                $name = get_class($mailer);
+                            }
+                            }
+                            ?>
+                            
+                            <?php echo esc_html($name) ?>
+                        </td>
+                    </tr>
+                    
+                    <tr>
                         <td>Mailing</td>
                         <td>
                             <?php if (empty($options['mail'])) { ?>
@@ -241,7 +266,24 @@ $speed = Newsletter::$instance->options['scheduler_max'];
                         </td>
 
                     </tr>
-
+                    
+                    <?php if (ini_get('opcache.validate_timestamps') === '0') { ?>
+                    
+                    <tr>
+                        <td>
+                            Opcache
+                        </td>
+                        
+                        <td>
+                            <span class="tnp-ko">KO</span>
+                        </td>
+                        
+                        <td>
+                            You have the PHP opcache active with file validation disable so every blog plugins update needs a webserver restart!
+                        </td>
+                    </tr>
+                    <?php } ?>
+                    
                     <?php
                     $return_path = $module->options['return_path'];
                     if (!empty($return_path)) {
@@ -342,6 +384,33 @@ $speed = Newsletter::$instance->options['scheduler_max'];
                         </td>
 
                     </tr>
+                    
+                    <?php
+                    $value = (int) ini_get('max_execution_time');
+                    $res = true;
+                    if ($value != 0 && $value < NEWSLETTER_CRON_INTERVAL) {
+                        $res = set_time_limit(NEWSLETTER_CRON_INTERVAL);
+                    }
+                    ?>
+
+                    <tr>
+                        <td>Addons update</td>
+                        <td>
+                            <?php if (NEWSLETTER_EXTENSION_UPDATE) { ?>
+                                <span class="tnp-ok">OK</span>
+                            <?php } else { ?>
+                                <span class="tnp-maybe">MAYBE</span>
+                            <?php } ?>
+                        </td>
+                        <td>
+                            <?php if (!NEWSLETTER_EXTENSION_UPDATE) { ?>
+                                Newsletter Addons update is disabled (probably in your <code>wp-config.php</code> file)
+                            <?php } else { ?>
+                                Newsletter Addons can be updated
+                            <?php } ?>
+                        </td>
+
+                    </tr>
 
 
                     <?php
@@ -423,7 +492,7 @@ $speed = Newsletter::$instance->options['scheduler_max'];
                     <tr>
                         <td>Database Charset</td>
                         <td>
-                            <?php if (DB_CHARSET != 'utf8' && DB_CHARSET != 'utf8mb4') { ?>
+                            <?php if ($wpdb->charset != 'utf8mb4') { ?>
                                 <span class="tnp-ko">KO</span>
                             <?php } else { ?>
                                 <span class="tnp-ok">OK</span>
@@ -431,14 +500,15 @@ $speed = Newsletter::$instance->options['scheduler_max'];
 
                         </td>
                         <td>
-                            Charset: <?php echo DB_CHARSET; ?>
+                            Charset: <?php echo $wpdb->charset; ?>
                             <br>
-                            <?php if (DB_CHARSET != 'utf8' && DB_CHARSET != 'utf8mb4') { ?>
-                                The recommended charset for your database is <code>utf8</code> or <code>utf8mb4</code>
-                                but the <a href="https://codex.wordpress.org/Converting_Database_Character_Sets" target="_blank">conversion</a>
-                                could be tricky. If you're not experiencing problem, leave things as is.
+                            <?php if ($wpdb->charset != 'utf8mb4') { ?>
+                                The recommended charset for your database is <code>utf8mb4</code> to avoid possible saving errors when you use emoji. 
+                                Read the WordPress Codex <a href="https://codex.wordpress.org/Converting_Database_Character_Sets" target="_blank">conversion 
+                                    instructions</a> (skilled technicia required).
                             <?php } else { ?>
-
+                                    If you experience newsletter saving database error
+                                    <?php $controls->button('conversion', 'Try tables upgrade')?>
                             <?php } ?>
                         </td>
                     </tr>
@@ -694,7 +764,7 @@ $speed = Newsletter::$instance->options['scheduler_max'];
                         </td>
                         <td>
                             <?php if (!$res) { ?>
-                                The blog is not responding to Newsletter URLs: ask the provider or your IT consultant to check this problem. Report the URL and error blow<br>
+                                The blog is not responding to Newsletter URLs: ask the provider or your IT consultant to check this problem. Report the URL and error below<br>
                                 Error: <?php echo esc_html($message) ?><br>
                             <?php } else { ?>
 
@@ -770,6 +840,26 @@ $speed = Newsletter::$instance->options['scheduler_max'];
 
                             <?php } ?>
                         </td>
+                    </tr>   
+                    
+                    <tr>
+                        <td>
+                            Addons update
+                        </td>
+                        <td>
+                            <?php if (NEWSLETTER_EXTENSION_UPDATE) { ?>
+                                <span class="tnp-ok">OK</span>
+                            <?php } else { ?>
+                                <span class="tnp-ko">KO</span>
+                            <?php } ?>
+                        </td>
+                        <td>
+                            <?php if (!NEWSLETTER_EXTENSION_UPDATE) { ?>
+                                Addons update has been disabled. 
+                            <?php } else { ?>
+
+                            <?php } ?>
+                        </td>
                     </tr>    
                     <?php
                     // Send calls stats
@@ -831,7 +921,28 @@ $speed = Newsletter::$instance->options['scheduler_max'];
                         <?php
                     }
                     ?>
+                       
 
+                    <tr>
+                        <td>
+                            Cron warnings
+                        </td>
+                        <td>
+                            <?php if (defined('NEWSLETTER_CRON_WARNINGS') && !NEWSLETTER_CRON_WARNINGS) { ?>
+                                <span class="tnp-maybe">MAYBE</span>
+                            <?php } else { ?>
+                                <span class="tnp-ok">OK</span>
+                            <?php } ?>
+                        </td>
+                        <td>
+                            <?php if (defined('NEWSLETTER_CRON_WARNINGS') && !NEWSLETTER_CRON_WARNINGS) { ?>
+                            Scheduler warnings are disabled in your wp-config.php with the constant <code>NEWSLETTER_CRON_WARNINGS</code> set to true.
+                            <?php } else { ?>
+
+                            <?php } ?>
+                        </td>
+                    </tr>
+                    
                     <tr>
                         <td>
                             WordPress debug mode
@@ -935,9 +1046,9 @@ $speed = Newsletter::$instance->options['scheduler_max'];
 
                     <?php
                     wp_mkdir_p(NEWSLETTER_LOG_DIR);
-                    $res = is_dir(NEWSLETTER_LOG_DIR);
+                    $res = is_dir(NEWSLETTER_LOG_DIR) && is_writable(NEWSLETTER_LOG_DIR);
                     if ($res) {
-                        file_put_contents(NEWSLETTER_LOG_DIR . '/test.txt', "");
+                        @file_put_contents(NEWSLETTER_LOG_DIR . '/test.txt', "");
                         $res = is_file(NEWSLETTER_LOG_DIR . '/test.txt');
                         if ($res) {
                             @unlink(NEWSLETTER_LOG_DIR . '/test.txt');
@@ -1002,6 +1113,8 @@ $speed = Newsletter::$instance->options['scheduler_max'];
                             <?php echo NEWSLETTER_CRON_INTERVAL . ' (seconds)'; ?>
                         </td>
                     </tr>
+                    
+                    
 
                     <?php /*
                       <tr>
@@ -1105,13 +1218,14 @@ $speed = Newsletter::$instance->options['scheduler_max'];
 
                 <h4><?php echo $wpdb->prefix ?>newsletter_emails</h4>
                 <?php
-                $rs = $wpdb->get_results("describe {$wpdb->prefix}newsletter_emails");
+                $rs = $wpdb->get_results("show full columns from {$wpdb->prefix}newsletter_emails");
                 ?>
                 <table class="tnp-db-table">
                     <thead>
                         <tr>
                             <th>Field</th>
                             <th>Type</th>
+                            <th>Collation</th>
                             <th>Null</th>
                             <th>Key</th>
                             <th>Default</th>
@@ -1123,6 +1237,7 @@ $speed = Newsletter::$instance->options['scheduler_max'];
                             <tr>
                                 <td><?php echo esc_html($r->Field) ?></td>
                                 <td><?php echo esc_html($r->Type) ?></td>
+                                <td><?php echo esc_html($r->Collation) ?></td>
                                 <td><?php echo esc_html($r->Null) ?></td>
                                 <td><?php echo esc_html($r->Key) ?></td>
                                 <td><?php echo esc_html($r->Default) ?></td>

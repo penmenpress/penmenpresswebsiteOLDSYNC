@@ -1,89 +1,38 @@
 <?php
+
 /* @var $options array contains all the options the current block we're ediging contains */
 /* @var $controls NewsletterControls */
+/* @var $fields NewsletterFields */
 
 ?>
+<?php if ($context['type'] == 'automated') { ?>
+<p>This is a dynamic block which is regenerated with the latest posts when Automated generate a new newsletter.</p>
 
-<p>Saving the options the block is recreated.</p>
-<table class="form-table">
-    <tr>
-        <th><?php _e('Title', 'newsletter') ?></th>
-        <td>
-            <?php $controls->text('title'); ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Button', 'newsletter') ?></th>
-        <td>
-            <?php $controls->text('read_more', 30, __('Label', 'newsletter')); ?>
-            
-            <?php $controls->color('button_color') ?>
-        </td>
-    </tr>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Max', 'newsletter') ?></th>
-        <td>
-            <?php $controls->select_number('max', 1, 20); ?>
-        </td>
-    </tr>
-        <tr>
-        <th><?php _e('Language', 'newsletter') ?></th>
-        <td>
-            <?php $controls->language(); ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Categories', 'newsletter') ?></th>
-        <td>
-            <?php $controls->categories_group('categories'); ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Tags', 'newsletter') ?></th>
-        <td>
-            <?php $controls->text('tags'); ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Layout', 'newsletter') ?></th>
-        <td>
-            <?php $controls->select('layout', array('one' => 'One column', 'two' => 'Two columns')) ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Show image', 'newsletter') ?></th>
-        <td>
-            <?php $controls->yesno('show_image') ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Show date', 'newsletter') ?></th>
-        <td>
-            <?php $controls->yesno('show_date') ?>
-        </td>
-    </tr>
-    
-</table>
+<?php $fields->select('automated_include', __('What to include', 'newsletter'), array('new' => __('New posts after last newsletter', 'newsletter'), 
+    'max' => __('Always max posts if at least one is new', 'newsletter')),
+        array('description'=>'This option is effective only when the newsletter is generated, not while composing')) ?>
+    <?php $fields->checkbox('automated_required', __('Required', 'newsletter'), array('description'=>'This block must return content or the newslettter has not to be sent')) ?>
+<?php } ?>
 
-<table class="form-table">
-    <tr>
-        <th><?php _e('Text font', 'newsletter') ?></th>
-        <td>
-            <?php $controls->css_font_family('font_family'); ?> <?php $controls->css_font_size('font_size'); ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Title font', 'newsletter') ?></th>
-        <td>
-            <?php $controls->css_font_family('title_font_family'); ?> <?php $controls->css_font_size('title_font_size'); ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Block background', 'newsletter') ?></th>
-        <td>
-            <?php $controls->color('block_background') ?>
-        </td>
-    </tr>
-</table>
+<?php $fields->select('layout', __('Layout', 'newsletter'), array('one' => __('One column', 'newsletter'), 'two' => __('Two columns', 'newsletter'))) ?>
+
+<?php $fields->font('title_font', __('Title font', 'newsletter')) ?>
+
+<?php $fields->font('font', __('Excerpt font', 'newsletter')) ?>
+
+<?php $fields->checkbox('show_image', __('Show image', 'newsletter')) ?>
+
+<?php $fields->checkbox('show_date', __('Show date', 'newsletter')) ?>
+
+<?php $fields->select_number('max', __('Max posts', 'newsletter'), 1, 40); ?>
+
+<?php $fields->language(); ?>
+
+<?php $fields->button('button', 'Button', array('url' => false)) ?>
+
+<?php $fields->section(__('Filters', 'newsletter')) ?>
+<?php $fields->categories(); ?>
+<?php $fields->text('tags', __('Tags', 'newsletter')); ?>
+
+<?php $fields->block_commons() ?>
+

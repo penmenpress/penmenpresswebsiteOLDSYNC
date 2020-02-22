@@ -1,161 +1,105 @@
 <?php
-if (!defined('ABSPATH')) exit;
+/* @var $this NewsletterStatistics */
 
-require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
-
-$module = NewsletterStatistics::instance();
-$controls = new NewsletterControls();
+defined('ABSPATH') || exit;
 
 wp_enqueue_script('tnp-chart');
 
-$email = $module->get_email($_GET['id']);
+require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
+$controls = new NewsletterControls();
 
-//$module->maybe_fix_sent_stats($email);
-$module->update_stats($email);
-       
+$email = $this->get_email($_GET['id']);
+$report = $this->get_statistics($email);
 
-$total_count = $module->get_total_count($email->id);
-$open_count = $module->get_open_count($email->id);
-$click_count = $module->get_click_count($email->id);
+if ($email->status == 'new') {
+    $controls->warnings[] = __('Draft newsletter, no data available', 'newsletter');
+} else if ($email->status == 'sending') {
+    $controls->warnings[] = __('Newsletter still sending', 'newsletter');
+}
 
 ?>
 
-<div class="wrap" id="tnp-wrap">
+<div class="wrap tnp-statistics tnp-statistics-view" id="tnp-wrap">
     <?php include NEWSLETTER_DIR . '/tnp-header.php' ?>
     <div id="tnp-heading">
         <h2><?php _e('Statistics of', 'newsletter') ?> "<?php echo htmlspecialchars($email->subject); ?>"</h2>
+        <p>Retargeting and subscriber detailed list are available with <a href="https://www.thenewsletterplugin.com/reports" target="_blank">Reports Addon</a>.</p>
     </div>
 
     <div id="tnp-body" style="min-width: 500px">
-        
-        <?php if ($email->status == 'new') { ?>
-        
-        <div class="tnp-warning"><?php _e('No data, newsletter not sent yet.', 'newsletter')?></div>
-        
-        <?php } else { ?>
 
-        <form action="" method="post">
-            <?php $controls->init(); ?>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="tnp-widget tnp-number">
+                    <h3><?php _e('Reach', 'newsletter') ?></h3>
+                    <div class="tnp-icon"><i class="fa fa-users"></i></div>
+                    <div class="tnp-value"><?php echo number_format_i18n($report->total, 0) ?></div>
+                </div>
+            </div>
 
-            <div class="row">
+            <div class="col-md-3">
+                <div class="tnp-widget tnp-number">
+                    <h3><?php _e('Opens', 'newsletter') ?></h3>
+                    <div class="tnp-icon tnp-blue"><i class="fa fa-envelope-open"></i></div>
+                    <div class="tnp-value"><?php echo $report->open_rate; ?>%</div>
+                    <div class="tnp-value-2">(<?php echo $report->open_count; ?>)</div>
+                </div>
+            </div>
 
-                <div class="col-md-6">
-                    <!-- START Statistics -->
-                    <div class="tnp-widget">
+            <div class="col-md-3">
+                <div class="tnp-widget tnp-number">
+                    <h3><?php _e('Clicks', 'newsletter') ?></h3>
+                    <div class="tnp-icon tnp-orange"><i class="fa fa-mouse-pointer"></i></div>
+                    <div class="tnp-value"><?php echo $report->click_rate; ?>%</div>
+                    <div class="tnp-value-2">(<?php echo $report->click_count; ?>)</div>
+                </div>
+            </div>
 
-                        <h3>Subscribers Reached <a href="admin.php?page=newsletter_statistics_view_users&id=<?php echo $email->id ?>">Details</a> 
-                            <a href="admin.php?page=newsletter_statistics_view_retarget&id=<?php echo $email->id ?>">Retarget</a></h3>
-                        
-                        <div class="inside">
-                            <div class="row tnp-row-pie-charts">
-                                <div class="col-md-6">
-                                    <canvas id="tnp-rates1-chart"></canvas>
-                                </div>
-                                <div class="col-md-6">
-                                    <canvas id="tnp-rates2-chart"></canvas>
-                                </div>
-                            </div>
+            <div class="col-md-3">
+                <div class="tnp-widget tnp-number tnp-inactive">
+                    <h3>Reactivity</h3>
+                    <div class="tnp-icon tnp-gray"><i class="fa fa-star"></i></div>
+                    <div class="tnp-value">-%</div>
+                </div>
+            </div>
+        </div>
 
-                            <script type="text/javascript">
-                               
-                                var rates1 = {
-                                    labels: [
-                                        "Not opened",
-                                        "Opened"
-                                    ],
-                                    datasets: [
-                                        {
-                                            data: [<?php echo $total_count - $open_count; ?>, <?php echo $open_count; ?>],
-                                            backgroundColor: [
-                                                "#E67E22",
-                                                "#2980B9"
-                                            ],
-                                            hoverBackgroundColor: [
-                                                "#E67E22",
-                                                "#2980B9"
-                                            ]
-                                        }]};
-                                        
-                                var rates2 = {
-                                    labels: [
-                                        "Opened",
-                                        "Clicked"
-                                    ],
-                                    datasets: [
-                                        {
-                                            data: [<?php echo $open_count-$click_count; ?>, <?php echo $click_count; ?>],
-                                            backgroundColor: [
-                                                "#2980B9",
-                                                "#27AE60"
-                                            ],
-                                            hoverBackgroundColor: [
-                                                "#2980B9",
-                                                "#27AE60"
-                                            ]
-                                        }]};
-
-                                jQuery(document).ready(function ($) {
-                                    ctx1 = $('#tnp-rates1-chart').get(0).getContext("2d");
-                                    ctx2 = $('#tnp-rates2-chart').get(0).getContext("2d");
-                                    myPieChart1 = new Chart(ctx1, {type: 'pie', data: rates1});
-                                    myPieChart2 = new Chart(ctx2, {type: 'pie', data: rates2});
-                                });
-
-                            </script>
-
-                            <div class="row tnp-row-values">
-                                <div class="col-md-6">
-                                    <div class="tnp-data">
-                                        <?php if ($email->status == 'sending' || $email->status == 'paused'): ?>
-                                            <div class="tnp-data-title">Sent</div>
-                                            <div class="tnp-data-value"><?php echo $email->sent; ?> of <?php echo $email->total; ?></div>
-                                        <?php else: ?>
-                                            <div class="tnp-data-title">Total Sent</div>
-                                            <div class="tnp-data-value"><?php echo $email->sent; ?></div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <!--
-                                    <div class="tnp-data">
-                                        <div class="tnp-data-title">Interactions</div>
-                                        <div class="tnp-data-value"><?php echo $open_count; ?> (<?php echo $module->percent($open_count, $total_count); ?>)</div>
-                                    </div>
-                                    -->
-
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="tnp-data">
-                                        <div class="tnp-data-title">Opened</div>
-                                        <div class="tnp-data-value"><?php echo $open_count; ?> (<?php echo $module->percent($open_count, $total_count); ?>)</div>
-                                    </div>
-                                    <div class="tnp-data">
-                                        <div class="tnp-data-title">Clicked</div>
-                                        <div class="tnp-data-value"><?php echo $click_count; ?> (<?php echo $module->percent($click_count, $total_count); ?>)</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
+        <div class="row">
+            <div class="col-md-4">
+                <div class="tnp-widget tnp-inactive">
+                    <h3>Clicked URLs</h3>
+                    <div class="tnp-placeholder">
+                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin&utm_medium=link&utm_content=worldmap&utm_campaign=newsletter-reports" target="_blank">
+                            <img src="<?php echo plugins_url('newsletter') ?>/statistics/images/clicked-urls@2x.png">
+                        </a>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-md-6">
-                    <div class="tnp-widget">
-                        <h3>World Map</h3>
-                        <div class="inside">
-                            <a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin&utm_medium=link&utm_content=worldmap&utm_campaign=newsletter-reports" target="_blank">
-                                <img style="width: 100%" src="<?php echo plugins_url('newsletter') ?>/statistics/images/map.gif">
-                            </a>
-                        </div>
+            <div class="col-md-4">
+                <div class="tnp-widget tnp-inactive">
+                    <h3>World Map</h3>
+                    <div class="tnp-placeholder">
+                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin&utm_medium=link&utm_content=worldmap&utm_campaign=newsletter-reports" target="_blank">
+                            <img src="<?php echo plugins_url('newsletter') ?>/statistics/images/world-map@2x.png">
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="tnp-widget tnp-inactive">
+                    <h3>Interactions</h3>
+                    <div class="tnp-placeholder">
+                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin&utm_medium=link&utm_content=worldmap&utm_campaign=newsletter-reports" target="_blank">
+                            <img src="<?php echo plugins_url('newsletter') ?>/statistics/images/interactions@2x.png">
+                        </a>
                     </div>
                 </div>
+            </div>
 
-            </div><!-- row -->
-
-
-        </form>
-        
-        <?php } // if "new" ?>
+        </div>
 
     </div>
     <?php include NEWSLETTER_DIR . '/tnp-footer.php' ?>

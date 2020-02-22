@@ -25,7 +25,7 @@ if ($controls->is_action('import')) {
     }
 
     // Set the selected preferences inside the
-    if (!is_array($controls->data['preferences']))
+    if (!isset($controls->data['preferences']) || !is_array($controls->data['preferences']))
         $controls->data['preferences'] = array();
 
 //    if ($options['followup'] == 'activate') {
@@ -229,7 +229,7 @@ if ($controls->is_action('import')) {
                         <div class="tnp-tip">
                             <span class="tip-button">Tip</span>
                             <span class="tip-content">
-                                Simply paste CVS text here.
+                                Simply paste CSV text here.
                             </span>
                         </div>
                     </th>

@@ -12,6 +12,13 @@ defined('ABSPATH') || exit;
         </td>
     </tr>
     <tr>
+        <th><?php _e('External background color', 'newsletter') ?></th>
+        <td>
+            <?php $controls->color('theme_background'); ?>
+            <p class="description" style="display: inline">Hex values, e.g. #FF0000</p>
+        </td>
+    </tr>
+    <tr>
         <th><?php _e('Disable social links', 'newsletter') ?></th>
         <td><?php $controls->checkbox('theme_social_disable', ''); ?></td>
     </tr>
@@ -23,7 +30,7 @@ defined('ABSPATH') || exit;
     <tr>
         <th>Language</th>
         <td>
-            <?php $controls->language(); ?>
+            <?php $controls->language('theme_language'); ?>
         </td>
     </tr>
     <tr>
@@ -31,9 +38,12 @@ defined('ABSPATH') || exit;
         <td>
             <?php $controls->checkbox('theme_posts', 'Add latest posts'); ?>
             <br>
-            <?php $controls->checkbox('theme_thumbnails', 'Add post thumbnails'); ?>
-            <br>
             <?php $controls->checkbox('theme_excerpts', 'Add post excerpts'); ?>
+            <br>
+            <?php $controls->checkbox('theme_thumbnails', 'Add post thumbnails'); ?> 
+            <?php $controls->select('theme_image_size', array('thumbnail'=>'Thumbnail', 'medium'=>'Medium')); ?>
+            <br>
+            
         </td>
     </tr>
     <tr>

@@ -1,9 +1,6 @@
 <?php
 
-if (!defined('ABSPATH'))
-    exit;
-
-require_once NEWSLETTER_INCLUDES_DIR . '/module.php';
+defined('ABSPATH') || exit;
 
 class NewsletterSubscription extends NewsletterModule {
 
@@ -35,7 +32,7 @@ class NewsletterSubscription extends NewsletterModule {
 
     function __construct() {
 
-        parent::__construct('subscription', '2.1.7', null, array('lists', 'template', 'profile'));
+        parent::__construct('subscription', '2.2.7', null, array('lists', 'template', 'profile', 'antibot'));
         $this->options_profile = $this->get_options('profile');
         $this->options_lists = $this->get_options('lists');
 
@@ -60,6 +57,12 @@ class NewsletterSubscription extends NewsletterModule {
         if (isset($_GET['page']) && $_GET['page'] === 'newsletter_subscription_forms') {
             header('X-XSS-Protection: 0');
         }
+
+        if (function_exists('register_block_type')) {
+            // Add custom blocks to Gutenberg
+            wp_register_script('tnp-blocks', NEWSLETTER_URL . '/includes/tnp-blocks.js', array('wp-blocks', 'wp-element', 'wp-editor'), NEWSLETTER_VERSION);
+            register_block_type('tnp/minimal', array('editor_script' => 'tnp-blocks'));
+        }
     }
 
     function hook_wp_enqueue_scripts() {
@@ -67,7 +70,7 @@ class NewsletterSubscription extends NewsletterModule {
         wp_enqueue_script('newsletter-subscription', plugins_url('newsletter') . '/subscription/validate.js', array(), NEWSLETTER_VERSION, true);
 
         $options = $this->get_options('profile', $this->get_current_language());
-        
+
         $data = array();
         $data['messages'] = array();
         if (isset($options['email_error'])) {
@@ -103,13 +106,15 @@ class NewsletterSubscription extends NewsletterModule {
     }
 
     function is_address_blacklisted($email) {
-        if (empty($this->options['address_blacklist'])) {
+        // TODO: Optimize!
+        $options = $this->get_options('antibot');
+        if (empty($options['address_blacklist'])) {
             return false;
         }
 
         $this->logger->debug('Address blacklist check');
         $rev_email = strrev($email);
-        foreach ($this->options['address_blacklist'] as $item) {
+        foreach ($options['address_blacklist'] as $item) {
             if (strpos($rev_email, strrev($item)) === 0) {
                 return true;
             }
@@ -118,11 +123,13 @@ class NewsletterSubscription extends NewsletterModule {
     }
 
     function is_ip_blacklisted($ip) {
-        if (empty($this->options['ip_blacklist'])) {
+        // TODO: Optimize!
+        $options = $this->get_options('antibot');
+        if (empty($options['ip_blacklist'])) {
             return false;
         }
         $this->logger->debug('IP blacklist check');
-        foreach ($this->options['ip_blacklist'] as $item) {
+        foreach ($options['ip_blacklist'] as $item) {
             if ($this->ip_match($ip, $item)) {
                 return true;
             }
@@ -150,8 +157,10 @@ class NewsletterSubscription extends NewsletterModule {
 
     function is_flood($email, $ip) {
         global $wpdb;
+        // TODO: Optimize!
+        $options = $this->get_options('antibot');
 
-        if (empty($this->options['antiflood'])) {
+        if (empty($options['antiflood'])) {
             return false;
         }
 
@@ -159,7 +168,7 @@ class NewsletterSubscription extends NewsletterModule {
 
         $updated = $wpdb->get_var($wpdb->prepare("select updated from " . NEWSLETTER_USERS_TABLE . " where ip=%s or email=%s order by updated desc limit 1", $ip, $email));
 
-        if ($updated && time() - $updated < $this->options['antiflood']) {
+        if ($updated && time() - $updated < $options['antiflood']) {
             return true;
         }
 
@@ -167,17 +176,25 @@ class NewsletterSubscription extends NewsletterModule {
     }
 
     function is_spam_text($text) {
-        if (stripos($text, 'http://') !== false || stripos($text, 'https://') !== false) {
+        if (stripos($text, 'http:') !== false || stripos($text, 'https:') !== false) {
             return true;
         }
         if (stripos($text, 'www.') !== false) {
             return true;
         }
+        // Blocks address like patterns 
+//        if (preg_match('/[^\s]+\.[^\s]+/m', $text)) {
+//            return true;
+//        }
+        
         return false;
     }
 
     function is_spam_by_akismet($email, $name, $ip, $agent, $referrer) {
-        if (empty($this->options['akismet'])) {
+        // TODO: Optimize!
+        $options = $this->get_options('antibot');
+
+        if (empty($options['akismet'])) {
             return false;
         }
         if (!class_exists('Akismet')) {
@@ -200,6 +217,63 @@ class NewsletterSubscription extends NewsletterModule {
             return true;
         }
         return false;
+    }
+
+    /**
+     * $email must be cleaned using the is_email() function.
+     * 
+     * @param type $email
+     * @param type $full_name
+     * @param type $ip
+     */
+    function valid_subscription_or_die($email, $full_name, $ip) {
+        $antibot_logger = new NewsletterLogger('antibot');
+        
+        $antibot_logger->info($_REQUEST);
+        
+        if (empty($email)) {
+            echo 'Wrong email';
+            header("HTTP/1.0 400 Bad request");
+            die();
+        }
+        
+        if ($this->is_spam_text($full_name)) {
+            $antibot_logger->fatal($email . ' - ' . $ip . ' - Name with http: ' . $full_name);
+            header("HTTP/1.0 404 Not Found");
+            die();
+        }
+
+        if ($this->is_missing_domain_mx($email)) {
+            $antibot_logger->fatal($email . ' - ' . $ip . ' - MX check failed');
+            header("HTTP/1.0 404 Not Found");
+            die();
+        }
+
+        if ($this->is_ip_blacklisted($ip)) {
+            $antibot_logger->fatal($email . ' - ' . $ip . ' - IP blacklisted');
+            header("HTTP/1.0 404 Not Found");
+            die();
+        }
+
+        if ($this->is_address_blacklisted($email)) {
+            $antibot_logger->fatal($email . ' - ' . $ip . ' - Address blacklisted');
+            header("HTTP/1.0 404 Not Found");
+            die();
+        }
+
+        // Akismet check
+        if ($this->is_spam_by_akismet($email, $full_name, $ip, $_SERVER['HTTP_USER_AGENT'], $_SERVER['HTTP_REFERER'])) {
+            $antibot_logger->fatal($email . ' - ' . $ip . ' - Akismet blocked');
+            header("HTTP/1.0 404 Not Found");
+            die();
+        }
+
+        // Flood check
+        if ($this->is_flood($email, $ip)) {
+            $antibot_logger->fatal($email . ' - ' . $ip . ' - Antiflood triggered');
+            header("HTTP/1.0 404 Not Found");
+            die('Too quick');
+        }
     }
 
     /**
@@ -259,86 +333,27 @@ class NewsletterSubscription extends NewsletterModule {
             case 's':
             case 'subscribe':
 
-                $ip = $this->get_remote_ip();
-                $email = $this->normalize_email($_REQUEST['ne']);
-                $first_name = '';
-                if (isset($_REQUEST['nn']))
-                    $first_name = $this->normalize_name($_REQUEST['nn']);
-
-                $last_name = '';
-                if (isset($_REQUEST['ns']))
-                    $last_name = $this->normalize_name($_REQUEST['ns']);
-
-                $full_name = trim($first_name . ' ' . $last_name);
-
-                $antibot_logger = new NewsletterLogger('antibot');
-
                 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                    $antibot_logger->fatal($email . ' - ' . $ip . ' - HTTP method invalid');
+                    //$antibot_logger->fatal('HTTP method invalid');
                     die('Invalid');
                 }
 
-                $captcha = !empty($this->options['captcha']);
+                $options_antibot = $this->get_options('antibot');
 
-                if (!empty($this->options['antibot_disable']) || $this->antibot_form_check($captcha)) {
+                $captcha = !empty($options_antibot['captcha']);
 
+                if (!empty($options_antibot['disabled']) || $this->antibot_form_check($captcha)) {
 
-                    if ($this->is_spam_text($full_name)) {
-                        $antibot_logger->fatal($email . ' - ' . $ip . ' - Name with http: ' . $full_name);
-                        header("HTTP/1.0 404 Not Found");
-                        die();
-                    }
+                    $user = $this->subscribe();
 
-                    // Cannot check for administrator here, too early.
-                    if (true) {
-
-                        $this->logger->debug('Subscription of: ' . $email);
-
-                        // 404 is returned to attempt to make the bot believe the url has been changed
-
-                        if ($this->is_missing_domain_mx($email)) {
-                            $antibot_logger->fatal($email . ' - ' . $ip . ' - MX check failed');
-                            header("HTTP/1.0 404 Not Found");
-                            die();
-                        }
-
-                        if ($this->is_ip_blacklisted($ip)) {
-                            $antibot_logger->fatal($email . ' - ' . $ip . ' - IP blacklisted');
-                            header("HTTP/1.0 404 Not Found");
-                            die();
-                        }
-
-                        if ($this->is_address_blacklisted($email)) {
-                            $antibot_logger->fatal($email . ' - ' . $ip . ' - Address blacklisted');
-                            header("HTTP/1.0 404 Not Found");
-                            die();
-                        }
-
-                        // Akismet check
-                        if ($this->is_spam_by_akismet($email, $full_name, $ip, $_SERVER['HTTP_USER_AGENT'], $_SERVER['HTTP_REFERER'])) {
-                            $antibot_logger->fatal($email . ' - ' . $ip . ' - Akismet blocked');
-                            header("HTTP/1.0 404 Not Found");
-                            die();
-                        }
-
-                        // Flood check
-                        if ($this->is_flood($email, $ip)) {
-                            $antibot_logger->fatal($email . ' - ' . $ip . ' - Antiflood triggered');
-                            header("HTTP/1.0 404 Not Found");
-                            die('Too quick');
-                        }
-
-                        $user = $this->subscribe();
-
-                        if ($user->status == 'E')
-                            $this->show_message('error', $user);
-                        if ($user->status == 'C')
-                            $this->show_message('confirmed', $user);
-                        if ($user->status == 'A')
-                            $this->show_message('already_confirmed', $user);
-                        if ($user->status == 'S')
-                            $this->show_message('confirmation', $user);
-                    }
+                    if ($user->status == 'E')
+                        $this->show_message('error', $user);
+                    if ($user->status == 'C')
+                        $this->show_message('confirmed', $user);
+                    if ($user->status == 'A')
+                        $this->show_message('already_confirmed', $user);
+                    if ($user->status == 'S')
+                        $this->show_message('confirmation', $user);
                 } else {
                     // Temporary store data
                     //$data_key =  wp_generate_password(16, false, false);
@@ -350,7 +365,14 @@ class NewsletterSubscription extends NewsletterModule {
 
             // AJAX subscription
             case 'ajaxsub':
+
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    //$antibot_logger->fatal('HTTP method invalid');
+                    die('Invalid');
+                }
+
                 $user = $this->subscribe();
+
                 if ($user->status == 'E')
                     $key = 'error';
                 if ($user->status == 'C')
@@ -359,10 +381,11 @@ class NewsletterSubscription extends NewsletterModule {
                     $key = 'already_confirmed';
                 if ($user->status == 'S')
                     $key = 'confirmation';
-                $module = NewsletterSubscription::instance();
-                $message = $newsletter->replace($module->options[$key . '_text'], $user);
-                if (isset($module->options[$key . '_tracking'])) {
-                    $message .= $module->options[$key . '_tracking'];
+
+
+                $message = $newsletter->replace($this->options[$key . '_text'], $user);
+                if (isset($this->options[$key . '_tracking'])) {
+                    $message .= $this->options[$key . '_tracking'];
                 }
                 echo $message;
                 die();
@@ -390,6 +413,25 @@ class NewsletterSubscription extends NewsletterModule {
 
     function upgrade() {
         global $wpdb, $charset_collate;
+
+        // Possible migration
+        $options_antibot = $this->get_options('antibot');
+
+        if (empty($options_antibot)) {
+            $options = $this->get_options();
+            foreach (array('address_blacklist', 'ip_blacklist', 'akismet', 'captcha', 'antiflood') as $key) {
+                if (isset($options[$key])) {
+                    $options_antibot[$key] = $options[$key];
+                }
+            }
+            if (isset($options['antibot_disable'])) {
+                $options_antibot['disabled'] = $options['antibot_disable'];
+            } else {
+                $options_antibot['disabled'] = 0;
+            }
+
+            $this->save_options($options_antibot, 'antibot');
+        }
 
         parent::upgrade();
 
@@ -430,33 +472,11 @@ class NewsletterSubscription extends NewsletterModule {
             $this->save_options($this->options);
         }
 
-        if ($this->old_version < '2.0.0') {
-            if (!isset($this->options['url']) && !empty($newsletter->options['url'])) {
-                $this->options['url'] = $newsletter->options['url'];
-                $this->save_options($this->options);
-            }
-
-            $options_template = $this->get_options('template');
-            if (empty($options_template) && isset($this->options['template'])) {
-                $options_template['enabled'] = isset($this->options['template_enabled']) ? 1 : 0;
-                $options_template['template'] = $this->options['template'];
-                add_option('newsletter_subscription_template', $options_template, null, 'no');
-            }
-
-            if (isset($this->options['template'])) {
-                unset($this->options['template']);
-                unset($this->options['template_enabled']);
-                $this->save_options($this->options);
-            }
-        }
-
         $this->init_options('template', false);
 
         global $wpdb, $charset_collate;
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-
 
         $sql = "CREATE TABLE `" . $wpdb->prefix . "newsletter_user_logs` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -483,7 +503,6 @@ class NewsletterSubscription extends NewsletterModule {
         $this->add_admin_page('profile', 'Subscription Form');
         $this->add_admin_page('forms', 'Forms');
         $this->add_admin_page('lists', 'Lists');
-        $this->add_admin_page('lists-edit', 'List edit');
         $this->add_admin_page('template', 'Template');
     }
 
@@ -581,16 +600,46 @@ class NewsletterSubscription extends NewsletterModule {
 
         $id = (int) $id;
 
-        $wpdb->update(NEWSLETTER_USERS_TABLE, array('updated' => $time, 'ip' => $ip, 'geo'=>0), array('id' => $id));
+        $wpdb->update(NEWSLETTER_USERS_TABLE, array('updated' => $time, 'ip' => $ip, 'geo' => 0), array('id' => $id));
     }
 
     /**
-     * Return the subscribed user.
-     *
-     * @param bool $registration If invoked from the registration process
-     * @global Newsletter $newsletter
+     * Create a subscription using the $_REQUEST data. Does security checks.
+     * 
+     * @param string $status The status to use for this subscription (confirmed, not confirmed, ...)
+     * @param bool $emails If the confirmation/welcome email should be sent or the subscription should be silent
+     * @return TNP_User
      */
     function subscribe($status = null, $emails = true) {
+
+        $options_profile = $this->get_options('profile');
+        /*
+        if ($options_profile['name_status'] == 0 && isset($_REQUEST['nn'])) {
+            // Name injection
+            die();
+        }
+        if ($options_profile['surname_status'] == 0 && isset($_REQUEST['ns'])) {
+            // Last name injection
+            die();
+        }
+        */
+         
+        // Validation
+        $ip = $this->get_remote_ip();
+        $email = $this->normalize_email(stripslashes($_REQUEST['ne']));
+        $first_name = '';
+        if (isset($_REQUEST['nn'])) {
+            $first_name = $this->normalize_name(stripslashes($_REQUEST['nn']));
+        }
+
+        $last_name = '';
+        if (isset($_REQUEST['ns'])) {
+            $last_name = $this->normalize_name(stripslashes($_REQUEST['ns']));
+        }
+
+        $full_name = trim($first_name . ' ' . $last_name);
+
+        $this->valid_subscription_or_die($email, $full_name, $ip);
 
         $opt_in = (int) $this->options['noconfirmation']; // 0 - double, 1 - single
         if (!empty($this->options['optin_override']) && isset($_REQUEST['optin'])) {
@@ -611,13 +660,6 @@ class NewsletterSubscription extends NewsletterModule {
             } else {
                 $opt_in = self::OPTIN_DOUBLE;
             }
-        }
-
-        $email = $this->normalize_email(stripslashes($_REQUEST['ne']));
-
-        // Shound never reach this point without a valid email address
-        if ($email == null) {
-            die('Wrong email');
         }
 
         $user = $this->get_user($email);
@@ -642,26 +684,26 @@ class NewsletterSubscription extends NewsletterModule {
                 return $user;
             }
 
-            if ($this->options['multiple'] == 2) {
-                $lists_changed = false;
-                if (isset($_REQUEST['nl']) && is_array($_REQUEST['nl'])) {
-                    foreach ($_REQUEST['nl'] as $list_id) {
-                        $list_id = (int) $list_id;
-                        if ($list_id <= 0 || $list_id > NEWSLETTER_LIST_MAX)
-                            continue;
-                        $field = 'list_' . $list_id;
-                        if ($user->$field == 0) {
-                            $lists_changed = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!$lists_changed) {
-                    $user->status = 'E';
-                    return $user;
-                }
-            }
+//            if ($this->options['multiple'] == 2) {
+//                $lists_changed = false;
+//                if (isset($_REQUEST['nl']) && is_array($_REQUEST['nl'])) {
+//                    foreach ($_REQUEST['nl'] as $list_id) {
+//                        $list_id = (int) $list_id;
+//                        if ($list_id <= 0 || $list_id > NEWSLETTER_LIST_MAX)
+//                            continue;
+//                        $field = 'list_' . $list_id;
+//                        if ($user->$field == 0) {
+//                            $lists_changed = true;
+//                            break;
+//                        }
+//                    }
+//                }
+//
+//                if (!$lists_changed) {
+//                    $user->status = 'E';
+//                    return $user;
+//                }
+//            }
 
             // If the subscriber is confirmed, we cannot change his data in double opt in mode, we need to
             // temporary store and wait for activation
@@ -692,7 +734,6 @@ class NewsletterSubscription extends NewsletterModule {
 
 
         $user['token'] = $this->get_token();
-        $ip = $this->get_remote_ip();
         $ip = $this->process_ip($ip);
         $user['ip'] = $ip;
         $user['geo'] = 0;
@@ -756,6 +797,9 @@ class NewsletterSubscription extends NewsletterModule {
         if (!empty($_REQUEST['nlang'])) {
             $language = strtolower(strip_tags($_REQUEST['nlang']));
             // TODO: Check if it's an allowed language code
+            $user['language'] = $language;
+        } else {
+            $language = $this->get_current_language();
             $user['language'] = $language;
         }
 
@@ -825,7 +869,7 @@ class NewsletterSubscription extends NewsletterModule {
      */
     function mail($user, $subject, $message) {
         $language = $this->get_user_language($user);
-        
+
         $options_template = $this->get_options('template', $language);
 
         $template = trim($options_template['template']);
@@ -839,7 +883,7 @@ class NewsletterSubscription extends NewsletterModule {
         // Replaces tags from the template
         $message = $this->replace($message, $user);
         $subject = $this->replace($subject, $user);
-        
+
         return Newsletter::instance()->mail($user->email, $subject, $message, $headers);
     }
 
@@ -909,7 +953,7 @@ class NewsletterSubscription extends NewsletterModule {
         if (!$force && !empty($this->options[$type . '_disabled'])) {
             return true;
         }
-        
+
         $language = $this->get_user_language($user);
 
         $options = $this->get_options('', $language);
@@ -918,7 +962,7 @@ class NewsletterSubscription extends NewsletterModule {
             $message = $this->add_microdata($message);
         }
         $subject = $options[$type . '_subject'];
-        
+
         return $this->mail($user, $subject, $message);
     }
 
@@ -1054,11 +1098,18 @@ class NewsletterSubscription extends NewsletterModule {
         $style = esc_attr($attrs['style']);
         $buffer = '<form method="post" action="' . $action . '" class="' . $class . '" style="' . $style . '">' . "\n";
 
+        $language = $this->get_current_language();
+
+        $buffer .= '<input type="hidden" name="nlang" value="' . esc_attr($language) . '">' . "\n";
+
         if (isset($attrs['referrer'])) {
-            $buffer .= '<input type="hidden" name="nr" value="' . esc_attr($referrer) . '">' . "\n";
+            $buffer .= '<input type="hidden" name="nr" value="' . esc_attr($attrs['referrer']) . '">' . "\n";
         }
 
         if (isset($attrs['confirmation_url'])) {
+            if ($attrs['confirmation_url'] == '#') {
+                $attrs['confirmation_url'] = $_SERVER['REQUEST_URI'];
+            }
             $buffer .= "<input type='hidden' name='ncu' value='" . esc_attr($attrs['confirmation_url']) . "'>\n";
         }
 
@@ -1094,6 +1145,8 @@ class NewsletterSubscription extends NewsletterModule {
     }
 
     function _shortcode_label($name, $attrs, $suffix = null) {
+        $options_profile = $this->get_options('profile', $this->get_current_language());
+
         if (!$suffix) {
             $suffix = $name;
         }
@@ -1105,7 +1158,7 @@ class NewsletterSubscription extends NewsletterModule {
                 $buffer .= esc_html($attrs['label']);
             }
         } else {
-            $buffer .= esc_html($this->options_profile[$name]);
+            $buffer .= esc_html($options_profile[$name]);
         }
         $buffer .= "</label>\n";
         return $buffer;
@@ -1276,13 +1329,13 @@ class NewsletterSubscription extends NewsletterModule {
         }
 
         if (strpos($name, 'privacy') === 0) {
-
+            $options_profile = $this->get_options('profile', $this->get_current_language());
             if (!isset($attrs['url'])) {
-                $attrs['url'] = $this->options_profile['privacy_url'];
+                $attrs['url'] = $this->get_privacy_url();
             }
 
             if (!isset($attrs['label'])) {
-                $attrs['label'] = $this->options_profile['privacy_label'];
+                $attrs['label'] = $options_profile['privacy'];
             }
 
             $buffer .= '<div class="tnp-field tnp-field-checkbox tnp-field-privacy">';
@@ -1315,8 +1368,9 @@ class NewsletterSubscription extends NewsletterModule {
     function get_privacy_field() {
         $options_profile = $this->get_options('profile', $this->get_current_language());
         $privacy_status = (int) $options_profile['privacy_status'];
-        if (empty($privacy_status)) return false;
-        
+        if (empty($privacy_status))
+            return false;
+
         $buffer = '<label>';
         if ($privacy_status === 1) {
             $buffer .= '<input type="checkbox" name="ny" required class="tnp-privacy">&nbsp;';
@@ -1485,7 +1539,7 @@ class NewsletterSubscription extends NewsletterModule {
 
             // Select field
             if ($options_profile['profile_' . $i . '_type'] == 'select') {
-                $buffer .= '<select class="tnp-profile tnp-profile-' . $i . '" name="np' . $i . '" required>' . "\n";
+                $buffer .= '<select class="tnp-profile tnp-profile-' . $i . '" name="np' . $i . '" ' . ($options_profile['profile_' . $i . '_rules'] == 1 ? ' required' : '') . '>' . "\n";
                 $buffer .= "<option></option>\n";
                 $opts = explode(',', $options_profile['profile_' . $i . '_options']);
                 for ($j = 0; $j < count($opts); $j++) {
@@ -1531,10 +1585,15 @@ class NewsletterSubscription extends NewsletterModule {
 
         $buffer .= '<div class="tnp-field tnp-field-button">';
 
+        $button_style = '';
+        if (!empty($attrs['button_color'])) {
+            $button_style = 'style="background-color:' . esc_attr($attrs['button_color']) . '"';
+        }
+
         if (strpos($options_profile['subscribe'], 'http') === 0) {
             $buffer .= '<input class="tnp-submit-image" type="image" src="' . esc_attr($options_profile['subscribe']) . '">' . "\n";
         } else {
-            $buffer .= '<input class="tnp-submit" type="submit" value="' . esc_attr($options_profile['subscribe']) . '">' . "\n";
+            $buffer .= '<input class="tnp-submit" type="submit" value="' . esc_attr($options_profile['subscribe']) . '" ' . $button_style . '>' . "\n";
         }
 
         $buffer .= "</div>\n</form>\n";
@@ -1597,7 +1656,7 @@ class NewsletterSubscription extends NewsletterModule {
                 "first name: " . $user->name . "\n" .
                 "last name: " . $user->surname . "\n" .
                 "gender: " . $user->sex . "\n";
-        
+
         $lists = $this->get_lists();
         foreach ($lists as $list) {
             $field = 'list_' . $list->id;
@@ -1615,20 +1674,21 @@ class NewsletterSubscription extends NewsletterModule {
         $message .= "token: " . $user->token . "\n" .
                 "status: " . $user->status . "\n";
         $email = trim($this->options['notify_email']);
-        if (empty($email)) {
-            $email = get_option('admin_email');
-        }
+
         $blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
         Newsletter::instance()->mail($email, '[' . $blogname . '] ' . $subject, array('text' => $message));
     }
 
     function get_subscription_form_minimal($attrs) {
+
         $language = $this->get_current_language();
         if (!is_array($attrs)) {
             $attrs = array();
         }
         $options_profile = $this->get_options('profile', $language);
-        $attrs = array_merge(array('class' => '', 'referrer' => 'minimal', 'button' => $options_profile['subscribe'], 'placeholder' => $options_profile['email']), $attrs);
+        $attrs = array_merge(array('class' => '', 'referrer' => 'minimal',
+            'button' => $options_profile['subscribe'], 'button_color' => '',
+            'button_radius' => '', 'placeholder' => $options_profile['email']), $attrs);
 
         $form = '';
         $form .= '<div class="tnp tnp-subscription-minimal ' . $attrs['class'] . '">';
@@ -1642,13 +1702,14 @@ class NewsletterSubscription extends NewsletterModule {
         $form .= '<input type="hidden" name="nr" value="' . esc_attr($attrs['referrer']) . '">';
         $form .= '<input type="hidden" name="nlang" value="' . esc_attr($language) . '">' . "\n";
         $form .= '<input class="tnp-email" type="email" required name="ne" value="" placeholder="' . esc_attr($attrs['placeholder']) . '">';
-        $form .= '<input class="tnp-submit" type="submit" value="' . esc_attr($attrs['button']) . '">';
-       
+        $form .= '<input class="tnp-submit" type="submit" value="' . esc_attr($attrs['button']) . '"'
+                . ' style="background-color:' . esc_attr($attrs['button_color']) . '">';
+
         $privacy_field = $this->get_privacy_field();
         if (!empty($privacy_field)) {
-             $form .= '<div class="tnp-privacy-field">' . $privacy_field . '</div>';
+            $form .= '<div class="tnp-privacy-field">' . $privacy_field . '</div>';
         }
-       
+
         $form .= "</form></div>\n";
 
         return $form;
@@ -1686,8 +1747,12 @@ class NewsletterSubscription extends NewsletterModule {
     function shortcode_newsletter($attrs, $content) {
         global $wpdb;
 
-        $user = $this->get_user_from_request();
         $message_key = $this->get_message_key_from_request();
+        if ($message_key == 'confirmation') {
+            $user = $this->get_user_from_request(false, 'preconfirm');
+        } else {
+            $user = $this->get_user_from_request();
+        }
 
         $message = apply_filters('newsletter_page_text', '', $message_key, $user);
 

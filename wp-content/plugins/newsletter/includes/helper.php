@@ -49,6 +49,8 @@ function tnp_post_excerpt($post, $length = 30) {
     } else {
         $excerpt = wp_trim_words($post->post_excerpt, $length);
     }
+    
+    $excerpt = preg_replace("/\[vc_row.*?\]/", "", $excerpt);
     return $excerpt;
 }
 
@@ -107,38 +109,50 @@ function tnp_media_resize($media_id, $size) {
     // Thumbnail generation if needed.
     if (!file_exists($absolute_thumb) || filemtime($absolute_thumb) < filemtime($absolute_file)) {
         $r = wp_mkdir_p($uploads['basedir'] . '/newsletter/thumbnails/' . $pathinfo['dirname']);
-
+        
         if (!$r) {
-            $src = wp_get_attachment_image_src($media_id, $size);
+            $src = wp_get_attachment_image_src($media_id, 'full');
             return $src[0];
         }
 
         $editor = wp_get_image_editor($absolute_file);
         if (is_wp_error($editor)) {
-            $src = wp_get_attachment_image_src($media_id, $size);
+            $src = wp_get_attachment_image_src($media_id, 'full');
             return $src[0];
             //return $editor;
             //return $uploads['baseurl'] . '/' . $relative_file;
+        }
+        
+        $original_size = $editor->get_size();
+        if ($width > $original_size['width'] || $height > $original_size['height']) {
+            $src = wp_get_attachment_image_src($media_id, 'full');
+            return $src[0];
         }
 
         $editor->set_quality(80);
         $resized = $editor->resize($width, $height, $crop);
 
         if (is_wp_error($resized)) {
-            $src = wp_get_attachment_image_src($media_id, $size);
+            $src = wp_get_attachment_image_src($media_id, 'full');
             return $src[0];
         }
 
         $saved = $editor->save($absolute_thumb);
         if (is_wp_error($saved)) {
-            $src = wp_get_attachment_image_src($media_id, $size);
+            $src = wp_get_attachment_image_src($media_id, 'full');
             return $src[0];
             //return $saved;
             //return $uploads['baseurl'] . '/' . $relative_file;
         }
     }
 
-
-
     return $uploads['baseurl'] . '/newsletter/thumbnails/' . $relative_thumb;
+}
+
+function tnp_outlook_wrapper_open($width = 600) {
+    return NewsletterEmails::get_outlook_wrapper_open($width);
+}
+    
+function tnp_outlook_wrapper_close() {
+    return NewsletterEmails::get_outlook_wrapper_close();
 }

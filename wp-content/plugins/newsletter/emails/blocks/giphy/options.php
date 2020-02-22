@@ -4,41 +4,19 @@
  * @var $controls NewsletterControls 
  */
 ?>
+<?php $fields->text('q', __('Search')) ?>
 
-<table class="form-table">
-    <tr>
-        <th><?php _e('Search Giphy', 'newsletter') ?></th>
-        <td>
-            <?php $controls->text('q', 40, 'Search a picture...') ?>
-            <br>
-            <div style="clear: both; max-height: 300px; overflow: scroll" id="tnp-giphy-results"></div>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Selected', 'newsletter') ?></th>
-        <td>
-            <?php $controls->hidden('giphy_url') ?>
-            <br>
+<div style="clear: both; max-height: 300px; overflow: scroll; margin-bottom: 15px" id="tnp-giphy-results"></div>
+
+<?php $controls->hidden('giphy_url') ?>
             <div id="giphy-preview">
                 <?php if (!empty($controls->data['giphy_url'])) { ?>
                 <img src="<?php echo esc_attr($controls->data['giphy_url'])?>" style="max-width: 300px">
                 <?php } ?>
             </div>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Background', 'newsletter') ?></th>
-        <td>
-            <?php $controls->block_background() ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Padding', 'newsletter') ?></th>
-        <td>
-            <?php $controls->block_padding() ?>
-        </td>
-    </tr>
-</table>
+
+
+<?php $fields->block_commons() ?>
 
 <script type="text/javascript">
 
@@ -46,6 +24,7 @@
         //jQuery("#tnp-giphy-results").html("");
         jQuery("#options-giphy_url").val(url);
         jQuery("#giphy-preview").html('<img src="' + url + '" style="max-width: 300px">');
+        jQuery("#options-giphy_url").trigger("change");
     }
 
     jQuery("#options-q").keyup(
@@ -61,7 +40,7 @@
                             jQuery.get("https://api.giphy.com/v1/gifs/search", {limit: limit, rating: rating, api_key: "57FLbVJJd7oQBZ0fEiRnzhM2VtZp5OP1", q: jQuery("#options-q").val()}, function (data) {
                                 jQuery("#tnp-giphy-results").html("");
                                 jQuery.each(data.data, function (index, value) {
-                                    jQuery("#tnp-giphy-results").append('<div style="overflow: hidden; width: 100px; height: 100px; float: left; margin: 5px"><img src="' + value.images.fixed_width_small.url + '" onclick="choose_gif(\'' + value.images.fixed_height.url + '\')" style="float:left; max-width: 100%"></div>');
+                                    jQuery("#tnp-giphy-results").append('<div style="overflow: hidden; width: 120px; height: 120px; float: left; margin: 5px"><img src="' + value.images.fixed_width_small.url + '" onclick="choose_gif(\'' + value.images.fixed_height.url + '\')" style="float:left; max-width: 100%"></div>');
                                 });
                             }, "json");
                         }, 500);

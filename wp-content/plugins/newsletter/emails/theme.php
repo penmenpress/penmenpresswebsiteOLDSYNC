@@ -1,6 +1,5 @@
 <?php
-if (!defined('ABSPATH'))
-    exit;
+defined('ABSPATH') || exit;
 
 require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
@@ -47,7 +46,14 @@ function newsletter_emails_get_theme_options($theme) {
 
 $themes = $module->themes->get_all_with_data();
 ?>
-
+<script>
+    function tnp_select_theme(id) {
+        var f = document.getElementById('newsletter-form');
+        f.act.value = 'theme';
+        f.elements['options[theme]'].value = id;
+        f.submit();
+    }
+</script>
 <div class="wrap tnp-emails tnp-emails-theme" id="tnp-wrap">
 
     <?php include NEWSLETTER_DIR . '/tnp-header.php'; ?>
@@ -65,33 +71,29 @@ $themes = $module->themes->get_all_with_data();
             <?php $controls->init(); ?>
             <?php $controls->hidden('theme'); ?>
 
-            <div class="tnp-theme-preview">
-                <p><?php echo _e('Responsive Drag & Drop Composer', 'newsletter') ?></p>
-                <a href="<?php echo $module->get_admin_page_url('composer'); ?>" style="margin-right: 20px; margin-bottom: 20px">
-                    <img src="<?php echo plugins_url('newsletter') . '/emails/images/composer.gif' ?>" width="420" height="200">
-                </a>
-            </div>
-            
-            <div class="tnp-theme-preview">
-                 <p>&lt;&gt; Raw HTML</p>
-                    <a href="#" onclick="var f = document.getElementById('newsletter-form');
-                            f.act.value = 'theme';
-                            f.elements['options[theme]'].value = 'rawhtml';
-                            f.submit();
-                            return false;" style="margin-right: 20px; margin-bottom: 20px">
-                        <img src="<?php echo plugins_url('newsletter') . '/emails/images/html.png' ?>" width="200" height="200">
-                    </a>
-            </div>
+                <div class="tnp-themes-new">
 
-            <?php foreach ($themes as $key => $data) { ?>
+                    <div class="tnp-theme-preview">
+                        <p><?php echo _e('Responsive Drag & Drop Composer', 'newsletter') ?></p>
+                        <a href="<?php echo $module->get_admin_page_url('composer'); ?>" style="margin-right: 20px; margin-bottom: 20px">
+                            <img src="<?php echo plugins_url('newsletter') . '/emails/images/composer.gif' ?>" width="420" height="200">
+                        </a>
+                    </div>
+
+                    <div class="tnp-theme-preview">
+                         <p>&lt;&gt; Raw HTML</p>
+                         <a href="<?php echo wp_nonce_url('admin.php?page=newsletter_emails_new&id=rawhtml', 'newsletter-new') ?>" style="margin-right: 20px; margin-bottom: 20px">
+                                <img src="<?php echo plugins_url('newsletter') . '/emails/images/html.png' ?>" width="200" height="200">
+                            </a>
+                    </div>
+
+                </div>
+
+            <?php foreach ($themes as $id => $data) { ?>
                 <div class="tnp-theme-preview">
                     <p><?php echo esc_html($data['name']) ?></p>
-                    <a href="#" onclick="var f = document.getElementById('newsletter-form');
-                            f.act.value = 'theme';
-                            f.elements['options[theme]'].value = '<?php echo esc_js($data['id']) ?>';
-                            f.submit();
-                            return false;" style="margin-right: 20px; margin-bottom: 20px">
-                        <img src="<?php echo esc_attr($data['screenshot']) ?>" width="200" height="200">
+                    <a href="<?php echo wp_nonce_url('admin.php?page=newsletter_emails_new&id=' .  urlencode($id), 'newsletter-new') ?>" style="margin-right: 20px; margin-bottom: 20px">
+                        <img src="<?php echo esc_attr($data['screenshot']) ?>" width="300" height="450">
                     </a>
                 </div>
             <?php } ?>

@@ -30,8 +30,10 @@ for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
     }
 }
 
+$all_lang_options = $module->get_options('lists');
 
-$status = array(0 => 'Disabled/Private use', 1 => 'Only on profile page', 2 => 'Even on subscription forms', '3' => 'Hidden');
+
+$status = array(0 => 'Private', 1 => 'Only on profile page', 2 => 'Even on subscription forms', '3' => 'Hidden');
 ?>
 <script>
     jQuery(function () {
@@ -87,7 +89,12 @@ $status = array(0 => 'Disabled/Private use', 1 => 'Only on profile page', 2 => '
                 ?>
                     <tr>
                         <td><?php echo $i; ?></td>
-                        <td><?php $controls->text('list_' . $i, 50); ?></td>
+                        <td>
+                            <?php $controls->text('list_' . $i, 50); ?>
+                            <?php if (!$is_all_languages) { ?>
+                            <p class="description">Main name: <?php echo esc_html($all_lang_options['list_' . $i])?></p>
+                            <?php } ?>
+                        </td>
                         <?php if ($is_all_languages) { ?>
                             <td><?php $controls->select('list_' . $i . '_status', $status); ?></td>
                             <td><?php $controls->select('list_' . $i . '_checked', array(0 => 'No', 1 => 'Yes')); ?></td>
@@ -98,8 +105,12 @@ $status = array(0 => 'Disabled/Private use', 1 => 'Only on profile page', 2 => '
                         <?php } ?>
 
                         <td><?php echo $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where list_" . $i . "=1 and status='C'"); ?></td>
-                        <td><?php $controls->button_confirm('unlink', __('Unlink everyone', 'newsletter'), '', $i); ?></td>
-
+                        
+                        <td>
+                            <?php if ($is_all_languages) { ?>
+                                <?php $controls->button_confirm('unlink', __('Unlink everyone', 'newsletter'), '', $i); ?>
+                            <?php } ?>
+                        </td>
                         <td>
                             <?php $notes = apply_filters('newsletter_lists_notes', array(), $i); ?>
                             <?php

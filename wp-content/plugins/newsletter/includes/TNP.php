@@ -21,11 +21,16 @@ class TNP {
      */
 
     public static function subscribe($params) {
-
-//        error_reporting(E_ALL);
+        
+        $logger = new NewsletterLogger('phpapi');
+        $logger->debug($params);
 
         $newsletter = Newsletter::instance();
         $subscription = NewsletterSubscription::instance();
+
+        // default params
+        $defaults = array('send_emails' => true);
+        $params = array_merge($defaults, $params);
 
         // Messages
         $options = get_option('newsletter', array());
@@ -84,39 +89,62 @@ class TNP {
         } else {
             $params['status'] = 'S';
         }
-        
+
         // Lists
- 
+
         if (!isset($params['lists']) || !is_array($params['lists'])) {
             $params['lists'] = array();
         }
-        
+
         // Public lists: rebuild the array keeping only the valid lists
         $lists = $newsletter->get_lists_public();
-        
+
         // Public list IDs
         $public_lists = array();
         foreach ($lists as $list) {
             $public_lists[] = $list->id;
         }
-        
+
         // Keep only the public lists
         $params['lists'] = array_intersect($public_lists, $params['lists']);
-        
+
         // Pre assigned lists
         $lists = $newsletter->get_lists();
         foreach ($lists as $list) {
             if ($list->forced) {
-                $params['lists'][] =  $list->id;
+                $params['lists'][] = $list->id;
+            }
+        }
+
+        // Keep only the public profile fields
+        for ($i = 1; $i <= NEWSLETTER_PROFILE_MAX; $i ++) {
+            // If the profile cannot be set by subscriber, skip it.
+            if ($subscription->options_profile['profile_' . $i . '_status'] == 0) {
+                unset($params['profile_' . $i]);
             }
         }
 
         apply_filters('newsletter_api_subscribe', $params);
         
+        $full_name = '';
+        if (isset($params['name'])) {
+            $params['name'] = $newsletter->normalize_name($params['name']);
+            $full_name .= $params['name'];
+        }
+        
+        if (isset($params['surname'])) {
+            $params['surname'] = $newsletter->normalize_name($params['surname']);
+            $full_name .= ' ' . $params['surname'];
+        }
+        
+        $ip = $newsletter->get_remote_ip();
+        
+        NewsletterSubscription::instance()->valid_subscription_or_die($email, $full_name, $ip);
+
         $user = TNP::add_subscriber($params);
 
         if (is_wp_error($user)) {
-            return ($user);
+            return ( $user );
         }
 
         // Notification to admin (only for new confirmed subscriptions)
@@ -126,14 +154,15 @@ class TNP {
             setcookie('newsletter', $user->id . '-' . $user->token, time() + 60 * 60 * 24 * 365, '/');
         }
 
-        if (empty($params['send_emails']) || !$params['send_emails']) {
+        // skip messages if send_emails = false
+        if (!$params['send_emails']) {
             return $user;
         }
 
-        $message_type = ($user->status == 'C') ? 'confirmed' : 'confirmation';
+        $message_type = ( $user->status == 'C' ) ? 'confirmed' : 'confirmation';
         $subscription->send_message($message_type, $user);
-        
-        return $user;
+
+        return null;
     }
 
     /*
@@ -145,24 +174,26 @@ class TNP {
         $newsletter = Newsletter::instance();
         $user = $newsletter->get_user($params['email']);
 
-//        $newsletter->logger->debug($params);
+        //        $newsletter->logger->debug($params);
 
         if (!$user) {
             return new WP_Error('-1', 'Email address not found', array('status' => 404));
         }
 
-        if ($user->status == 'U') {
-            return $user;
+        if ($user->status == TNP_User::STATUS_UNSUBSCRIBED) {
+            return;
         }
 
         $user = $newsletter->set_user_status($user, 'U');
+        $newsletter->add_user_log($user, 'unsubscribe');
 
-        if (empty(NewsletterSubscription::instance()->options['unsubscribed_disabled'])) {
-            $newsletter->mail($user->email, $newsletter->replace(NewsletterSubscription::instance()->options['unsubscribed_subject'], $user), $newsletter->replace(NewsletterSubscription::instance()->options['unsubscribed_message'], $user));
-        }
+        NewsletterUnsubscription::instance()->send_unsubscribed_email($user);
+
         NewsletterSubscription::instance()->notify_admin($user, 'Newsletter unsubscription');
+        
+        do_action('newsletter_unsubscribed', $user);
 
-        return $user;
+        return;
     }
 
     /*
@@ -172,6 +203,7 @@ class TNP {
     public static function add_subscriber($params) {
 
         $newsletter = Newsletter::instance();
+        $subscription = NewsletterSubscription::instance();
 
         $email = $newsletter->normalize_email(stripslashes($params['email']));
 
@@ -199,17 +231,17 @@ class TNP {
             $user['sex'] = $newsletter->normalize_sex($params['gender']);
         }
 
-        if (isset($params['profile']) && is_array($params['profile'])) {
-            foreach ($params['profile'] as $key => $value) {
-                $user['profile_' . $key] = trim(stripslashes($value));
+        for ($i = 1; $i <= NEWSLETTER_PROFILE_MAX; $i ++) {
+            if (isset($params['profile_' . $i])) {
+                $user['profile_' . $i] = trim(stripslashes($params['profile_' . $i]));
             }
         }
 
-        // Lists (an arrayunder the key "lists")
+        // Lists (an array under the key "lists")
         // Preferences (field names are nl[] and values the list number so special forms with radio button can work)
         if (isset($params['lists']) && is_array($params['lists'])) {
             foreach ($params['lists'] as $list_id) {
-                $user['list_' . ((int)$list_id)] = 1;
+                $user['list_' . ( (int) $list_id )] = 1;
             }
         }
 
@@ -222,6 +254,8 @@ class TNP {
 
         $user['token'] = $newsletter->get_token();
         $user['updated'] = time();
+
+        $user['ip'] = Newsletter::get_remote_ip();
 
         $user = $newsletter->save_user($user);
 
@@ -266,6 +300,7 @@ class TNP {
             return "OK";
         } else {
             $newsletter->logger->debug($wpdb->last_query);
+
             return new WP_Error('-1', $wpdb->last_error, array('status' => 400));
         }
     }
@@ -277,11 +312,13 @@ class TNP {
     public static function newsletters($params) {
 
         global $wpdb;
+        $newsletter = Newsletter::instance();
 
         $list = $wpdb->get_results("SELECT id, subject, created, status, total, sent, send_on FROM " . NEWSLETTER_EMAILS_TABLE . " ORDER BY id DESC LIMIT 10", OBJECT);
 
         if ($wpdb->last_error) {
-            $this->logger->error($wpdb->last_error);
+            $newsletter->logger->error($wpdb->last_error);
+
             return false;
         }
 

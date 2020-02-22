@@ -2,8 +2,6 @@
 
 defined('ABSPATH') || exit;
 
-require_once NEWSLETTER_INCLUDES_DIR . '/module.php';
-
 class NewsletterProfile extends NewsletterModule {
 
     static $instance;
@@ -20,20 +18,16 @@ class NewsletterProfile extends NewsletterModule {
 
     function __construct() {
         parent::__construct('profile', '1.1.0');
-        add_action('init', array($this, 'hook_init'), 1);
-        add_action('wp_loaded', array($this, 'hook_wp_loaded'));
         add_shortcode('newsletter_profile', array($this, 'shortcode_newsletter_profile'));
-    }
-
-    function hook_init() {
         add_filter('newsletter_replace', array($this, 'hook_newsletter_replace'), 10, 3);
         add_filter('newsletter_page_text', array($this, 'hook_newsletter_page_text'), 10, 3);
+        add_action('newsletter_action', array($this, 'hook_newsletter_action'));
     }
 
-    function hook_wp_loaded() {
+    function hook_newsletter_action($action) {
         global $wpdb;
 
-        switch (Newsletter::instance()->action) {
+        switch ($action) {
             case 'profile':
             case 'p':
             case 'pe':
@@ -369,9 +363,15 @@ class NewsletterProfile extends NewsletterModule {
         $data['email'] = $email;
         if (isset($_REQUEST['nn'])) {
             $data['name'] = $this->normalize_name(stripslashes($_REQUEST['nn']));
+            if ($subscription_module->is_spam_text($data['name'])) {
+                die();
+            }
         }
         if (isset($_REQUEST['ns'])) {
             $data['surname'] = $this->normalize_name(stripslashes($_REQUEST['ns']));
+            if ($subscription_module->is_spam_text($data['surname'])) {
+                die();
+            }
         }
         if ($options_profile['sex_status'] >= 1) {
             $data['sex'] = $_REQUEST['nx'][0];
@@ -445,12 +445,6 @@ class NewsletterProfile extends NewsletterModule {
             $this->options['email_changed'] = $options['profile_email_changed'];
             $this->options['error'] = $options['profile_error'];
             $this->options['url'] = $options['profile_url'];
-            $this->save_options($this->options);
-        }
-
-        if (empty($this->options) || empty($this->options['save_label'])) {
-            $options = get_option('newsletter_profile');
-            $this->options['save_label'] = $options['save'];
             $this->save_options($this->options);
         }
     }

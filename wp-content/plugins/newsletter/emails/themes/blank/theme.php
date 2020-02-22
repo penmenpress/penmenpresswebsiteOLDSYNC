@@ -1,5 +1,12 @@
 <?php
-if (!defined('ABSPATH')) exit;
+/*
+ * Name: Really minimal
+ * Type: standard
+ * Description: -
+ */
+
+defined('ABSPATH') || exit;
+
 ?><html>
     <head>
         <style>
@@ -41,5 +48,6 @@ if (!defined('ABSPATH')) exit;
         <p>
             <?php echo $theme_options['main_footer_legal'] ?>
         </p>
+        
     </body>
 </html>

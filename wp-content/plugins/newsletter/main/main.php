@@ -7,10 +7,16 @@ $module = Newsletter::instance();
 
 if (!$controls->is_action()) {
     $controls->data = get_option('newsletter_main');
+    if (!isset($controls->data['roles'])) {
+        $controls->data['roles'] = array();
+        if (!empty($controls->data['editor'])) $controls->data['roles'] = 'editor';
+    }
 } else {
 
     if ($controls->is_action('save')) {
         $errors = null;
+        
+        if (!isset($controls->data['roles'])) $controls->data['roles'] = array();
 
         // Validation
         $controls->data['sender_email'] = $module->normalize_email($controls->data['sender_email']);
@@ -45,8 +51,9 @@ if (!$controls->is_action()) {
 
         update_option('newsletter_log_level', $controls->data['log_level']);
 
-        $module->hook_newsletter_extension_versions(true);
+        //$module->hook_newsletter_extension_versions(true);
         delete_transient("tnp_extensions_json");
+        delete_transient('newsletter_license_data');
     }
 
     if ($controls->is_action('create')) {
@@ -72,32 +79,20 @@ if (!$controls->is_action()) {
     }
 }
 
-if (!empty($controls->data['contract_key']) || defined('NEWSLETTER_LICENSE_KEY')) {
+$license_data = $module->get_license_data(true);
 
-    if (defined('NEWSLETTER_LICENSE_KEY')) {
-        $license_key = NEWSLETTER_LICENSE_KEY;
-    } else {
-        $license_key = $controls->data['contract_key'];
+if (is_wp_error($license_data)) {
+        $controls->errors .= esc_html('[' . $license_data->get_error_code()) . '] - ' . esc_html($license_data->get_error_message());
+} else {
+    if ($license_data !== false) {
+        if ($license_data->expire == 0) {
+            $controls->messages = 'Your FREE license is valid';
+        } elseif ($license_data->expire >= time()) {
+            $controls->messages = 'Your license is valid and expires on ' . esc_html(date('Y-m-d', $license_data->expire));
+        } else {
+            $controls->errors = 'Your license is expired on ' . esc_html(date('Y-m-d', $license_data->expire));
+        }
     }
-    $response = wp_remote_get('http://www.thenewsletterplugin.com/wp-content/plugins/file-commerce-pro/check.php?k=' . urlencode($license_key), array('sslverify' => false));
-
-    if (is_wp_error($response)) {
-        /* @var $response WP_Error */
-        $controls->errors .= 'It seems that your blog cannot contact the license validator. Ask your provider to unlock the HTTP/HTTPS connections to www.thenewsletterplugin.com<br>';
-        $controls->errors .= esc_html($response->get_error_code()) . ' - ' . esc_html($response->get_error_message());
-        $controls->data['licence_expires'] = "";
-    } else if ($response['response']['code'] != 200) {
-        $controls->errors .= '[' . $response['response']['code'] . '] The license seems expired or not valid, please check your <a href="https://www.thenewsletterplugin.com/account">license code and status</a>, thank you.';
-        $controls->errors .= '<br>You can anyway download the professional extension from https://www.thenewsletterplugin.com.';
-        $controls->data['licence_expires'] = "";
-    } elseif ($expires = json_decode(wp_remote_retrieve_body($response))) {
-        $controls->data['licence_expires'] = $expires->expire;
-        $controls->messages = 'Your license is valid and expires on ' . esc_html(date('Y-m-d', $expires->expire));
-    } else {
-        $controls->errors = 'Unable to detect the license expiration. Debug data to report to the support: <code>' . esc_html(wp_remote_retrieve_body($response)) . '</code>';
-        $controls->data['licence_expires'] = "";
-    }
-    $module->merge_options($controls->data);
 }
 
 $return_path = $module->options['return_path'];
@@ -266,9 +261,19 @@ if (!empty($return_path)) {
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e('Enable access to blog editors?', 'newsletter') ?></th>
+                            <th><?php _e('Allowed roles', 'newsletter') ?></th>
                             <td>
-                                <?php $controls->yesno('editor'); ?>
+                                <?php 
+                                $wp_roles = get_editable_roles();
+                                $roles = array();
+                                foreach ($wp_roles as $key=>$wp_role) {
+                                    if ($key == 'administrator') continue;
+                                    if ($key == 'subscriber') continue;
+                                    $roles[$key] = $wp_role['name'];
+                                }
+                                $controls->checkboxes('roles', $roles); 
+                                ?>
+                                
                             </td>
                         </tr>
 
@@ -313,17 +318,21 @@ if (!empty($return_path)) {
                         </tr>
 
                         <tr>
-                            <th><?php _e('Send email directly', 'newsletter') ?></th>
-                            <td>
-                                <?php $controls->yesno('phpmailer'); ?>
-                                <?php $controls->help('https://www.thenewsletterplugin.com/configuration-tnin-send-email'); ?>
-                            </td>
-                        </tr>
-                        <tr>
                             <th><?php _e('Email encoding', 'newsletter') ?></th>
                             <td>
                                 <?php $controls->select('content_transfer_encoding', array('' => 'Default', '8bit' => '8 bit', 'base64' => 'Base 64', 'binary' => 'Binary', 'quoted-printable' => 'Quoted printable', '7bit' => '7 bit')); ?>
                                 <?php $controls->help('https://www.thenewsletterplugin.com/plugins/newsletter/newsletter-configuration#encoding') ?>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <th>
+                                <?php _e('Execute shortcodes on newsletters', 'newsletter') ?>
+                                <?php $controls->field_help("https://www.thenewsletterplugin.com/documentation/newsletter-configuration#shortcodes")?>
+                            </th>
+                            <td>
+                                <?php $controls->yesno('do_shortcodes', 40); ?>
+                                <?php $controls->field_help("https://www.thenewsletterplugin.com/documentation/newsletter-configuration#shortcodes")?>
                             </td>
                         </tr>
                     </table>

@@ -1,4 +1,6 @@
 <?php
+defined('ABSPATH') || exit;
+
 @include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
 $module = Newsletter::instance();
@@ -22,135 +24,101 @@ if (isset($_POST['email']) && check_admin_referer('subscribe')) {
     die();
 }
 
-$subscribed = get_option('newsletter_subscribed', false);
-$has_license = !empty(Newsletter::instance()->options['contract_key']);
-if ($has_license) {
-    if (!class_exists('NewsletterExtensions')) {
-        $controls->warnings = 'Please, install our Addons manager to manage all extensions from this panel. 
-            <a href="https://www.thenewsletterplugin.com/documentation/how-to-install-the-addons-manager" target="_blank">Get it here</a>.';
+if ($controls->is_action('activate')) {
+    $result = activate_plugin('newsletter-extensions/extensions.php');
+    if (is_wp_error($result)) {
+        $controls->errors .= __('Error while activating:', 'newsletter') . " " . $result->get_error_message();
+    } else {
+        wp_clean_plugins_cache(false);
+        delete_transient("tnp_extensions_json");
+        $controls->js_redirect('admin.php?page=newsletter_extensions_index');
+        wp_die();
     }
 }
+
 ?>
 
 <div class="wrap" id="tnp-wrap">
 
     <?php include NEWSLETTER_DIR . '/tnp-header.php'; ?>
 
-    <div id="tnp-heading">
-
-        <h2><?php _e('Extensions', 'newsletter') ?></h2>
-
-        <p><?php _e('Extend your Newsletter experience with our addons', 'newsletter') ?>.</p>
-
-    </div>
 
     <div id="tnp-body">
+        <?php if (is_wp_error(validate_plugin('newsletter-extensions/extensions.php'))) { ?>
+            <div id="tnp-promo">
+
+                <h1>Supercharge Newsletter with our Professional Addons</h1>
+                <div class="tnp-promo-how-to">
+                    <h3>How to install:</h3>
+                    <p>To add our addons, free or professional, you need to install our Addons Manager. But don't worry, it's super easy! Just click on "Download" button to download the zip file of
+                        the Addon Manager from our website, then click on "Install" to upload the same zip file to your WordPress installation.</p>
+                </div>
+                <div class="tnp-promo-buttons">
+                    <a class="tnp-promo-button" href="https://www.thenewsletterplugin.com/get-addons-manager"><i class="fas fa-cloud-download-alt"></i> Download Addons Manager</a>
+                    <a class="tnp-promo-button" href="<?php echo admin_url('plugin-install.php?tab=upload') ?>"><i class="fas fa-cloud-upload-alt"></i> Install</a>
+                </div>
+
+            </div>
+        <?php } elseif (is_plugin_inactive('newsletter-extensions/extensions.php')) { ?>
+            <div id="tnp-promo">
+                <div class="tnp-promo-how-to">
+                    <p>Addons Manager seems installed but not active.</p>
+                    <p>Activate it to install and update our free and professional addons.</p>
+                </div>
+                <div class="tnp-promo-buttons">
+                    <a class="tnp-promo-button" href="<?php echo wp_nonce_url(admin_url('admin.php') . '?page=newsletter_main_extensions&act=activate', 'save'); ?>"><i class="fas fa-power-off"></i> Activate</a>
+                </div>
+            </div>
+        <?php } ?>
 
         <?php if (is_array($extensions)) { ?>
 
-            <!--PREMIUM EXTENSIONS-->
+            <!-- Extensions -->
             <?php foreach ($extensions AS $e) { ?>
 
-                <?php
-                $e->activate_url = wp_nonce_url(admin_url('admin.php') . '?page=newsletter_main_extensions&act=activate&id=' . $e->id, 'save');
-                $e->install_url = wp_nonce_url(admin_url('admin.php') . '?page=newsletter_main_extensions&act=install&id=' . $e->id, 'save');
-                ?>
+                <?php if ($e->type == "extension" || $e->type == "premium") { ?>
+                    <div class="<?php echo $e->free ? 'tnp-extension-free-box' : 'tnp-extension-premium-box' ?> <?php echo $e->slug ?>">
 
-                <!--PREMIUM EXTENSIONS-->
-                <?php if ($e->type == "premium") { ?>
-                    <div class="tnp-extension-premium-box <?php echo $e->slug ?>">
+                        <?php if ($e->free) { ?>
+                            <img class="tnp-extensions-free-badge" src="<?php echo plugins_url('newsletter') ?>/images/extension-free.png">
+                        <?php } ?>
                         <div class="tnp-extensions-image"><img src="<?php echo $e->image ?>" alt="" /></div>
                         <h3><?php echo $e->title ?></h3>
                         <p><?php echo $e->description ?></p>
-                        <div class="tnp-extension-premium-action">
-                            <?php if (is_plugin_active($e->wp_slug)) { ?>
-                                <span><i class="fa fa-check" aria-hidden="true"></i> <?php _e('Plugin active', 'newsletter') ?></span>
-                            <?php } elseif (file_exists(WP_PLUGIN_DIR . "/" . $e->wp_slug)) { ?>
-                                <a href="<?php echo $e->activate_url ?>" class="tnp-extension-activate">
-                                    <i class="fa fa-power-off" aria-hidden="true"></i> <?php _e('Activate', 'newsletter') ?>
-                                </a>
-                            <?php } else { ?>
-                                <?php if ($has_license) { ?>
-                                    <a href="https://www.thenewsletterplugin.com/account" class="tnp-extension-install" target="_blank">
-                                        DOWNLOAD NOW
-                                    </a>
-                                <?php } else { ?>
-                                    <a href="<?php echo $e->url ?>" class="tnp-extension-install" target="_blank">
-                                        BUY NOW
-                                    </a>
-                                <?php } ?>
-                            <?php } ?>
-                        </div>
                     </div>
                 <?php } ?>
             <?php } ?>
 
-            <!--FREE EXTENSIONS-->
+            <!-- Integrations -->
             <?php foreach ($extensions AS $e) { ?>
 
-                <?php
-                $e->activate_url = wp_nonce_url(admin_url('admin.php') . '?page=newsletter_main_extensions&act=activate&id=' . $e->id, 'save');
-                if ($subscribed) {
-                    $e->install_url = wp_nonce_url(admin_url('admin.php') . '?page=newsletter_main_extensions&act=install&id=' . $e->id, 'save');
-                } else {
-                    $e->install_url = 'javascript:newsletter_subscribe(' . $e->id . ')';
-                }
-                ?>
-                <?php if ($e->type == "free") { ?>
-                    <div class="tnp-extension-free-box <?php echo $e->slug ?>">
-                        <img class="tnp-extensions-free-badge" src="<?php echo plugins_url('newsletter') ?>/images/extension-free.png">
+                <?php if ($e->type == "integration") { ?>
+
+                    <div class="<?php echo $e->free ? 'tnp-extension-free-box' : 'tnp-integration-box' ?> <?php echo $e->slug ?>">
+
+                        <?php if ($e->free) { ?>
+                            <img class="tnp-extensions-free-badge" src="<?php echo plugins_url('newsletter') ?>/images/extension-free.png">
+                        <?php } ?>
                         <div class="tnp-extensions-image"><img src="<?php echo $e->image ?>"></div>
                         <h3><?php echo $e->title ?></h3>
                         <p><?php echo $e->description ?></p>
-                        <div class="tnp-extension-free-action">
-                            <?php if (is_plugin_active($e->wp_slug)) { ?>
-                                <span><i class="fa fa-check" aria-hidden="true"></i> <?php _e('Plugin active', 'newsletter') ?></span>
-                            <?php } elseif (file_exists(WP_PLUGIN_DIR . "/" . $e->wp_slug)) { ?>
-                                <a href="<?php echo $e->activate_url ?>" class="tnp-extension-activate">
-                                    <i class="fa fa-power-off" aria-hidden="true"></i> <?php _e('Activate', 'newsletter') ?>
-                                </a>
-                            <?php } else { ?>
-                                <a href="<?php echo $e->url ?>" class="tnp-extension-install" target="_blank">
-                                    <i class="fa fa-download" aria-hidden="true"></i> Download now
-                                </a>
-                            <?php } ?>
-                        </div>
                     </div>
                 <?php } ?>
 
             <?php } ?>
 
-            <!-- INTEGRATIONS -->
+            <!-- Delivery -->
             <?php foreach ($extensions AS $e) { ?>
 
-                <?php
-                $e->activate_url = wp_nonce_url(admin_url('admin.php') . '?page=newsletter_main_extensions&act=activate&id=' . $e->id, 'save');
-                $e->install_url = wp_nonce_url(admin_url('admin.php') . '?page=newsletter_main_extensions&act=install&id=' . $e->id, 'save');
-                ?>
-                <?php if ($e->type == "integration") { ?>
-                    <div class="tnp-integration-box <?php echo $e->slug ?>">
+                <?php if ($e->type == "delivery") { ?>
+                    <div class="<?php echo $e->free ? 'tnp-extension-free-box' : 'tnp-integration-box' ?> <?php echo $e->slug ?>">
+
+                        <?php if ($e->free) { ?>
+                            <img class="tnp-extensions-free-badge" src="<?php echo plugins_url('newsletter') ?>/images/extension-free.png">
+                        <?php } ?>
                         <div class="tnp-extensions-image"><img src="<?php echo $e->image ?>" alt="" /></div>
                         <h3><?php echo $e->title ?></h3>
                         <p><?php echo $e->description ?></p>
-                        <div class="tnp-integration-action">
-                            <?php if (is_plugin_active($e->wp_slug)) { ?>
-                                <span><i class="fa fa-check" aria-hidden="true"></i> <?php _e('Plugin active', 'newsletter') ?></span>
-                            <?php } elseif (file_exists(WP_PLUGIN_DIR . "/" . $e->wp_slug)) { ?>
-                                <a href="<?php echo $e->activate_url ?>" class="tnp-extension-activate">
-                                    <i class="fa fa-power-off" aria-hidden="true"></i> <?php _e('Activate', 'newsletter') ?>
-                                </a>
-                            <?php } else { ?>
-                                <?php if ($has_license) { ?>
-                                    <a href="https://www.thenewsletterplugin.com/account" class="tnp-extension-install" target="_blank">
-                                        DOWNLOAD NOW
-                                    </a>
-                                <?php } else { ?>
-                                    <a href="<?php echo $e->url ?>" class="tnp-extension-install" target="_blank">
-                                        BUY NOW
-                                    </a>
-                                <?php } ?>
-                            <?php } ?>
-                        </div>
                     </div>
                 <?php } ?>
 
@@ -159,7 +127,7 @@ if ($has_license) {
 
         <?php } else { ?>
 
-            <p style="color: white;">No extensions available.</p>
+            <p style="color: white;">No addons available, try later.</p>
 
         <?php } ?>
 

@@ -1,66 +1,12 @@
 <?php
-/*
- * @var $options array contains all the options the current block we're ediging contains
- * @var $controls NewsletterControls 
- */
+
+/* @var $fields NewsletterFields */
 ?>
 
-<table class="form-table">
-    <tr>
-        <th><?php _e('Label and link', 'newsletter') ?></th>
-        <td>
-            <?php $controls->text('text', 70) ?>
-            <br>
-            <?php $controls->text('url', 70, 'https://...') ?>
-        </td>
-    </tr>
-    <tr>
-        <th></th>
-        <td>
-            <table class="tnp-button-colors">
-                <tr>
-                    <td>
-                        <?php _e('Background', 'newsletter') ?><br>
-                        <?php $controls->color('background') ?>
-                    </td>
-                    <td>
-                        <?php _e('Label', 'newsletter') ?><br>
-                        <?php $controls->color('color') ?>
-                    </td>
-                </tr>
-            </table>
-            <?php $controls->css_font('font') ?>
-        </td>
-    </tr>
+<?php $fields->text('text', 'Button label') ?>
+<?php $fields->url('url', 'Button URL') ?>
+<?php $fields->font('font', __('Font', 'newsletter')) ?>
+<?php $fields->color('background', 'Button background') ?>
+<?php $fields->size('width', __('Width', 'newsletter')) ?>
 
-    <tr>
-        <th><?php _e('Width', 'newsletter') ?></th>
-        <td>
-            <?php $controls->text('width') ?>px
-        </td>
-    </tr>
-
-    <tr>
-        <th><?php _e('Block background', 'newsletter') ?></th>
-        <td>
-            <?php $controls->color('block_background') ?>
-        </td>
-    </tr>
-    <tr>
-        <th><?php _e('Block padding', 'newsletter') ?></th>
-        <td>
-            <table class="tnp-button-colors">
-                <tr>
-                    <td>
-                        Top<br>
-                        <?php $controls->text('block_padding_top', 4) ?> 
-                    </td>
-                    <td>
-                        Bottom<br>
-                        <?php $controls->text('block_padding_bottom', 4) ?>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
+<?php $fields->block_commons() ?>

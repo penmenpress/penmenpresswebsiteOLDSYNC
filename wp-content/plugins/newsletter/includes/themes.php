@@ -1,142 +1,137 @@
 <?php
-if (!defined('ABSPATH')) exit;
+
+defined('ABSPATH') || exit;
+
+/**
+ * Registers a Newsletter theme to be shown as option on standard newsletter creation
+ * Designers love functions...
+ * @param string $dir The absolute path of a folder containing a Newsletter theme
+ */
+function tnp_register_theme($dir) {
+    NewsletterThemes::register_theme($dir);
+}
 
 class NewsletterThemes {
 
     var $module;
     var $is_extension = false;
+    static $registered_theme_dirs = array();
+
+    static function register_theme($dir) {
+        if (!file_exists($dir . '/theme.php')) {
+            $error = new WP_Error('1', 'theme.php missing on folder ' . $dir);
+            return $error;
+        }
+        self::$registered_theme_dirs[] = $dir;
+        return true;
+    }
 
     function __construct($module, $is_extension = false) {
         $this->module = $module;
         $this->is_extension = $is_extension;
     }
 
-    /** Loads all themes of a module (actually only "emails" module makes sense). Themes are located inside the subfolder
-     * named as the module on plugin folder and on a subfolder named as the module on wp-content/newsletter folder (which
-     * must be manually created).
-     *
-     * @param type $module
-     * @return type
+    /** 
+     * Build an associative array which represent a theme starting from the theme
+     * parsing the files in the theme folder.<br>
+     * dir - the full path to the theme folder<br>
+     * url - the full url to the theme folder (to reference assets like images)<br>
+     * id - the folder name, used as unique identifier<br>
+     * screenshot - url to an image representing the theme (400x400)<br>
+     * name - the readable theme name extracted from the theme.php<br>
+     * 
+     * description - not used
+     * type - not used
+     * 
+     * @param string $dir
+     * @return array
      */
-    function get_all() {
-        $list = array();
+    function build_theme($dir) {
 
-        $dir = WP_CONTENT_DIR . '/extensions/newsletter/' . $this->module . '/themes';
-        $handle = @opendir($dir);
-
-        if ($handle !== false) {
-            while ($file = readdir($handle)) {
-                if ($file == '.' || $file == '..')
-                    continue;
-                if (!is_file($dir . '/' . $file . '/theme.php'))
-                    continue;
-                $list[$file] = $file;
-            }
-            closedir($handle);
+        if (!is_dir($dir)) {
+            return null;
+        }
+        
+        if (!is_file($dir . '/theme.php')) {
+            return null;
         }
 
-        if (!$this->is_extension) {
-            $dir = NEWSLETTER_DIR . '/' . $this->module . '/themes';
-            $handle = @opendir($dir);
-
-            if ($handle !== false) {
-                while ($file = readdir($handle)) {
-                    if ($file == '.' || $file == '..')
-                        continue;
-                    if (isset($list[$file]))
-                        continue;
-                    if (!is_file($dir . '/' . $file . '/theme.php'))
-                        continue;
-
-                    $list[$file] = $file;
-                }
-                closedir($handle);
-            }
+        $data = get_file_data($dir . '/theme.php', array('name' => 'Name', 'type' => 'Type', 'description' => 'Description'));
+        $data['id'] = basename($dir);
+        $data['dir'] = $dir;
+        if (empty($data['name'])) {
+            $data['name'] = $data['id'];
         }
-
-        return $list;
-    }
-
-    function themescmp($a, $b) {
-        $al = strtolower($a['name']);
-        $bl = strtolower($b['name']);
-        if ($al == 'default') {
-            return -1;
+        
+        if (empty($data['type'])) {
+            $data['type'] = 'standard';
         }
-        return (strcmp($al, $bl));
+        $relative_dir = substr($dir, strlen(WP_CONTENT_DIR));
+        $data['url'] = content_url($relative_dir);
+        $screenshot = $dir . '/screenshot.png';
+        if (is_file($screenshot)) {
+            $relative_dir = substr($dir, strlen(WP_CONTENT_DIR));
+            $data['screenshot'] = $data['url'] . '/screenshot.png';
+        } else {
+            $data['screenshot'] = plugins_url('newsletter') . '/images/theme-screenshot.png';
+        }
+        return $data;
     }
 
     function get_all_with_data() {
         $list = array();
 
+        // Packaged themes
+        $list['default'] = $this->build_theme(NEWSLETTER_DIR . '/emails/themes/default');
+        $list['blank'] = $this->build_theme(NEWSLETTER_DIR . '/emails/themes/blank');
+        $list['cta-2015'] = $this->build_theme(NEWSLETTER_DIR . '/emails/themes/cta-2015');
+        $list['vimeo-like'] = $this->build_theme(NEWSLETTER_DIR . '/emails/themes/vimeo-like');
+
+        // Extensions folder scan
         $dir = WP_CONTENT_DIR . '/extensions/newsletter/' . $this->module . '/themes';
         $handle = @opendir($dir);
 
         if ($handle !== false) {
             while ($file = readdir($handle)) {
-                if ($file == '.' || $file == '..') {
+
+                $data = $this->build_theme($dir . '/' . $file);
+
+                if (!$data || isset($list[$data['id']])) {
                     continue;
                 }
-                if (isset($list[$file])) {
-                    continue;
-                }
-                if (!is_file($dir . '/' . $file . '/theme.php')) {
-                    continue;
-                }
-                $data = get_file_data($dir . '/' . $file . '/theme.php', array('name' => 'Name', 'type' => 'Type', 'description'=>'Description'));
-                $data['id'] = $file;
-                if (empty($data['name'])) {
-                    $data['name'] = $file;
-                }
-                if (empty($data['type'])) {
-                    $data['type'] = 'standard';
-                }
-                $screenshot = $dir . '/' . $file . '/screenshot.png';
-                if (is_file($screenshot)) {
-                    $data['screenshot'] = $this->get_theme_url($file) . '/screenshot.png';
-                } else {
-                    $data['screenshot'] = plugins_url('newsletter') . '/images/theme-screenshot.png';
-                }
-                $list[$file] = $data;
+
+                $list[$data['id']] = $data;
             }
             closedir($handle);
         }
+        
+        // Registered themes
+        do_action('newsletter_register_themes');
 
-        if (!$this->is_extension) {
-            $dir = NEWSLETTER_DIR . '/' . $this->module . '/themes';
-            $handle = @opendir($dir);
-
-            if ($handle !== false) {
-                while ($file = readdir($handle)) {
-                    if ($file == '.' || $file == '..') {
-                        continue;
-                    }
-                    if (!is_file($dir . '/' . $file . '/theme.php')) {
-                        continue;
-                    }
-                    $data = get_file_data($dir . '/' . $file . '/theme.php', array('name' => 'Name', 'type' => 'Type', 'description'=>'Description'));
-                    $data['id'] = $file;
-                    if (empty($data['name'])) {
-                        $data['name'] = $file;
-                    }
-                    if (empty($data['type'])) {
-                        $data['type'] = 'standard';
-                    }
-                    $screenshot = $dir . '/' . $file . '/screenshot.png';
-                    if (is_file($screenshot)) {
-                        $data['screenshot'] = $this->get_theme_url($file) . '/screenshot.png';
-                    } else {
-                        $data['screenshot'] = plugins_url('newsletter') . '/images/theme-screenshot.png';
-                    }
-                    $list[$file] = $data;
-                }
-                closedir($handle);
+        foreach (self::$registered_theme_dirs as $dir) {
+            $data = $this->build_theme($dir);
+            if (!$data || isset($list[$data['id']])) {
+                continue;
             }
+
+            $list[$data['id']] = $data;
         }
 
-        usort($list, array($this, "themescmp"));
-
         return $list;
+    }
+
+    /**
+     * Returns a data structure containing the theme details.
+     * 
+     * @param string $id
+     * @return array
+     */
+    function get_theme($id) {
+        $themes = $this->get_all_with_data();
+        if (isset($themes[$id])) {
+            return $themes[$id];
+        }
+        return null;
     }
 
     /**
@@ -145,81 +140,45 @@ class NewsletterThemes {
      * @param type $options
      * @param type $module
      */
-    function save_options($theme, &$options) {
-        add_option('newsletter_' . $this->module . '_theme_' . $theme, array(), null, 'no');
+    function save_options($theme_id, &$options) {
         $theme_options = array();
         foreach ($options as $key => &$value) {
             if (substr($key, 0, 6) != 'theme_')
                 continue;
             $theme_options[$key] = $value;
         }
-        update_option('newsletter_' . $this->module . '_theme_' . $theme, $theme_options);
+        update_option('newsletter_' . $this->module . '_theme_' . $theme_id, $theme_options, false);
     }
 
-    function get_options($theme) {
-        $options = get_option('newsletter_' . $this->module . '_theme_' . $theme);
+    function get_options($theme_id) {
+        $options = get_option('newsletter_' . $this->module . '_theme_' . $theme_id);
         // To avoid merge problems.
         if (!is_array($options)) {
             $options = array();
         }
-        $file = $this->get_file_path($theme, 'theme-defaults.php');
+        
+        $theme = $this->get_theme($theme_id);
+        
+        $file = $theme['dir'] . '/theme-defaults.php';
         if (is_file($file)) {
             @include $file;
         }
         if (isset($theme_defaults) && is_array($theme_defaults)) {
             $options = array_merge($theme_defaults, $options);
         }
+        
+        // main options merge
+        $main_options = Newsletter::instance()->options;
+        foreach ($main_options as $key => $value) {
+            $options['main_' . $key] = $value;
+        }
+        
+        $info_options = Newsletter::instance()->get_options('info');
+        foreach ($info_options as $key => $value) {
+            $options['main_' . $key] = $value;
+        }
+        
         return $options;
     }
-
-    function get_file_path($theme, $file) {
-        $path = WP_CONTENT_DIR . '/extensions/newsletter/' . $this->module . '/themes/' . $theme . '/' . $file;
-        if (is_file($path)) {
-            return $path;
-        } else {
-            return NEWSLETTER_DIR . '/' . $this->module . '/themes/' . $theme . '/' . $file;
-        }
-    }
-
-    function get_theme_url($theme) {
-        if ($this->is_extension) {
-            return WP_CONTENT_URL . '/extensions/newsletter/' . $this->module . '/themes/' . $theme;
-        }
-
-        $path = NEWSLETTER_DIR . '/' . $this->module . '/themes/' . $theme;
-        if (is_dir($path)) {
-            return plugins_url('newsletter') . '/' . $this->module . '/themes/' . $theme;
-        } else {
-            return WP_CONTENT_URL . '/extensions/newsletter/' . $this->module . '/themes/' . $theme;
-        }
-    }
-
-    function get_default_options() {
-        if ($this->is_extension) {
-            $path2 = WP_CONTENT_DIR . '/extensions/newsletter/' . $this->module . '/themes/' . $theme . '/languages';
-            @include $path2 . '/en_US.php';
-            @include $path2 . '/' . WPLANG . '.php';
-        } else {
-            $path1 = NEWSLETTER_DIR . '/' . $this->module . '/themes/' . $theme . '/languages';
-            $path2 = WP_CONTENT_DIR . '/extensions/newsletter/' . $this->module . '/themes/' . $theme . '/languages';
-            @include $path1 . '/en_US.php';
-            @include $path2 . '/en_US.php';
-            @include $path1 . '/' . WPLANG . '.php';
-            @include $path2 . '/' . WPLANG . '.php';
-        }
-
-        if (!is_array($options))
-            return array();
-        return $options;
-    }
-
 }
 
-function nt_option($name, $def = null) {
-    $options = get_option('newsletter_email');
-    $option = $options['theme_' . $name];
-    if (!isset($option))
-        return $def;
-    else
-        return $option;
-}

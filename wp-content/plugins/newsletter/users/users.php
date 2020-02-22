@@ -2,8 +2,6 @@
 
 defined('ABSPATH') || exit;
 
-require_once NEWSLETTER_INCLUDES_DIR . '/module.php';
-
 class NewsletterUsers extends NewsletterModule {
 
     static $instance;
@@ -19,11 +17,7 @@ class NewsletterUsers extends NewsletterModule {
     }
 
     function __construct() {
-        parent::__construct('users', '1.2.9');
-        add_action('init', array($this, 'hook_init'));
-    }
-
-    function hook_init() {
+        parent::__construct('users', '1.3.0');
         if (is_admin()) {
             add_action('wp_ajax_newsletter_users_export', array($this, 'hook_wp_ajax_newsletter_users_export'));
         }
@@ -32,7 +26,7 @@ class NewsletterUsers extends NewsletterModule {
     function hook_wp_ajax_newsletter_users_export() {
 
         $newsletter = Newsletter::instance();
-        if (current_user_can('manage_options') || ($newsletter->options['editor'] == 1 && current_user_can('manage_categories'))) {
+        if ($newsletter->is_allowed()) {
             require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
             $controls = new NewsletterControls();
 

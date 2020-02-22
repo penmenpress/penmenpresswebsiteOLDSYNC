@@ -31,6 +31,8 @@ $options['sex_male'] = 'Man';
 $options['sex_female'] = 'Woman';
 $options['sex_none'] = 'Not specified';
 
+$options['profile_error'] = __('A mandatory field is not filled in', 'newsletter');
+    
 for ($i=1; $i<=NEWSLETTER_PROFILE_MAX; $i++) {
     $options['profile_' . $i . '_status'] = 0;
     $options['profile_' . $i] = '';

@@ -1,14 +1,12 @@
 <?php
 
-if (!defined('ABSPATH'))
-    exit;
-
-require_once NEWSLETTER_INCLUDES_DIR . '/module.php';
+defined('ABSPATH') || exit;
 
 class NewsletterStatistics extends NewsletterModule {
 
     static $instance;
-    
+
+    const SENT_NONE = 0;
     const SENT_READ = 1;
     const SENT_CLICK = 2;
 
@@ -23,17 +21,8 @@ class NewsletterStatistics extends NewsletterModule {
     }
 
     function __construct() {
-        parent::__construct('statistics', '1.1.8');
+        parent::__construct('statistics', '1.2.0');
         add_action('wp_loaded', array($this, 'hook_wp_loaded'));
-        if (is_admin()) {
-            add_action('admin_enqueue_scripts', array($this, 'hook_admin_enqueue_scripts'));
-        }
-    }
-
-    function hook_admin_enqueue_scripts() {
-        if (isset($_GET['page']) && (strpos($_GET['page'], 'newsletter_statistics') === 0 || strpos($_GET['page'], 'newsletter_reports') === 0)) {
-            wp_enqueue_style('newsletter-admin-statistics', plugins_url('newsletter') . '/statistics/css/tnp-statistics.css', array('tnp-admin'), time());
-        }
     }
 
     /**
@@ -88,6 +77,7 @@ class NewsletterStatistics extends NewsletterModule {
             }
 
             setcookie('newsletter', $user->id . '-' . $user->token, time() + 60 * 60 * 24 * 365, '/');
+            setcookie('tnpe', $email->id . '-' . $email->token, time() + 60 * 60 * 24 * 365, '/');
 
             $is_action = strpos($url, '?na=');
 
@@ -101,7 +91,9 @@ class NewsletterStatistics extends NewsletterModule {
                 // Track an action as an email read and not a click
                 $this->update_open_value(self::SENT_READ, $user_id, $email_id, $ip);
             }
-            
+            $this->reset_stats_time($email_id);
+
+
             $this->update_user_ip($user, $ip);
             $this->update_user_last_activity($user);
 
@@ -139,10 +131,11 @@ class NewsletterStatistics extends NewsletterModule {
             }
 
             $ip = $this->get_remote_ip();
-            $ip = $this->process_ip($ip); 
+            $ip = $this->process_ip($ip);
 
             $this->add_click('', $user_id, $email_id, $ip);
             $this->update_open_value(self::SENT_READ, $user_id, $email_id, $ip);
+            $this->reset_stats_time($email_id);
 
             $this->update_user_last_activity($user);
 
@@ -150,6 +143,11 @@ class NewsletterStatistics extends NewsletterModule {
             echo base64_decode('_R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
             die();
         }
+    }
+
+    function reset_stats_time($email_id) {
+        global $wpdb;
+        $wpdb->update(NEWSLETTER_EMAILS_TABLE, array('stats_time' => 0), array('id' => $email_id));
     }
 
     function upgrade() {
@@ -163,9 +161,7 @@ class NewsletterStatistics extends NewsletterModule {
   `url` varchar(255) NOT NULL DEFAULT '',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `email_id` varchar(10) NOT NULL DEFAULT '0',
-  `link_id` int(11) NOT NULL DEFAULT '0',
   `ip` varchar(20) NOT NULL DEFAULT '',
-  `country` varchar(4) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `email_id` (`email_id`),
   KEY `user_id` (`user_id`)
@@ -195,7 +191,7 @@ class NewsletterStatistics extends NewsletterModule {
         $this->relink_email_token = $email_token;
 
         $this->logger->debug('Relink with token: ' . $email_token);
-        $text = preg_replace_callback('/(<[aA][^>]+href[\s]*=[\s]*["\'])([^>"\']+)(["\'][^>]*>)(.*?)(<\/[Aa]>)/s', array($this, 'relink_callback'), $text);
+        $text = preg_replace_callback('/(<[aA][^>]+href[\s]*=[\s]*["\'])([^>"\']+)(["\'][^>]*>)(.*?)(<\/[Aa]>)/is', array($this, 'relink_callback'), $text);
 
         $signature = md5($email_id . $user_id . $email_token);
         $text = str_replace('</body>', '<img width="1" height="1" alt="" src="' . home_url('/') . '?noti=' . urlencode(base64_encode($email_id . ';' . $user_id . ';' . $signature)) . '"/></body>', $text);
@@ -206,7 +202,11 @@ class NewsletterStatistics extends NewsletterModule {
         $href = trim(str_replace('&amp;', '&', $matches[2]));
 
         // Do not replace the tracking or subscription/unsubscription links.
-        if (strpos($href, '/newsletter/') !== false) {
+        //if (strpos($href, '/newsletter/') !== false) {
+        //    return $matches[0];
+        //}
+        // Do not replace URL which are tags (special case for ElasticEmail)
+        if (strpos($href, '{') === 0) {
             return $matches[0];
         }
 
@@ -249,6 +249,60 @@ class NewsletterStatistics extends NewsletterModule {
         return 'admin.php?page=' . $page . '&amp;id=' . $email_id;
     }
 
+    function get_index_url() {
+        $page = apply_filters('newsletter_statistics_index', 'newsletter_statistics_index');
+        return 'admin.php?page=' . $page;
+    }
+    
+    /**
+     * @deprecated
+     * 
+     * @param type $email_id
+     * @return type
+     */
+    function get_total_count($email_id) {
+        $report = $this->get_statistics($email_id);
+        return $report->total;
+    }
+    
+    /**
+     * @deprecated
+     * 
+     * @param type $email_id
+     * @return type
+     */
+    function get_open_count($email_id) {
+        $report = $this->get_statistics($email_id);
+        return $report->open_count;
+    }
+    
+    /**
+     * @deprecated
+     * 
+     * @param type $email_id
+     * @return type
+     */
+    function get_error_count($email_id) {
+        return 0;
+    }    
+    
+    /**
+     * @deprecated
+     * 
+     * @param type $email_id
+     * @return type
+     */
+    function get_click_count($email_id) {
+        $report = $this->get_statistics($email_id);
+        return $report->click_count;
+    }    
+
+    /**
+     * @deprecated 
+     * 
+     * @global wpdb $wpdb
+     * @param TNP_Email $email
+     */
     function maybe_fix_sent_stats($email) {
         global $wpdb;
 
@@ -289,25 +343,11 @@ class NewsletterStatistics extends NewsletterModule {
         $wpdb->query($wpdb->prepare("update " . $wpdb->prefix . "newsletter_sent s1 join " . $wpdb->prefix . "newsletter_stats s2 on s1.user_id=s2.user_id and s1.email_id=s2.email_id and s2.url<>'' and s1.email_id=%d set s1.open=2, s1.ip=s2.ip", $email->id));
     }
 
-    function get_total_count($email_id) {
+    function reset_stats($email) {
         global $wpdb;
-        return (int) $wpdb->get_var($wpdb->prepare("select count(*) from " . NEWSLETTER_SENT_TABLE . " where email_id=%d", $this->to_int_id($email_id)));
-    }
-
-    function get_open_count($email_id) {
-        global $wpdb;
-
-        return (int) $wpdb->get_var($wpdb->prepare("select count(*) from " . NEWSLETTER_SENT_TABLE . " where open>0 and email_id=%d", $this->to_int_id($email_id)));
-    }
-
-    function get_click_count($email_id) {
-        global $wpdb;
-        return (int) $wpdb->get_var($wpdb->prepare("select count(*) from " . NEWSLETTER_SENT_TABLE . " where open>1 and email_id=%d", $this->to_int_id($email_id)));
-    }
-
-    function get_error_count($email_id) {
-        global $wpdb;
-        return (int) $wpdb->get_var($wpdb->prepare("select count(*) from " . NEWSLETTER_SENT_TABLE . " where status>0 and email_id=%d", $this->to_int_id($email_id)));
+        $email_id = $this->to_int_id($email);
+        $this->query("delete from " . $wpdb->prefix . "newsletter_sent where email_id=" . $email_id);
+        $this->query("delete from " . $wpdb->prefix . "newsletter_stats where email_id=" . $email_id);
     }
 
     function add_click($url, $user_id, $email_id, $ip = null) {
@@ -315,9 +355,9 @@ class NewsletterStatistics extends NewsletterModule {
         if (is_null($ip)) {
             $ip = $this->get_remote_ip();
         }
-        
+
         $ip = $this->process_ip($ip);
-        
+
         $this->insert(NEWSLETTER_STATS_TABLE, array(
             'email_id' => $email_id,
             'user_id' => $user_id,
@@ -334,6 +374,63 @@ class NewsletterStatistics extends NewsletterModule {
         }
         $ip = $this->process_ip($ip);
         $this->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=%d, ip=%s where email_id=%d and user_id=%d and open<%d limit 1", $value, $ip, $email_id, $user_id, $value));
+    }
+
+    /**
+     * Returns an object with statistics values
+     * 
+     * @global type $wpdb
+     * @param TNP_Email $email
+     * @return TNP_Report
+     */
+    function get_statistics($email) {
+        global $wpdb;
+
+        if (!is_object($email)) $email = $this->get_email($email);
+        
+        $report = new TNP_Statistics();
+                
+        $report->email_id = $email->id;
+
+        if ($email->status != 'new') {
+            $data = $wpdb->get_row($wpdb->prepare("SELECT COUNT(*) as total, 
+            count(case when status>0 then 1 else null end) as `errors`,
+            count(case when open>0 then 1 else null end) as `opens`,
+            count(case when open>1 then 1 else null end) as `clicks`
+            FROM " . NEWSLETTER_SENT_TABLE . " where email_id=%d", $email->id));
+
+            $report->total = $data->total;
+            $report->open_count = $data->opens;
+            $report->click_count = $data->clicks;
+        }
+
+        $report->update();
+
+        return $report;
+    }
+
+}
+
+class TNP_Statistics {
+
+    var $email_id;
+    var $total = 0;
+    var $open_count = 0;
+    var $open_rate = 0;
+    var $click_count = 0;
+    var $click_rate = 0;
+
+    /**
+     * Recomputes the rates using the absolute values already set.
+     */
+    function update() {
+        if ($this->total > 0) {
+            $this->open_rate = round($this->open_count / $this->total * 100, 2);
+            $this->click_rate = round($this->click_count / $this->total * 100, 2);
+        } else {
+            $this->open_rate = 0;
+            $this->click_rate = 0;
+        }
     }
 
 }

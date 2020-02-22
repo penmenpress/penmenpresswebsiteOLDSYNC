@@ -7,13 +7,15 @@
  */
 
 /* @var $options array */
-/* @var $wpdb wpdb */
 
 $default_options = array(
     'color'=>'#dddddd',
     'height'=>1,
     'block_padding_top'=>20,
-    'block_padding_bottom'=>20
+    'block_padding_bottom'=>20,
+    'block_padding_right'=>20,
+    'block_padding_left'=>20,
+    'block_background'=>'#ffffff'
     
 );
 

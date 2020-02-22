@@ -5,8 +5,9 @@ $list = NewsletterEmails::instance()->get_blocks();
 
 $blocks = array();
 foreach ($list as $key => $data) {
-    if (!isset($blocks[$data['section']]))
+    if (!isset($blocks[$data['section']])) {
         $blocks[$data['section']] = array();
+    }
     $blocks[$data['section']][$key]['name'] = $data['name'];
     $blocks[$data['section']][$key]['filename'] = $key;
     $blocks[$data['section']][$key]['icon'] = $data['icon'];
@@ -17,6 +18,7 @@ $blocks = array_merge(array_flip(array('header', 'content', 'footer')), $blocks)
 
 // prepare the options for the default blocks
 $block_options = get_option('newsletter_main');
+
 ?>
 <style>
     .placeholder {
@@ -32,56 +34,89 @@ $block_options = get_option('newsletter_main');
     }
 </style>
 
-<div id="newsletter-builder">  
+<style>
+<?php echo NewsletterEmails::instance()->get_composer_css(); ?>
+</style>
 
-    <div id="newsletter-builder-sidebar" class="tnp-builder-column">
-
-        <?php foreach ($blocks as $k => $section) { ?>
-                    <div class="newsletter-sidebar-add-buttons" id="sidebar-add-<?php echo $k ?>">
-                        <h4><span><?php echo ucfirst($k) ?></span></h4>
-            <?php foreach ($section AS $key => $block) { ?>
-                            <div class="newsletter-sidebar-buttons-content-tab" data-id="<?php echo $key ?>" data-name="<?php echo esc_attr($block['name']) ?>">
-                                <img src="<?php echo $block['icon'] ?>" title="<?php echo esc_attr($block['name']) ?>">
-                            </div>
-                    <?php } ?>
-                    </div>
-        <?php } ?>
-
-    </div>
+<div id="newsletter-builder">
 
     <div id="newsletter-builder-area" class="tnp-builder-column">
 
+        <?php if ($tnpc_show_subject) { ?>
+            <p>
+                <?php $this->text('title', 60, 'Newsletter subject'); ?>
+                <a href="#" class="tnp-suggest-button" onclick="tnp_suggest_subject(); return false;"><?php _e('Get ideas', 'newsletter') ?></a>
+            </p>
+        <?php } ?>
+
         <div id="newsletter-builder-area-center-frame-content">
 
-            <?php
-            if (isset($email) && !$controls->is_action('reset')) {
-                echo NewsletterModule::extract_body($body);
-            } else {
-                NewsletterEmails::instance()->render_block('preheader', true, array());
-                NewsletterEmails::instance()->render_block('header-01-header.block', true, array());
-                NewsletterEmails::instance()->render_block('content-01-hero.block', true, array());
-                NewsletterEmails::instance()->render_block('footer-02-canspam.block', true, array());
-                NewsletterEmails::instance()->render_block('footer-01-footer.block', true, array());
-                //NewsletterEmails::instance()->render_block('footer-01-footer.block', true, array());
-                //NewsletterEmails::instance()->render_block('footer-02-canspam.block', true, array());
-                //include __DIR__ . '/blocks/header-01-header.block.php';
-                //include __DIR__ . '/blocks/content-05-image.block.php';
-                //include __DIR__ . '/blocks/content-01-hero.block.php';
-                //include __DIR__ . '/blocks/footer-01-footer.block.php';
-                //include __DIR__ . '/blocks/footer-02-canspam.block.php';
-            }
-            ?>
+            <!-- Composer content -->
 
         </div>
     </div>
 
-    <div id="newsletter-mobile-preview-area" class="tnp-builder-column">
-        <iframe id="tnp-mobile-preview"></iframe>
+    <div id="newsletter-builder-sidebar" class="tnp-builder-column">
+
+        <div class="tnpc-tabs">
+            <button class="tablinks" onclick="openTab(event, 'tnpc-blocks')" id="defaultOpen"><?php _e('Blocks', 'newsletter') ?></button>
+            <?php /* <button class="tablinks" onclick="openTab(event, 'tnpc-general-options')"><?php _e('General Options', 'newsletter') ?></button> */ ?>
+            <button class="tablinks" onclick="openTab(event, 'tnpc-mobile-tab')"><i class="fa fa-mobile"></i> <?php _e('Mobile Preview', 'newsletter') ?></button>
+            <?php if ($show_test) { ?>
+                <button class="tablinks" onclick="openTab(event, 'tnpc-test-tab')"><i class="fa fa-paper-plane"></i> <?php _e('Test', 'newsletter') ?></button>
+            <?php } ?>
+
+        </div>
+
+        <div id="tnpc-blocks" class="tabcontent">
+            <?php foreach ($blocks as $k => $section) { ?>
+                <div class="newsletter-sidebar-add-buttons" id="sidebar-add-<?php echo $k ?>">
+                    <h4><span><?php echo ucfirst($k) ?></span></h4>
+                    <?php foreach ($section AS $key => $block) { ?>
+                        <div class="newsletter-sidebar-buttons-content-tab" data-id="<?php echo $key ?>" data-name="<?php echo esc_attr($block['name']) ?>">
+                            <img src="<?php echo $block['icon'] ?>" title="<?php echo esc_attr($block['name']) ?>">
+                        </div>
+                    <?php } ?>
+                </div>
+            <?php } ?>
+        </div>
+
+        <div id="tnpc-mobile-tab" class="tabcontent">
+
+            <iframe id="tnpc-mobile-preview"></iframe>
+
+        </div>
+
+        <div id="tnpc-test-tab" class="tabcontent">
+
+            <p><?php _e("Test subscribers:") ?></p>
+            <ul>
+                <?php foreach (NewsletterUsers::instance()->get_test_users() AS $user) { ?>
+                    <li><?php echo $user->email ?></li>
+                <?php } ?>
+            </ul>
+            <button class="button-secondary" onclick="tnpc_test()"><?php _e("Send a test", 'newsletter') ?></button>
+            <p>
+                <a href="https://www.thenewsletterplugin.com/documentation/subscribers#test" target="_blank">
+                    <?php _e('Read more about test subscribers', 'newsletter') ?></a>
+            </p>
+        </div>
+
+        <!-- Block options container (dynamically loaded -->
+        <div id="tnpc-block-options">
+            <div id="tnpc-block-options-buttons">
+                <span id="tnpc-block-options-cancel" class="button-secondary"><?php _e("Cancel", "newsletter") ?></span>
+                <span id="tnpc-block-options-save" class="button-primary"><?php _e("Apply", "newsletter") ?></span>
+            </div>
+            <form id="tnpc-block-options-form" onsubmit="return false;"></form>
+
+        </div>
+
     </div>
 
     <div style="clear: both"></div>
-</div>
 
+</div>
 
 <div style="display: none">
     <div id="newsletter-preloaded-export"></div>
@@ -89,21 +124,13 @@ $block_options = get_option('newsletter_main');
     <div id="sortable-helper" style="width: 700px; height: 75px;border: 3px dashed #ddd; opacity: .7; background-color: #fff; text-align: center; text-transform: uppercase; font-size: 14px; color: #aaa; padding: 20px;"></div>
 </div>
 
-<div id="tnp-body" style="margin: 0; padding: 0; overflow: hidden; border: 0;"> 
-<?php include NEWSLETTER_DIR . '/emails/tnp-composer/edit.php'; ?>
-</div>
-
-
-
 <script type="text/javascript">
     TNP_PLUGIN_URL = "<?php echo NEWSLETTER_URL ?>";
     TNP_HOME_URL = "<?php echo home_url('/', is_ssl() ? 'https' : 'http') ?>";
+    tnp_context_type = "<?php echo $context_type ?>";
 </script>
 <script type="text/javascript" src="<?php echo plugins_url('newsletter'); ?>/emails/tnp-composer/_scripts/newsletter-builder.js?ver=<?php echo time() ?>"></script>
 
-<script src="<?php echo plugins_url('newsletter') ?>/vendor/tinymce/tinymce.min.js"></script>
-<script>
-    jQuery(function () {
-        tnp_mobile_preview();
-    });
-</script>
+<?php include NEWSLETTER_DIR . '/emails/subjects.php'; ?>
+
+<?php if (function_exists('wp_enqueue_editor')) wp_enqueue_editor(); ?>

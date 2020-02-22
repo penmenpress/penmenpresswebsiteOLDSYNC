@@ -1,5 +1,5 @@
 <?php
-if (!defined('ABSPATH')) exit;
+defined('ABSPATH') || exit;
 
 @require_once NEWSLETTER_INCLUDES_DIR . '/logger.php';
 
@@ -35,7 +35,7 @@ class NewsletterStore {
         global $wpdb;
         $field_name = (string)$field_name;
         if (preg_match('/^[a-zA-Z_]+$/', $field_name) == 0) {
-            $this->logger->error('Invalis field name: ' . $field_name);
+            $this->logger->fatal('Invalis field name: ' . $field_name);
             return false;
         }
         $id = (int)$id;
@@ -97,6 +97,7 @@ class NewsletterStore {
 
     function sanitize($data) {
         global $wpdb;
+        //if (strpos($wpdb->charset, 'utf8mb4') === 0) return $data;
         if (strpos($wpdb->charset, 'utf8mb4') === 0) return $data;
         foreach ($data as $key => $value) {
             $data[$key] = preg_replace('%(?:\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})%xs', '', $value);
@@ -133,7 +134,7 @@ class NewsletterStore {
                 if ($r === false) {
                     $this->logger->fatal($wpdb->last_error);
                     $this->logger->fatal($wpdb->last_query);
-                    die('Database error see the log files (log files path can be found on Newsletter diagnostic panel)');
+                    die('Database error. If you were saving a newsletter try a table upgrade from the status panel.');
                 }
             }
             //$this->logger->debug('save: ' . $wpdb->last_query);
@@ -142,7 +143,7 @@ class NewsletterStore {
             if ($r === false) {
                 $this->logger->fatal($wpdb->last_error);
                 $this->logger->fatal($wpdb->last_query);
-                die('Database error see the log files (log files path can be found on Newsletter diagnostic panel)');
+                die('Database error. If you were saving a newsletter try a table upgrade from the status panel.');
             }
             $id = $wpdb->insert_id;
         }
@@ -224,7 +225,7 @@ class NewsletterStore {
             $this->logger->error('Invalis field name: ' . $field_name);
             return false;
         }
-        $result = $wpdb->query($wpdb->prepare("update $table set $field=%s where id=%d", $value, $id));
+        $result = $wpdb->query($wpdb->prepare("update $table set $field=%s where id=%d limit 1", $value, $id));
 
         if ($wpdb->last_error) {
             $this->logger->error($wpdb->last_error);
