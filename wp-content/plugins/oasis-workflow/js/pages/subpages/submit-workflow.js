@@ -8,7 +8,6 @@ jQuery( document ).ready( function () {
       // If not allowed post/page type then do not show
       if ( jQuery.inArray( current_post_type, allowed_post_types ) != -1 )
       {
-
          jQuery( "#publishing-action" ).append(
                  "<input type='button' id='workflow_submit' class='button button-primary button-large'" + " value='" + owf_submit_workflow_vars.submitToWorkflowButton + "' style='float:left;clear:both;' />"
                  ).css( { "width": "100%" } );

@@ -156,6 +156,33 @@ class OW_Custom_Capabilities {
 
 		}
 	}
+   
+   /**
+    * Function - API to check if current user can abort workflow
+    *
+    * @return array
+    *
+    * @since 3.4
+    */
+   public function api_check_user_capabilities( $criteria ) {
+      
+      if ( ! wp_verify_nonce( $criteria->get_header('x_wp_nonce'), 'wp_rest' ) ) {
+         wp_die( __( 'Unauthorized access.', 'oasisworkflow' ) );
+      }
+
+      if ( ! is_user_logged_in() ) {
+         wp_die( __( 'You are not allowed to invoke this api.', 'oasisworkflow' ) );
+      }
+
+      $response = array (
+         "user_can" => [
+            "ow_abort_workflow" => current_user_can( 'ow_abort_workflow' ),
+            "ow_skip_workflow" => current_user_can( 'ow_skip_workflow' )
+         ]
+      );
+
+      return $response;
+   }
 
 }
 ?>

@@ -2,8 +2,8 @@
 Contributors: nuggetsol
 Tags: workflow, work flow, review, assignment, publish, inbox, workflow history, audit, versioning, edit flow, newsroom, custom post status, journalism, auto submit, approval workflow, editorial workflow, notifications, oasis workflow, editorial, revisions, document revision, version control, collaboration, document management, revision scheduling, duplication, clone, revise, revise article
 Requires at least: 4.4
-Tested up to: 4.9.8
-Stable tag: 3.3
+Tested up to: 5.3.2
+Stable tag: 4.4
 
 Automate your WordPress Editorial Workflow with Oasis Workflow. Simple, intuitive drag and drop workflow builder to streamline your editorial process.
 
@@ -117,9 +117,31 @@ For [Frequently Asked Questions](https://www.oasisworkflow.com/faq) plus documen
 
 == Changelog ==
 
+= Version 4.4 =
+* Fixed front end gutenberg dependency error.
+* Deny creating custom statuses that are interfering with the core ones like draft, etc.
+
+= Version 4.3 =
+* Fixed roles capability check to allow underscore in post type names.
+* Redirect user to either post list page or workflow inbox after workflow submit and sign-off.
+* Added loader for each API request and submission.
+
+= Version 4.2 =
+* Made it compatible with PHP 5.2 to support regular array declaration instead of square brackets.
+* Made it compatible with WP 5.2.1.
+* Added a custom role called - Post Submitter. This will give more assignee options when defining the workflow.
+
+= Version 4.1 =
+* Display warning message if "Show in Rest" and "custom field support" is not set for Custom Post Type.
+* Fixed Assign to all not assigning to all the step users.
+* Fixed email service invocation to be compatible with Gutenberg Editor.
+
+= Version 4.0 =
+* Made it compatible with Gutenberg Editor
+
 = Version 3.3 =
- * Fixed datatype issue.
- * Fixed compatibility issue with ACF plugin.
+* Fixed datatype issue.
+* Fixed compatibility issue with ACF plugin.
 
 = Version 3.2 =
 * Made it compatible with ACF 5.6.10 and above.

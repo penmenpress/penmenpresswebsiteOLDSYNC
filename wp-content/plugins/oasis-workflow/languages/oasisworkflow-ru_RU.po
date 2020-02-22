@@ -1,50 +1,83 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oasis-workflow\n"
-"POT-Creation-Date: 2018-10-14 07:28-0700\n"
-"PO-Revision-Date: 2018-10-14 07:28-0700\n"
+"POT-Creation-Date: 2020-01-13 11:40+0530\n"
+"PO-Revision-Date: 2020-01-13 11:40+0530\n"
 "Last-Translator: \n"
 "Language-Team: support@oasisworkflow.com\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2\n"
+"X-Generator: Poedit 2.2.4\n"
 "X-Poedit-KeywordsList: __;_e;_c;__ngettext;esc_html__\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: node_modules\n"
+"X-Poedit-SearchPathExcluded-1: js\n"
+"X-Poedit-SearchPathExcluded-2: src/block.js\n"
+
+#: includes/class-ow-custom-capabilities.php:170
+#: includes/class-ow-process-flow.php:871
+#: includes/class-ow-process-flow.php:902
+#: includes/class-ow-process-flow.php:2938
+#: includes/class-ow-process-flow.php:2983
+#: includes/class-ow-process-flow.php:3036
+#: includes/class-ow-process-flow.php:3120
+#: includes/class-ow-process-flow.php:3161
+#: includes/class-ow-process-flow.php:3219
+#: includes/class-ow-process-flow.php:3284
+#: includes/class-ow-process-flow.php:3373
+#: includes/class-ow-process-flow.php:3445
+#: includes/class-ow-tools-service.php:71 includes/class-ow-utility.php:1036
+#: includes/class-ow-workflow-service.php:1027
+#: includes/class-ow-workflow-service.php:1061
+msgid "Unauthorized access."
+msgstr "НеСанкционированный доступ."
+
+#: includes/class-ow-custom-capabilities.php:174
+msgid "You are not allowed to invoke this api."
+msgstr "Вы не можете вызывать этот API."
 
 #: includes/class-ow-custom-statuses.php:91
 msgid "You are not allowed to create custom statuses."
 msgstr "Недостаточно прав для создания кастомных статусов."
 
-#: includes/class-ow-custom-statuses.php:108
-#: includes/class-ow-custom-statuses.php:154
+#: includes/class-ow-custom-statuses.php:115
+#: includes/class-ow-custom-statuses.php:192
 msgid "Could not add status: "
 msgstr "Статус не добавлен: "
 
-#: includes/class-ow-custom-statuses.php:136
+#: includes/class-ow-custom-statuses.php:149
+msgid "Custom status has been added successfully."
+msgstr "Пользовательский статус был успешно добавлен."
+
+#: includes/class-ow-custom-statuses.php:160
+msgid "Custom status already exist."
+msgstr "Пользовательский статус уже существует."
+
+#: includes/class-ow-custom-statuses.php:173
 msgid "You are not allowed to edit/update the custom status."
 msgstr "Недостаточно прав для правки/удаления кастомных статусов."
 
-#: includes/class-ow-custom-statuses.php:191
+#: includes/class-ow-custom-statuses.php:229
 msgid "You are not allowed to delete the custom status."
 msgstr "Недостаточно прав для удаления кастомных статусов."
 
-#: includes/class-ow-custom-statuses.php:248
+#: includes/class-ow-custom-statuses.php:286
 #: includes/pages/ow-custom-statuses.php:70
 msgid "Name"
 msgstr "Имя"
 
-#: includes/class-ow-custom-statuses.php:249
+#: includes/class-ow-custom-statuses.php:287
 #: includes/pages/ow-custom-statuses.php:76
 msgid "Slug"
 msgstr "Слаг"
 
-#: includes/class-ow-custom-statuses.php:250
+#: includes/class-ow-custom-statuses.php:288
 #: includes/pages/ow-custom-statuses.php:82
 #: includes/pages/subpages/workflow-copy-popup.php:14
 msgid "Description"
@@ -175,31 +208,33 @@ msgid "You have an assignment related to post - "
 msgstr "У Вас есть новое назначение по заявке - "
 
 #: includes/class-ow-email.php:283 includes/class-ow-inbox-service.php:132
-#: includes/class-ow-utility.php:909
+#: includes/class-ow-utility.php:922
 #: includes/class-ow-workflow-terminology-settings.php:213
 #: includes/pages/subpages/submit-step.php:39
 #: includes/pages/subpages/submit-workflow.php:35
+#: src/components/ow-task-priority-select-control.js:16
 msgid "Priority"
 msgstr "Приоритет"
 
 #: includes/class-ow-email.php:313 includes/class-ow-history-service.php:146
-#: includes/class-ow-history-service.php:622
+#: includes/class-ow-history-service.php:640
 msgid "Sign off date"
 msgstr "Дата выхода из системы"
 
 #: includes/class-ow-email.php:316 includes/class-ow-inbox-service.php:131
-#: includes/class-ow-report-service.php:60 includes/class-ow-utility.php:905
+#: includes/class-ow-report-service.php:60 includes/class-ow-utility.php:918
 #: includes/class-ow-workflow-terminology-settings.php:172
 #: includes/pages/subpages/submit-step.php:38
-#: includes/pages/subpages/submit-workflow.php:33 oasiswf.php:458
+#: includes/pages/subpages/submit-workflow.php:33 oasiswf.php:470
+#: src/components/ow-signoff.js:52 src/components/ow-submit-to-workflow.js:54
 msgid "Due Date"
 msgstr "Дата дедлайна"
 
-#: includes/class-ow-email.php:331 includes/class-ow-process-flow.php:803
+#: includes/class-ow-email.php:331 includes/class-ow-process-flow.php:837
 msgid "Additionally,"
 msgstr "Дополнительно,"
 
-#: includes/class-ow-email.php:331 includes/class-ow-process-flow.php:803
+#: includes/class-ow-email.php:331 includes/class-ow-process-flow.php:837
 msgid "added the following comments"
 msgstr "добавлены комментарии"
 
@@ -269,15 +304,15 @@ msgid "You are not allowed to download workflow history."
 msgstr "Недостаточно прав для загрузки истории воркфлоу."
 
 #: includes/class-ow-history-service.php:141
-#: includes/class-ow-history-service.php:605
+#: includes/class-ow-history-service.php:623
 #: includes/class-ow-report-service.php:110
-#: includes/class-ow-workflow-service.php:927
+#: includes/class-ow-workflow-service.php:954
 #: includes/pages/subpages/workflow-copy-popup.php:6
 msgid "Title"
 msgstr "Заголовок"
 
 #: includes/class-ow-history-service.php:142
-#: includes/class-ow-history-service.php:609
+#: includes/class-ow-history-service.php:627
 msgid "Actor"
 msgstr "Исполнитель"
 
@@ -285,7 +320,8 @@ msgstr "Исполнитель"
 msgid "Workflow (version)"
 msgstr "Воркфлоу (версия)"
 
-#: includes/class-ow-history-service.php:144
+#: includes/class-ow-history-service.php:144 src/components/ow-signoff.js:394
+#: src/components/ow-submit-to-workflow.js:332
 msgid "Step"
 msgstr "Этап"
 
@@ -294,13 +330,15 @@ msgid "Assigned Date"
 msgstr "Дата назначения"
 
 #: includes/class-ow-history-service.php:147
-#: includes/class-ow-history-service.php:623
+#: includes/class-ow-history-service.php:641
 msgid "Result"
 msgstr "Результат"
 
 #: includes/class-ow-history-service.php:148
-#: includes/class-ow-history-service.php:624
-#: includes/class-ow-inbox-service.php:175
+#: includes/class-ow-history-service.php:642
+#: includes/class-ow-inbox-service.php:175 src/components/ow-abort.js:154
+#: src/components/ow-signoff-last-step.js:247 src/components/ow-signoff.js:449
+#: src/components/ow-submit-to-workflow.js:411
 msgid "Comments"
 msgstr "Комментарии"
 
@@ -310,13 +348,13 @@ msgid "No comments found."
 msgstr "Комментарии не найдены."
 
 #: includes/class-ow-history-service.php:193
-#: includes/class-ow-process-flow.php:1634
+#: includes/class-ow-process-flow.php:1727
 #: includes/pages/workflow-history.php:175
 msgid "No Action Taken"
 msgstr "Не выполнено никаких действий"
 
 #: includes/class-ow-history-service.php:196
-#: includes/class-ow-process-flow.php:1649
+#: includes/class-ow-process-flow.php:1742
 #: includes/pages/workflow-history.php:178
 msgid "Workflow completed"
 msgstr "Воркфлоу завершен"
@@ -325,13 +363,13 @@ msgstr "Воркфлоу завершен"
 msgid "You are not allowed to view workflow history."
 msgstr "Недостаточно прав для просмотра истории воркфлоу."
 
-#: includes/class-ow-history-service.php:612
+#: includes/class-ow-history-service.php:630
 #: includes/class-ow-inbox-service.php:167
 #: includes/class-ow-report-service.php:77
 msgid "Workflow [Step]"
 msgstr "Воркфлоу [Этап]"
 
-#: includes/class-ow-history-service.php:618
+#: includes/class-ow-history-service.php:636
 msgid "Assigned date"
 msgstr "Дата назначения"
 
@@ -358,34 +396,40 @@ msgstr "Категория"
 msgid "Select a user to reassign the task."
 msgstr "Выберите пользователя для переназначения задачи."
 
-#: includes/class-ow-process-flow.php:77 includes/class-ow-process-flow.php:148
-#: includes/class-ow-process-flow.php:228
-#: includes/class-ow-process-flow.php:286
-#: includes/class-ow-process-flow.php:347
-#: includes/class-ow-process-flow.php:662
-#: includes/class-ow-process-flow.php:752
-#: includes/class-ow-process-flow.php:2255
-#: includes/class-ow-process-flow.php:2303
+#: includes/class-ow-process-flow.php:80 includes/class-ow-process-flow.php:151
+#: includes/class-ow-process-flow.php:231
+#: includes/class-ow-process-flow.php:289
+#: includes/class-ow-process-flow.php:350
+#: includes/class-ow-process-flow.php:677
+#: includes/class-ow-process-flow.php:769
+#: includes/class-ow-process-flow.php:2350
+#: includes/class-ow-process-flow.php:2407
 msgid "You are not allowed to create/edit post."
 msgstr "Недостаточно прав для создания/удаления записей."
 
-#: includes/class-ow-process-flow.php:112
-#: includes/class-ow-process-flow.php:322
-#: includes/class-ow-process-flow.php:2437
-#: includes/class-ow-process-flow.php:2476
+#: includes/class-ow-process-flow.php:115
+#: includes/class-ow-process-flow.php:325
+#: includes/class-ow-process-flow.php:2543
+#: includes/class-ow-process-flow.php:2582 src/components/ow-signoff.js:198
+#: src/components/ow-submit-to-workflow.js:140
 msgid "No users found to assign the task."
 msgstr "Не найдены пользователи для назначения задачи."
 
-#: includes/class-ow-process-flow.php:181
-#: includes/class-ow-process-flow.php:417
+#: includes/class-ow-process-flow.php:184
+#: includes/class-ow-process-flow.php:420 src/components/ow-signoff.js:257
+#: src/components/ow-submit-to-workflow.js:213
 msgid "Due date must be greater than the current date."
 msgstr "Дата окончания должна быть позже даты начала."
 
-#: includes/class-ow-process-flow.php:549
+#: includes/class-ow-process-flow.php:545
+msgid "The post was successfully claimed."
+msgstr "Эта должность была успешно востребована."
+
+#: includes/class-ow-process-flow.php:564
 msgid "You are not allowed to reassign tasks."
 msgstr "Недостаточно прав для переназначения задач."
 
-#: includes/class-ow-process-flow.php:800
+#: includes/class-ow-process-flow.php:834
 #, php-format
 msgid ""
 "<div>Hello %1$s,</div><p>The post <a href=\"%2$s\" title=\"%3$s\">%3$s</a> "
@@ -394,121 +438,138 @@ msgstr ""
 "<div>Приветствую, %1$s,</div><p>Запись <a href=\"%2$s\" title=\"%3$s\">%3$s</"
 "a> отменена в воркфлоу.</p>"
 
-#: includes/class-ow-process-flow.php:807
+#: includes/class-ow-process-flow.php:841
 msgid "<p>Thanks.</p>"
 msgstr "<p>Спасибо.</p>"
 
-#: includes/class-ow-process-flow.php:857
-#: includes/class-ow-process-flow.php:881
+#: includes/class-ow-process-flow.php:852
+msgid "The workflow was successfully aborted from the last step."
+msgstr "Рабочий процесс был успешно прерван с последнего шага."
+
+#: includes/class-ow-process-flow.php:875
+msgid "You are not allowed to claim."
+msgstr "Вы не можете претендовать."
+
+#: includes/class-ow-process-flow.php:906
+msgid "You are not allowed to claim the task."
+msgstr "Вы не можете претендовать на задачу."
+
+#: includes/class-ow-process-flow.php:950
+#: includes/class-ow-process-flow.php:974
+#: includes/class-ow-process-flow.php:3125
 msgid "You are not allowed to abort the workflow."
 msgstr "Недостаточно прав для прерывания воркфлоу."
 
-#: includes/class-ow-process-flow.php:1630
+#: includes/class-ow-process-flow.php:1723
 msgid "Submitted"
 msgstr "Отправлен"
 
-#: includes/class-ow-process-flow.php:1632
+#: includes/class-ow-process-flow.php:1725
 msgid "Aborted"
 msgstr "Прерван"
 
-#: includes/class-ow-process-flow.php:1636
+#: includes/class-ow-process-flow.php:1729
 msgid "Unclaimed"
 msgstr "Не обжалован"
 
-#: includes/class-ow-process-flow.php:1638
+#: includes/class-ow-process-flow.php:1731
 msgid "Claimed"
 msgstr "Обжалован"
 
-#: includes/class-ow-process-flow.php:1640
-#: includes/class-ow-process-flow.php:1684
+#: includes/class-ow-process-flow.php:1733
+#: includes/class-ow-process-flow.php:1777
 msgid "Reassigned"
 msgstr "Переназначен"
 
-#: includes/class-ow-process-flow.php:1651
+#: includes/class-ow-process-flow.php:1744
 msgid "Cancelled"
 msgstr "Отменен"
 
-#: includes/class-ow-process-flow.php:1665
-#: includes/class-ow-process-flow.php:1701
-#: includes/pages/subpages/submit-step.php:51
+#: includes/class-ow-process-flow.php:1758
+#: includes/class-ow-process-flow.php:1794
+#: includes/pages/subpages/submit-step.php:51 src/util.js:45
 msgid "Approved"
 msgstr "Утвержден"
 
-#: includes/class-ow-process-flow.php:1667
-#: includes/class-ow-process-flow.php:1703
+#: includes/class-ow-process-flow.php:1760
+#: includes/class-ow-process-flow.php:1796
 msgid "Rejected"
 msgstr "Отклонен"
 
-#: includes/class-ow-process-flow.php:1670
+#: includes/class-ow-process-flow.php:1763
 msgid "Completed"
 msgstr "Завершен"
 
-#: includes/class-ow-process-flow.php:1672
-#: includes/class-ow-process-flow.php:1708
-#: includes/pages/subpages/submit-step.php:52
+#: includes/class-ow-process-flow.php:1765
+#: includes/class-ow-process-flow.php:1801
+#: includes/pages/subpages/submit-step.php:52 src/util.js:43
 msgid "Unable to Complete"
 msgstr "Невозможно завершить"
 
-#: includes/class-ow-process-flow.php:1706
-#: includes/pages/subpages/submit-step.php:51
+#: includes/class-ow-process-flow.php:1799
+#: includes/pages/subpages/submit-step.php:51 src/util.js:42
 msgid "Complete"
 msgstr "Завершить"
 
-#: includes/class-ow-process-flow.php:2435
+#: includes/class-ow-process-flow.php:2541
 msgid "All steps are not defined.\\n Please check the workflow."
 msgstr ""
 "Не настроены все этапы.\n"
 "Пожалуйста, проверьте воркфлоу."
 
-#: includes/class-ow-process-flow.php:2436
+#: includes/class-ow-process-flow.php:2542
 msgid "The selected workflow is not valid.\\n Please check this workflow."
 msgstr ""
 "Выбранный воркфлоу не прошел валидацию.\n"
 "Пожалуйста, проверьте его."
 
-#: includes/class-ow-process-flow.php:2438
-#: includes/class-ow-process-flow.php:2481
+#: includes/class-ow-process-flow.php:2544
+#: includes/class-ow-process-flow.php:2587
 msgid "You can select multiple users only for review step. Selected step is"
 msgstr "Вы можете выбрать нескольких пользователей для этапа. Выбранный этап "
 
-#: includes/class-ow-process-flow.php:2439
-#: includes/class-ow-process-flow.php:2482
+#: includes/class-ow-process-flow.php:2545
+#: includes/class-ow-process-flow.php:2588
 msgid "step."
 msgstr "этап."
 
-#: includes/class-ow-process-flow.php:2440
+#: includes/class-ow-process-flow.php:2546
+#: src/components/ow-submit-to-workflow.js:201
 msgid "Please select a workflow."
 msgstr "Пожалуйста, выберите воркфлоу."
 
-#: includes/class-ow-process-flow.php:2441
-#: includes/class-ow-process-flow.php:2478
+#: includes/class-ow-process-flow.php:2547
+#: includes/class-ow-process-flow.php:2584 src/components/ow-signoff.js:249
+#: src/components/ow-submit-to-workflow.js:205
 msgid "Please select a step."
 msgstr "Пожалуйста, выберите этап."
 
-#: includes/class-ow-process-flow.php:2442
+#: includes/class-ow-process-flow.php:2548
 msgid "This step is not defined."
 msgstr "Этот этап не настроен."
 
-#: includes/class-ow-process-flow.php:2443
-#: includes/class-ow-process-flow.php:2479
+#: includes/class-ow-process-flow.php:2549
+#: includes/class-ow-process-flow.php:2585 src/components/ow-signoff.js:253
+#: src/components/ow-submit-to-workflow.js:209
 msgid "Please enter a due date."
 msgstr "Пожалуйста, выберите дату дедлайна."
 
-#: includes/class-ow-process-flow.php:2444
-#: includes/class-ow-process-flow.php:2480
+#: includes/class-ow-process-flow.php:2550
+#: includes/class-ow-process-flow.php:2586 src/components/ow-signoff.js:261
+#: src/components/ow-submit-to-workflow.js:217
 msgid "No assigned actor(s)."
 msgstr "Нет назначенных исполнителей."
 
-#: includes/class-ow-process-flow.php:2472
-#: includes/pages/workflow-inbox.php:122
+#: includes/class-ow-process-flow.php:2578
+#: includes/pages/workflow-inbox.php:122 src/components/ow-claim.js:105
 msgid "Claim"
 msgstr "Жалоба"
 
-#: includes/class-ow-process-flow.php:2473
+#: includes/class-ow-process-flow.php:2579
 msgid "Go to Workflow Inbox"
 msgstr "Перейти во входящие воркфлоу"
 
-#: includes/class-ow-process-flow.php:2474
+#: includes/class-ow-process-flow.php:2580
 msgid ""
 "There are no further steps defined in the workflow.</br> Do you want to "
 "cancel the post/page from the workflow?"
@@ -516,18 +577,58 @@ msgstr ""
 "Это первый этап воркфлоу.</br> Желаете отменить воркфлоу для этой записи/"
 "страницы?"
 
-#: includes/class-ow-process-flow.php:2475
+#: includes/class-ow-process-flow.php:2581
+#: src/components/ow-signoff-last-step.js:185
 msgid ""
 "This is the last step in the workflow. Are you sure to complete the workflow?"
 msgstr "Это последний этап воркфлоу. Желаете завершить воркфлоу?"
 
-#: includes/class-ow-process-flow.php:2477
+#: includes/class-ow-process-flow.php:2583
 msgid "Please select an action."
 msgstr "Пожалуйста, выберите действие."
 
-#: includes/class-ow-process-flow.php:2572
+#: includes/class-ow-process-flow.php:2678
 msgid "Are you sure to terminate the workflow?"
 msgstr "Вы уверены, что хотите остановить воркфлоу?"
+
+#: includes/class-ow-process-flow.php:2942
+#: includes/class-ow-process-flow.php:2987
+#: includes/class-ow-process-flow.php:3165
+#: includes/class-ow-process-flow.php:3223
+msgid "You are not allowed to get workflow step details."
+msgstr "Вы не можете получить подробности шага рабочего процесса."
+
+#: includes/class-ow-process-flow.php:3040 src/ow-sidebar.js:172
+msgid "You are not allowed to submit to workflow."
+msgstr "Вы не можете отправить в Workflow-процесс."
+
+#: includes/class-ow-process-flow.php:3103
+msgid "The post was successfully submitted to the workflow."
+msgstr "Сообщение успешно отправлено в рабочий процесс."
+
+#: includes/class-ow-process-flow.php:3142
+msgid "The workflow was successfully aborted."
+msgstr "Рабочий процесс успешно прерван."
+
+#: includes/class-ow-process-flow.php:3288
+msgid "You are not allowed to signoff."
+msgstr "Вы не можете signoff."
+
+#: includes/class-ow-process-flow.php:3357
+msgid "The task was successfully signed off."
+msgstr "Задача была успешно подписана."
+
+#: includes/class-ow-process-flow.php:3377
+msgid "You are not allowed to publish post."
+msgstr "Вы не можете опубликовать публикацию."
+
+#: includes/class-ow-process-flow.php:3427
+msgid "The workflow is complete."
+msgstr "Рабочий процесс завершен."
+
+#: includes/class-ow-process-flow.php:3449
+msgid "You are not allowed to end the workflow process."
+msgstr "Не разрешается заканчивать рабочий процесс."
 
 #: includes/class-ow-report-service.php:64
 msgid "Assigned User"
@@ -562,111 +663,136 @@ msgstr "Терминология воркфлоу"
 msgid "Settings"
 msgstr "Настройки"
 
+#: includes/class-ow-tools-service.php:74
+msgid "You are not allowed to fetch workflow settings."
+msgstr "Не разрешается выбирать параметры рабочего процесса."
+
 #: includes/class-ow-utility.php:332
 #, php-format
 msgid "Displaying %s-%s of %s"
 msgstr "Отображается %s-%s из %s"
 
-#: includes/class-ow-utility.php:471 includes/class-ow-utility.php:798
-#: includes/class-ow-utility.php:857
+#: includes/class-ow-utility.php:481 includes/class-ow-utility.php:810
+#: includes/class-ow-utility.php:870
 msgid "Post Author"
 msgstr "Автор записи"
 
-#: includes/class-ow-utility.php:721
+#: includes/class-ow-utility.php:483 includes/class-ow-utility.php:811
+msgid "Post Submitter"
+msgstr "Почтовый отправитек"
+
+#: includes/class-ow-utility.php:733
 msgid "There's something wrong with your code..."
 msgstr "Что-то не так с Вашим кодом..."
 
-#: includes/class-ow-utility.php:757
+#: includes/class-ow-utility.php:769
 msgid "Low"
 msgstr "Низкий"
 
-#: includes/class-ow-utility.php:758
+#: includes/class-ow-utility.php:770
 msgid "Normal"
 msgstr "Обычный"
 
-#: includes/class-ow-utility.php:759
+#: includes/class-ow-utility.php:771
 msgid "High"
 msgstr "Высокий"
 
-#: includes/class-ow-utility.php:760
+#: includes/class-ow-utility.php:772
 msgid "Urgent"
 msgstr "Наивысшый"
 
-#: includes/class-ow-utility.php:801
+#: includes/class-ow-utility.php:814
 msgid "Roles"
 msgstr "Роли"
 
-#: includes/class-ow-utility.php:834
+#: includes/class-ow-utility.php:847
 msgid "Users"
 msgstr "Пользователи"
 
-#: includes/class-ow-utility.php:902
-#: includes/class-ow-workflow-terminology-settings.php:142 oasiswf.php:455
+#: includes/class-ow-utility.php:915
+#: includes/class-ow-workflow-terminology-settings.php:142 oasiswf.php:467
+#: src/components/ow-submit-to-workflow.js:51 src/ow-sidebar.js:147
 msgid "Submit to Workflow"
 msgstr "Запустить воркфлоу"
 
-#: includes/class-ow-utility.php:903
+#: includes/class-ow-utility.php:916
 #: includes/class-ow-workflow-terminology-settings.php:152
-#: includes/pages/subpages/submit-step.php:36 oasiswf.php:456
+#: includes/pages/subpages/submit-step.php:36 oasiswf.php:468
+#: src/components/ow-signoff-last-step.js:42 src/components/ow-signoff.js:50
 msgid "Sign Off"
 msgstr "Выйти"
 
-#: includes/class-ow-utility.php:904
+#: includes/class-ow-utility.php:917
 #: includes/class-ow-workflow-terminology-settings.php:162
 #: includes/pages/subpages/submit-step.php:37
-#: includes/pages/subpages/submit-workflow.php:32 oasiswf.php:457
+#: includes/pages/subpages/submit-workflow.php:32 oasiswf.php:469
+#: src/components/ow-signoff.js:51 src/components/ow-submit-to-workflow.js:52
 msgid "Assign Actor(s)"
 msgstr "Назначить исполнителей"
 
-#: includes/class-ow-utility.php:906
+#: includes/class-ow-utility.php:919
 #: includes/class-ow-workflow-terminology-settings.php:182
-#: includes/pages/subpages/submit-workflow.php:34 oasiswf.php:459
+#: includes/pages/subpages/submit-workflow.php:34 oasiswf.php:471
+#: src/components/ow-submit-to-workflow.js:53
 msgid "Publish Date"
 msgstr "Дата публикации"
 
-#: includes/class-ow-utility.php:907
+#: includes/class-ow-utility.php:920
 #: includes/class-ow-workflow-terminology-settings.php:192
-#: includes/pages/subpages/abort-workflow-comment.php:4 oasiswf.php:460
+#: includes/pages/subpages/abort-workflow-comment.php:4 oasiswf.php:472
+#: src/components/ow-abort.js:29
 msgid "Abort Workflow"
 msgstr "Отменить воркфлоу"
 
-#: includes/class-ow-utility.php:908
-#: includes/class-ow-workflow-terminology-settings.php:202 oasiswf.php:461
+#: includes/class-ow-utility.php:921
+#: includes/class-ow-workflow-terminology-settings.php:202 oasiswf.php:473
 msgid "Workflow History"
 msgstr "История воркфлоу"
 
-#: includes/class-ow-utility.php:955
+#: includes/class-ow-utility.php:968
 msgid "Learn More"
 msgstr "Узнать больше"
 
-#: includes/class-ow-workflow-service.php:45
-#: includes/class-ow-workflow-service.php:86
-#: includes/class-ow-workflow-service.php:264
-#: includes/class-ow-workflow-service.php:343
-#: includes/class-ow-workflow-service.php:453
-#: includes/class-ow-workflow-service.php:1049
+#: includes/class-ow-utility.php:1040
+msgid "You are not allowed to get workflow priorities."
+msgstr "Вы не можете получить приоритеты рабочего процесса."
+
+#: includes/class-ow-workflow-service.php:48
+#: includes/class-ow-workflow-service.php:91
+#: includes/class-ow-workflow-service.php:274
+#: includes/class-ow-workflow-service.php:355
+#: includes/class-ow-workflow-service.php:466
+#: includes/class-ow-workflow-service.php:1140
 msgid "You are not allowed to create/edit workflows."
 msgstr "Недостаточно прав для создания/правки воркфлоу."
 
-#: includes/class-ow-workflow-service.php:932
+#: includes/class-ow-workflow-service.php:959
 msgid "Version"
 msgstr "Версия"
 
-#: includes/class-ow-workflow-service.php:937
+#: includes/class-ow-workflow-service.php:964
 msgid "Start Date"
 msgstr "Дата начала"
 
-#: includes/class-ow-workflow-service.php:945
+#: includes/class-ow-workflow-service.php:972
 msgid "End Date"
 msgstr "Дата окончания"
 
-#: includes/class-ow-workflow-service.php:953
+#: includes/class-ow-workflow-service.php:980
 msgid "Post/Pages in workflow"
 msgstr "Записи/Страницы в воркфлоу"
 
-#: includes/class-ow-workflow-service.php:958
+#: includes/class-ow-workflow-service.php:985
 msgid "Is Valid?"
 msgstr "Валидный?"
+
+#: includes/class-ow-workflow-service.php:1031
+msgid "You are not allowed to get workflows."
+msgstr "Вам не разрешается получать рабочие процессы."
+
+#: includes/class-ow-workflow-service.php:1065
+msgid "You are not allowed to get step process details."
+msgstr "Вы не можете получить детали процесса шага."
 
 #: includes/class-ow-workflow-settings.php:108
 msgid "Please enter a numeric value for default due date."
@@ -858,7 +984,7 @@ msgstr "Желаете испробовать функции версии Pro?"
 msgid "Even more features with Pro Add-ons:"
 msgstr "Получите больше функций в версии Pro:"
 
-#: includes/pages/ow-custom-statuses.php:6 oasiswf.php:252 oasiswf.php:253
+#: includes/pages/ow-custom-statuses.php:6 oasiswf.php:263 oasiswf.php:264
 msgid "Custom Statuses"
 msgstr "Кастомные статусы"
 
@@ -919,6 +1045,7 @@ msgstr "Отправить"
 #: includes/pages/subpages/submit-workflow.php:192
 #: includes/pages/subpages/workflow-copy-popup.php:24
 #: includes/pages/subpages/workflow-create-popup.php:24
+#: src/components/ow-abort.js:160
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -931,6 +1058,7 @@ msgid "Signed off on"
 msgstr "Вышел в"
 
 #: includes/pages/subpages/action-comments.php:118
+#: src/components/ow-abort.js:147
 msgid "Close"
 msgstr "Закрыть"
 
@@ -1117,11 +1245,12 @@ msgstr "Текст email сообщения : "
 msgid "Action : "
 msgstr "Действие : "
 
-#: includes/pages/subpages/submit-step.php:52
+#: includes/pages/subpages/submit-step.php:52 src/util.js:46
 msgid "Reject"
 msgstr "Отклонить"
 
 #: includes/pages/subpages/submit-step.php:58
+#: src/components/ow-signoff-last-step.js:189
 msgid "Publish"
 msgstr "Опубликовать"
 
@@ -1403,7 +1532,7 @@ msgstr "Загрузить отчет об истории воркфлоу"
 msgid "No workflow history data found."
 msgstr "Нет данных истории воркфлоу."
 
-#: includes/pages/workflow-inbox.php:24 oasiswf.php:213 oasiswf.php:214
+#: includes/pages/workflow-inbox.php:24 oasiswf.php:224 oasiswf.php:225
 msgid "Inbox"
 msgstr "Входящие"
 
@@ -1423,7 +1552,7 @@ msgstr "Просмотр"
 msgid "View History"
 msgstr "История"
 
-#: includes/pages/workflow-list.php:63 oasiswf.php:243 oasiswf.php:244
+#: includes/pages/workflow-list.php:63 oasiswf.php:254 oasiswf.php:255
 msgid "Edit Workflows"
 msgstr "Правка воркфлоу"
 
@@ -1463,164 +1592,51 @@ msgstr "-- Выберите действие --"
 msgid "Abort"
 msgstr "Отменить"
 
-#: js/lib/textedit/nicEdit.js:13
-msgid "Click to Bold"
-msgstr "Жирный"
-
-#: js/lib/textedit/nicEdit.js:14
-msgid "Click to Italic"
-msgstr "Курсив"
-
-#: js/lib/textedit/nicEdit.js:15
-msgid "Click to Underline"
-msgstr "Подчеркнуть"
-
-#: js/lib/textedit/nicEdit.js:16
-msgid "Left Align"
-msgstr "Выровнить по левому краю"
-
-#: js/lib/textedit/nicEdit.js:17
-msgid "Center Align"
-msgstr "Выровнять по центру"
-
-#: js/lib/textedit/nicEdit.js:18
-msgid "Right Align"
-msgstr "Выровнить по правому краю"
-
-#: js/lib/textedit/nicEdit.js:19
-msgid "Justify Align"
-msgstr "Выравнивание по ширине"
-
-#: js/lib/textedit/nicEdit.js:20
-msgid "Insert Ordered List"
-msgstr "Нумерованный список"
-
-#: js/lib/textedit/nicEdit.js:21
-msgid "Insert Unordered List"
-msgstr "Ненумерованный список"
-
-#: js/lib/textedit/nicEdit.js:22
-msgid "Click to Subscript"
-msgstr "Субскрипт"
-
-#: js/lib/textedit/nicEdit.js:23
-msgid "Click to Superscript"
-msgstr "Суперскрипт"
-
-#: js/lib/textedit/nicEdit.js:24
-msgid "Click to Strike Through"
-msgstr "Перечеркнутый"
-
-#: js/lib/textedit/nicEdit.js:25
-msgid "Remove Formatting"
-msgstr "Очистить форматирование"
-
-#: js/lib/textedit/nicEdit.js:26
-msgid "Indent Text"
-msgstr "Отступ"
-
-#: js/lib/textedit/nicEdit.js:27
-msgid "Remove Indent"
-msgstr "Убрать отступ"
-
-#: js/lib/textedit/nicEdit.js:28
-msgid "Horizontal Rule"
-msgstr "Горизонтальный разделитель"
-
-#: js/lib/textedit/nicEdit.js:55
-msgid "Select Font Size"
-msgstr "Размер текста"
-
-#: js/lib/textedit/nicEdit.js:56
-msgid "Select Font Family"
-msgstr "Шрифт"
-
-#: js/lib/textedit/nicEdit.js:57
-msgid "Select Font Format"
-msgstr "Начертание"
-
-#: js/lib/textedit/nicEdit.js:76
-msgid "Change Text Color"
-msgstr "Изменить цвет текста"
-
-#: js/lib/textedit/nicEdit.js:77
-msgid "Change Background Color"
-msgstr "Изменить цвет фона"
-
-#: js/lib/textedit/nicEdit.js:96
-msgid "Save this content"
-msgstr "Сохранить контент"
-
-#: js/pages/acf-pro-validator-new.js:112
-msgid "Validation failed"
-msgstr "Validation failed"
-
-#: js/pages/acf-pro-validator-new.js:114
-msgid "1 field requires attention"
-msgstr "1 обязательное поле не заполнено!"
-
-#: js/pages/acf-pro-validator-new.js:116
-#, javascript-format
-msgid "%d fields require attention"
-msgstr "%d поля требуют внимания"
-
-#: js/pages/acf-pro-validator.js:63
-msgid "validation_failed"
-msgstr "validation_failed"
-
-#: js/pages/acf-pro-validator.js:109
-msgid "validation_failed_1"
-msgstr "validation_failed_1"
-
-#: js/pages/acf-pro-validator.js:112
-msgid "validation_failed_2"
-msgstr "validation_failed_2"
-
-#: oasiswf.php:204 oasiswf.php:205
+#: oasiswf.php:215 oasiswf.php:216
 msgid "Workflows"
 msgstr "Воркфлоу"
 
-#: oasiswf.php:233 oasiswf.php:234
+#: oasiswf.php:244 oasiswf.php:245
 msgid "Reports"
 msgstr "Отчеты"
 
-#: oasiswf.php:262 oasiswf.php:263 oasiswf.php:2193
+#: oasiswf.php:273 oasiswf.php:274 oasiswf.php:2268
 msgid "Stay Informed"
 msgstr "В курсе"
 
-#: oasiswf.php:680 oasiswf.php:1509
+#: oasiswf.php:688 oasiswf.php:1565
 msgid "first name"
 msgstr "имя"
 
-#: oasiswf.php:681 oasiswf.php:1510
+#: oasiswf.php:689 oasiswf.php:1566
 msgid "last name"
 msgstr "фамилия"
 
-#: oasiswf.php:682 oasiswf.php:1511
+#: oasiswf.php:690 oasiswf.php:1567
 msgid "post title"
 msgstr "заголовок записи"
 
-#: oasiswf.php:683 oasiswf.php:1512
+#: oasiswf.php:691 oasiswf.php:1568
 msgid "category"
 msgstr "категория"
 
-#: oasiswf.php:684 oasiswf.php:1513
+#: oasiswf.php:692 oasiswf.php:1569
 msgid "last modified date"
 msgstr "дата последнего изменения"
 
-#: oasiswf.php:685
+#: oasiswf.php:693
 msgid "post author"
 msgstr "автор записи"
 
-#: oasiswf.php:1183
+#: oasiswf.php:1191
 msgid "Welcome to Oasis Workflow"
 msgstr "Добро пожаловать в Oasis Workflow"
 
-#: oasiswf.php:1185
+#: oasiswf.php:1193
 msgid "To get started with Oasis Workflow follow the steps listed below."
 msgstr "Для начала работы с Oasis Workflow выполните нижеследующие шаги."
 
-#: oasiswf.php:1186
+#: oasiswf.php:1194
 msgid ""
 "To get started with Oasis Workflow go to the individual site and follow the "
 "steps listed below."
@@ -1628,17 +1644,17 @@ msgstr ""
 "Для начала работы с Oasis Workflow перейдите к конкретному сайту и выполните "
 "нижеследующие шаги."
 
-#: oasiswf.php:1187
+#: oasiswf.php:1195
 #, php-format
 msgid "1. Go to Workflows %s Edit Workflows."
 msgstr "1. Перейдите к Воркфлоу %s Правка воркфлоу."
 
-#: oasiswf.php:1188
+#: oasiswf.php:1196
 msgid "2. Modify the \"Sample Workflow\" to suit your needs."
 msgstr ""
 "2. Настройте \"Sample Workflow\", чтобы он соответствовал Вашим требованиям."
 
-#: oasiswf.php:1189
+#: oasiswf.php:1197
 #, php-format
 msgid ""
 "3. Activate the workflow process from Workflows %s Settings, Workflow tab."
@@ -1646,98 +1662,254 @@ msgstr ""
 "3. Активируйте процесс воркфлоу из меню Воркфлоу %s Настройки, закладка "
 "Воркфлоу."
 
-#: oasiswf.php:1498
+#: oasiswf.php:1554
 msgid "Success"
 msgstr "Готово"
 
-#: oasiswf.php:1499
+#: oasiswf.php:1555
 msgid "Failure"
 msgstr "Ошибка"
 
-#: oasiswf.php:1503
+#: oasiswf.php:1559
 msgid "In Progress"
 msgstr "В процессе"
 
-#: oasiswf.php:1504
+#: oasiswf.php:1560
 msgid "In Review"
 msgstr "На рассмотрении"
 
-#: oasiswf.php:1505
+#: oasiswf.php:1561
 msgid "Ready to Publish"
 msgstr "Готов к публикации"
 
-#: oasiswf.php:2054
+#: oasiswf.php:2123
 msgid "Are you sure to abort the workflow?"
 msgstr "Вы действительно хотите отменить воркфлоу?"
 
-#: oasiswf.php:2081
+#: oasiswf.php:2151
 msgid "Do you really want to clear all the steps?"
 msgstr "Вы уверены, что хотите удалить все этапы?"
 
-#: oasiswf.php:2082
+#: oasiswf.php:2152
 msgid "This step is already defined. Do you really want to remove this step?"
 msgstr "Этот этап уже настроен. Вы действительно желаете удалить этот этап?"
 
-#: oasiswf.php:2083
+#: oasiswf.php:2153
 msgid "Please select Post Status."
 msgstr "Пожалуйста, выберите статус записи."
 
-#: oasiswf.php:2084
+#: oasiswf.php:2154
 msgid "The path between"
 msgstr "Путь между"
 
-#: oasiswf.php:2085
+#: oasiswf.php:2155
 msgid "step and"
 msgstr "этапом и"
 
-#: oasiswf.php:2086
+#: oasiswf.php:2156
 msgid "step is incorrect."
 msgstr "этап неправильный."
 
-#: oasiswf.php:2087
+#: oasiswf.php:2157
 msgid ""
 "To edit/delete the step, right click on the step to access the step menu."
 msgstr ""
 "Для правки/удаления этапа нажмите правую кнопку мыши на этапе для открытия "
 "контекстного меню."
 
-#: oasiswf.php:2088
+#: oasiswf.php:2158
 msgid ""
 "To connect to another step drag a line from the \"dot\" to the next step."
 msgstr ""
 "Для связи с другим этапом тяните линию от \"точки\" к следующему этапу."
 
-#: oasiswf.php:2089
+#: oasiswf.php:2159
 msgid "Post Status"
 msgstr "Статус объявления"
 
-#: oasiswf.php:2097
+#: oasiswf.php:2167
 msgid "You have unsaved changes."
 msgstr "У Вас есть несохраненные изменения."
 
-#: oasiswf.php:2105
+#: oasiswf.php:2175
 msgid "Due date cannot be in the past."
 msgstr "Дата дедлайна не может быть в прошлом."
 
-#: oasiswf.php:2112
+#: oasiswf.php:2182
 msgid "Step name is required."
 msgstr "Необходимо заполнить название этапа."
 
-#: oasiswf.php:2113
+#: oasiswf.php:2183
 msgid "Step name already exists. Please use a different name."
 msgstr "Название этапа уже существует. Пожалуйста, используйте другое."
 
-#: oasiswf.php:2114
+#: oasiswf.php:2184
 msgid "Please select assignee(s)."
 msgstr "Выберите участников."
 
-#: oasiswf.php:2115
+#: oasiswf.php:2185
 msgid "Please select a placeholder."
 msgstr "Выберите плейсхолдер."
 
-#: oasiswf.php:2156
+#: oasiswf.php:2228
 msgid "Workflow Tasks At a Glance"
 msgstr "Резюме по заданиям воркфлоу"
+
+#: src/components/custom-post-type-support.js:8
+msgid "If this is a custom post type, check this page: "
+msgstr "Если это пользовательский тип записи, проверьте эту страницу: "
+
+#: src/components/custom-post-type-support.js:10
+msgid ""
+" for more information on how to make custom post type work with Gutenberg "
+"Editor."
+msgstr ""
+" для получения дополнительной информации о том, как сделать пользовательский "
+"тип поста работать с редактором."
+
+#: src/components/ow-signoff-last-step.js:172 src/components/ow-signoff.js:351
+#: src/components/ow-submit-to-workflow.js:296
+msgid "redirecting..."
+msgstr "Перенаправление..."
+
+#: src/components/ow-signoff-last-step.js:211
+msgid "Publish Immediately?"
+msgstr "Опубликовать сразу?"
+
+#: src/components/ow-signoff-last-step.js:242
+msgid ""
+"There are no further steps defined in the workflow. Do you want to cancel "
+"the post/page from the workflow?"
+msgstr ""
+"В рабочем процессе нет дальнейших шагов, определенных. Вы хотите отменить "
+"публикацию/страницу из рабочего процесса?"
+
+#: src/components/ow-signoff-response.js:60
+msgid "What’s next?"
+msgstr "Что дальше?"
+
+#: src/components/ow-signoff-response.js:69
+msgid "Take me to List page"
+msgstr "Отвезти меня на страницу списка"
+
+#: src/components/ow-signoff-response.js:78
+msgid "Take me to Workflow Inbox"
+msgstr "Отвезти меня в почтовый ящик рабочего процесса"
+
+#: src/components/ow-signoff.js:148
+msgid "Select Step"
+msgstr "Выберите шаг"
+
+#: src/components/ow-signoff.js:373
+msgid "Action"
+msgstr "Действие"
+
+#: src/components/ow-workflow-select-control.js:67
+msgid "Select Workflow"
+msgstr "Выберите рабочий процесс"
+
+#: src/components/workflow-revision-feature-message.js:8
+msgid "Workflow support for published posts is available with Pro version. "
+msgstr ""
+"Поддержка рабочих процессов для опубликованных должностей доступна с версией "
+"Pro."
+
+#: src/components/workflow-revision-feature-message.js:10
+msgid " for more information."
+msgstr " для получения дополнительной информации."
+
+#: src/ow-sidebar.js:57
+msgid "Loading..."
+msgstr "Загрузка..."
+
+#: src/ow-sidebar.js:170
+msgid "Workflow actions are not available for this post type."
+msgstr "Действия рабочего процесса недоступны для данного типа записи."
+
+#: src/ow-sidebar.js:243 src/ow-sidebar.js:247
+msgid "Oasis Workflow"
+msgstr "Oasis Workflow"
+
+#~ msgid "Click to Bold"
+#~ msgstr "Жирный"
+
+#~ msgid "Click to Italic"
+#~ msgstr "Курсив"
+
+#~ msgid "Click to Underline"
+#~ msgstr "Подчеркнуть"
+
+#~ msgid "Left Align"
+#~ msgstr "Выровнить по левому краю"
+
+#~ msgid "Center Align"
+#~ msgstr "Выровнять по центру"
+
+#~ msgid "Right Align"
+#~ msgstr "Выровнить по правому краю"
+
+#~ msgid "Justify Align"
+#~ msgstr "Выравнивание по ширине"
+
+#~ msgid "Insert Ordered List"
+#~ msgstr "Нумерованный список"
+
+#~ msgid "Insert Unordered List"
+#~ msgstr "Ненумерованный список"
+
+#~ msgid "Click to Subscript"
+#~ msgstr "Субскрипт"
+
+#~ msgid "Click to Superscript"
+#~ msgstr "Суперскрипт"
+
+#~ msgid "Click to Strike Through"
+#~ msgstr "Перечеркнутый"
+
+#~ msgid "Remove Formatting"
+#~ msgstr "Очистить форматирование"
+
+#~ msgid "Indent Text"
+#~ msgstr "Отступ"
+
+#~ msgid "Remove Indent"
+#~ msgstr "Убрать отступ"
+
+#~ msgid "Horizontal Rule"
+#~ msgstr "Горизонтальный разделитель"
+
+#~ msgid "Select Font Family"
+#~ msgstr "Шрифт"
+
+#~ msgid "Select Font Format"
+#~ msgstr "Начертание"
+
+#~ msgid "Change Text Color"
+#~ msgstr "Изменить цвет текста"
+
+#~ msgid "Change Background Color"
+#~ msgstr "Изменить цвет фона"
+
+#~ msgid "Save this content"
+#~ msgstr "Сохранить контент"
+
+#~ msgid "Validation failed"
+#~ msgstr "Validation failed"
+
+#~ msgid "1 field requires attention"
+#~ msgstr "1 обязательное поле не заполнено!"
+
+#~ msgid "%d fields require attention"
+#~ msgstr "%d поля требуют внимания"
+
+#~ msgid "validation_failed"
+#~ msgstr "validation_failed"
+
+#~ msgid "validation_failed_1"
+#~ msgstr "validation_failed_1"
+
+#~ msgid "validation_failed_2"
+#~ msgstr "validation_failed_2"
 
 #~ msgid "Workflow(version)"
 #~ msgstr "Воркфлоу(версия)"

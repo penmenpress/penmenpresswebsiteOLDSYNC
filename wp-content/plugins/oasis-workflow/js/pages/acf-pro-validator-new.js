@@ -98,16 +98,20 @@ function workflowSubmitWithACF(fnParam)
                // show error
                field.showError( error.message );
 
-
-               // add error
-               acf.validation.addError(error.message);
+               // errorMessage
+               var errorMessage = acf.__('Validation failed');
+               if( errorCount == 1 ) {
+                  errorMessage += '. ' + acf.__('1 field requires attention');
+               } else if( errorCount > 1 ) {
+                  errorMessage += '. ' + acf.__('%d fields require attention').replace('%d', errorCount);
+               }
 
                // set $scrollTo
                if ( !$scrollTo ) {
                   $scrollTo = field.$el;
                }
             }
-
+            
             // errorMessage
             var errorMessage = acf.__('Validation failed');
             if( errorCount == 1 ) {

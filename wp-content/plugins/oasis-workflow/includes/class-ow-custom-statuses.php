@@ -98,17 +98,43 @@ class OW_Custom_Statuses {
          $slug = sanitize_text_field( trim( $_POST['slug_name'] ) );
          $slug = $slug ? $slug : sanitize_title( $term );
          $status_description = stripslashes( wp_filter_nohtml_kses( trim( $_POST['status_description'] ) ) );
-         //handle_add_custom_status
-         $args = array(
-            'slug' => $slug,
-            'description' => $status_description
-         );
-         $response = wp_insert_term( $term, $this->taxonomy_key, $args );
-         if( is_wp_error( $response ) ) {
-            wp_die( __( 'Could not add status: ', 'oasisworkflow' ) . $response->get_error_message() );
-         }
+         
+         // Check if custom status name and slug name doesn't match with the existing and core statuses
+         $is_term_exist = $this->check_if_term_exist( $term, $slug );
+         
+         if( $is_term_exist ) {
+            add_action( 'admin_notices', array( $this, 'custom_status_exist' ) );
+         } else {         
+            //handle_add_custom_status
+            $args = array(
+               'slug' => $slug,
+               'description' => $status_description
+            );
+            $response = wp_insert_term( $term, $this->taxonomy_key, $args );
+            if( is_wp_error( $response ) ) {
+               wp_die( __( 'Could not add status: ', 'oasisworkflow' ) . $response->get_error_message() );
+            }
 
-         add_action( 'admin_notices', array( $this, 'custom_status_added' ) );
+            add_action( 'admin_notices', array( $this, 'custom_status_added' ) );
+         }
+      }
+   }
+   
+   /**
+    * Check if custom status name and slug name doesn't match with the existing and core statuses
+    * @param string $term
+    * @param string $slug
+    * @return boolean
+    * @since 4.4
+    */
+   public function check_if_term_exist( $term, $slug ) {
+      
+      $status_array = get_post_stati( array( 'show_in_admin_status_list' => true ) );
+      
+      if( term_exists( $term ) || term_exists( $slug ) || array_key_exists( $slug, $status_array ) ) {
+         return true;
+      } else {
+         return false;
       }
    }
 
@@ -120,7 +146,18 @@ class OW_Custom_Statuses {
    public function custom_status_added() {
       echo OW_Utility::instance()->admin_notice( array(
          'type' => 'update',
-         'message' => 'Custom status has been added successfully.'
+         'message' => __( 'Custom status has been added successfully.', 'oasisworkflow' )
+      ) );
+   }
+   
+   /**
+    * Notice: Custom status already exist.
+    * @since 4.4
+    */
+   public function custom_status_exist() {
+      echo OW_Utility::instance()->admin_notice( array(
+         'type' => 'error',
+         'message' => __( 'Custom status already exist.', 'oasisworkflow' )
       ) );
    }
 
@@ -144,6 +181,7 @@ class OW_Custom_Statuses {
          $slug = sanitize_text_field( trim( $_POST['slug_name'] ) );
          $slug = $slug ? $slug : sanitize_title( $term );
          $status_description = stripslashes( wp_filter_nohtml_kses( trim( $_POST['status_description'] ) ) );
+
          $args = array(
             'slug' => $slug,
             'description' => $status_description,

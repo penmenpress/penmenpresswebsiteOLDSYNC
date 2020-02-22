@@ -573,6 +573,24 @@ class OW_History_Service {
    }
    
    /**
+    * Get Post submitter
+    * @param int $post_id
+    * @return array
+    *
+    * @since 4.2
+    *
+    */
+   public function get_post_submitter_by_post_id( $post_id ) {
+      global $wpdb;
+
+		$post_id = intval( sanitize_text_field( $post_id ) );
+
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT assign_actor_id FROM " . OW_Utility::instance()->get_action_history_table_name() . " WHERE post_id = %d AND action_status = 'submitted' ", $post_id ) );
+      
+      return $results;
+   }
+   
+   /**
     * Print the header of workflow history
     */
    public function get_table_header() {

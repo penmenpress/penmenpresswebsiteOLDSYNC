@@ -440,12 +440,19 @@ class OW_Utility {
       if( count( $role ) > 0 ) {
          $user_string = array();
          $post_author_id = "";
+         $post_submitter_id = get_current_user_id();
          // Instead of using WP_User_Query, we have to go this route, because user role editor
          // plugin has implemented the pre_user_query hook and excluded the administrator users to appear in the list
 
          if( $post_id != null ) {
             $post = get_post( $post_id );
             $post_author_id = $post->post_author;
+            
+            $ow_history_service = new OW_History_Service();
+            $history = $ow_history_service->get_post_submitter_by_post_id( $post_id );
+            if( $history ) :
+               $post_submitter_id = $history[0]->assign_actor_id;
+            endif;
          }
 
 
@@ -453,6 +460,9 @@ class OW_Utility {
             if( $k == 'owfpostauthor' ) { // this is a custom role added by oasis workflow
                $author_user = new WP_User( $post_author_id );
                $users = array( $author_user );
+            } else if ( $k == 'owfpostsubmitter' ) { // this is a custom role added by oasis workflow
+               $submitter_user = new WP_User( $post_submitter_id );
+               $users = array( $submitter_user );
             } else {
                $user_role = '%' . $k . '%';
                $users = $wpdb->get_results( $wpdb->prepare( "SELECT users_1.ID, users_1.display_name FROM {$wpdb->base_prefix}users users_1
@@ -464,11 +474,13 @@ class OW_Utility {
                $user_obj = new WP_User( $user->ID );
                if( !empty( $user_obj->roles ) && is_array( $user_obj->roles ) ) {
                   foreach ( $user_obj->roles as $user_role ) {
-                     if( $user_role == $k || 'owfpostauthor' == $k ) { // if the selected role is 'postauthor'- the custom role.
+                     if( $user_role == $k || 'owfpostauthor' == $k || 'owfpostsubmitter' == $k ) { // if the selected role is 'postauthor'- the custom role.
                         $part["ID"] = $user->ID;
 
                         if( $user->ID == $post_author_id ) {
                            $part["name"] = $user->display_name . ' (' . __( "Post Author", "oasisworkflow" ) . ')';
+                        } else if( $user->ID == $post_submitter_id ) {
+                           $part["name"] = $user->display_name . ' (' . __( "Post Submitter", "oasisworkflow" ) . ')';
                         } else {
                            $part["name"] = $user->display_name;
                         }
@@ -796,6 +808,7 @@ class OW_Utility {
       $roles = (array) $wp_roles->role_names;
       // add our custom role "Post Author" to this list
       $roles['owfpostauthor'] = __( 'Post Author', 'oasisworkflow' );
+      $roles['owfpostsubmitter'] = __( 'Post Submitter', 'oasisworkflow' );
       asort( $roles );
 
       $options = '<optgroup label="' . __( 'Roles', 'oasisworkflow' ) . '">';
@@ -1012,7 +1025,31 @@ class OW_Utility {
       return false;
 
    }
-    
+   
+   /**
+    * set priority levels
+    * @return array
+    * @since 3.4
+    */
+   public function api_get_priorities( $criteria ) {
+      if ( ! wp_verify_nonce( $criteria->get_header('x_wp_nonce'), 'wp_rest' ) ) {
+         wp_die( __( 'Unauthorized access.', 'oasisworkflow' ) );
+      }
+
+      if ( ! current_user_can( 'ow_submit_to_workflow' ) && ! current_user_can( 'ow_sign_off_step' ) ) {
+         wp_die( __( 'You are not allowed to get workflow priorities.', 'oasisworkflow' ) );
+      }
+
+      $priorities = $this->get_priorities();
+      $return = array();
+      foreach ( $priorities as $key => $val ) {
+         $return[] = array(
+            "key" => $key,
+            "value" => $val
+         );
+      }
+      return $return;
+   }
 }
 
 ?>
