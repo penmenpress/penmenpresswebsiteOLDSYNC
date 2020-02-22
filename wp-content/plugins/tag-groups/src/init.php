@@ -20,18 +20,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 *
 * @since 1.0.0
 */
-function chatty_mango_tag_groups_block_assets() {
-	// Styles.
-	wp_enqueue_style(
-		'chatty-mango_tag-groups-style-css', // Handle.
-		plugins_url( 'dist/blocks.style.build.css', dirname( __FILE__ ) ), // Block style CSS.
-		array( 'wp-blocks' ) // Dependency to include the CSS after it.
-		// filemtime( plugin_dir_path( __FILE__ ) . 'editor.css' ) // Version: filemtime — Gets file modification time.
-	);
-} // End function chatty_mango_tag_groups_block_assets().
+
+// We don't have any public Gutenberg styles
+// function chatty_mango_tag_groups_block_assets() {
+// 	// Styles.
+// 	wp_enqueue_style(
+// 		'chatty-mango_tag-groups-style-css', // Handle.
+// 		plugins_url( 'dist/blocks.style.build.css', dirname( __FILE__ ) ), // Block style CSS.
+// 		array( 'wp-blocks' ) // Dependency to include the CSS after it.
+// 		// filemtime( plugin_dir_path( __FILE__ ) . 'editor.css' ) // Version: filemtime — Gets file modification time.
+// 	);
+// } // End function chatty_mango_tag_groups_block_assets().
 
 // Hook: Frontend assets.
-add_action( 'enqueue_block_assets', 'chatty_mango_tag_groups_block_assets' );
+// add_action( 'enqueue_block_assets', 'chatty_mango_tag_groups_block_assets' );
 
 /**
 * Enqueue Gutenberg block assets for backend editor.
@@ -43,10 +45,13 @@ add_action( 'enqueue_block_assets', 'chatty_mango_tag_groups_block_assets' );
 * @since 1.0.0
 */
 function chatty_mango_tag_groups_editor_assets() {
+
+	global $tag_groups_premium_fs_sdk;
+
 	// Scripts.
 	wp_enqueue_script(
 		'chatty-mango_tag-groups-block-js', // Handle.
-		plugins_url( '/dist/blocks.build.js', dirname( __FILE__ ) ), // Block.build.js: We register the block here. Built with Webpack.
+		plugins_url( 'dist/blocks.build.js', dirname( __FILE__ ) ), // Block.build.js: We register the block here. Built with Webpack.
 		array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-editor' ) // Dependencies, defined above.
 		// filemtime( plugin_dir_path( __FILE__ ) . 'block.js' ) // Version: filemtime — Gets file modification time.
 	);
@@ -57,7 +62,7 @@ function chatty_mango_tag_groups_editor_assets() {
 		'siteUrl' 	=> get_option( 'siteurl' ),
 		'siteLang'	=> '',	// for future use
 		'pluginUrl'	=> TAG_GROUPS_PLUGIN_URL,
-		'hasPremium'	=> defined( 'TAG_GROUPS_PREMIUM_MINIMUM_VERSION_WP' ),
+		'hasPremium'	=> $tag_groups_premium_fs_sdk->can_use_premium_code(),
 	);
 
 	wp_localize_script( 'chatty-mango_tag-groups-block-js', 'ChattyMangoTagGroupsGlobal', $args );

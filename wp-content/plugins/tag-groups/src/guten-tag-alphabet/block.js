@@ -50,7 +50,7 @@ const {
 const helpUrl = 'https://documentation.chattymango.com/documentation/';
 const helpProduct = 'tag-groups-premium';
 const helpComponent = 'alphabetical-tag-cloud/alphabetical-tag-cloud-parameters/';
-const logoUrl = pluginUrl + '/images/cm-tg-icon-64x64.png';
+const logoUrl = pluginUrl + '/assets/images/cm-tg-icon-64x64.png';
 
 
 class TagGroupsHelp extends Component {
@@ -80,14 +80,20 @@ class tagGroupsAlphabeticalCloudParameters extends Component {
 
   // Method for setting the initial state.
   static getInitialState( attributes ) {
+    let selectedGroups = []; // empty means all
     let selectedTaxonomies = ['post_tag'];
 
+    // We need arrays for the select elements.
+    if ( attributes.include ) {
+      selectedGroups = attributes.include.split(",")
+    }
 
     if ( attributes.taxonomy ) {
       selectedTaxonomies = attributes.taxonomy.split(",")
     }
 
     return {
+      groups: [],
       taxonomies: [],
       posts: [],
       selectedTaxonomies: selectedTaxonomies, // array representation
@@ -100,14 +106,17 @@ class tagGroupsAlphabeticalCloudParameters extends Component {
   constructor() {
     super( ...arguments );
 
+    this.groupsEndPoint = siteUrl + '/wp-json/tag-groups/v1/groups';
     this.termsEndPoint = siteUrl + '/wp-json/tag-groups/v1/terms';
     this.taxonomiesEndPoint = siteUrl + '/wp-json/tag-groups/v1/taxonomies';
 
     this.state = this.constructor.getInitialState( this.props.attributes );
 
     // Bind so we can use 'this' inside the method.
+    this.getGroupsFromApi = this.getGroupsFromApi.bind( this );
     this.getTaxonomiesFromApi = this.getTaxonomiesFromApi.bind( this );
     this.getPostsFromApi = this.getPostsFromApi.bind( this );
+    this.handleChangeInclude = this.handleChangeInclude.bind( this );
     this.handleChangeTaxonomy = this.handleChangeTaxonomy.bind( this );
     this.toggleOptionActive = this.toggleOptionActive.bind( this );
     this.toggleOptionCollapsible = this.toggleOptionCollapsible.bind( this );
@@ -118,11 +127,37 @@ class tagGroupsAlphabeticalCloudParameters extends Component {
     this.toggleOptionShowTagCount = this.toggleOptionShowTagCount.bind( this );
 
     // Load data from REST API.
+    this.getGroupsFromApi();
     this.getTaxonomiesFromApi();
     this.getPostsFromApi();
 
   }
 
+  handleChangeInclude( options ) {
+    let selectedGroups = options.map( function( option ) {
+      if ( ! isNaN( option.value ) ) {
+        return option.value;
+      }
+    });
+
+    // Set the state
+    this.setState( { selectedGroups: selectedGroups } );
+
+    // Set the attributes
+    this.props.setAttributes( {
+      include: selectedGroups.join(',')
+    } );
+
+    if ( selectedGroups.indexOf(0) > -1 ) {
+      this.props.setAttributes( {
+        show_not_assigned: 1
+      } );
+    } else {
+      this.props.setAttributes( {
+        show_not_assigned: 0
+      } );
+    }
+  }
 
   handleChangeTaxonomy( options ) {
     let selectedTaxonomies = options.map( function( option ) {
@@ -140,6 +175,18 @@ class tagGroupsAlphabeticalCloudParameters extends Component {
     });
   }
 
+
+  /**
+  * Loading Groups
+  */
+  getGroupsFromApi() {
+    // retrieve the groups
+    apiFetch( { path: this.groupsEndPoint } ).then( groups => {
+      if ( groups ) {
+        this.setState({ groups });
+      }
+    });
+  }
 
   /**
   * Loading Taxonomies (own REST API endpoint)
@@ -246,7 +293,13 @@ class tagGroupsAlphabeticalCloudParameters extends Component {
       ul_class
     } = attributes;
 
-    let optionsTaxonomies = [];
+    let optionsGroups = [], optionsTaxonomies = [];
+
+    if( this.state.groups && this.state.groups.length > 0 ) {
+      this.state.groups.forEach( ( group ) => {
+        optionsGroups.push({ value:group.term_group, label:group.label });
+      });
+    }
 
     if( this.state.taxonomies && this.state.taxonomies.length > 0 ) {
       this.state.taxonomies.forEach( ( taxonomy ) => {
@@ -512,6 +565,22 @@ class tagGroupsAlphabeticalCloudParameters extends Component {
               />
             </PanelBody>
 
+            <PanelBody title={ __( 'Groups' ) } initialOpen={false}>
+            <TagGroupsHelp topic="include"/>
+            <label htmlFor="tg_input_include">
+            { __( 'Include groups' ) }
+            </label>
+            <Select
+              id="tg_input_include"
+              onChange={ this.handleChangeInclude }
+              value={ this.state.selectedGroups }
+              options={ optionsGroups }
+              multi={ true }
+              closeOnSelect={ false}
+              removeSelected={ true }
+            />
+            </PanelBody>
+
             <PanelBody title={ __( 'Advanced Styling' ) } initialOpen={false}>
             <div>
             <TagGroupsHelp topic="div_id"/>
@@ -578,7 +647,7 @@ class tagGroupsAlphabeticalCloudParameters extends Component {
           </div>
         </InspectorControls>
       ),
-      <div className="chatt-mango-editor">
+      <div className="chatty-mango-editor">
         <table style={{border:'none'}}>
         <tr>
         <td>
@@ -711,6 +780,10 @@ var cmTagGroupsAlphabetBlock = registerBlockType( 'chatty-mango/tag-groups-alpha
     hide_empty_tabs: {// configurable in block
       type: 'integer',
       default: 0
+    },
+    include: {// configurable in block
+      type: 'string',
+      default: ''
     },
     include_letters: {// only in shortcode
       type: 'string',

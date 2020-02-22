@@ -50,7 +50,7 @@ const {
 const helpUrl = 'https://documentation.chattymango.com/documentation/';
 const helpProduct = 'tag-groups-premium';
 const helpComponent = 'tabbed-tag-cloud/tabbed-tag-cloud-parameters/';
-const logoUrl = pluginUrl + '/images/cm-tg-icon-64x64.png';
+const logoUrl = pluginUrl + '/assets/images/cm-tg-icon-64x64.png';
 
 
 class TagGroupsHelp extends Component {
@@ -539,16 +539,6 @@ class tagGroupsTabbedCloudParameters extends Component {
                 value={ tags_post_id }
                 options={ this.state.posts }
               />
-              <TagGroupsHelp topic="groups_post_id"/>
-              <label htmlFor="tg_input_group_post_id">
-  						{ __( 'Use groups of the following post:' ) }
-              </label>
-              <Select
-                id="tg_input_group_post_id"
-                onChange={ ( option ) => { if ( option ) setAttributes( { groups_post_id:option.value } ) } }
-                value={ groups_post_id }
-                options={ this.state.posts }
-              />
             </PanelBody>
 
             <PanelBody title={ __( 'Groups and Tabs' ) } initialOpen={false}>
@@ -611,6 +601,16 @@ class tagGroupsTabbedCloudParameters extends Component {
                 />
                 </div>
               }
+              <TagGroupsHelp topic="groups_post_id"/>
+              <label htmlFor="tg_input_group_post_id">
+  						{ __( 'Use groups of the following post:' ) }
+              </label>
+              <Select
+                id="tg_input_group_post_id"
+                onChange={ ( option ) => { if ( option ) setAttributes( { groups_post_id:option.value } ) } }
+                value={ groups_post_id }
+                options={ this.state.posts }
+              />
             </PanelBody>
 
             <PanelBody title={ __( 'Advanced Styling' ) } initialOpen={false}>
@@ -679,7 +679,7 @@ class tagGroupsTabbedCloudParameters extends Component {
           </div>
         </InspectorControls>
       ),
-      <div className="chatt-mango-editor">
+      <div className="chatty-mango-editor">
         <table style={{border:'none'}}>
         <tr>
         <td>

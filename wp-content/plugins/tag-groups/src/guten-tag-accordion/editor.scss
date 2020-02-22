@@ -27,12 +27,19 @@
     margin-bottom: 10px;
   }
 
+  .editor-plain-text {
+    border: 1px solid #666;
+    background: #EEE;
+    padding: 1px;
+    margin-bottom: 10px;
+  }
+
   .Select-control {
     margin-bottom: 10px;
   }
 }
 
-.chatt-mango-editor {
+.chatty-mango-editor {
   .cm-gutenberg.dashicons-before::before {
     line-height: 30px;
     margin-right: 5px;
@@ -41,8 +48,19 @@
   clear: both;
 }
 
- .chatty-mango-help-transform {
-   // border: 1px solid #999;
-   background-color: #edeff0;
-   padding: 7px;
- }
+.chatty-mango-help-transform {
+  // border: 1px solid #999;
+  background-color: #edeff0;
+  padding: 7px;
+}
+
+.chatty-mango-editor {
+      font-size: 16px;
+      font-family: arial, helvetica;
+      line-height: 1.5em;
+}
+
+.chatty-mango-editor h3 {
+      font-size: 20px;
+      font-family: arial, helvetica;
+}

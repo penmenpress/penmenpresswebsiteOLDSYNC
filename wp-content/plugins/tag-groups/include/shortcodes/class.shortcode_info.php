@@ -22,16 +22,15 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
     */
     static function tag_groups_info( $atts = array() ) {
 
-      // create key that depends on settings
-      $key_array = $atts;
+      global $tag_group_groups;
 
-      if ( isset( $key_array['html_id'] ) ) {
+      if ( is_array( $atts ) ) {
 
-        unset( $key_array['html_id'] );
+        asort( $atts );
 
       }
 
-      $cache_key = md5( 'tag_groups_info' . serialize( $key_array ) );
+      $cache_key = md5( 'tag_groups_info' . serialize( $atts ) );
 
       // check for a cached version (premium plugin)
       $html = apply_filters( 'tag_groups_hook_cache_get', false, $cache_key );
@@ -42,16 +41,14 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
       }
 
-      $active_tag_group_taxonomies = get_option( 'tag_group_taxonomy', array('post_tag') );
-
-      $group = new TagGroups_Group();
+      $active_tag_group_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
 
       extract( shortcode_atts( array(
-        'info'      =>  'number_of_tags',
-        'group_id'  => '0',
-        'html_id'    => '',
-        'html_class' => '',
-        'taxonomy' => null,
+        'info'        =>  'number_of_tags',
+        'group_id'    => '0',
+        'html_id'     => '',
+        'html_class'  => '',
+        'taxonomy'    => null,
       ), $atts ) );
 
 
@@ -89,7 +86,7 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 
-              error_log( sprintf( '[Tag Groups] Wrong taxonomy in shortcode "tag_groups_info": %s', $taxonomy ) );
+              error_log( sprintf( '[Tag Groups] Wrong taxonomy in "tag_groups_info": %s', $taxonomy ) );
 
             }
 
@@ -118,7 +115,7 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
         if ( 'all' == $group_id ) {
 
-          $term_groups = $group->get_all_ids();
+          $term_groups = $tag_group_groups->get_group_ids_by_position();
 
         } elseif ( strpos( $group_id, ',' ) !== false ) {
 
@@ -135,19 +132,19 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
           foreach ( $term_groups as $term_group ) {
 
-            $group->set_term_group( $term_group );
+            $tg_group = new TagGroups_Group( $term_group );
 
-            if ( $group->exists() ) {
+            if ( $tg_group->exists() ) {
 
               $output .= '<tr>
               <td class="tag-groups-td-label" title="ID: ' . $term_group . '">';
 
-              $output .= $group->get_label();
+              $output .= $tg_group->get_label();
 
               $output .= '</td>
               <td class="tag-groups-td-number">';
 
-              $output .= intval( $group->get_number_of_terms( $tag_group_taxonomies ) );
+              $output .= intval( $tg_group->get_number_of_terms( $tag_group_taxonomies ) );
 
               $output .= '</td>
               </tr>';
@@ -156,7 +153,7 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
               if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 
-                error_log( sprintf( '[Tag Groups] Unknown group ID in shortcode "tag_groups_info": %s', $term_group ) );
+                error_log( sprintf( '[Tag Groups] Unknown group ID in "tag_groups_info": %s', $term_group ) );
 
               }
 
@@ -172,13 +169,13 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
           */
           $term_group = intval( $group_id );
 
-          $group->set_term_group( $term_group );
+          $tg_group = new TagGroups_Group( $term_group );
 
-          if ( $group->exists() ) {
+          if ( $tg_group->exists() ) {
 
             $output .= '<span' . $id_string . $class_string . '>';
 
-            $output .= intval( $group->get_number_of_terms( $tag_group_taxonomies ) );
+            $output .= intval( $tg_group->get_number_of_terms( $tag_group_taxonomies ) );
 
             $output .= '</span>';
 
@@ -186,7 +183,7 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 
-              error_log( sprintf( '[Tag Groups] Unknown group ID in shortcode "tag_groups_info": %s', $term_group ) );
+              error_log( sprintf( '[Tag Groups] Unknown group ID in "tag_groups_info": %s', $term_group ) );
 
             }
 
@@ -202,7 +199,7 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
           if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 
-            error_log( sprintf( '[Tag Groups] Wrong group ID in shortcode "tag_groups_info" with info=label: %s', $group_id ) );
+            error_log( sprintf( '[Tag Groups] Wrong group ID in "tag_groups_info" with info=label: %s', $group_id ) );
 
           }
 
@@ -210,13 +207,13 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
           $term_group = intval( $group_id );
 
-          $group->set_term_group( $term_group );
+          $tg_group = new TagGroups_Group( $term_group );
 
-          if ( $group->exists() ) {
+          if ( $tg_group->exists() ) {
 
             $output = '<span' . $id_string . $class_string . '>';
 
-            $output .= $group->get_label();
+            $output .= $tg_group->get_label();
 
             $output .= '</span>';
 
@@ -224,7 +221,7 @@ if ( ! class_exists('TagGroups_Shortcode_Info') ) {
 
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 
-              error_log( sprintf( '[Tag Groups] Unknown group ID in shortcode "tag_groups_info": %s', $term_group ) );
+              error_log( sprintf( '[Tag Groups] Unknown group ID in "tag_groups_info": %s', $term_group ) );
 
             }
 
