@@ -216,13 +216,12 @@ class N2SmartSliderSlide extends N2SmartSliderComponentOwnerAbstract {
                 $url = N2LinkParser::parse($url, $this->linkAttributes);
 
                 $this->linkAttributes['data-href'] = (N2Platform::$isJoomla ? JRoute::_($url, false) : $url);
-                if (empty($this->linkAttributes['onclick'])) {
-                    if ($target == '_blank') {
-                        $this->linkAttributes['data-n2click'] = "window.open(this.getAttribute('data-href'),'_blank');";
-                    } else {
-                        $this->linkAttributes['data-n2click'] = "n2const.setLocation(this.getAttribute('data-href'))";
+                if (empty($this->linkAttributes['onclick']) && !isset($this->linkAttributes['n2-lightbox'])) {
+                    if (!empty($target) && $target != '_self') {
+                        $this->linkAttributes['data-target'] = $target;
                     }
-                    $this->linkAttributes['data-n2middleclick'] = "window.open(this.getAttribute('data-href'),'_blank');";
+                    $this->linkAttributes['data-n2click']       = "n2ss.openUrl(event);";
+                    $this->linkAttributes['data-n2middleclick'] = "n2ss.openUrl(event, '_blank');";
                 }
             }
             if (!isset($this->linkAttributes['style'])) {
@@ -234,7 +233,20 @@ class N2SmartSliderSlide extends N2SmartSliderComponentOwnerAbstract {
     }
 
     public function getRawLink() {
-        return $this->parameters->getIfEmpty('link', '|*|');
+        $linkV1 = $this->parameters->getIfEmpty('link', '');
+        if(!empty($linkV1)){
+            list($link, $target) = array_pad((array)N2Parse::parse($linkV1), 2, '');
+            return $link;
+        }
+        return $this->parameters->getIfEmpty('href', '');
+    }
+    public function getRawLinkHref() {
+        $linkV1 = $this->parameters->getIfEmpty('link', '');
+        if(!empty($linkV1)){
+            list($link, $target) = array_pad((array)N2Parse::parse($linkV1), 2, '');
+            return $target;
+        }
+        return $this->parameters->getIfEmpty('href-target', '_self');
     }
 
     public function getSlider() {
@@ -269,7 +281,7 @@ class N2SmartSliderSlide extends N2SmartSliderComponentOwnerAbstract {
         }
 
         if ($this->sliderObject->exposeSlideData['thumbnail']) {
-            $thumbnail = $this->getThumbnail();
+            $thumbnail = $this->getThumbnailDynamic();
             if (!empty($thumbnail)) {
                 $this->attributes['data-thumbnail'] = $this->sliderObject->features->optimize->optimizeThumbnail($thumbnail);
             }
@@ -491,6 +503,15 @@ class N2SmartSliderSlide extends N2SmartSliderComponentOwnerAbstract {
         }
 
         return N2ImageHelper::fixed($this->fill($image));
+    }
+
+    public function getThumbnailDynamic() {
+        $image = $this->thumbnail;
+        if (empty($image)) {
+            $image = $this->parameters->get('backgroundImage');
+        }
+
+        return $this->fill($image);
     }
 
     public function getLightboxImage() {

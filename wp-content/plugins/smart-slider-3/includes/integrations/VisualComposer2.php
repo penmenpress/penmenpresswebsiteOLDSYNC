@@ -30,7 +30,7 @@ class SmartSlider3Controller extends Container implements Module {
     }
 
     protected function addFilters($response) {
-        \N2SS3Shortcode::forceIframe('VisualComposer2');
+        \N2SS3Shortcode::forceIframe('VisualComposer2', true);
 
         return $response;
     }
@@ -39,5 +39,5 @@ class SmartSlider3Controller extends Container implements Module {
 new SmartSlider3Controller();
 
 add_action('wp_ajax_vcv:admin:ajax', function () {
-    \N2SS3Shortcode::forceIframe('VisualComposer2');
+    \N2SS3Shortcode::forceIframe('VisualComposer2', true);
 });

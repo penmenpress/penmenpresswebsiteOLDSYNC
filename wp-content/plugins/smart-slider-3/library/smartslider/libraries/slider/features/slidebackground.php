@@ -14,6 +14,7 @@ class N2SmartSliderFeatureSlideBackground {
         if (!$enabled) {
             if ($this->slider->params->get('backgroundMode') == 'fixed') {
                 $enabled = 1;
+                $this->slider->params->set('slide-background-parallax-strength', 100);
             }
         }
         if ($enabled) {

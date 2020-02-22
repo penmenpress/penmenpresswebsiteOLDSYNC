@@ -11,6 +11,8 @@ class N2UriAbstract {
 
     var $_currentbase = '';
 
+    var $siteUrl = '';
+
     public static $scheme = 'http';
 
     static function getInstance() {
@@ -38,6 +40,12 @@ class N2UriAbstract {
         $i = N2Uri::getInstance();
 
         return $i->_baseuri;
+    }
+
+    static function getSiteUri() {
+        $i = N2Uri::getInstance();
+
+        return $i->siteUrl;
     }
 
     static function pathToUri($path, $protocol = true) {

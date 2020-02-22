@@ -136,21 +136,28 @@ class N2SmartsliderSlidersModel extends N2Model {
 
         $generalTab  = new N2TabGroupped($sliderSettings, 'general', n2_('General'));
         $generalTab2 = new N2Tab($generalTab, 'slider', false);
-        new N2ElementText($generalTab2, 'title', n2_('Name'), n2_('Slider'), array(
+
+        $nameGroup = new N2ElementGroup($generalTab2, 'namegroup', n2_('Slider name'));
+
+        new N2ElementText($nameGroup, 'title', n2_('Name'), n2_('Slider'), array(
             'style' => 'width:400px;'
         ));
 
+        new N2ElementText($nameGroup, 'aria-label', n2_('ARIA Label'), n2_('Slider'), array(
+            'style' => 'width:200px;'
+        ));
+
         $aliasGroup = new N2ElementGroup($generalTab2, 'aliasgroup', n2_('Alias'), array(
-            'tip' => 'Find the description of the options by hovering over their titles.'
+            'tip' => n2_('Find the description of the options by hovering over their titles.')
         ));
 
         new N2ElementText($aliasGroup, 'alias', n2_('Alias'), '', array(
             'style' => 'width:200px;',
-            'tip'   => 'This alias can be used for your slider\'s shortcode, but you can also use it to create an element for anchors with the next on/off options.'
+            'tip'   => n2_('This alias can be used for your slider\'s shortcode, but you can also use it to create an element for anchors with the next on/off options.')
         ));
 
         new N2ElementOnOff($aliasGroup, 'alias-id', n2_('Use as ID on element before slider'), '', array(
-            'tip'           => 'You can have an empty div element before our slider, which would use this alias as its id. This can be useful, if you would want to use #your-alias as the url in your menu to jump to that element.',
+            'tip'           => n2_('You can have an empty div element before our slider, which would use this alias as its id. This can be useful, if you would want to use #your-alias as the url in your menu to jump to that element.'),
             'relatedFields' => array(
                 'slideralias-smoothscroll',
                 'slideralias-slideswitch'
@@ -158,11 +165,11 @@ class N2SmartsliderSlidersModel extends N2Model {
         ));
 
         new N2ElementOnOff($aliasGroup, 'alias-smoothscroll', n2_('Smooth scroll to this element'), '', array(
-            'tip' => 'The #your-alias urls in links would be forced to smooth scroll to our element.'
+            'tip' => n2_('The #your-alias urls in links would be forced to smooth scroll to our element.')
         ));
 
         new N2ElementOnOff($aliasGroup, 'alias-slideswitch', n2_('Allow slide switching for anchor'), '', array(
-            'tip' => 'If you wouldn\'t use #your-alias as anchor, but rather #your-alias-1 or #your-alias-2, then your slider will switch to the 1st, 2nd, etc. slide.'
+            'tip' => n2_('If you wouldn\'t use #your-alias as anchor, but rather #your-alias-1 or #your-alias-2, then your slider will switch to the 1st, 2nd, etc. slide.')
         ));
 
         $controls = new N2ElementGroup($generalTab2, 'controls', n2_('Controls'));
@@ -177,10 +184,6 @@ class N2SmartsliderSlidersModel extends N2Model {
 
         new N2ElementOnOff($controls, 'controlsScroll', n2_('Mouse wheel'), 0);
         new N2ElementOnOff($controls, 'controlsKeyboard', n2_('Keyboard'), 1);
-
-        $focus = new N2ElementGroup($generalTab2, 'slider-focus', n2_('Scroll to slider'));
-        new N2ElementOnOff($focus, 'responsiveFocusUser', n2_('User interaction'), 1);
-        new N2ElementOnOff($focus, 'responsiveFocusAutoplay', n2_('Autoplay'), 0);
 
         new N2ElementImage($generalTab2, 'thumbnail', n2_('Thumbnail'), '');
         new N2ElementRadio($generalTab2, 'align', n2_('Align'), 'normal', array(
@@ -462,6 +465,21 @@ class N2SmartsliderSlidersModel extends N2Model {
             'unit'   => 'px'
         ));
 
+        $focus = new N2ElementGroup($developerOptions, 'responsiveFocus', n2_('Scroll to slider on user interaction'));
+        new N2ElementOnOff($focus, 'responsiveFocusUser', n2_('Enabled'), 1);
+
+
+        new N2ElementList($focus, 'responsiveFocusEdge', n2_('Edge'), 'auto', array(
+            'options' => array(
+                'auto'         => n2_('Auto'),
+                'top'          => n2_('Top - when needed'),
+                'top-force'    => n2_('Top - always'),
+                'bottom'       => n2_('Bottom - when needed'),
+                'bottom-force' => n2_('Bottom - always'),
+            )
+        ));
+
+
         new N2ElementTextarea($developerOptions, 'custom-css-codes', n2_('CSS'), '', array(
             'fieldStyle' => 'width:600px;height:300px;'
         ));
@@ -470,7 +488,7 @@ class N2SmartsliderSlidersModel extends N2Model {
         ));
 
         new N2ElementText($developerOptions, 'classes', n2_('Slider CSS classes'), '', array(
-            'tip' => 'You can put custom CSS classes to the slider\'s container.'
+            'tip' => n2_('You can put custom CSS classes to the slider\'s container.')
         ));
         new N2ElementTextarea($developerOptions, 'related-posts', n2_('Post IDs') . ' (' . n2_('one per line') . ')', '', array(
             'fieldStyle' => 'width:600px;height:100px;',

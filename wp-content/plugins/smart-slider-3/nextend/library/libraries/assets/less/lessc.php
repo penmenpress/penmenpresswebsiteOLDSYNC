@@ -611,7 +611,7 @@ class n2lessc {
 
         // check for a rest
         $last = end($args);
-        if ($last[0] == "rest") {
+        if (is_array($last) && $last[0] == "rest") {
             $rest = array_slice($values, count($args) - 1);
             $this->set($last[1], $this->reduce(array(
                 "list",
@@ -674,7 +674,7 @@ class n2lessc {
                     if ($mixin != $block) $mixin->parent = $block;
 
                     foreach ($this->sortProps($mixin->props) as $subProp) {
-                        if ($suffix !== null && $subProp[0] == "assign" && is_string($subProp[1]) && $subProp[1]{0} != $this->vPrefix) {
+                        if ($suffix !== null && $subProp[0] == "assign" && is_string($subProp[1]) && $subProp[1][0] != $this->vPrefix) {
                             $subProp[2] = array(
                                 'list',
                                 ' ',
@@ -1798,7 +1798,7 @@ class n2lessc {
         $this->pushEnv();
         $parser = new n2lessc_parser($this, __METHOD__);
         foreach ($args as $name => $strValue) {
-            if ($name{0} != '@') $name = '@' . $name;
+            if ($name[0] != '@') $name = '@' . $name;
             $parser->count  = 0;
             $parser->buffer = (string)$strValue;
             if (!$parser->propertyValue($value)) {
@@ -2484,7 +2484,7 @@ class n2lessc_parser {
                 $hidden = true;
                 if (!isset($block->args)) {
                     foreach ($block->tags as $tag) {
-                        if (!is_string($tag) || $tag{0} != $this->lessc->mPrefix) {
+                        if (!is_string($tag) || $tag[0] != $this->lessc->mPrefix) {
                             $hidden = false;
                             break;
                         }
@@ -2547,7 +2547,7 @@ class n2lessc_parser {
     protected function fixTags($tags) {
         // move @ tags out of variable namespace
         foreach ($tags as &$tag) {
-            if ($tag{0} == $this->lessc->vPrefix) $tag[0] = $this->lessc->mPrefix;
+            if ($tag[0] == $this->lessc->vPrefix) $tag[0] = $this->lessc->mPrefix;
         }
 
         return $tags;
@@ -3416,7 +3416,7 @@ class n2lessc_parser {
     protected function end() {
         if ($this->literal(';')) {
             return true;
-        } elseif ($this->count == strlen($this->buffer) || $this->buffer{$this->count} == '}') {
+        } elseif ($this->count == strlen($this->buffer) || $this->buffer[$this->count] == '}') {
             // if there is end of file or a closing block next then we don't need a ;
             return true;
         }

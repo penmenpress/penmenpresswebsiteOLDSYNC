@@ -147,8 +147,8 @@ N2D('SmartSliderWidgetThumbnailDefault', function ($, undefined) {
             widthLocal: this.dots.width(),
             width: this.dots.outerWidth(true),
             height: this.dots.outerHeight(true),
-            widthBorder: parseInt(this.dots.css('borderLeftWidth')) + parseInt(this.dots.css('borderRightWidth')),
-            heightBorder: parseInt(this.dots.css('borderTopWidth')) + parseInt(this.dots.css('borderBottomWidth'))
+            widthBorder: parseInt(this.dots.css('borderLeftWidth')) + parseInt(this.dots.css('borderRightWidth')) + parseInt(this.dots.css('paddingLeft')) + parseInt(this.dots.css('paddingRight')),
+            heightBorder: parseInt(this.dots.css('borderTopWidth')) + parseInt(this.dots.css('borderBottomWidth')) + parseInt(this.dots.css('paddingTop')) + parseInt(this.dots.css('paddingBottom'))
 
         };
 
@@ -361,6 +361,7 @@ N2D('SmartSliderWidgetThumbnailDefault', function ($, undefined) {
             availableBarDimension = barDimension - sideDimension * 2;
             ratio = availableBarDimension / (this.parameters.minimumThumbnailCount * this.thumbnailDimension[variables.prop]);
             itemPerPane = availableBarDimension / (this.thumbnailDimension[variables.prop] * ratio);
+
         }
 
         if (this.ratio !== ratio) {

@@ -23,7 +23,7 @@ class N2ElementPublishSlider extends N2ElementHidden {
             }
 
             document.addEventListener('copy', function (e) {
-                if ($(e.target).hasClass('n2-has-copy')) {
+                if (n2(e.target).hasClass('n2-has-copy')) {
                     try {
                         e.clipboardData.setData('text/plain', window.getSelection().toString());
                         e.clipboardData.setData('text/html', '<div>' + window.getSelection().toString() + '</div>');

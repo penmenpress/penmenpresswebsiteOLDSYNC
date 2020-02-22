@@ -66,21 +66,23 @@ abstract class N2SmartSliderCSSAbstract {
 
         if (N2Platform::needStrongerCSS()) {
             $css = preg_replace(array(
+                '/' . preg_quote('#' . $this->slider->elementId) . '/',
                 '/\.n2-ss-align([\. \{,])/',
                 '/(?<!' . preg_quote('#' . $this->slider->elementId) . ')\.n2-ss-slider([\. \{,])/'
             ), array(
-                '#' . $this->slider->elementId . '-align$1',
-                '#' . $this->slider->elementId . '$1'
+                '#' . $this->slider->elementId . '#' . $this->slider->elementId . '$1',
+                '#' . $this->slider->elementId . '-align#' . $this->slider->elementId . '-align$1',
+                '#' . $this->slider->elementId . '#' . $this->slider->elementId . '$1'
             ), $css);
         }
 
-        if ($this->slider->params->get('media-query-hide-slider', 0)) {
+        if ($this->slider->params->get('media-query-hide-slider', 0) && !N2Platform::$isAdmin) {
             $css .= '
                 #' . $this->slider->elementId . '{
                     display:block;
                 }
                 @media (' . $this->slider->params->get('media-query-under-over', 'max-width') . ': ' . $this->slider->params->get('media-query-width', '640') . 'px){
-                    div#' . $this->slider->elementId . '{
+                    div#' . $this->slider->elementId . ', div#' . $this->slider->elementId . '-placeholder{
                         display:none;
                     }
                 }';

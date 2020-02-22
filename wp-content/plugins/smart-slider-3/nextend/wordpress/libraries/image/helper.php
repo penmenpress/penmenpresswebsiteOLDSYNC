@@ -19,6 +19,7 @@ class N2ImageHelper extends N2ImageHelperAbstract {
     }
 
     public static function onImageUploaded($filename) {
+        $filename = str_replace(DIRECTORY_SEPARATOR, '/', $filename); // fix for Windows servers
         // Check the type of file. We'll use this as the 'post_mime_type'.
         $filetype = wp_check_filetype(basename($filename), null);
 

@@ -120,7 +120,7 @@ class N2SmartSliderTypeSimple extends N2SmartSliderType {
     }
 
     public function getScript() {
-        return "N2R(" . json_encode($this->jsDependency) . ",function(){new N2Classes.SmartSliderSimple('#{$this->slider->elementId}', " . json_encode($this->javaScriptProperties) . ");});";
+        return "N2R(" . json_encode($this->jsDependency) . ",function(){new N2Classes.SmartSliderSimple('#{$this->slider->elementId}', " . $this->encodeJavaScriptProperties() . ");});";
     }
 
     public function loadResources() {

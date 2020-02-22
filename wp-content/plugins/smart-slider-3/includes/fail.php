@@ -3,7 +3,7 @@
 
 if (!function_exists('smartslider3_fail_php_version')) {
     function smartslider3_fail_php_version() {
-        $html_message = sprintf('<div class="error">%s</div>', wpautop(sprintf('Smart Slider 3 requires PHP version 5.4+, plugin is currently NOT RUNNING. Current PHP version: %s', PHP_VERSION)));
+        $html_message = sprintf('<div class="error">%s</div>', wpautop(sprintf('Smart Slider 3 requires PHP version 5.6.20+, plugin is currently NOT RUNNING. Current PHP version: %s', PHP_VERSION)));
         echo wp_kses_post($html_message);
     }
 }

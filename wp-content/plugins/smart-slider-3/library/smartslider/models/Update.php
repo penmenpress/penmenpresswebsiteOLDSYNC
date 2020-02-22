@@ -89,23 +89,7 @@ class N2SmartsliderUpdateModel {
     }
 
     public function update() {
-
-        $posts = array(
-            'action' => 'update'
-        );
-
-        $response = N2SS3::api($posts);
-        if (is_string($response)) {
-            $updateStatus = N2Platform::updateFromZip($response, N2SS3::getUpdateInfo());
-            if ($updateStatus === true) {
-                return 'OK';
-            } else if ($updateStatus != false) {
-                return $updateStatus;
-            }
-
-            return 'UPDATE_ERROR';
-        }
-
-        return $response['status'];
+        header('LOCATION: ' . admin_url('update-core.php?force-check=1'));
+        exit;
     }
 }

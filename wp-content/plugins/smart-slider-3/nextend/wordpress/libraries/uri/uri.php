@@ -6,7 +6,9 @@ class N2Uri extends N2UriAbstract {
 
     function __construct() {
 
-        $this->uris[] = WP_PLUGIN_URL;
+        $this->siteUrl = site_url();
+
+        $this->uris[] = plugins_url();
 
         $this->_baseuri = content_url();
 

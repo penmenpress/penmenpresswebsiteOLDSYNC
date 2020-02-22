@@ -618,6 +618,7 @@ body:not([data-slides='0']) #n2-ss-slides .n2-box-dummy {
 }
 
 .n2-ss-slides-header .n2-button-menu-open .n2-button-menu {
+    left: auto;
     right: -90px;
 }
 
@@ -1977,6 +1978,10 @@ body:not(.n2-ss-layer-edit-visible) #n2-ss-layer-window {
     top: 28px;
 }
 
+html[dir="rtl"] #n2-ss-slide-canvas-settings .n2-ss-settings-panel{
+    right:0;
+}
+
 #n2-ss-slide-canvas-settings .n2-ss-settings-panel-inner {
     margin-top: 6px;
     min-width: 180px;
@@ -2240,6 +2245,7 @@ body:not(.n2-ss-layer-edit-visible) #n2-ss-layer-window {
     margin: 0 30px;
     display: block;
     width: 170px;
+    min-height: 31px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

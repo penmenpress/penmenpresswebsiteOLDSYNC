@@ -18,7 +18,7 @@ class N2SSItemHeading extends N2SSItemAbstract {
         $owner = $this->layer->getOwner();
 
         $attributes = array();
-        $font = $owner->addFont($this->data->get('font'), 'hover', 'div#' . $owner->getElementID() . ' .n2-ss-layer ');
+        $font = $owner->addFont($this->data->get('font'), 'hover');
 
         $style = $owner->addStyle($this->data->get('style'), 'heading');
 

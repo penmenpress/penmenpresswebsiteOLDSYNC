@@ -2,9 +2,6 @@
 
 class Nextend_SmartSlider3 extends ET_Builder_Module {
 
-    public $slug = 'et_pb_nextend_smart_slider_3';
-    public $vb_support = 'on';
-
     protected $module_credits = array(
         'module_uri' => 'https://smartslider3.com',
         'author'     => 'Nextendweb',
@@ -12,7 +9,9 @@ class Nextend_SmartSlider3 extends ET_Builder_Module {
     );
 
     public function init() {
-        $this->name = 'Smart Slider 3';
+        $this->name       = 'Smart Slider 3';
+        $this->slug       = 'et_pb_nextend_smart_slider_3';
+        $this->vb_support = 'on';
 
 
         $this->settings_modal_toggles = array(
@@ -39,10 +38,12 @@ class Nextend_SmartSlider3 extends ET_Builder_Module {
 
     public function get_fields() {
 
-        add_action('wp_footer', array(
-            $this,
-            'add_styles_scripts'
-        ));
+        if (et_core_is_fb_enabled()) {
+            add_action('wp_footer', array(
+                $this,
+                'add_styles_scripts'
+            ));
+        }
 
         N2base::getApplication('smartslider')
               ->getApplicationType('backend');
@@ -82,7 +83,7 @@ class Nextend_SmartSlider3 extends ET_Builder_Module {
 
                 'description'   => esc_html__('Here you can create the content that will be used within the module.', 'et_builder'),
                 'is_fb_content' => true,
-                'toggle_slug'   => 'content',
+                'toggle_slug'   => 'main_content',
             ),
         );
     }

@@ -254,7 +254,7 @@ class N2DBConnector extends N2DBConnectorAbstract {
             if (strlen($q) == 1) {
                 return $q . $name . $q;
             } else {
-                return $q{0} . $name . $q{1};
+                return $q[0] . $name . $q[1];
             }
         }
     }

@@ -12,6 +12,8 @@ class N2ElementWordPressTaxonomies extends N2ElementList {
 
     protected $postSeparator = '_x_';
 
+    protected $skip = false;
+
     public function __construct($parent, $name = '', $label = '', $default = '', array $parameters = array()) {
         parent::__construct($parent, $name, $label, $default, $parameters);
 
@@ -19,17 +21,28 @@ class N2ElementWordPressTaxonomies extends N2ElementList {
 
         $taxonomyNames = get_object_taxonomies($this->postType);
 
+        if($this->skip){
+            $skip = array(
+                'category',
+                'post_tag'
+            );
+        } else {
+            $skip = array();
+        }
+
         foreach ($taxonomyNames as $taxonomyName) {
-            $terms = get_terms(array(
-                'taxonomy' => $taxonomyName
-            ));
-            if (count($terms)) {
-                $taxonomy = get_taxonomy($taxonomyName);
-                $options  = array();
-                foreach ($terms AS $term) {
-                    $options[$taxonomy->name . $this->postSeparator . $term->term_id] = '- ' . $term->name;
+            if (!in_array($taxonomyName, $skip)) {
+                $terms = get_terms(array(
+                    'taxonomy' => $taxonomyName
+                ));
+                if (count($terms)) {
+                    $taxonomy = get_taxonomy($taxonomyName);
+                    $options  = array();
+                    foreach ($terms AS $term) {
+                        $options[$taxonomy->name . $this->postSeparator . $term->term_id] = '- ' . $term->name;
+                    }
+                    $this->optgroup[$taxonomy->label] = $options;
                 }
-                $this->optgroup[$taxonomy->label] = $options;
             }
         }
     }
@@ -43,6 +56,10 @@ class N2ElementWordPressTaxonomies extends N2ElementList {
 
     public function setPostSeparator($postSeparator) {
         $this->postSeparator = $postSeparator;
+    }
+
+    public function setSkip($skip) {
+        $this->skip = $skip;
     }
 
 }

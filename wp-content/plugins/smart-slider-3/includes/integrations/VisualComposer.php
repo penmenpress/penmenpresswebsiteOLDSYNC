@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 function n2_visualcomposer_force_iframe() {
-    N2SS3Shortcode::forceIframe('visualcomposer');
+    N2SS3Shortcode::forceIframe('visualcomposer', true);
 }
 
 class NextendSmartSlider3VisualComposer {

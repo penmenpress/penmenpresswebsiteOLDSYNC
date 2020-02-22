@@ -381,7 +381,6 @@ abstract class  N2SSSlideComponent {
             $click = $this->data->get('click');
             if (!empty($click)) {
                 $this->attributes['data-click'] = $this->pluginAnimationParseEventCode($click, $elementID);
-                $this->attributes['style']      .= 'cursor:pointer;';
             }
             $mouseenter = $this->data->get('mouseenter');
             if (!empty($mouseenter)) {
@@ -441,7 +440,7 @@ abstract class  N2SSSlideComponent {
             } else if ($code == 'previous') {
                 $code = "window['" . $elementId . "'].previous();";
             } else {
-                $code = "n2ss.trigger(this, '" . $code . "');";
+                $code = "n2ss.trigger(e.currentTarget, '" . $code . "');";
             }
         }
 
@@ -520,13 +519,13 @@ abstract class  N2SSSlideComponent {
         $gradientHover    = $this->data->get('bgcolorgradient-hover');
         $colorEndHover    = $this->data->get('bgcolorgradientend-hover');
         $isHoverDifferent = false;
-        if (!empty($colorHover) || $colorHover != $color) {
+        if (!empty($colorHover) && $colorHover != $color) {
             $isHoverDifferent = true;
         }
-        if (!empty($gradientHover) || $gradientHover != $gradient) {
+        if (!empty($gradientHover) && $gradientHover != $gradient) {
             $isHoverDifferent = true;
         }
-        if (!empty($colorEndHover) || $colorEndHover != $colorEnd) {
+        if (!empty($colorEndHover) && $colorEndHover != $colorEnd) {
             $isHoverDifferent = true;
         }
         if ($isHoverDifferent) {
@@ -691,48 +690,54 @@ abstract class  N2SSSlideComponent {
     }
 
     private static function translateUniqueIdentifierID(&$idTranslation, &$layers) {
-        for ($i = 0; $i < count($layers); $i++) {
-            if (!empty($layers[$i]['id'])) {
-                $newId                            = self::generateUniqueIdentifier();
-                $idTranslation[$layers[$i]['id']] = $newId;
-                $layers[$i]['id']                 = $newId;
-            }
-            if (isset($layers[$i]['type']) && $layers[$i]['type'] == 'group') {
-                self::translateUniqueIdentifierID($idTranslation, $layers[$i]['layers']);
+        if (is_array($layers)) {
+            for ($i = 0; $i < count($layers); $i++) {
+                if (!empty($layers[$i]['id'])) {
+                    $newId                            = self::generateUniqueIdentifier();
+                    $idTranslation[$layers[$i]['id']] = $newId;
+                    $layers[$i]['id']                 = $newId;
+                }
+                if (isset($layers[$i]['type']) && $layers[$i]['type'] == 'group') {
+                    self::translateUniqueIdentifierID($idTranslation, $layers[$i]['layers']);
+                }
             }
         }
     }
 
     private static function translateUniqueIdentifierParentID(&$idTranslation, &$layers) {
-        for ($i = 0; $i < count($layers); $i++) {
-            if (!empty($layers[$i]['parentid'])) {
-                if (isset($idTranslation[$layers[$i]['parentid']])) {
-                    $layers[$i]['parentid'] = $idTranslation[$layers[$i]['parentid']];
-                } else {
-                    $layers[$i]['parentid'] = '';
+        if (is_array($layers)) {
+            for ($i = 0; $i < count($layers); $i++) {
+                if (!empty($layers[$i]['parentid'])) {
+                    if (isset($idTranslation[$layers[$i]['parentid']])) {
+                        $layers[$i]['parentid'] = $idTranslation[$layers[$i]['parentid']];
+                    } else {
+                        $layers[$i]['parentid'] = '';
+                    }
                 }
-            }
-            if (isset($layers[$i]['type']) && $layers[$i]['type'] == 'group') {
-                self::translateUniqueIdentifierParentID($idTranslation, $layers[$i]['layers']);
+                if (isset($layers[$i]['type']) && $layers[$i]['type'] == 'group') {
+                    self::translateUniqueIdentifierParentID($idTranslation, $layers[$i]['layers']);
+                }
             }
         }
     }
 
     private static function translateUniqueIdentifierClass(&$layers) {
-        for ($i = 0; $i < count($layers); $i++) {
-            if (!empty($layers[$i]['uniqueclass'])) {
-                $layers[$i]['uniqueclass'] = self::generateUniqueIdentifier('n-uc-');
-            }
-            if (isset($layers[$i]['type'])) {
-                switch ($layers[$i]['type']) {
-                    case 'row':
-                        self::translateUniqueIdentifierClass($layers[$i]['cols']);
-                        break;
-                    case 'col':
-                    case 'content':
-                    case 'group':
-                        self::translateUniqueIdentifierClass($layers[$i]['layers']);
-                        break;
+        if (is_array($layers)) {
+            for ($i = 0; $i < count($layers); $i++) {
+                if (!empty($layers[$i]['uniqueclass'])) {
+                    $layers[$i]['uniqueclass'] = self::generateUniqueIdentifier('n-uc-');
+                }
+                if (isset($layers[$i]['type'])) {
+                    switch ($layers[$i]['type']) {
+                        case 'row':
+                            self::translateUniqueIdentifierClass($layers[$i]['cols']);
+                            break;
+                        case 'col':
+                        case 'content':
+                        case 'group':
+                            self::translateUniqueIdentifierClass($layers[$i]['layers']);
+                            break;
+                    }
                 }
             }
         }

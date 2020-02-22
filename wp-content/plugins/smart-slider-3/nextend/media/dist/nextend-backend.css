@@ -2954,6 +2954,7 @@ NextendText
     line-height: 24px;
     color: #7b8898;
     vertical-align: top;
+    min-height: initial;
 }
 
 .n2-form-dark .n2-form-element-text input,
@@ -3159,7 +3160,7 @@ html[dir="rtl"] .n2-form-element-text .n2-text-unit {
     display: inline-block;
 }
 
-#n2-form-matrix-slider-settings .n2-form-element-preview-fixed{
+#n2-form-matrix-slider-settings .n2-form-element-preview-fixed {
     border: 2px solid #a1aeb5;
 }
 
@@ -3770,10 +3771,18 @@ NextendList
     border-radius: 3px;
 
     box-sizing: content-box;
+
+    -webkit-appearance: menulist;
+    -moz-appearance: menulist;
+
+    min-height: initial;
+    max-width: initial;
 }
 
 .n2 .n2-form-element-list select[multiple] {
     height: auto;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 .n2 .n2-form-dark .n2-form-element-list select {
@@ -5116,14 +5125,14 @@ License: MIT
 .n2-button-menu-open .n2-button-menu {
     display: none;
     position: absolute;
-    right: 0;
+    left: -50px;
     top: 36px;
     z-index: 3;
 }
 
 html[dir="rtl"] .n2-button-menu-open .n2-button-menu {
-    right: auto;
-    left: 0;
+    right: -50px;
+    left: auto;
 }
 
 .n2-button-menu-inner {

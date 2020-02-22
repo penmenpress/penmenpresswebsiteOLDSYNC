@@ -59,6 +59,8 @@ class N2SSItemVimeo extends N2SSItemAbstract {
             ), $playImage);
         }
 
+        $this->data->set('privacy-enhanced', intval(N2SmartSliderSettings::get('youtube-privacy-enhanced', 0)));
+
         $owner->addScript('new N2Classes.FrontendItemVimeo(this, "' . $this->id . '", "' . $owner->getElementID() . '", ' . $this->data->toJSON() . ', ' . $hasImage . ', ' . $owner->fill($this->data->get('start', '0')) . ');');
 
         return N2Html::tag('div', array(

@@ -2,7 +2,11 @@
 
 class N2TransferData {
 
-    public static function get($url) {
+    public static function get($url, $options = array()) {
+
+        $options = array_merge(array(
+            'referer' => $_SERVER['REQUEST_URI']
+        ), $options);
 
         if (function_exists('curl_init') && function_exists('curl_exec') && N2Settings::get('curl', 1)) {
 
@@ -12,7 +16,30 @@ class N2TransferData {
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);
             curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)');
-            curl_setopt($ch, CURLOPT_REFERER, $_SERVER['REQUEST_URI']);
+            $proxy = new WP_HTTP_Proxy();
+
+            if ($proxy->is_enabled() && $proxy->send_through_proxy($url)) {
+
+
+                curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+
+                curl_setopt($ch, CURLOPT_PROXY, $proxy->host());
+
+                curl_setopt($ch, CURLOPT_PROXYPORT, $proxy->port());
+
+
+                if ($proxy->use_authentication()) {
+
+                    curl_setopt($ch, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+
+                    curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy->authentication());
+                }
+            }
+        
+
+            if (!empty($options['referer'])) {
+                curl_setopt($ch, CURLOPT_REFERER, $options['referer']);
+            }
 
 
             if (N2Settings::get('curl-clean-proxy', 0)) {
@@ -29,9 +56,12 @@ class N2TransferData {
             curl_close($ch);
 
             if ($curlErrorNumber) {
-                $href = N2Base::getApplication('smartslider')->router->createUrl(array( "help/index", array( 'curl' => 1 ) ));
+                $href = N2Base::getApplication('smartslider')->router->createUrl(array(
+                    "help/index",
+                    array('curl' => 1)
+                ));
                 N2Message::error(N2Html::tag('a', array(
-                    'href'  => $href . '#support-form'
+                    'href' => $href . '#support-form'
                 ), n2_('Debug error')));
 
                 N2Message::error($curlErrorNumber . $error);

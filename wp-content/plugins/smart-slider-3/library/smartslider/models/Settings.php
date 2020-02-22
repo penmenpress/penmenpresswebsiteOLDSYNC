@@ -49,9 +49,6 @@ class N2SmartsliderSettingsModel extends N2Model {
 
         new N2ElementToken($general);
 
-        new N2ElementOnOff($general, 'beacon', n2_('Show help beacon'), 1);
-        new N2ElementOnOff($general, 'discover', n2_('Show discover modal'), 1);
-
         new N2ElementOnOff($general, 'autoupdatecheck', n2_('Automatic update check'), 1);
 
         $translateUrl = new N2ElementMixed($general, 'translate-url', n2_('Translate url'), '|*|');
@@ -79,7 +76,7 @@ class N2SmartsliderSettingsModel extends N2Model {
 
         new N2ElementOnOff($general, 'wp-ajax-iframe-slider', n2_('Render sliders as iframe in AJAX calls'), 0);
 
-        new N2ElementOnOff($general, 'youtube-privacy-enhanced', n2_('YouTube privacy enhanced mode'), 0);
+        new N2ElementOnOff($general, 'youtube-privacy-enhanced', n2_('YouTube and Vimeo privacy enhanced mode'), 0);
 
         new N2ElementNumber($general, 'smooth-scroll-speed', n2_('Smooth scroll speed'), 400, array(
             'style' => 'width:35px;',

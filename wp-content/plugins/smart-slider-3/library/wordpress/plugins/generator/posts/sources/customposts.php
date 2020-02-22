@@ -27,6 +27,7 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
             default:
                 break;
         }
+
         return $variable;
     }
 
@@ -187,10 +188,9 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
     }
 
     protected function _getData($count, $startIndex) {
-        global $post, $wp_the_query;
-        $tmpPost         = $post;
-        $tmpWp_the_query = $wp_the_query;
-        $wp_the_query    = null;
+        global $post, $wp_query;
+        $tmpPost = $post;
+
         if (has_filter('the_content', 'siteorigin_panels_filter_content')) {
             $siteorigin_panels_filter_content = true;
             remove_filter('the_content', 'siteorigin_panels_filter_content');
@@ -230,7 +230,7 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
         $compare       = array();
         $compare_value = $this->data->get('postmetacompare', '');
         if (!empty($compare_value)) {
-            $compare = array( 'compare' => $compare_value );
+            $compare = array('compare' => $compare_value);
         }
 
         $postMetaKey = $this->data->get('postmetakey', '0');
@@ -252,22 +252,23 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
         if (!empty($metaMore) && $metaMore != 'field_name||compare_method||field_value') {
             $metaMoreValues = explode(PHP_EOL, $metaMore);
             foreach ($metaMoreValues AS $metaMoreValue) {
-                $metaMoreValue = preg_replace('/\s+/', '', $metaMoreValue);
+                $metaMoreValue = trim($metaMoreValue);
                 if ($metaMoreValue != 'field_name||compare_method||field_value') {
                     $metaMoreArray = explode('||', $metaMoreValue);
-                    if (count($metaMoreArray) == 3) {
-                        if (!empty($metaMoreArray[1])) {
-                            $compare = array( 'compare' => $metaMoreArray[1] );
-                        } else {
-                            $compare = array( '' );
-                        }
-                        $metaMoreArray[2] = $this->checkKeywords($metaMoreArray[2]);
+                    if (count($metaMoreArray) >= 2) {
+                        $compare = array('compare' => $metaMoreArray[1]);
 
-                        $getPostMeta['meta_query'][] =
-                            array(
-                                'key'   => $metaMoreArray[0],
-                                'value' => $metaMoreArray[2],
-                            ) + $compare;
+                        $key_query = array(
+                            'key' => $metaMoreArray[0]
+                        );
+
+                        if (!empty($metaMoreArray[2])) {
+                            $key_query += array(
+                                'value' => $this->checkKeywords($metaMoreArray[2])
+                            );
+                        }
+
+                        $getPostMeta['meta_query'][] = $key_query + $compare;
                     }
                 }
             }
@@ -307,7 +308,7 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
 
         $getPosts = array_merge($getPosts, $getPostMeta);
 
-        $ids = array_diff($this->getIDs(), array( 0 ));
+        $ids = array_diff($this->getIDs(), array(0));
 
         if (count($ids) > 0) {
             $getPosts += array(
@@ -315,7 +316,7 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
             );
         }
 
-        $exclude_ids = array_diff($this->getIDs('exclude_ids'), array( 0 ));
+        $exclude_ids = array_diff($this->getIDs('exclude_ids'), array(0));
 
         if (count($exclude_ids) > 0) {
             $getPosts += array(
@@ -353,17 +354,20 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
 
             $post = $posts[$i];
             setup_postdata($post);
+            $wp_query->post = $post;
 
             $record['id'] = $post->ID;
 
-            $record['url']         = get_permalink();
-            $record['title']       = apply_filters('the_title', get_the_title(), $post->ID);
-            $record['content']     = get_the_content();
-            $record['description'] = preg_replace('#\[[^\]]+\]#', '', $record['content']);
-            $record['author_name'] = $record['author'] = get_the_author();
-            $record['author_url']  = get_the_author_meta('url');
-            $record['date']        = get_the_date();
-            $record['modified']    = get_the_modified_date();
+            $record['url']           = get_permalink();
+            $record['title']         = apply_filters('the_title', get_the_title(), $post->ID);
+            $record['content']       = get_the_content();
+            $record['description']   = preg_replace('#\[[^\]]+\]#', '', $record['content']);
+            $record['author_name']   = $record['author'] = get_the_author();
+            $userID                  = get_the_author_meta('ID');
+            $record['author_url']    = get_author_posts_url($userID);
+            $record['author_avatar'] = get_avatar_url($userID,$userID);
+            $record['date']          = get_the_date();
+            $record['modified']      = get_the_modified_date();
 
             $thumbnail_id             = get_post_thumbnail_id($post->ID);
             $record['featured_image'] = wp_get_attachment_url($thumbnail_id);
@@ -429,8 +433,14 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
             }
 
             $taxonomies = get_post_taxonomies($post->ID);
+            $args       = array(
+                'orderby' => 'parent',
+                'order'   => 'ASC',
+                'fields'  => 'all'
+            );
+
             foreach ($taxonomies AS $taxonomy) {
-                $post_terms = wp_get_post_terms($post->ID, $taxonomy);
+                $post_terms = wp_get_object_terms($post->ID, $taxonomy, $args);
                 for ($j = 0; $j < count($post_terms); $j++) {
                     $record[$taxonomy . '_' . ($j + 1)]                  = $post_terms[$j]->name;
                     $record[$taxonomy . '_' . ($j + 1) . '_ID']          = $post_terms[$j]->term_id;
@@ -525,11 +535,10 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
             add_filter('the_content', 'siteorigin_panels_filter_content');
         }
 
-        $wp_the_query = $tmpWp_the_query;
-
+        $wp_query->post = $tmpPost;
         wp_reset_postdata();
-        $post = $tmpPost;
-        if ($post) setup_postdata($post);
+
+
         if ($this->data->get('identifydatetime', 0)) {
             $translate_dates = $this->data->get('translatedate', '');
             $translateValue  = explode(PHP_EOL, $translate_dates);
@@ -550,6 +559,7 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
                 }
             }
         }
+
         return $data;
     }
 
@@ -576,6 +586,7 @@ class N2GeneratorPostsCustomPosts extends N2GeneratorAbstract {
                 $from = str_replace($key, trim($value), $from);
             }
         }
+
         return $from;
     }
 

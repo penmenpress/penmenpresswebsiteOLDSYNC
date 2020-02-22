@@ -18,7 +18,8 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
         new N2ElementWordPressCategories($group, 'postscategory', n2_('Categories'), 0);
         new N2ElementWordPressTags($group, 'posttags', n2_('Tags'), 0);
         new N2ElementWordPressTaxonomies($group, 'postcustomtaxonomy', n2_('Taxonomies'), 0, array(
-            'postType' => 'post'
+            'postType' => 'post',
+            'skip'     => true
         ));
 
         $posts = new N2ElementGroup($filter, 'poststickygroup', n2_('Posts'));
@@ -96,13 +97,12 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
                 }
             }
         }
+
         return $data;
     }
 
     private function isTimeStamp($timestamp) {
-        return ((string)(int)$timestamp === $timestamp)
-            && ($timestamp <= PHP_INT_MAX)
-            && ($timestamp >= ~PHP_INT_MAX);
+        return ((string)(int)$timestamp === $timestamp) && ($timestamp <= PHP_INT_MAX) && ($timestamp >= ~PHP_INT_MAX);
     }
 
     public function getPostType() {
@@ -131,7 +131,7 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
         return $contents;
     }
 
-    var $ElementorCount      = 0;
+    var $ElementorCount = 0;
     var $ElementorWidgetType = '';
 
     function getElementorTextEditors($array) {
@@ -161,10 +161,8 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
     }
 
     protected function _getData($count, $startIndex) {
-        global $post, $wp_the_query;
-        $tmpPost         = $post;
-        $tmpWp_the_query = $wp_the_query;
-        $wp_the_query    = null;
+        global $post, $wp_query;
+        $tmpPost = $post;
 
         list($orderBy, $order) = N2Parse::parse($this->data->get('postscategoryorder', 'post_date|*|desc'));
 
@@ -207,9 +205,9 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
                     );
                 }
                 if (!empty($tax_query)) {
-                    array_unshift($tax_query, array( 'relation' => 'AND' ));
+                    array_unshift($tax_query, array('relation' => 'AND'));
                 } else {
-                    $tax_query = array( 'relation' => 'AND' );
+                    $tax_query = array('relation' => 'AND');
                 }
                 $tax_query = array_merge($tax_query, $term_helper);
             }
@@ -266,12 +264,6 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
 
         $posts = get_posts($postsFilter);
 
-        $prev_timezone   = date_default_timezone_get();
-        $timezone_string = get_option('timezone_string');
-        if ($timezone_string !== '') {
-            date_default_timezone_set($timezone_string);
-        }
-
         $custom_dates  = $this->linesToArray($this->data->get('customdates', ''));
         $translate     = $this->linesToArray($this->data->get('translatecustomdates', ''));
         $date_function = $this->data->get('datefunction', 'date_i18n');
@@ -289,6 +281,7 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
 
             $post = $posts[$i];
             setup_postdata($post);
+            $wp_query->post = $post;
 
             $record['id']          = $post->ID;
             $record['url']         = get_permalink();
@@ -322,8 +315,8 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
                 }
             }
             $record['author_name']   = $record['author'] = get_the_author();
-            $record['author_url']    = get_the_author_meta('url');
             $userID                  = get_the_author_meta('ID');
+            $record['author_url']    = get_author_posts_url($userID);
             $record['author_avatar'] = get_avatar_url($userID);
             $record['date']          = get_the_date();
             $record['modified']      = get_the_modified_date();
@@ -469,7 +462,9 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
                 $record['primary_category_name'] = $primary->name;
                 $record['primary_category_link'] = get_category_link($primary->cat_ID);
             }
-            $record['excerpt'] = get_the_excerpt();
+            $record['excerpt']       = get_the_excerpt();
+            $record['comment_count'] = $post->comment_count;
+            $record['guid']          = $post->guid;
 
             if (!empty($custom_dates)) {
                 foreach ($custom_dates AS $custom_date_key => $custom_date_format) {
@@ -507,15 +502,9 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
             add_filter('the_content', 'siteorigin_panels_filter_content');
         }
 
-        $wp_the_query = $tmpWp_the_query;
-
+        $wp_query->post = $tmpPost;
         wp_reset_postdata();
-        $post = $tmpPost;
-        if ($post) setup_postdata($post);
 
-        if ($timezone_string !== '') {
-            date_default_timezone_set($prev_timezone);
-        }
         return $data;
     }
 

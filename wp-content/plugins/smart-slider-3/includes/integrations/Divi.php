@@ -66,13 +66,14 @@ class Nextend_ET_Builder_Module_Smart_Slider extends ET_Builder_Module {
     }
 
     function shortcode_callback($atts, $content = null, $function_name) {
-        $sliderIdOrAlias     = $this->shortcode_atts['slider'];
-        $module_class = '';
-        $module_class = ET_Builder_Element::add_module_order_class($module_class, $function_name);
+        $sliderIdOrAlias = $this->shortcode_atts['slider'];
+        $module_class    = '';
+        $module_class    = ET_Builder_Element::add_module_order_class($module_class, $function_name);
 
-        if(!is_numeric($sliderIdOrAlias)){
-	        return '<div class="et_pb_module et-waypoint ' . $module_class . ' et_pb_animation_off">' . do_shortcode('[smartslider3 alias="' . $sliderIdOrAlias . '"]') . '</div>';
+        if (!is_numeric($sliderIdOrAlias)) {
+            return '<div class="et_pb_module et-waypoint ' . $module_class . ' et_pb_animation_off">' . do_shortcode('[smartslider3 alias="' . $sliderIdOrAlias . '"]') . '</div>';
         }
+
         return '<div class="et_pb_module et-waypoint ' . $module_class . ' et_pb_animation_off">' . do_shortcode('[smartslider3 slider=' . $sliderIdOrAlias . ']') . '</div>';
     }
 }
@@ -98,7 +99,7 @@ add_filter('et_builder_get_child_modules', 'Nextend_et_builder_get_child_modules
 
 
 function n2_divi_force_iframe() {
-    N2SS3Shortcode::forceIframe('divi');
+    N2SS3Shortcode::forceIframe('divi', true);
 }
 
 if (function_exists('et_fb_is_enabled') && et_fb_is_enabled()) {

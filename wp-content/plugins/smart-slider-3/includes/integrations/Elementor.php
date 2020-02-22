@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 function n2_elementor_force_iframe() {
-    \N2SS3Shortcode::forceIframe('elementor');
+    \N2SS3Shortcode::forceIframe('elementor', true);
 }
 
 add_action('template_redirect', function () {

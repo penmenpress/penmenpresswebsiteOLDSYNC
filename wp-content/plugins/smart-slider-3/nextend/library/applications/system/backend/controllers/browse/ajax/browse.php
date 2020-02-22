@@ -399,7 +399,7 @@ class N2BulletProof {
         if (function_exists("mime_content_type")) {
             $rawMime = mime_content_type($fileToUpload["tmp_name"]);
         } else {
-            $path_parts = pathinfo($_FILES["tmp_name"]["name"]);
+            $path_parts = pathinfo($_FILES["image"]["name"]);
             switch ($path_parts['extension']) {
                 case 'mp4':
                     $rawMime = 'video/mp4';

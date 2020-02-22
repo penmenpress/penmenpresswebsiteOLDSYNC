@@ -71,7 +71,7 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
         new N2ElementText($alt_group, 'widget-arrow-previous-alt', n2_('Previous arrow'), 'previous arrow');
         new N2ElementText($alt_group, 'widget-arrow-next-alt', n2_('Next arrow'), 'next arrow');
         new N2ElementOnoff($settings, 'widget-arrow-base64', n2_('Base64 encoding'), 1, array(
-            'tip'           => 'Base64 encoded arrow images are loading faster and they are colorable. But optimization plugins often have errors in their codes related to them, so if your arrow won\'t load, turn this option off.',
+            'tip'           => n2_('Base64 encoded arrow images are loading faster and they are colorable. But optimization plugins often have errors in their codes related to them, so if your arrow won\'t load, turn this option off.'),
             'relatedFields' => array(
                 'sliderwidget-arrow-next-color',
                 'sliderwidget-arrow-next-hover',
@@ -242,16 +242,6 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
                 )));
         }
 
-        $label = '';
-        switch ($side) {
-            case 'previous':
-                $label = 'Previous slide';
-                break;
-            case 'next':
-                $label = 'Next slide';
-                break;
-        }
-
         $isNormalFlow = self::isNormalFlow($params, self::$key . $side . '-');
 
         if ($animation == 'none' || $animation == 'fade') {
@@ -260,7 +250,7 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
                     'class'      => $displayClass . $styleClass . 'nextend-arrow n2-ow nextend-arrow-' . $side . '  nextend-arrow-animated-' . $animation . ($isNormalFlow ? '' : ' n2-ib'),
                     'style'      => $style,
                     'role'       => 'button',
-                    'aria-label' => $label,
+                    'aria-label' => $alt,
                     'tabindex'   => '0'
                 ), $image);
         }
@@ -271,7 +261,7 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
                 'class'      => $displayClass . 'nextend-arrow nextend-arrow-animated n2-ow nextend-arrow-animated-' . $animation . ' nextend-arrow-' . $side . ($isNormalFlow ? '' : ' n2-ib'),
                 'style'      => $style,
                 'role'       => 'button',
-                'aria-label' => $label,
+                'aria-label' => $alt,
                 'tabindex'   => '0'
             ), N2Html::tag('div', array(
                 'class' => $styleClass . ' n2-resize'

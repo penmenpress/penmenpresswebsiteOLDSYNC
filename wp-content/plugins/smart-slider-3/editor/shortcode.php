@@ -78,14 +78,16 @@ class N2SSShortcodeInsert {
         N2Loader::import('libraries.settings.settings', 'smartslider');
         ?>
         <div id="n2-ss-editor-modal">
-				<div class="n2-ss-editor-inner">
-					<div class="n2-ss-editor-header">Select a Slider<div class="n2-ss-editor-header-close"></div></div>
-                    <?php
-                    $router = N2Base::getApplication('smartslider')->router;
-                    ?>
-                    <iframe style="border: 0;" src="about:blank"></iframe>
-				</div>
-			</div>
+            <div class="n2-ss-editor-inner">
+                <div class="n2-ss-editor-header">Select a Slider
+                    <div class="n2-ss-editor-header-close"></div>
+                </div>
+                <?php
+                $router = N2Base::getApplication('smartslider')->router;
+                ?>
+                <iframe style="border: 0;" src="about:blank"></iframe>
+            </div>
+        </div>
         <script type="text/javascript">
             jQuery(document).ready(function ($) {
                 var modal = $('#n2-ss-editor-modal'),
@@ -220,7 +222,7 @@ class N2SSShortcodeInsert {
                 }
 
             });
-			</script>
+        </script>
         <?php
     }
 }

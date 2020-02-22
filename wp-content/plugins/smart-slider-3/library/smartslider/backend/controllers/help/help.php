@@ -27,6 +27,26 @@ class N2SmartsliderBackendHelpController extends N2SmartSliderController {
         $out       = fopen($errorFile, "w");
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_STDERR, $out);
+        $proxy = new WP_HTTP_Proxy();
+
+        if ($proxy->is_enabled() && $proxy->send_through_proxy(N2::getApiUrl())) {
+
+
+            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+
+            curl_setopt($ch, CURLOPT_PROXY, $proxy->host());
+
+            curl_setopt($ch, CURLOPT_PROXYPORT, $proxy->port());
+
+
+            if ($proxy->use_authentication()) {
+
+                curl_setopt($ch, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy->authentication());
+            }
+        }
+    
 
         $output = curl_exec($ch);
 

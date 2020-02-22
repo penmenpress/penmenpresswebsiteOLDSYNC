@@ -4,7 +4,8 @@ if (!defined('ABSPATH')) {
 }
 
 function n2_fl_builder_force_iframe() {
-    N2SS3Shortcode::forceIframe('beaverbuilder');
+    remove_action('wp_enqueue_scripts', 'N2SS3Shortcode::shortcodeModeToNoop', 1000000);
+    N2SS3Shortcode::forceIframe('beaverbuilder', true);
 }
 
 add_action('fl_builder_editing_enabled', 'n2_fl_builder_force_iframe');
