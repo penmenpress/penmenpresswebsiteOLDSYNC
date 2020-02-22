@@ -12,32 +12,35 @@ use WP_Defender\Module\Hardener\IRule_Service;
 use WP_Defender\Module\Hardener\Rule_Service;
 
 class Protect_Information_Service extends Rule_Service implements IRule_Service {
-
+	
 	/**
 	 * @return bool
 	 */
 	public function check() {
 		$cache = WP_Helper::getArrayCache()->get( 'Protect_Information_Service', null );
 		if ( $cache === null ) {
-			$url        = wp_defender()->getPluginUrl() . 'changelog.txt';
-			$ssl_verify = apply_filters( 'defender_ssl_verify', true ); //most hosts dont really have valid ssl or ssl still pending
-			$status     = wp_remote_head( $url, array(
-				'user-agent' => $_SERVER['HTTP_USER_AGENT'],
-				'sslverify'  => $ssl_verify
-			) );
-			if ( 200 == wp_remote_retrieve_response_code( $status ) ) {
-				WP_Helper::getArrayCache()->set( 'Protect_Information_Service', false );
+			$url     = wp_defender()->getPluginUrl() . 'changelog.txt';
+			$headers = $this->headRequest( $url, 'Protect Information', strtotime( '+1 day' ) );
+
+			if ( is_wp_error( $headers ) ) {
+				Utils::instance()->log( sprintf( 'Self ping error: %s', $headers->get_error_message() ), 'tweaks' );
 
 				return false;
 			}
+			
+			if ( 200 == $headers['response_code'] ) {
+				WP_Helper::getArrayCache()->set( 'Protect_Information_Service', false );
+				
+				return false;
+			}
 			WP_Helper::getArrayCache()->set( 'Protect_Information_Service', true );
-
+			
 			return true;
 		} else {
 			return $cache;
 		}
 	}
-
+	
 	/**
 	 * @return bool|\WP_Error
 	 */
@@ -70,10 +73,12 @@ class Protect_Information_Service extends Rule_Service implements IRule_Service 
 			$htConfig = array_merge( $htConfig, $rules );
 			file_put_contents( $htPath, implode( PHP_EOL, $htConfig ), LOCK_EX );
 		}
-
+		$url = wp_defender()->getPluginUrl() . 'changelog.txt';
+		$this->clearHeadRequest( $url );
+		
 		return true;
 	}
-
+	
 	/**
 	 * @return bool|\WP_Error
 	 */
@@ -87,7 +92,7 @@ class Protect_Information_Service extends Rule_Service implements IRule_Service 
 			}
 			$htConfig = file_get_contents( $htPath );
 			$rules    = $this->apache_rule();
-
+			
 			preg_match_all( '/## WP Defender(.*?)## WP Defender - End ##/s', $htConfig, $matches );
 			if ( is_array( $matches ) && count( $matches ) > 0 ) {
 				$htConfig = str_replace( implode( '', $matches[0] ), '', $htConfig );
@@ -96,14 +101,48 @@ class Protect_Information_Service extends Rule_Service implements IRule_Service 
 			}
 			$htConfig = trim( $htConfig );
 			file_put_contents( $htPath, $htConfig, LOCK_EX );
-
+			$url = wp_defender()->getPluginUrl() . 'changelog.txt';
+			$this->clearHeadRequest( $url );
+			
 			return true;
 		} else {
 			//Other servers we cant revert
 			return new \WP_Error( Error_Code::INVALID, __( "Revert is not possible on your current server", "defender-security" ) );
 		}
 	}
+	
+	public function getNginxRules() {
+		if ( DIRECTORY_SEPARATOR == '\\' ) {
+			//Windows
+			$wp_includes = str_replace( ABSPATH, '', WPINC );
+			$wp_content  = str_replace( ABSPATH, '', WP_CONTENT_DIR );
+		} else {
+			$wp_includes = str_replace( $_SERVER['DOCUMENT_ROOT'], '', ABSPATH . WPINC );
+			$wp_content  = str_replace( $_SERVER['DOCUMENT_ROOT'], '', WP_CONTENT_DIR );
+		}
+		
+		$rules = "# Turn off directory indexing
+autoindex off;
 
+# Deny access to htaccess and other hidden files
+location ~ /\. {
+  deny  all;
+}
+
+# Deny access to wp-config.php file
+location = /wp-config.php {
+  deny all;
+}
+
+# Deny access to revealing or potentially dangerous files in the /wp-content/ directory (including sub-folders)
+location ~* ^$wp_content/.*\.(txt|md|exe|sh|bak|inc|pot|po|mo|log|sql)$ {
+  deny all;
+}
+";
+		
+		return $rules;
+	}
+	
 	/**
 	 * Get Apache rule depending on the version
 	 *
@@ -141,7 +180,7 @@ class Protect_Information_Service extends Rule_Service implements IRule_Service 
 				'## WP Defender - End ##'
 			);
 		}
-
+		
 		return $rules;
 	}
 }

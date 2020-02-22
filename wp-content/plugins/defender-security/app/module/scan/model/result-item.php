@@ -3,6 +3,7 @@
 namespace WP_Defender\Module\Scan\Model;
 
 use Hammer\WP\Model;
+use WP_Defender\Behavior\Utils;
 use WP_Defender\Module\Scan\Component\Scan_Api;
 
 /**
@@ -36,7 +37,7 @@ class Result_Item extends Model {
 	 * @var
 	 */
 	public $parentId;
-
+	
 	/**
 	 * @var int
 	 */
@@ -45,12 +46,12 @@ class Result_Item extends Model {
 	 * @var int
 	 */
 	public $dateIgnored;
-
+	
 	/**
 	 * @var array
 	 */
 	public $raw;
-
+	
 	protected static function maps() {
 		return array(
 			'id'          => array(
@@ -83,7 +84,7 @@ class Result_Item extends Model {
 			),
 		);
 	}
-
+	
 	/**
 	 * Add this status to ignore, also we will need to cache the ignore as globally
 	 */
@@ -91,11 +92,11 @@ class Result_Item extends Model {
 		$this->status      = self::STATUS_IGNORED;
 		$this->dateIgnored = date( 'Y-m-d H:i:s' );
 		$this->save();
-
+		
 		//upadte to global ignore cache
 		Scan_Api::indexIgnore( $this->id );
 	}
-
+	
 	/**
 	 * mark this as resolved
 	 */
@@ -104,17 +105,17 @@ class Result_Item extends Model {
 		$this->dateFixed = date( 'Y-m-d H:i:s' );
 		$this->save();
 	}
-
+	
 	/**
 	 * Un ignore this
 	 */
 	public function unignore() {
 		$this->status = self::STATUS_ISSUE;
 		$this->save();
-
+		
 		Scan_Api::unIndexIgnore( $this->id );
 	}
-
+	
 	public function behaviors() {
 		switch ( $this->type ) {
 			case 'core':
@@ -134,6 +135,10 @@ class Result_Item extends Model {
 					'contentResult' => '\WP_Defender\Module\Scan\Behavior\Pro\Content_Result',
 					'utils'         => '\WP_Defender\Behavior\Utils'
 				);
+				break;
+			default:
+				//param not from the button on frontend, log it
+				error_log( sprintf( 'Unexpected value %s from IP %s', $this->type, Utils::instance()->getUserIp() ) );
 				break;
 		}
 	}

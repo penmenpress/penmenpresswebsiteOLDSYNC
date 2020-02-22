@@ -5,14 +5,9 @@
 
 namespace WP_Defender\Module\Advanced_Tools\Component;
 
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
 use Hammer\Base\Component;
 use WP_Defender\Behavior\Utils;
 use WP_Defender\Module\Advanced_Tools\Model\Auth_Settings;
-use WP_Defender\Module\Scan\Component\Scan_Api;
 
 class Auth_API extends Component {
 	/**
@@ -26,10 +21,10 @@ class Auth_API extends Component {
 		for ( $i = 0; $i < $length; $i ++ ) {
 			$secret[] = $strings[ rand( 0, strlen( $strings ) - 1 ) ];
 		}
-
+		
 		return implode( "", $secret );
 	}
-
+	
 	/**
 	 * @param $name
 	 * @param $secret
@@ -45,13 +40,12 @@ class Auth_API extends Component {
 			$chl .= ( '&issuer=' . rawurlencode( $title ) );
 		}
 		//manually include the autoload
-		require_once wp_defender()->getPluginPath() . 'vendor/phpqrcode/qrlib.php';
-
-		$code =  \QRcode::svg( $chl, false, QR_ECLEVEL_L, 4 );
-		//clean up cache folder
-
+		require_once wp_defender()->getPluginPath() . 'vendor/phpqrcode/phpqrcode.php';
+		
+		$code = \QRcode::svg( $chl, false, QR_ECLEVEL_L, 4 );
+		
 	}
-
+	
 	/**
 	 * Calculate the TOTP code
 	 *
@@ -70,7 +64,6 @@ class Auth_API extends Component {
 		$secret = $base32->decode( $secret );
 		//timestep fixed at 30
 		if ( is_null( $counter ) ) {
-
 			$counter = time();
 		}
 		$input = floor( $counter / 30 );
@@ -90,10 +83,10 @@ class Auth_API extends Component {
 		$code = $value % pow( 10, 6 );
 		//in some case we have the 0 before, so it become lesser than 6, make sure it always right
 		$code = str_pad( $code, 6, '0', STR_PAD_LEFT );
-
+		
 		return $code;
 	}
-
+	
 	/**
 	 * @param $secret
 	 * @param $userCode
@@ -105,7 +98,7 @@ class Auth_API extends Component {
 		if ( strlen( $userCode ) != 6 ) {
 			return false;
 		}
-
+		
 		/**
 		 * window is 30 seconds, before and after
 		 */
@@ -116,11 +109,11 @@ class Auth_API extends Component {
 				return true;
 			}
 		}
-
-
+		
+		
 		return false;
 	}
-
+	
 	/**
 	 * Timing attack safe string comparison, replacement of has_equals which only on 5.6+
 	 *
@@ -134,23 +127,23 @@ class Auth_API extends Component {
 		if ( function_exists( 'hash_equals' ) ) {
 			return hash_equals( $known_string, $user_string );
 		}
-
+		
 		$ret = 0;
-
+		
 		if ( strlen( $known_string ) !== strlen( $user_string ) ) {
 			$user_string = $known_string;
 			$ret         = 1;
 		}
-
+		
 		$res = $known_string ^ $user_string;
-
+		
 		for ( $i = strlen( $res ) - 1; $i >= 0; -- $i ) {
 			$ret |= ord( $res[ $i ] );
 		}
-
+		
 		return ! $ret;
 	}
-
+	
 	/**
 	 * @return bool
 	 */
@@ -165,10 +158,13 @@ class Auth_API extends Component {
 		if ( 0 === count( $user->roles ) ) {
 			return true;
 		}
-
+		
 		if ( Utils::instance()->isActivatedSingle() ) {
-			$allowedForThisRole = array_intersect( $settings->userRoles, $user->roles );
-
+			$allowedForThisRole = array_intersect( $settings->user_roles, $user->roles );
+			if ( ! is_array( $allowedForThisRole ) ) {
+				$allowedForThisRole = [];
+			}
+			
 			return count( $allowedForThisRole ) > 0;
 		} else {
 			$blogs     = get_blogs_of_user( $user->ID );
@@ -178,12 +174,12 @@ class Auth_API extends Component {
 				$u         = new \WP_User( $user->ID, '', $blog->userblog_id );
 				$userRoles = array_merge( $u->roles, $userRoles );
 			}
-			$allowedForThisRole = array_intersect( $settings->userRoles, $userRoles );
-
+			$allowedForThisRole = array_intersect( $settings->user_roles, $userRoles );
+			
 			return count( $allowedForThisRole ) > 0;
 		}
 	}
-
+	
 	/**
 	 * @param null $user
 	 *
@@ -201,10 +197,10 @@ class Auth_API extends Component {
 			//this mean user just added but have no roles, we dnt force them
 			return false;
 		}
-
+		
 		if ( Utils::instance()->isActivatedSingle() ) {
-			$isForced = array_intersect( $settings->forceAuthRoles, $user->roles );
-
+			$isForced = array_intersect( $settings->force_auth_roles, $user->roles );
+			
 			return count( $isForced ) > 0;
 		} else {
 			$blogs     = get_blogs_of_user( $user->ID );
@@ -214,12 +210,12 @@ class Auth_API extends Component {
 				$u         = new \WP_User( $user->ID, '', $blog->userblog_id );
 				$userRoles = array_merge( $u->roles, $userRoles );
 			}
-			$isForced = array_intersect( $settings->forceAuthRoles, $userRoles );
-
+			$isForced = array_intersect( $settings->force_auth_roles, $userRoles );
+			
 			return count( $isForced ) > 0;
 		}
 	}
-
+	
 	/**
 	 * @return bool|mixed|string
 	 */
@@ -227,16 +223,16 @@ class Auth_API extends Component {
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
-
+		
 		$secret = get_user_meta( get_current_user_id(), 'defenderAuthSecret', true );
 		if ( ! $secret ) {
 			$secret = self::generateSecret();
 			update_user_meta( get_current_user_id(), 'defenderAuthSecret', $secret );
 		}
-
+		
 		return $secret;
 	}
-
+	
 	/**
 	 * @param null $userID
 	 *
@@ -250,10 +246,10 @@ class Auth_API extends Component {
 		if ( ! $secret ) {
 			return false;
 		}
-
+		
 		return $secret;
 	}
-
+	
 	/**
 	 * @param $userID
 	 *
@@ -269,12 +265,12 @@ class Auth_API extends Component {
 		if ( ! self::isEnableForCurrentRole( $user ) ) {
 			return false;
 		}
-
+		
 		$isOn = get_user_meta( $userID, 'defenderAuthOn', true );
-
+		
 		return $isOn;
 	}
-
+	
 	/**
 	 * @param $userID
 	 *
@@ -289,10 +285,10 @@ class Auth_API extends Component {
 			}
 			$email = $user->user_email;
 		}
-
+		
 		return $email;
 	}
-
+	
 	/**
 	 * Generate single code, use in case lost phone
 	 *
@@ -306,10 +302,10 @@ class Auth_API extends Component {
 			'code' => $code,
 			'time' => time()
 		) );
-
+		
 		return $code;
 	}
-
+	
 	/**
 	 * @return bool
 	 */
@@ -327,7 +323,7 @@ class Auth_API extends Component {
 					$options = get_blog_option( $id, 'jetpack_active_modules', array() );
 					if ( array_search( 'sso', $options ) ) {
 						$settings->markAsConflict( 'jetpack/jetpack.php' );
-
+						
 						return true;
 					}
 				}
@@ -335,7 +331,7 @@ class Auth_API extends Component {
 				//get the data from cache
 				return $isConflict;
 			}
-
+			
 		} elseif ( is_plugin_active( 'jetpack/jetpack.php' ) ) {
 			//ugly but faster
 			$settings   = Auth_Settings::instance();
@@ -344,18 +340,18 @@ class Auth_API extends Component {
 				$options = get_option( 'jetpack_active_modules', array() );
 				if ( array_search( 'sso', $options ) ) {
 					$settings->markAsConflict( 'jetpack/jetpack.php' );
-
+					
 					return true;
 				}
 			} else {
 				return $isConflict;
 			}
-
+			
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * @return bool
 	 */
@@ -363,10 +359,10 @@ class Auth_API extends Component {
 		if ( is_plugin_active( 'theme-my-login/theme-my-login.php' ) || is_plugin_active_for_network( 'theme-my-login/theme-my-login.php' ) ) {
 			$settings = Auth_Settings::instance();
 			$settings->markAsConflict( 'theme-my-login/theme-my-login.php' );
-
+			
 			return true;
 		}
-
+		
 		return false;
 	}
 }

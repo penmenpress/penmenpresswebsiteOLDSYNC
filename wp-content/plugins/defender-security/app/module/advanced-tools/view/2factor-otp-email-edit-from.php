@@ -50,7 +50,7 @@ $body    = ! empty( $settings->email_body ) ? $settings->email_body : $settings-
 								<?php _e( "Body", "defender-security" ) ?>
                             </label>
                             <textarea class="sui-form-control" name="body" rows="8"
-                                      id="email_body"><?php echo wp_unslash( $body ); ?></textarea>
+                                      id="email_body"><?php echo stripslashes( $body ); ?></textarea>
                         </div>
                     </div>
                     <div class="sui-row">

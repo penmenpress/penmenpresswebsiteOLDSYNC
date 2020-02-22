@@ -48,7 +48,7 @@ $checked = $controller->check();
 				<?php if ( $checked ): ?>
                     <div class="sui-notice sui-notice-success">
                         <p>
-							<?php _e( "You've disabled the file editor, winning.", "defender-security" ) ?>
+							<?php _e( "You've automatically disabled PHP execution..", "defender-security" ) ?>
                         </p>
                     </div>
 				<?php else: ?>
@@ -105,11 +105,27 @@ $checked = $controller->check();
                     </div>
 				<?php endif; ?>
             </div>
-            <div class="sui-box-footer">
-                <div class="sui-actions-left">
-					<?php $controller->showIgnoreForm() ?>
+			<?php if ( ! $checked ): ?>
+                <div class="sui-box-footer">
+                    <div class="sui-actions-left">
+						<?php $controller->showIgnoreForm() ?>
+                    </div>
                 </div>
-            </div>
+			<?php else: ?>
+				<?php if ( $setting->active_server == 'apache' || $setting->active_server == 'lite_speed' ): ?>
+                    <div class="sui-box-footer">
+                        <div class="sui-actions-left">
+                            <form method="post" class="hardener-frm rule-process">
+								<?php $controller->createNonceField(); ?>
+                                <input type="hidden" name="action" value="processRevert"/>
+                                <input type="hidden" name="slug" value="<?php echo $controller::$slug ?>"/>
+                                <button class="sui-button sui-button-gray"
+                                        type="submit"><?php _e( "Revert", "defender-security" ) ?></button>
+                            </form>
+                        </div>
+                    </div>
+				<?php endif; ?>
+			<?php endif; ?>
         </div>
     </div>
 </div>

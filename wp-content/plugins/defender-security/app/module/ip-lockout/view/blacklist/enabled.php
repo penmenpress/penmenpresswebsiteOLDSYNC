@@ -15,30 +15,33 @@
                         <?php _e( "IP Addresses", "defender-security" ) ?>
                     </span>
                     <span class="sui-description">
-                    <?php _e( "Add IP addresses you want to permanently ban from, or always allow access to your website.", "defender-security" ) ?>
+                    <?php _e( "Add IP addresses you want to permanently ban from, or always allow access to your website. ", "defender-security" ) ?>
                     </span>
                 </div>
                 <div class="sui-box-settings-col-2">
                     <strong><?php _e( "Blacklist", "defender-security" ) ?></strong>
                     <p class="sui-description">
-						<?php _e( "Any IPs addresses you list here will be completely blocked from accessing your website, including admins.", "defender-security" ) ?>
+						<?php _e( "Any IP addresses you list here will be completely blocked from accessing your website, including admins.", "defender-security" ) ?>
                     </p>
                     <div class="sui-border-frame">
                         <label class="sui-label"><?php _e( "Banned IPs", "defender-security" ) ?></label>
                         <textarea class="sui-form-control"
                                   id="ip_blacklist" name="ip_blacklist"
-                                  placeholder="<?php esc_attr_e( "Add blacklisted IPs here, one per line", "defender-security" ) ?>"
+                                  placeholder="<?php esc_attr_e( "Add IP addresses here, one per line", "defender-security" ) ?>"
                                   rows="8"><?php echo $settings->ip_blacklist ?></textarea>
                         <span class="sui-description">
                             <?php _e( "Both IPv4 and IPv6 are supported. IP ranges are also accepted in format xxx.xxx.xxx.xxx-xxx.xxx.xxx.xxx.", "defender-security" ) ?>
                         </span>
                     </div>
                     <strong><?php _e( "Whitelist", "defender-security" ) ?></strong>
+                    <p class="sui-description">
+						<?php _e( "Any IP addresses you list here will be exempt any existing or new ban rules outlined in login protection, 404 detection or IP ban lists.", "defender-security" ) ?>
+                    </p>
                     <div class="sui-border-frame">
                         <label class="sui-label"><?php _e( "Allowed IPs", "defender-security" ) ?></label>
                         <textarea class="sui-form-control"
                                   id="ip_whitelist" name="ip_whitelist"
-                                  placeholder="<?php esc_attr_e( "Add whitelisted IPs here, one per line", "defender-security" ) ?>"
+                                  placeholder="<?php esc_attr_e( "Add IP addresses here, one per line", "defender-security" ) ?>"
                                   rows="8"><?php echo $settings->ip_whitelist ?></textarea>
                         <span class="sui-description">
                             <?php _e( "One IP address per line. Both IPv4 and IPv6 are supported. IP ranges are also accepted in format xxx.xxx.xxx.xxx-xxx.xxx.xxx.xxx.", "defender-security" ) ?>
@@ -46,7 +49,7 @@
                     </div>
                     <div class="sui-notice">
                         <p>
-							<?php printf( __( "We recommend you add your own IP to avoid getting locked out accidentally! Your current IP is 192.87.990.06.", "defender-security" ), \WP_Defender\Behavior\Utils::instance()->getUserIp() ) ?>
+							<?php printf( __( "We recommend you add your own IP to avoid getting locked out accidentally! Your current IP is <span class='admin-ip'>%s</span>.", "defender-security" ), \WP_Defender\Behavior\Utils::instance()->getUserIp() ) ?>
                         </p>
                     </div>
                 </div>
@@ -87,7 +90,7 @@
 						<?php else: ?>
                             <strong><?php _e( "Blacklist", "defender-security" ) ?></strong>
                             <p class="sui-description no-margin-bottom">
-								<?php _e( "Any countries you select will not being able to access any area of your website.", "defender-security" ) ?>
+								<?php _e( "Any countries you select will not be able to access any area of your website.", "defender-security" ) ?>
                             </p>
                             <div class="sui-border-frame">
                                 <div class="sui-control-with-icon">

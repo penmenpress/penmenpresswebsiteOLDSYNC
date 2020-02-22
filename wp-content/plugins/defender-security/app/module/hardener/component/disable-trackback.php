@@ -10,7 +10,7 @@ use WP_Defender\Module\Hardener\Model\Settings;
 use WP_Defender\Module\Hardener\Rule;
 
 class Disable_Trackback extends Rule {
-	static $slug = 'disable_trackback';
+	static $slug = 'disable-trackback';
 	static $service;
 
 	function getDescription() {
@@ -24,15 +24,32 @@ class Disable_Trackback extends Rule {
 		return $this->getService()->check();
 	}
 
+	/**
+	 * This will return the short summary why this rule show up as issue
+	 *
+	 * @return string
+	 */
+	function getErrorReason() {
+		return __( "Trackbacks and pingbacks are currently enabled.", "defender-security" );
+	}
+
+	/**
+	 * This will return a short summary to show why this rule works
+	 * @return mixed
+	 */
+	function getSuccessReason() {
+		return __( "Trackbacks and pingbacks are disabled, nice work!", "defender-security" );
+	}
+
 	public function getTitle() {
 		return __( "Disable trackbacks and pingbacks", "defender-security" );
 	}
 
 	function addHooks() {
-		$this->add_action( 'processingHardener' . self::$slug, 'process' );
-		$this->add_action( 'processRevert' . self::$slug, 'revert' );
-		if ( in_array( self::$slug, Settings::instance()->fixed ) ) {
-			$this->add_filter( 'wp_headers', 'removePingback' );
+		$this->addAction( 'processingHardener' . self::$slug, 'process' );
+		$this->addAction( 'processRevert' . self::$slug, 'revert' );
+		if ( in_array( self::$slug, (array) Settings::instance()->fixed ) ) {
+			$this->addFilter( 'wp_headers', 'removePingback' );
 		}
 	}
 
@@ -48,10 +65,6 @@ class Disable_Trackback extends Rule {
 	}
 
 	function revert() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
-
 		$ret = $this->getService()->revert();
 		if ( ! is_wp_error( $ret ) ) {
 			Settings::instance()->addToIssues( self::$slug );
@@ -63,11 +76,8 @@ class Disable_Trackback extends Rule {
 	}
 
 	function process() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
-		$process_posts                      = HTTP_Helper::retrieve_post( 'updatePosts' );
-		$this->getService()->process_posts 	= $process_posts;
+		$process_posts                     = HTTP_Helper::retrievePost( 'updatePosts' );
+		$this->getService()->process_posts = $process_posts;
 
 		$ret = $this->getService()->process();
 		if ( ! is_wp_error( $ret ) ) {

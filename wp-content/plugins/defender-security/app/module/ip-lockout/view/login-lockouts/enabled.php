@@ -67,9 +67,6 @@
                         </div>
                         <div data-panes>
                             <div class="sui-tab-boxed <?php echo $settings->login_protection_lockout_ban == 0 ? 'active' : null ?>">
-                                <p class="sui-description">
-									<?php _e( "Choose a timeframe to temporarily lock out blocked the IP for.", "defender-security" ) ?>
-                                </p>
                                 <div class="sui-row">
                                     <div class="sui-col-md-3">
                                         <input value="<?php echo $settings->login_protection_lockout_duration ?>"
@@ -80,11 +77,11 @@
                                     </div>
                                     <div class="sui-col-md-4">
                                         <select name="login_protection_lockout_duration_unit">
-                                            <option <?php echo selected( 'second', $settings->login_protection_lockout_duration_unit ) ?>
+                                            <option <?php echo selected( 'seconds', $settings->login_protection_lockout_duration_unit ) ?>
                                                     value="seconds"><?php _e( "Seconds", "defender-security" ) ?></option>
-                                            <option <?php echo selected( 'minute', $settings->login_protection_lockout_duration_unit ) ?>
+                                            <option <?php echo selected( 'minutes', $settings->login_protection_lockout_duration_unit ) ?>
                                                     value="minutes"><?php _e( "Minutes", "defender-security" ) ?></option>
-                                            <option <?php echo selected( 'hour', $settings->login_protection_lockout_duration_unit ) ?>
+                                            <option <?php echo selected( 'hours', $settings->login_protection_lockout_duration_unit ) ?>
                                                     value="hours"><?php _e( "Hours", "defender-security" ) ?></option>
                                         </select>
                                     </div>

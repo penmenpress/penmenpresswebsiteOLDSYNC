@@ -16,7 +16,7 @@ use Hammer\Helper\Log_Helper;
  */
 class Settings extends Model {
 	private static $_instance;
-
+	
 	const EVENT_BEFORE_SAVE = 'beforeSave', EVENT_AFTER_SAVE = 'afterSave', EVENT_BEFORE_DELETE = 'beforeDelete', EVENT_AFTER_DELETED = 'afterDeleted';
 	/**
 	 * Required, this will be the option name for storing
@@ -24,7 +24,7 @@ class Settings extends Model {
 	 */
 	protected $id;
 	protected $is_multi;
-
+	
 	public function __construct( $id, $is_multi ) {
 		$this->id       = $id;
 		$this->is_multi = $is_multi;
@@ -33,12 +33,18 @@ class Settings extends Model {
 		} else {
 			$data = get_option( $this->id, false );
 		}
-
+		if ( ! is_array( $data ) ) {
+			/**
+			 * Because serialize doesn't store exactly true/false so switching into json
+			 */
+			$data = json_decode( $data, true );
+		}
+		
 		if ( is_array( $data ) && count( $data ) ) {
 			$this->import( $data );
 		}
 	}
-
+	
 	/**
 	 * Saving current settings to database
 	 *
@@ -46,18 +52,21 @@ class Settings extends Model {
 	 */
 	public function save() {
 		$this->trigger( self::EVENT_BEFORE_SAVE );
+		$this->doFilters();
 		$data = $this->export();
+		//clean up data
+		$json_string = json_encode( $data );
 		if ( $this->is_multi ) {
-			$ret = update_site_option( $this->id, $data );
+			$ret = update_site_option( $this->id, $json_string );
 		} else {
-			$ret = update_option( $this->id, $data, false );
+			$ret = update_option( $this->id, $json_string, false );
 		}
-
+		
 		$this->trigger( self::EVENT_AFTER_SAVE );
-
+		
 		return $ret;
 	}
-
+	
 	public function delete() {
 		$this->trigger( self::EVENT_BEFORE_DELETE );
 		$ret = delete_option( $this->id );

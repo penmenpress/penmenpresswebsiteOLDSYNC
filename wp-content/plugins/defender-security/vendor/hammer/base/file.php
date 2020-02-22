@@ -5,7 +5,9 @@
 
 namespace Hammer\Base;
 
-class File extends HObject{
+use WP_Defender\Behavior\Utils;
+
+class File extends HObject {
 	const ENGINE_SPL = 'spl', ENGINE_SCANDIR = 'scan_dir', ENGINE_OPENDIR = 'open_dir';
 	/**
 	 * Engine use to create a dir tree
@@ -17,7 +19,7 @@ class File extends HObject{
 	 * @var string
 	 */
 	public $path = '';
-
+	
 	/**
 	 * Is the result including file?
 	 * @var bool
@@ -28,7 +30,9 @@ class File extends HObject{
 	 * @var bool
 	 */
 	public $include_dir = true;
-
+	
+	public $include_hidden = false;
+	
 	/**
 	 * This is where to define the rules for exclude files out of the result
 	 *
@@ -39,7 +43,7 @@ class File extends HObject{
 	 * @var array
 	 */
 	public $exclude = array();
-
+	
 	/**
 	 * This is where to define the rules for include files, please note that if $include is provided, the $exclude
 	 * will get ignored
@@ -51,19 +55,19 @@ class File extends HObject{
 	 * @var array
 	 */
 	public $include = array();
-
+	
 	/**
 	 * Does this search recursive
 	 * @var bool
 	 */
 	public $is_recursive = true;
-
+	
 	/**
 	 * if provided, only search file smaller than this
 	 * @var bool
 	 */
 	public $max_filesize = false;
-
+	
 	/**
 	 * @param $path
 	 * @param bool|true $include_file
@@ -72,14 +76,15 @@ class File extends HObject{
 	 * @param array $exclude
 	 * @param bool|true $is_recursive
 	 */
-	public function __construct( $path, $include_file = true, $include_dir = false, $include = array(), $exclude = array(), $is_recursive = true ) {
-		$this->path         = $path;
-		$this->include_file = $include_file;
-		$this->include_dir  = $include_dir;
-		$this->include      = $include;
-		$this->exclude      = $exclude;
-		$this->is_recursive = $is_recursive;
-		$this->engine = self::ENGINE_SCANDIR;
+	public function __construct( $path, $include_file = true, $include_dir = false, $include = array(), $exclude = array(), $is_recursive = true, $include_hidden = false ) {
+		$this->path           = $path;
+		$this->include_file   = $include_file;
+		$this->include_dir    = $include_dir;
+		$this->include        = $include;
+		$this->exclude        = $exclude;
+		$this->is_recursive   = $is_recursive;
+		$this->engine         = self::ENGINE_SCANDIR;
+		$this->include_hidden = $include_hidden;
 //		if ( function_exists( 'scandir' ) && stristr( PHP_OS, 'win' ) == false ) {
 //			$this->engine = self::ENGINE_SCANDIR;
 //		} elseif ( class_exists( 'FilesystemIterator' ) && class_exists( 'RecursiveDirectoryIterator' ) && class_exists( 'RecursiveCallbackFilterIterator' ) ) {
@@ -88,7 +93,7 @@ class File extends HObject{
 //			$this->engine = self::ENGINE_OPENDIR;
 //		}
 	}
-
+	
 	/**
 	 * @return array
 	 */
@@ -97,7 +102,7 @@ class File extends HObject{
 		if ( ! is_dir( $this->path ) ) {
 			return $result;
 		}
-
+		
 		if ( $this->engine == self::ENGINE_SPL ) {
 			$result = $this->_get_dir_tree_by_spl();
 		} elseif ( $this->engine == self::ENGINE_SCANDIR ) {
@@ -105,10 +110,10 @@ class File extends HObject{
 		} elseif ( $this->engine == self::ENGINE_OPENDIR ) {
 			$result = $this->_get_dir_tree_by_open_dir();
 		}
-
+		
 		return $result;
 	}
-
+	
 	/**
 	 * Create a dir tree by SPL library
 	 * @return array
@@ -120,7 +125,7 @@ class File extends HObject{
 			$directory_flag = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO
 			                  | \FilesystemIterator::UNIX_PATHS | \FilesystemIterator::SKIP_DOTS;
 			$directory      = new \RecursiveDirectoryIterator( $path, $directory_flag );
-
+			
 			if ( ! empty( $this->include ) || ! empty( $this->exclude ) ) {
 				$directory = new \RecursiveCallbackFilterIterator( $directory, array(
 					&$this,
@@ -134,12 +139,12 @@ class File extends HObject{
 		} else {
 			$tree = new \FilesystemIterator( $path );
 		}
-
+		
 		foreach ( $tree as $file ) {
 			$real_path = $file->getRealPath();
-
+			
 			$is_hidden = explode( DIRECTORY_SEPARATOR . '.', $real_path );
-			if ( count( $is_hidden ) > 1 ) {
+			if ( count( $is_hidden ) > 1 && $this->include_hidden == false ) {
 				continue;
 			}
 			if ( $this->is_recursive == false ) {
@@ -150,15 +155,15 @@ class File extends HObject{
 					}
 				}
 			}
-
+			
 			if ( $this->include_file == false && $file->isFile() ) {
 				continue;
 			}
-
+			
 			if ( $this->include_dir == false && $file->isDir() ) {
 				continue;
 			}
-
+			
 			if ( $file->isFile() && is_numeric( $this->max_filesize ) ) {
 				//convert max to bytes
 				$max_size = $this->max_filesize * ( pow( 1024, 2 ) );
@@ -166,13 +171,13 @@ class File extends HObject{
 					continue;
 				}
 			}
-
+			
 			$data[] = $real_path;
 		}
-
+		
 		return $data;
 	}
-
+	
 	/**
 	 * @param null $path
 	 *
@@ -185,7 +190,7 @@ class File extends HObject{
 		$path   = rtrim( $path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
 		$rfiles = scandir( $path );
 		$data   = array();
-
+		
 		foreach ( $rfiles as $rfile ) {
 			if ( $rfile == '.' || $rfile == '..' ) {
 				continue;
@@ -194,15 +199,15 @@ class File extends HObject{
 				//hidden files, move on
 				continue;
 			}
-
+			
 			$real_path = $path . $rfile;
-
+			
 			$type = filetype( $real_path );
-
+			
 			if ( ( ! empty( $this->include ) || ! empty( $this->exclude ) ) && ( $this->filter_directory( $real_path, $type ) == false ) ) {
 				continue;
 			}
-
+			
 			if ( $type == 'file' && $this->include_file == true ) {
 				if ( is_numeric( $this->max_filesize ) ) {
 					$max_size = $this->max_filesize * ( pow( 1024, 2 ) );
@@ -215,7 +220,7 @@ class File extends HObject{
 					$data[] = $real_path;
 				}
 			}
-
+			
 			if ( $type == 'dir' ) {
 				if ( $this->include_dir ) {
 					$data[] = $real_path;
@@ -225,7 +230,7 @@ class File extends HObject{
 					$data  = array_merge( $data, $tdata );
 				}
 			}
-
+			
 			/*if ( is_file( $real_path ) && is_numeric( $this->max_filesize ) ) {
 				//convert max to bytes
 				$max_size = $this->max_filesize * ( pow( 1024, 2 ) );
@@ -234,10 +239,10 @@ class File extends HObject{
 				}
 			}*/
 		}
-
+		
 		return $data;
 	}
-
+	
 	/**
 	 * Query files on path using opendir&readir
 	 *
@@ -252,7 +257,7 @@ class File extends HObject{
 		}
 		$path = rtrim( $path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
 		$data = array();
-
+		
 		if ( $dh = opendir( $path ) ) {
 			while ( ( $file = readdir( $dh ) ) !== false ) {
 				if ( $file == '.' || $file == '..' ) {
@@ -263,13 +268,13 @@ class File extends HObject{
 					//hidden files, move on
 					continue;
 				}
-
+				
 				if ( ( ! empty( $this->include ) || ! empty( $this->exclude ) ) && ( $this->filter_directory( $real_path ) == false ) ) {
 					continue;
 				}
-
+				
 				$type = filetype( $real_path );
-
+				
 				if ( $type == 'file' && $this->include_file == true ) {
 					if ( is_numeric( $this->max_filesize ) ) {
 						$max_size = $this->max_filesize * ( pow( 1024, 2 ) );
@@ -282,7 +287,7 @@ class File extends HObject{
 						$data[] = $real_path;
 					}
 				}
-
+				
 				if ( $type == 'dir' ) {
 					if ( $this->include_dir ) {
 						$data[] = $real_path;
@@ -295,10 +300,10 @@ class File extends HObject{
 			}
 			closedir( $dh );
 		}
-
+		
 		return $data;
 	}
-
+	
 	/**
 	 * Filter for recursive directory tree
 	 *
@@ -313,7 +318,7 @@ class File extends HObject{
 			return $this->_filter_exclude( $current, $filetype );
 		}
 	}
-
+	
 	/**
 	 * @param $path
 	 *
@@ -325,13 +330,13 @@ class File extends HObject{
 		$applied     = 0;
 		$dir_include = isset( $include['dir'] ) ? $include['dir'] : array();
 		$dir_exclude = isset( $exclude['dir'] ) ? $exclude['dir'] : array();
-
-		if ( is_null( $filetype ) ) {
+		
+		if ( ! is_null( $filetype ) ) {
 			$type = $filetype;
 		} else {
 			$type = filetype( $path );
 		}
-
+		
 		if ( is_array( $dir_include ) && count( $dir_include ) ) {
 			if ( is_array( $dir_exclude ) ) {
 				foreach ( $dir_exclude as $dir ) {
@@ -342,7 +347,7 @@ class File extends HObject{
 					}
 				}
 			}
-
+			
 			foreach ( $dir_include as $dir ) {
 				if ( strpos( $path, $dir ) === 0 ) {
 					return true;
@@ -350,10 +355,10 @@ class File extends HObject{
 			}
 			$applied ++;
 		}
-
+		
 		//next extension
 		$ext_include = isset( $include['ext'] ) ? $include['ext'] : array();
-
+		
 		if ( is_array( $ext_include ) && count( $ext_include ) && $type == 'file' ) {
 			//we will uses foreach and strcasecmp instead of regex cause it faster
 			foreach ( $ext_include as $ext ) {
@@ -364,7 +369,7 @@ class File extends HObject{
 			}
 			$applied ++;
 		}
-
+		
 		//now filename
 		$filename_include = isset( $include['filename'] ) ? $include['filename'] : array();
 		if ( is_array( $filename_include ) && count( $filename_include ) && $type == 'file' ) {
@@ -375,7 +380,7 @@ class File extends HObject{
 			}
 			$applied ++;
 		}
-
+		
 		//now abs path
 		$path_include = isset( $include['path'] ) ? $include['path'] : array();
 		if ( is_array( $path_include ) && count( $path_include ) && $type == 'file' ) {
@@ -386,14 +391,14 @@ class File extends HObject{
 			}
 			$applied ++;
 		}
-
+		
 		if ( $applied == 0 ) {
 			return true;
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Run the filter for a file/dir
 	 *
@@ -404,7 +409,7 @@ class File extends HObject{
 	private function _filter_exclude( $path, $filetype = null ) {
 		$exclude = $this->exclude;
 		//first filer dir, or file inside dir
-		if ( is_null( $filetype ) ) {
+		if ( ! is_null( $filetype ) ) {
 			$type = $filetype;
 		} else {
 			$type = filetype( $path );
@@ -417,7 +422,7 @@ class File extends HObject{
 				}
 			}
 		}
-
+		
 		//next extension
 		$ext_exclude = isset( $exclude['ext'] ) ? $exclude['ext'] : array();
 		if ( is_array( $ext_exclude ) && count( $ext_exclude ) && $type == 'file' ) {
@@ -438,7 +443,7 @@ class File extends HObject{
 				}
 			}
 		}
-
+		
 		//now abs path
 		$path_exclude = isset( $exclude['path'] ) ? $exclude['path'] : array();
 		if ( is_array( $path_exclude ) && count( $path_exclude ) && $type == 'file' ) {
@@ -448,7 +453,7 @@ class File extends HObject{
 				}
 			}
 		}
-
+		
 		return true;
 	}
 }

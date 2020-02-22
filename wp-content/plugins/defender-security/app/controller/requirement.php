@@ -49,7 +49,7 @@ class WD_Requirement {
                     <tr>
                         <td><?php _e( "PHP version", "defender-security" ) ?></td>
                         <td>
-                            <span class="def-tag tag-yellow"><?php echo phpversion() ?></span>&nbsp;&nbsp;<?php _e( "Please upgrade to 5.3 or later.", "defender-security" ) ?>
+                            <?php _e( "Please upgrade to 5.6 or later.", "defender-security" ) ?>
                         </td>
                     </tr>
                     </tbody>

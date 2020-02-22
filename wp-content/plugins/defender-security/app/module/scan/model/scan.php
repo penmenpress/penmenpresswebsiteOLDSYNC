@@ -7,6 +7,7 @@ namespace WP_Defender\Module\Scan\Model;
 
 use Hammer\Helper\Log_Helper;
 use Hammer\WP\Model;
+use WP_Defender\Behavior\Utils;
 use WP_Defender\Module\Scan\Behavior\Core_Result;
 
 /**
@@ -31,9 +32,9 @@ use WP_Defender\Module\Scan\Behavior\Core_Result;
  */
 class Scan extends Model {
 	const STATUS_INIT = 'init', STATUS_PROCESS = 'process', STATUS_ERROR = 'error', STATUS_FINISH = 'finish';
-
+	
 	static $post_type = 'wdf_scan';
-
+	
 	/**
 	 * Id
 	 * @var int
@@ -72,7 +73,7 @@ class Scan extends Model {
 	 * @var int
 	 */
 	public $dateFinished;
-
+	
 	/**
 	 * @return array
 	 */
@@ -112,10 +113,30 @@ class Scan extends Model {
 			)
 		);
 	}
-
+	
+	/**
+	 * @param int $offset
+	 * @param string $status
+	 * @param null $type
+	 *
+	 * @return array
+	 */
+	public function getItemsAsJson( $offset = 0, $status = Result_Item::STATUS_ISSUE, $type = null ) {
+		$items   = $this->getItems( false, $status, $type );
+		$results = [];
+		
+		foreach ( $items as $item ) {
+			if ( $item->hasMethod( 'getInfo' ) ) {
+				$results[] = $item->getInfo();
+			}
+		}
+		
+		return $results;
+	}
+	
 	/**
 	 * @param $offset int
-	 * @param $type string issues|cleaned|ignored
+	 * @param $type string core|content|vuln
 	 *
 	 * @return Result_Item[]
 	 */
@@ -125,10 +146,10 @@ class Scan extends Model {
 			'status'   => $status,
 			'type'     => $type
 		), null, null, $offset );
-
+		
 		return $items;
 	}
-
+	
 	/**
 	 * @param $type
 	 *
@@ -144,10 +165,10 @@ class Scan extends Model {
 			'status'   => $type,
 			'type'     => $scanTypes
 		) );
-
+		
 		return $count;
 	}
-
+	
 	/**
 	 * This is deifferent from all countAllxxx function, only for counting issues category
 	 *
@@ -175,15 +196,19 @@ class Scan extends Model {
 					'status'   => Result_Item::STATUS_ISSUE,
 					'type'     => 'vuln'
 				) );
+			default:
+				//param not from the button on frontend, log it
+				error_log( sprintf( 'Unexpected value %s from IP %s', $type, Utils::instance()->getUserIp() ) );
+				break;
 		}
 	}
-
+	
 	/**
 	 * @return array
 	 */
 	public function events() {
 		$that = $this;
-
+		
 		return array(
 			self::EVENT_AFTER_DELETE => array(
 				array(

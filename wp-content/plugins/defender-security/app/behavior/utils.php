@@ -8,6 +8,7 @@ namespace WP_Defender\Behavior;
 use Hammer\Base\Behavior;
 use Hammer\Helper\Log_Helper;
 use Hammer\Helper\WP_Helper;
+use WP_Defender\Component\Error_Code;
 use WP_Defender\Module\Advanced_Tools\Model\Auth_Settings;
 use WP_Defender\Module\Hardener\Model\Settings;
 use WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api;
@@ -678,6 +679,33 @@ class Utils extends Behavior {
 	}
 
 	/**
+	 * We will need to convert mo translate into json for frontend can read
+	 *
+	 * @param $handle
+	 */
+	public function createTranslationJson( $handle ) {
+		$locale    = determine_locale();
+		$mo_file   = "wpdef-{$locale}.mo";
+		$mo_path   = wp_defender()->getPluginPath() . 'languages/' . $mo_file;
+		$json_path = wp_defender()->getPluginPath() . 'languages/' . "wpdef-{$locale}-{$handle}.json";
+		if ( file_exists( $json_path ) ) {
+			//already there
+			//return;
+		}
+		if ( ! file_exists( $mo_path ) ) {
+			//no translation found
+			return;
+		}
+		//import from mo
+		$translations = new \Gettext\Translations();
+		\Gettext\Extractors\Mo::fromFile( $mo_path, $translations );
+		$translations->setDomain( 'messages' );
+		$translations->setLanguage( get_locale() );
+		//export to json
+		\Gettext\Generators\Jed::toFile( $translations, $json_path );
+	}
+
+	/**
 	 * @param null $result
 	 *
 	 * @return bool
@@ -685,15 +713,22 @@ class Utils extends Behavior {
 	public function checkRequirement( &$result = null ) {
 		$meet = true;
 
-		if ( version_compare( $this->getPHPVersion(), '5.3', '>=' ) == false ) {
+		if ( version_compare( $this->getPHPVersion(), '5.6', '>=' ) == false ) {
 			$meet          = false;
 			$result['php'] = array(
 				'status'  => $this->getPHPVersion(),
-				'message' => __( "Please upgrade to 5.3 or later", "defender-security" )
+				'message' => __( "Please upgrade to 5.6 or later", "defender-security" )
 			);
 		}
 
 		return $meet;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getSummaryClass() {
+		return null;
 	}
 
 
@@ -776,6 +811,14 @@ class Utils extends Behavior {
 
 		return $url;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function maybeHighContrast() {
+		return \WP_Defender\Module\Setting\Model\Settings::instance()->high_contrast_mode == 0 ? '' : 'sui-color-accessible';
+	}
+
 
 	/**
 	 * Copy the list from here
@@ -954,7 +997,6 @@ class Utils extends Behavior {
 			"NU" => "Niue",
 			"NF" => "Norfolk Island",
 			"KP" => "North Korea",
-			"VD" => "North Vietnam",
 			"MP" => "Northern Mariana Islands",
 			"NO" => "Norway",
 			"OM" => "Oman",
@@ -1051,5 +1093,131 @@ class Utils extends Behavior {
 		);
 
 		return $country_array;
+	}
+	
+	/**
+	 * @param $dir
+	 *
+	 * @return bool|void|\WP_Error
+	 */
+	public function removeDir( $dir ) {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		$it    = new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS );
+		$files = new \RecursiveIteratorIterator( $it,
+			\RecursiveIteratorIterator::CHILD_FIRST );
+		foreach ( $files as $file ) {
+			if ( $file->isDir() ) {
+				$res = @rmdir( $file->getRealPath() );
+			} else {
+				$res = @unlink( $file->getRealPath() );
+			}
+			if ( $res == false ) {
+				return new \WP_Error( Error_Code::NOT_WRITEABLE, __( "Defender doesn't have enough permission to remove this file", "defender-security" ) );
+			}
+		}
+		$res = @rmdir( $dir );
+		if ( $res == false ) {
+			return new \WP_Error( Error_Code::NOT_WRITEABLE, __( "Defender doesn't have enough permission to remove this file", "defender-security" ) );
+		}
+		
+		return true;
+	}
+	
+	public function parseDomain( $domain ) {
+		if ( ! filter_var( $domain, FILTER_VALIDATE_DOMAIN ) ) {
+			return false;
+		}
+		$suffix = $this->getDomainSuffix( $domain );
+		if ( $suffix == false ) {
+			return false;
+		}
+		$host             = parse_url( $domain, PHP_URL_HOST );
+		$host_without_tld = str_replace( $suffix, '', $host );
+		//remove righter . if any
+		$host_without_tld = rtrim( $host_without_tld, '.' );
+		$parts            = explode( '.', $host_without_tld );
+		if ( count( $parts ) == 1 ) {
+			return [
+				'host' => $host,
+				'tld'  => $suffix
+			];
+		}
+		//parse to get the root & subdomain
+		$domain = array_pop( $parts );
+		
+		return [
+			'host'      => $host,
+			'tld'       => $suffix,
+			'subdomain' => str_replace( $domain, '', $host_without_tld ),
+		];
+	}
+	
+	private function getDomainSuffix( $domain ) {
+		$tlds = include dirname( __DIR__ ) . '/component/public-suffix.php';
+		//whitelist development
+		$tlds['localhost'] = 1;
+		$parts             = explode( '.', $domain );
+		$parts             = array_reverse( $parts );
+		$suffix            = '';
+		$list              = [];
+		$length            = 0;
+		foreach ( $parts as $part ) {
+			$suffix   = rtrim( $part . '.' . $suffix, '.' );
+			$notAllow = '!' . $suffix;
+			if ( isset( $tlds[ $notAllow ] ) ) {
+				//this wont be here
+				continue;
+			}
+			if ( isset( $tlds[ $suffix ] ) ) {
+				if ( $length > strlen( $suffix ) ) {
+					//put at last
+					$list[] = $suffix;
+				} else {
+					array_unshift( $list, $suffix );
+				}
+			}
+		};
+		if ( empty( $list ) ) {
+			return false;
+		}
+		
+		//the lenghter will be use
+		return $list[0];
+	}
+	
+	public function log( $log, $group = null ) {
+		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
+			return;
+		}
+		$log_path = self::getDefUploadDir();
+		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
+		$log_path = $log_path . '/' . $log_name;
+		
+		$log = sprintf( '%s - %s' . PHP_EOL, date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ), $log );
+		file_put_contents( $log_path, $log, FILE_APPEND );
+	}
+	
+	public function read_log( $group = null ) {
+		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
+			return;
+		}
+		$log_path = self::getDefUploadDir();
+		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
+		$log_path = $log_path . '/' . $log_name;
+		$text     = file( $log_path );
+		
+		return implode( array_reverse( $text ), PHP_EOL );
+	}
+	
+	public function clear_log( $group = null ) {
+		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
+			return;
+		}
+		$log_path = self::getDefUploadDir();
+		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
+		$log_path = $log_path . '/' . $log_name;
+		@unlink( $log_path );
 	}
 }

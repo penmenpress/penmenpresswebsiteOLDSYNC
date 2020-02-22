@@ -1,50 +1,73 @@
-=== Defender Security, Monitoring, and Hack Protection ===
-Plugin Name: Defender Security, Monitoring, and Hack Protection
-Version: 2.1.1.1
+=== Defender WordPress Security, Malware Detection, and Firewall ===
+Plugin Name: Defender WordPress Security, Malware Detection, and Firewall
+Version: 2.2.5
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV
-Tags: Security, Security Tweaks, Hardening, IP lockout, Monitoring, Blacklist, Site Protection, Hacked, Security Scan
-Requires at least: 4.6
-Tested up to: 5.1.1
-Stable tag: 2.1.1.1
+Tags: wordpress security plugin, security, firewall, vulnerability, brute force attacks, sql injections, XSS, malware, malware scanner, two-factor authentication, scheduled malware scans, audit logs
+Requires at least: 5.0
+Tested up to: 5.3
+Stable tag: 2.2.5
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
-Protect WordPress from hackers with security tweaks, code scans, 2-Step Verification, IP lockouts, and monitoring.
+WordPress security plugin with malware scans, IP blocking, audit logs, firewall, login security & more.
 
 
 
 == Description ==
 
-<strong>Defender is layered security for WordPress made easy.</strong> And by easy, we mean <strong>amazingly easy!</strong> No longer do you have to go through hideously complex settings and get a virtual PhD in security. Defender adds all the hardening and security tweaks you need, in minutes. :)
+**Defender adds the best in WordPress security to your website with just a few clicks. Stop brute force attacks, SQL injections, cross-site scripting XSS, and other WordPress vulnerabilities with Defender malware scans, firewall, and two-factor authentication login security.**
 
-= Security Tweaks =
+No longer do you have to go through hideously complex settings and get a virtual PhD in security. Defender adds all the hardening and security tweaks you need.
+
+### Security Tweaks
 
 Defender starts with a list of one-click hardening techniques that will instantly add layers of protection to your site.
 
-= Block hackers at every level: =
+### Block hackers at every level:
  
-* Disable trackbacks and pingbacks - safety first
-* Core and server update recommendations - stay on top of your systems
-* Change default database prefix - they won’t find this
-* Disable file editor - if they get in, they won’t get far
-* Hide error reporting - don’t reveal your issues
-* Update security keys - ultimate security reset
-* Prevent information disclosure - why tell them what you have
-* Prevent PHP execution - because it’s daaaangerous
+* Two-factor authentication – passwords and mobile app verification codes
+* Login masking – change the location of WordPress’s default login area
+* Login lockout – failed login attempts lockout
+* 404 Detection – automated block of bot IPs 
+* Geolocation IP lockout – block users based on location
+* WordPress Security Firewall – block or whitelist IPs
+* Disable trackbacks and pingbacks – spam prevention
+* Core and server update recommendations – stay on top of your system
+* Change default database prefix – they won’t find this
+* Disable file editor – if they get in, they won’t get far
+* Hide error reporting – don’t reveal your issues
+* Update security keys – reset on-demand
+* Prevent information disclosure – why tell them what you have
+* Prevent PHP execution – because it’s daaaangerous
 
-= File Scans =
 
-Run free scans that check WordPress for suspicious code. The Defender scan tool compares your WordPress install with the directory, reports changes and lets you restore the original file with a click.
+### WordPress Security Scans
+Run free malware scans that check WordPress for suspicious code. The Defender scan tool compares your WordPress install with the directory, reports changes and lets you restore the original file with a click.
 
-= Google 2-step Verification =
-
-Now you can easily join the millions of users that make their accounts safer with Google 2-Step Verification. Activate and protect your account with both your password and your phone.
+### Google 2-step Verification
+Now you can easily join the millions of users that make their accounts safer with Google 2-Step Verification. Activate two-factor authentication and protect your account with both your password and your phone.
 
 [youtube https://www.youtube.com/watch?v=w9pfRCuT36Q]
  
-= IP Blacklist =
-Keep your site safe with Defender’s simple IP manager. Manually block specific IPs, import a list of banned IPs and set automated timed and permanent lockouts. Defender makes it easy to quickly block and unblock specific locations.
+### Firewall and IP Manager
+Keep your site safe with Defender’s IP manager. Manually block specific IPs, import a list of banned IPs and set automated timed and permanent lockouts. Defender makes it easy to block and unblock specific locations quickly.
+
+### Login Protection
+
+Brute force attacks are no match for Defender. Limit login attempts to stop users trying to guess passwords. Permanently ban IPs or trigger a timed lockout after a set number of failed login attempts.
+
+### Login Screen Masking
+
+Defender makes it easy to move your login screen to a custom URL. Not only does login screen masking improve security, but it also lets you white label your login user experience and improves branding. 
+
+### 404 Limiter
+Defender detects when bots are being used to scan your site for vulnerabilities and shuts them down. The 404 limiter lets you stop the scan by detecting when a bot keeps visiting pages that do not exist, which can also save you from a giant strain on your site’s performance.
+
+### Notifications and Reports
+Defender runs surveillance and sends notifications with information that matters.
+
+### What Do People Say About Defender?
 
 ★★★★★ <br>
 “I found other pro security plugins a bit too fiddly for my taste...I’m delighted with Defender” - <a href="https://profiles.wordpress.org/keithadv">KeithADV</a>
@@ -58,21 +81,12 @@ Keep your site safe with Defender’s simple IP manager. Manually block specific
 ★★★★★ <br>
 “Defender Recently blocked over 3000 attacks in one week without any noticeable impact on the website. WPMUDEV knocking it out of the park on this one.” - <a href="https://premium.wpmudev.org/profile/davidoswald/">David Oswald</a>
 
-= Login Protection =
+### Secure Websites, More Trust, Better Profit
+Your visitors expect a super-safe extra secure website when deciding whether or not to make a purchase or submit information. If visitors don’t trust your site, they will leave without completing a transaction.
 
-Brute force attacks are no match for Defender. Limit login attempts to stop users trying to guess passwords. Permanently ban IPs or trigger a timed lockout after a set number of failed login attempts.
+If you’re running a business website or eCommerce store privacy, security, uptime and trust are essential.
 
-= Login Screen Masking =
-
-Defender makes it easy to move your login screen to a custom URL. Not only does login screen masking improve security, it lets you white label your login user experience and improves branding. 
-
-= 404 Limiter =
-Defender detects when bots are being used to scan your site for vulnerabilities and shuts them down. The 404 limiter lets you stop the scan by detecting when a user keeps visiting pages that do not exist.
-
-= Notifications and Reports =
-Defender runs surveillance and sends notifications with information that matters.
-
-= Features Available in Defender Include: =
+Defender is here to help you: it’s a one of a kind WordPress security plugin that makes web security easy for anyone, for free!
 
 * Google 2-Step Verification
 * One-click site hardening and security tweaking
@@ -80,14 +94,34 @@ Defender runs surveillance and sends notifications with information that matters
 * Login Screen Masking
 * IP Blacklist manager and logging
 * Unlimited file scans
-* Timed Lockout brute force attack shield for login protection 
+* Timed Lockout brute force attack shield for login protection
 * 404 limiter for blocking vulnerability scans
 * IP lockout notifications and reports
 
-Defender can take care of all your security needs, for free!
+Defender is built to make security simple: it makes your WordPress site harder to hack and it’s insanely easy to set up. Run a scan and implement recommended changes in one-click, for added security in mere minutes.
 
-However, if you'd like extra scanning, audits and monitoring, you can always take the next step with Defender Pro.
+All the above is free and will secure WordPress for you. If you need extra security for your WordPress site, [you should get WPMU DEV Membership](https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=defender-readme&utm_content=you_should_get_wpmudev_membership#trial).
 
+Our Membership gives you access to Defender Pro – which features automated scanning, scheduled malware scans for Core, themes, plugins and other files, audit logs, Blacklist monitoring – alongside Snapshot Pro cloud backups, the Hub with automated plugin, theme and core updates and safe-upgrade scans, all our premium WordPress plugins, 24/7 WordPress support and if your sites already been hacked our team of security experts will clean it up at no additional cost.
+
+[It’s an incredible deal, and you can find out more here](https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=defender-readme&utm_content=and_you_can_find_out_more_here#trial).
+
+### A Note From Defender
+Hey! This is Defender, your trusted solution for WordPress security and hack prevention. I’m part of the WPMU DEV team, a superhero-suite of WordPress plugins, services, and support. Here are some of our other free plugins:
+
+* [Smush](https://wordpress.org/plugins/wp-smushit/) – Image Compression and Optimization
+* [Forminator](https://wordpress.org/plugins/forminator/) – Form, Quiz, Poll and Survey Builder
+* [Hummingbird](https://wordpress.org/plugins/hummingbird-performance/) – Page Speed Optimization
+* [Hustle](https://wordpress.org/plugins/wordpress-popup/) – Pop-ups, Slide-ins and Email Opt-ins
+* [SmartCrawl](https://wordpress.org/plugins/smartcrawl-seo/) – SEO checker, Analyzer and Optimizer
+
+And if you need ALL our Pro plugins AND 24/7 WordPress support, get WPMU DEV membership! You can try it free for 30 days: [premium.wpmudev.org](https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=hummingbird-readme&utm_content=link_wpmudev#trial)
+
+My superhero friends run the WPMU DEV Blog, your source for the very best WordPress tutorials. If you need to be in the know about WordPress, check it out.
+
+Thanks for looking at Defender, and I look forward to hardening your site and making it safer than ever.
+
+*Enjoy, The Defender*
 
 
 == Frequently Asked Questions ==
@@ -97,17 +131,19 @@ However, if you'd like extra scanning, audits and monitoring, you can always tak
 Defender is built to add all the best hardening and security tweaks used by the pros without having to become a security expert. This means you get all the most effective and proven protection methods other services provide with fewer settings, on-click hardening and faster setup.
 
 = Is Defender the only step I need to take in securing my WordPress site? =
-Hackers and bot attacks are not the only threat to your site.  No matter what security plugin or service you use, always be prepared with a secure backup stored in a safe location away from your live site. Security does not protect from hosting outages, server errors and accidentally lost or damaged data. We recommend <a href="https://premium.wpmudev.org/project/snapshot/">Snapshot</a>. Defender with scheduled managed backups is the best way to keep your site safe.
+Hackers and bot attacks are not the only threat to your site.  No matter what security plugin or service you use, always be prepared with a secure backup stored in a safe location away from your live site. Security does not protect from hosting outages, server errors and accidentally lost or damaged data. We recommend [Snapshot](https://premium.wpmudev.org/project/snapshot/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=defender-readme&utm_content=snapshot#trial). Defender with scheduled managed backups is the best way to keep your site safe.
 
+= Help! I was already hacked. What should I do? =
+WPMU DEV's expert support will restore and clean up your site after it’s been hacked for [free with a 30 day trial of Defender Pro](https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=hummingbird-readme&utm_content=free_with_a_30_day_trial_of_defender_pro#trial). If you have a backup, we'll minimize your downtime by activating the most recent clean version of your site. Our experts will then scan your site with Defender to find and fix known vulnerabilities, permanently remove the malicious code and set up his firewall of cyber muscle.
 
 
 == Screenshots ==
 
-1. Use 2-Step Verification to protect your accounts with your phone.
+1. Malware scans and one-click hardening recomendations.
 2. Layered security tweaks let your harden your site with a few clicks.
 3. Compares your WordPress install with the directory and restore original files with a click.
-4. Simple configuration and security manager.
-5. IP blacklisting, 404 limiter and Timed Lockout attack shield
+4. Use 2-Step Verification to protect your accounts with your phone.
+5. IP blacklisting, 404 limiter and Timed Lockout attack shield.
 
 
 
@@ -121,6 +157,77 @@ Hackers and bot attacks are not the only threat to your site.  No matter what se
 
 
 == Changelog ==
+
+= 2.2.5=
+- Fix: Displaying Defender pages after activating the plugin.
+
+= 2.2.4=
+- Fix: Security tweaks self ping cause performance issues.
+
+= 2.2.3 =
+- Improvement: Increased the frequency of Security Tweak notifications from daily to weekly.
+- Fix: Two-Factor activate/deactivate not working as expected.
+- Fix: Defender IP Lockouts was blocking Hub services.
+- Fix: Error when bulk deletes lockout logs, without selecting any.
+- Fix: Active Translation in General Settings was not using the language that had been set.
+- Fix: The first time you setup the Blacklist location, it doesn't save.
+- Fix: Security Keys tweaks showing decimals in status.
+- Fix: Enforcing Security Header tweaks revert when you refresh the page.
+- Fix: Lockout duration in email notification now reflects the right setting instead of always in seconds.
+- Fix: Missing logs from the  Audit logging screen.
+- Remove: WordPress REST API security tweak. This feature was causing many sites to break basic functionality so we've decided to remove it.
+- Other minor enhancements and fixes
+
+= 2.2 =
+- Feature: New security tweaks: Security headers
+- Feature: New security tweak: Block WordPress Rest API
+- Feature: New security tweak: Prevent user enumeration
+- Feature: Ability to talk with HUB for syncing Defender settings.
+- Improvement: Add ability to ban by filename/extension
+- Improvement: Allow user to change the retention period of Audit Logs in Defender
+- Improvement: Add the ability for an admin to unblock a temporarily blocked IP.
+- Improvement: Add 'Your current time' to Reporting tabs
+- Fix: Email link still goes to wp-admin instead of masked one, if use Defender Mask Login
+- Fix: Css z-index issue with Quick setup modal
+- Fix: Use hostname instead of wp-defender in authenticator app
+- Fix: Minor grammar and UX improvements.
+
+= 2.1.5 =
+- Fix: Add the correct css wrapper class to body
+
+= 2.1.4 =
+- Fix: Mask Login cause issue when visiting /wp-admin/network/sites.php
+
+= 2.1.3 =
+- Feature: Security tweaks will send reminder when no tweaks were actioned after activation
+- Improvement: Scanning will be more catchy, especially with code using eval function, however that can lead to more false positive, please consider to check with our support before delete the file.
+- Fix: Bring back the tooltips system
+- Fix: Audit filter links doesn't reflect the right results if open in new tab
+- Fix: Filtering issue type in scanning now show correct results.
+- Fix: Scanning notification keep sending when the setting turn to "off"
+- Fix: User IP in IP Lockout->Blacklist now show the correct IP.
+- Fix: Bring back the subject customization field in Scanning email config.
+- Fix: Manage Login Duration wont make user to login twice anymore.
+- Fix: Audit filtering by user now working properly
+- Fix: We change the Audit logging items' color from red to more neutral.
+- Fix: Ad Widget won't be show in vulnerability list by accident anymore
+- Fix: Bottom bulk selector in Scanning page now work properly
+- Fix: Deprecate warning from the function strpos() in php 7.3
+- Fix: Sync issues with HUB will be more consistent.
+- Fix: Mask login doesn't work properly if Wordpress get installed in a sub-folder
+- Fix: Conflict with Avada theme which making scanning stuck
+- Fix: Gracefully handle error when php dom extension does not install
+- Fix: Prevent factory reset revert database prefix into wp_ even though it was not set by Defender.
+- Fix: Prevent slashes added in email template - Fix: Minor grammar and UX improvements.
+
+= 2.1.2 =
+- Feature: Defender Pro now supports the WPMU DEV Dashboard’s white label feature.
+- Feature: You can now perform a factory reset of Defender’s settings via the Settings screen, as well as control what happens to data when the plugin is uninstalled.
+- Improvement: Defender File Scanning no longer identifies robots.txt as a potentially harmful file.
+- Improvement: We’ve turned off autocomplete on the two-factor authentication field so that previous codes don’t show up.
+- Fix: Fixed a conflict with Defender where the 404 lockout feature would lock out users who tried to access old Hummingbird cache files.
+- Fix: You can now view date ranges greater than 7 days for IP Lockout logs
+- Fix: Minor grammar and UX improvements.
 
 = 2.1.1.1 =
 - Fix: Two-Factor Authentication QR code not being displayed on new device registration.
@@ -370,9 +477,9 @@ Hackers and bot attacks are not the only threat to your site.  No matter what se
 
 == About Us ==
 WPMU DEV is a premium supplier of quality WordPress plugins and themes. For premium support with any WordPress related issues you can join us here:
-<a href="https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme">https://premium.wpmudev.org/</a>
+[https://premium.wpmudev.org/](https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=defender-readme&utm_content=wpmu_dev_link)
 
 Don't forget to stay up to date on everything WordPress from the Internet's number one resource:
-<a href="https://premium.wpmudev.org/blog/?utm_source=wordpress.org&utm_medium=readme">WPMU DEV Blog</a>
+[WPMU DEV Blog(https://premium.wpmudev.org/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=defender-readme&utm_content=wpmu_dev_blog_link)
 
-Hey, one more thing... we hope you <a href="http://profiles.wordpress.org/WPMUDEV/">enjoy our free offerings</a> as much as we've loved making them for you!
+Hey, one more thing... we hope you [enjoy our free offerings](http://profiles.wordpress.org/WPMUDEV/) as much as we've loved making them for you!

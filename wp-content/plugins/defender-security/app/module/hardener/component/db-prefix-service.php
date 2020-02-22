@@ -5,44 +5,46 @@
 
 namespace WP_Defender\Module\Hardener\Component;
 
+use Faker\Factory;
 use Hammer\Helper\Log_Helper;
 use Hammer\Helper\WP_Helper;
 use WP_Defender\Behavior\Utils;
 use WP_Defender\Component\Error_Code;
 use WP_Defender\Module\Hardener\IRule_Service;
+use WP_Defender\Module\Hardener\Model\Settings;
 use WP_Defender\Module\Hardener\Rule_Service;
 
 class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 	public $new_prefix;
 	protected $old_prefix;
-
+	
 	/**
 	 * @return bool
 	 */
 	public function check() {
 		global $wpdb;
-
+		
 		return $wpdb->prefix != 'wp_';
 	}
-
+	
 	public function process() {
 		$config_path = $this->retrieveWPConfigPath();
 		if ( ! is_writeable( $config_path ) ) {
 			return new \WP_Error( Error_Code::NOT_WRITEABLE,
 				sprintf( __( "The file %s is not writable", "defender-security" ), $config_path ) );
 		}
-
+		
 		$hook_line = $this->findDefaultHookLine( file( $config_path ) );
 		if ( $hook_line === false ) {
 			return new \WP_Error( Error_Code::UNKNOWN_WPCONFIG, __( "Your wp-config.php was modified by a 3rd party, this will cause conflict with Defender. Please revert it to original for updating your database prefix", "defender-security" ) );
 		}
-
+		
 		if ( ! Utils::instance()->isActivatedSingle() ) {
 			//validate if this network is too big, then we will prevent it
 			$sites = get_sites( array(
 				'count' => true
 			) );
-
+			
 			if ( $sites >= 100 ) {
 				return new \WP_Error( Error_Code::VALIDATE, __( "Unfortunately it's not safe to do this via a plugin for larger WordPress Multisite installs. You can ignore this step, or follow a tutorial online on how to use a scalable tool like WP-CLI.", "defender-security" ) );
 			}
@@ -50,14 +52,18 @@ class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 		if ( is_wp_error( $is_valid = $this->validatePrefix() ) ) {
 			return $is_valid;
 		}
-
+		
+		//mark this here
+		Settings::instance()->is_prefix_changed = true;
+		Settings::instance()->save();
+		
 		$prefix = $this->new_prefix;
 		set_time_limit( - 1 );
 		//add trailing underscore if not present
 		if ( substr( $prefix, - 1 ) != '_' ) {
 			$this->new_prefix .= '_';
 		}
-
+		
 		global $wpdb;
 		$wpdb->query( 'BEGIN' );
 		//run a query to change db prefix
@@ -71,15 +77,20 @@ class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 		//almost there, now just need to update wpconfig
 		if ( is_wp_error( ( $err = $this->writeToWpConfig() ) ) ) {
 			$wpdb->query( 'ROLLBACK' );
-
+			
 			return $err;
 		}
 		//all good
 		$wpdb->query( 'COMMIT' );
-
+		//because we write to db so the later query will be error as the table from $wpdb not there anymore
+		//replace the $wpdb isntance
+		$wpdb->set_prefix( $this->new_prefix );
+		//some time it can be gap time from io or so, just sleep it for 3s
+		sleep(3);
+		
 		return true;
 	}
-
+	
 	/**
 	 * @return bool|\WP_Error
 	 */
@@ -94,10 +105,10 @@ class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 			return new \WP_Error( Error_Code::NOT_WRITEABLE,
 				sprintf( __( "The file %s is not writable", "defender-security" ), $config_path ) );
 		}
-
+		
 		return true;
 	}
-
+	
 	/**
 	 * @return bool|\WP_Error
 	 */
@@ -105,7 +116,6 @@ class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 		global $wpdb;
 		$prefix     = $this->new_prefix;
 		$old_prefix = $this->old_prefix;
-
 		if ( is_multisite() ) {
 			/**
 			 * case multiste
@@ -145,10 +155,10 @@ class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 				}
 			}
 		}
-
+		
 		return true;
 	}
-
+	
 	/**
 	 * @param null $old_prefix
 	 *
@@ -162,7 +172,7 @@ class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 		//cache it
 		$this->old_prefix = $old_prefix;
 		$tables           = $this->getTables();
-
+		
 		foreach ( $tables as $table ) {
 			$new_table_name = substr_replace( $table, $this->new_prefix, 0, strlen( $this->old_prefix ) );
 			$sql            = "RENAME TABLE `{$table}` TO `{$new_table_name}`";
@@ -170,10 +180,10 @@ class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 				return new \WP_Error( Error_Code::SQL_ERROR, $wpdb->last_error );
 			}
 		}
-
+		
 		return true;
 	}
-
+	
 	/**
 	 * Validate the current prefix
 	 *
@@ -181,48 +191,71 @@ class DB_Prefix_Service extends Rule_Service implements IRule_Service {
 	 */
 	private function validatePrefix() {
 		$new_prefix = trim( $this->new_prefix );
-
+		
 		global $wpdb;
 		if ( $new_prefix == $wpdb->prefix ) {
 			return new \WP_Error( Error_Code::VALIDATE, __( "You are currently using this prefix.", "defender-security" ) );
 		}
-
+		
 		if ( strlen( $new_prefix ) == 0 ) {
 			return new \WP_Error( Error_Code::VALIDATE, __( "Your prefix can't be empty!", "defender-security" ) );
 		}
-
+		
 		if ( preg_match( '|[^a-z0-9_]|i', $new_prefix ) ) {
 			return new \WP_Error( Error_Code::VALIDATE, __( "Table prefix can only contain numbers, letters, and underscores.", "defender-security" ) );
 		}
-
+		
 		if ( count( $tables = $this->getTables( $new_prefix ) ) ) {
 			return new \WP_Error( Error_Code::VALIDATE, __( "This prefix is already in use. Please choose a different prefix.", "defender-security" ) );
 		}
-
+		
 		$this->new_prefix = $new_prefix;
-
+		
 		return true;
 	}
-
+	
 	private function getTables( $prefix = null ) {
 		global $wpdb;
-
+		
 		if ( ! $prefix ) {
 			$prefix = $wpdb->base_prefix;
 		}
-
+		
 		$results = $wpdb->get_col( $wpdb->prepare( "SHOW TABLES LIKE %s", $prefix . '%' ) );
 		$results = array_unique( $results );
-
+		
 		return $results;
 	}
-
+	
 	public function revert() {
 		$this->new_prefix = 'wp_';
-
-		return $this->process();
+		if ( Settings::instance()->is_prefix_changed == true ) {
+			set_time_limit( - 1 );
+			global $wpdb;
+			$wpdb->query( 'BEGIN' );
+			//run a query to change db prefix
+			if ( is_wp_error( ( $err = $this->changeDBPrefix() ) ) ) {
+				return $err;
+			}
+			//update data
+			if ( is_wp_error( ( $err = $this->updateData() ) ) ) {
+				return $err;
+			}
+			//almost there, now just need to update wpconfig
+			if ( is_wp_error( ( $err = $this->writeToWpConfig() ) ) ) {
+				$wpdb->query( 'ROLLBACK' );
+				
+				return $err;
+			}
+			//all good
+			$wpdb->query( 'COMMIT' );
+			//restore back
+			$wpdb->set_prefix( 'wp_' );
+			
+			return true;
+		}
 	}
-
+	
 	public function listen() {
 		// TODO: Implement listen() method.
 	}

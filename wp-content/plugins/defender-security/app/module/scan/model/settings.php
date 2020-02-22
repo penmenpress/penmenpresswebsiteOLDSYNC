@@ -8,14 +8,16 @@ namespace WP_Defender\Module\Scan\Model;
 use Hammer\Helper\Log_Helper;
 use Hammer\Helper\WP_Helper;
 use Hammer\Queue\Queue;
+use WP_Defender\Behavior\Utils;
 use WP_Defender\Module\Scan\Behavior\Core_Scan;
 use WP_Defender\Module\Scan\Behavior\Pro\Content_Scan;
+use WP_Defender\Module\Scan\Behavior\Pro\Content_Scan2;
 use WP_Defender\Module\Scan\Behavior\Pro\MD5_Scan;
 use WP_Defender\Module\Scan\Behavior\Pro\Vuln_Scan;
 use WP_Defender\Module\Scan\Component\Scan_Api;
 
 class Settings extends \Hammer\WP\Settings {
-
+	
 	private static $_instance;
 	/**
 	 * Scan WP core files
@@ -28,29 +30,29 @@ class Settings extends \Hammer\WP\Settings {
 	 * @var bool
 	 */
 	public $scan_vuln = true;
-
+	
 	/**
 	 * @var bool
 	 */
 	public $scan_content = true;
-
+	
 	/**
 	 * Receipts to sending notification
 	 * @var array
 	 */
-	public $receipts = array();
-
+	public $recipients = array();
+	
 	/**
 	 * @var array
 	 */
-	public $receiptsNotification = array();
-
+	public $recipients_notification = array();
+	
 	/**
 	 * Toggle notification on or off
 	 * @var bool
 	 */
 	public $notification = true;
-
+	
 	/**
 	 * @var bool
 	 */
@@ -61,18 +63,18 @@ class Settings extends \Hammer\WP\Settings {
 	 * @var bool
 	 */
 	public $always_send = false;
-
+	
 	/**
 	 * @var bool
 	 */
-	public $alwaysSendNotification = false;
-
+	public $always_send_notification = false;
+	
 	/**
 	 * Maximum filesize to scan, only apply for content scan
 	 * @var int
 	 */
 	public $max_filesize = 1;
-
+	
 	/**
 	 * @var string
 	 */
@@ -85,7 +87,7 @@ class Settings extends \Hammer\WP\Settings {
 	 * @var string|void
 	 */
 	public $email_all_ok = '';
-
+	
 	/**
 	 * @var string
 	 */
@@ -97,10 +99,13 @@ class Settings extends \Hammer\WP\Settings {
 	/**
 	 * @var string
 	 */
-	public $time = '0:00';
-
-	public $lastReportSent;
-
+	public $time = '4:00';
+	
+	/**
+	 * @var
+	 */
+	public $last_report_sent;
+	
 	/**
 	 * @return array
 	 */
@@ -108,14 +113,14 @@ class Settings extends \Hammer\WP\Settings {
 		$behaviors = array(
 			'utils' => '\WP_Defender\Behavior\Utils'
 		);
-
+		
 		if ( wp_defender()->isFree == false ) {
 			$behaviors['pro'] = '\WP_Defender\Module\Scan\Behavior\Pro\Model';
 		}
-
+		
 		return $behaviors;
 	}
-
+	
 	public function __construct( $id, $is_multi ) {
 		$this->email_subject   = __( 'Scan of {SITE_URL} complete. {ISSUES_COUNT} issues found.', "defender-security" );
 		$this->email_has_issue = __( 'Hi {USER_NAME},
@@ -140,23 +145,45 @@ Stay safe,
 WP Defender
 Official WPMU DEV Superhero', "defender-security" );
 		//call parent to load stored
-		if ( is_admin() || is_network_admin() && current_user_can( 'manage_options' ) ) {
-			$this->receipts[]             = get_current_user_id();
-			$this->receiptsNotification[] = get_current_user_id();
-			//default is weekly
-			$this->day = date( 'l' );
-			$hour      = date( 'H', current_time( 'timestamp' ) );
-			if ( $hour == '00' ) {
-				$hour = 0;
-			} else {
-				$hour = ltrim( $hour, '0' );
+		if ( ( is_admin() || is_network_admin() ) && current_user_can( 'manage_options' ) ) {
+			$user = wp_get_current_user();
+			if ( is_object( $user ) ) {
+				$this->recipients[]              = array(
+					'first_name' => $user->display_name,
+					'email'      => $user->user_email
+				);
+				$this->recipients_notification[] = array(
+					'first_name' => $user->display_name,
+					'email'      => $user->user_email
+				);
 			}
-			$this->time = $hour . ':0';
+			
+			//default is weekly
+			$this->day  = strtolower( date( 'l' ) );
+			$this->time = '4:00';
 		}
-
 		parent::__construct( $id, $is_multi );
+		$this->notification = ! ! $this->notification;
+		$this->report       = ! ! $this->report;
+		$this->scan_content = ! ! $this->scan_content;
+		$this->scan_core    = ! ! $this->scan_core;
+		$this->scan_vuln    = ! ! $this->scan_vuln;
+		
+		if ( ! is_array( $this->recipients ) ) {
+			$this->recipients = [];
+		}
+		$this->recipients = array_values( $this->recipients );
+		if ( ! is_array( $this->recipients_notification ) ) {
+			$this->recipients_notification = [];
+		}
+		$this->recipients_notification = array_values( $this->recipients_notification );
+		
+		$times = Utils::instance()->getTimes();
+		if ( ! isset( $times[ $this->time ] ) ) {
+			$this->time = '4:00';
+		}
 	}
-
+	
 	/**
 	 * Act like a factory, return available scans based on pro or not
 	 * @return array
@@ -166,19 +193,19 @@ Official WPMU DEV Superhero', "defender-security" );
 		if ( $this->scan_core ) {
 			$scans[] = 'core';
 		}
-
+		
 		if ( $this->scan_vuln && wp_defender()->isFree != true ) {
 			$scans[] = 'vuln';
 		}
-
+		
 		if ( $this->scan_content && wp_defender()->isFree != true ) {
-			$scans[] = 'md5';
+			//$scans[] = 'md5';
 			$scans[] = 'content';
 		}
-
+		
 		return $scans;
 	}
-
+	
 	/**
 	 * @return Settings
 	 */
@@ -187,10 +214,10 @@ Official WPMU DEV Superhero', "defender-security" );
 			$class           = new Settings( 'wd_scan_settings', WP_Helper::is_network_activate( wp_defender()->plugin_slug ) );
 			self::$_instance = $class;
 		}
-
+		
 		return self::$_instance;
 	}
-
+	
 	/**
 	 * @param $slug
 	 * @param array $args
@@ -208,21 +235,21 @@ Official WPMU DEV Superhero', "defender-security" );
 				$queue->args          = $args;
 				$queue->args['owner'] = $queue;
 				$queue->attachBehavior( 'core', new Core_Scan() );
-
+				
 				return $queue;
 			case 'vuln':
 				if ( ! class_exists( '\WP_Defender\Module\Scan\Behavior\Pro\Vuln_Scan' ) ) {
 					return null;
 				}
-
+				
 				$queue = new Queue( array(
 					'dummy'
 				), 'vuln', true );
-
+				
 				$queue->args          = $args;
 				$queue->args['owner'] = $queue;
 				$queue->attachBehavior( 'vuln', new Vuln_Scan() );
-
+				
 				return $queue;
 				break;
 			case 'md5':
@@ -238,7 +265,7 @@ Official WPMU DEV Superhero', "defender-security" );
 				$queue->args          = $args;
 				$queue->args['owner'] = $queue;
 				$queue->attachBehavior( 'md5', new MD5_Scan() );
-
+				
 				return $queue;
 				break;
 			case 'content':
@@ -252,9 +279,80 @@ Official WPMU DEV Superhero', "defender-security" );
 				$patterns                = Scan_Api::getPatterns();
 				$queue->args['patterns'] = $patterns;
 				$queue->attachBehavior( 'content', new Content_Scan() );
-
+				
 				return $queue;
 				break;
+			default:
+				//param not from the button on frontend, log it
+				error_log( sprintf( 'Unexpected value %s from IP %s', $slug, Utils::instance()->getUserIp() ) );
+				break;
 		}
+	}
+	
+	public function events() {
+		$that = $this;
+		
+		return array(
+			self::EVENT_BEFORE_SAVE => array(
+				array(
+					function () use ( $that ) {
+						//need to turn off notification or report off if no recipients
+						$keys = array(
+							'recipients'              => 'report',
+							'recipients_notification' => 'notification'
+						);
+						foreach ( $keys as $key => $attr ) {
+							$recipients = $this->$key;
+							$recipients = ! is_array( $recipients ) ? [] : $recipients;
+							foreach ( $recipients as $k => &$recipient ) {
+								$recipient = array_map( 'sanitize_text_field', $recipient );
+								if ( ! filter_var( $recipient['email'], FILTER_VALIDATE_EMAIL ) ) {
+									unset( $recipients[ $k ] );
+								}
+							}
+							$this->$key = $recipients;
+							$this->$key = array_filter( $this->$key );
+							if ( count( $this->$key ) == 0 ) {
+								$this->$attr = false;
+							}
+						}
+						
+					}
+				)
+			)
+		);
+	}
+	
+	/**
+	 * Define labels for settings key, we will use it for HUB
+	 *
+	 * @param null $key
+	 *
+	 * @return array|mixed
+	 */
+	public function labels( $key = null ) {
+		$labels = [
+			'scan_core'                => __( "Scan Types: WordPress Core", "defender-security" ),
+			'scan_vuln'                => __( "Scan Types: Plugins & Themes", "defender-security" ),
+			'scan_content'             => __( "Scan Types: Suspicious Code", "defender-security" ),
+			'max_filesize'             => __( "Maximum included file size", "defender-security" ),
+			'report'                   => __( "Report", "defender-security" ),
+			'always_send'              => __( "Also send report when no issues are detected.", "defender-security" ),
+			'recipients'               => __( "Recipients for report", "defender-security" ),
+			'day'                      => __( "Day of the week", "defender-security" ),
+			'time'                     => __( "Time of day", "defender-security" ),
+			'frequency'                => __( "Frequency", "defender-security" ),
+			'notification'             => __( "Notification", "defender-security" ),
+			'always_send_notification' => __( "Also send notification when no issues are detected.", "defender-security" ),
+			'recipients_notification'  => __( "Recipients for notification", "defender-security" ),
+			'email_subject'            => __( "Email Subject", "defender-security" ),
+			'email_all_ok'             => __( "When no issues are found", "defender-security" ),
+			'email_has_issue'          => __( "When an issue is found", "defender-security" )
+		];
+		if ( $key != null ) {
+			return isset( $labels[ $key ] ) ? $labels[ $key ] : null;
+		}
+		
+		return $labels;
 	}
 }

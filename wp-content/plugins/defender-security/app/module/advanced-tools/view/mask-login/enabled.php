@@ -66,14 +66,14 @@
                 </div>
 
                 <div class="sui-box-settings-col-2">
+                    <input type="hidden" name="redirectTraffic" value="0"/>
                     <label class="sui-toggle">
-                        <input type="hidden" name="redirectTraffic" value="0"/>
                         <input role="presentation" type="checkbox" name="redirectTraffic" class="toggle-checkbox"
                                id="redirectTraffic" value="1"
 			                <?php checked( true, $settings->redirectTraffic ) ?>/>
                         <span class="sui-toggle-slider"></span>
                     </label>
-                    <label for="lostPhone" class="sui-toggle-label">
+                    <label for="redirectTraffic" class="sui-toggle-label">
 		                <?php _e( "Enable 404 redirection", "defender-security" ) ?>
                     </label>
                     <div id="redirectTrafficContainer" class="sui-border-frame sui-toggle-content"
@@ -93,7 +93,7 @@
                         <?php _e( "Deactivate", "defender-security" ) ?>
                     </span>
                     <span class="sui-description">
-                        <?php _e( "Disable two-factor authentication on your website.", "defender-security" ) ?>
+                        <?php _e( "Disable login area masking and return to the default wp-admin and wp-login URLS.", "defender-security" ) ?>
                     </span>
                 </div>
                 <div class="sui-box-settings-col-2">

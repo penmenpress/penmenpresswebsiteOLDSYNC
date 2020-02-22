@@ -14,7 +14,7 @@
             <div class="sui-box-settings-col-1">
                 <span class="sui-settings-label"><?php _e( "Enable reporting", "defender-security" ) ?></span>
                 <span class="sui-description">
-                        <?php _e( "Enabling this option will ensure you’re always the first to know when something suspicious is detected on your site.", "defender-security" ) ?>
+                        <?php _e( "Enabling this option will ensure you're always the first to know when something suspicious is detected on your site.", "defender-security" ) ?>
                     </span>
             </div>
             <div class="sui-box-settings-col-2">

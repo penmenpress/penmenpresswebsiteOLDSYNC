@@ -22,35 +22,38 @@ use WP_Defender\Module\Scan\Model\Settings;
 class Scan_Api extends Component {
 	const CACHE_CORE = 'wdfcore', CACHE_CONTENT = 'wdfcontent', CACHE_CHECKSUMS = 'wdfchecksum';
 	const IGNORE_LIST = 'wdfscanignore', SCAN_PATTERN = 'wdfscanparttern';
-
+	
 	private static $ignoreList = false;
-
+	
+	public static $scanResults = array();
+	
 	/**
 	 * @return Scan|\WP_Error
 	 */
 	public static function createScan() {
 		if ( is_null( self::getActiveScan() ) ) {
-			self::flushCache( false );
-
+			self::flushCache();
+			
 			$model             = new Scan();
 			$model->status     = Scan::STATUS_INIT;
 			$model->statusText = __( "Initializing...", "defender-security" );
 			$model->save();
-
+			
 			return $model;
 		} else {
 			return new \WP_Error( Error_Code::INVALID, __( "A scan is already in progress", "defender-security" ) );
 		}
 	}
-
+	
 	/**
 	 * Check if this module is active
 	 */
 	public static function isActive() {
 		return Settings::instance()->notification;
 	}
-
+	
 	/**
+	 * Get the current scan on going
 	 * @return null|Scan
 	 */
 	public static function getActiveScan() {
@@ -65,12 +68,12 @@ class Scan_Api extends Component {
 				Scan::STATUS_PROCESS
 			)
 		) );
-
+		
 		$cache->set( 'activeScan', $model );
-
+		
 		return $model;
 	}
-
+	
 	/**
 	 * @return null|Scan
 	 */
@@ -84,13 +87,13 @@ class Scan_Api extends Component {
 				Scan::STATUS_FINISH
 			)
 		), 'ID', 'DESC' );
-
+		
 		$cache->set( 'lastScan', $model );
-
-
+		
+		
 		return $model;
 	}
-
+	
 	/**
 	 * @return array
 	 */
@@ -103,29 +106,32 @@ class Scan_Api extends Component {
 		if ( is_array( $cached ) && ! empty( $cached ) ) {
 			return $cached;
 		}
-
+		
 		$settings        = Settings::instance();
 		$firstLevelFiles = File_Helper::findFiles( ABSPATH, true, true, array(
-			'dir'  => array(
+			'dir'      => array(
 				ABSPATH . 'wp-content',
 				ABSPATH . 'wp-admin',
 				ABSPATH . 'wp-includes'
 			),
-			'path' => array(
-				ABSPATH . 'wp-config.php'
+			'filename' => array(
+				'wp-config.php'
 			)
-		), array(), false, $settings->max_filesize );
-		$coreFiles       = File_Helper::findFiles( ABSPATH, true, false, array(), array(
+		), array(), false );
+		
+		$coreFiles = File_Helper::findFiles( ABSPATH, true, false, array(), array(
 			'dir' => array(
 				ABSPATH . 'wp-admin',
 				ABSPATH . 'wp-includes',
 			)
-		), true, $settings->max_filesize );
-		$cache->set( self::CACHE_CORE, array_merge( $firstLevelFiles, $coreFiles ), 0 );
-
-		return array_merge( $firstLevelFiles, $coreFiles );
+		), true );
+		$files     = array_merge( $firstLevelFiles, $coreFiles );
+		$files     = apply_filters( 'wd_core_files', $files );
+		$cache->set( self::CACHE_CORE, $files, 0 );
+		
+		return $files;
 	}
-
+	
 	/**
 	 * @return array
 	 */
@@ -138,18 +144,15 @@ class Scan_Api extends Component {
 		$settings = Settings::instance();
 		$files    = File_Helper::findFiles( WP_CONTENT_DIR, true, false, array(), array(
 			'ext' => array( 'php' )
-		), true, $settings->max_filesize );
-//		$files = File_Helper::findFiles( ABSPATH . 'wp-content/trash/sample', true, false, array(), array(
-//			'ext' => array( 'php' )
-//		), true, $settings->max_filesize );
+		), true, $settings->max_filesize, true );
 		//include wp-config.php here
 		$files[] = ABSPATH . 'wp-config.php';
-
+		$files   = apply_filters( 'wd_content_files', $files );
 		$cache->set( self::CACHE_CONTENT, $files );
-
+		
 		return $files;
 	}
-
+	
 	/**
 	 * Get checksums
 	 * @return array|bool
@@ -160,7 +163,7 @@ class Scan_Api extends Component {
 		if ( is_array( $cached ) && ! empty( $cached ) ) {
 			return $cached;
 		}
-
+		
 		global $wp_version, $wp_local_package;
 		$locale = 'en_US';
 		if ( ! is_null( $wp_local_package ) && count( explode( '_', $wp_local_package ) ) == 2 ) {
@@ -173,16 +176,16 @@ class Scan_Api extends Component {
 		if ( $checksum == false ) {
 			return $checksum;
 		}
-
+		
 		if ( isset( $checksum[ $wp_version ] ) ) {
 			return $checksum = $checksum[ $wp_version ];
 		}
-
+		
 		$cache->set( self::CACHE_CHECKSUMS, $checksum, 86400 );
-
+		
 		return $checksum;
 	}
-
+	
 	/**
 	 * Processing a scan, return bool if done or not
 	 * @return bool|\WP_Error
@@ -193,14 +196,14 @@ class Scan_Api extends Component {
 		if ( ! is_object( $model ) ) {
 			return new \WP_Error( Error_Code::INVALID, __( "No scan record exists", "defender-security" ) );
 		}
-
+		
 		if ( $model->status == Scan::STATUS_ERROR ) {
 			//stop scan
 			self::releaseLock();
-
+			
 			return new \WP_Error( Error_Code::SCAN_ERROR, $model->statusText );
 		}
-
+		
 		$settings = Settings::instance();
 		$steps    = $settings->getScansAvailable();
 		$done     = 0;
@@ -211,7 +214,7 @@ class Scan_Api extends Component {
 			//create a safe lock
 			self::createLock();
 		}
-
+		
 		/**
 		 * loop through scanning steps, instance scan step as queue and process
 		 */
@@ -220,14 +223,14 @@ class Scan_Api extends Component {
 				'model'      => $model,
 				'ignoreList' => self::getIgnoreList()
 			) );
-
+			
 			if ( ! is_object( $queue ) || $queue->isEnd() ) {
 				$done ++;
 				continue;
 			}
-
+			
 			$lastPost = $queue->key();
-
+			
 			if ( $lastPost == 0 ) {
 				//this is newly, we will update the status text here
 				switch ( $step ) {
@@ -243,6 +246,10 @@ class Scan_Api extends Component {
 					case 'vuln':
 						$model->statusText = __( "Checking for any published vulnerabilities your plugins & themes...", "defender-security" );
 						break;
+					default:
+						//param not from the button on frontend, log it
+						error_log( sprintf( 'Unexpected value %s from IP %s', $step, Utils::instance()->getUserIp() ) );
+						break;
 				}
 				$model->save();
 			}
@@ -254,17 +261,21 @@ class Scan_Api extends Component {
 					$queue->next();
 					$queue->saveProcess();
 					self::releaseLock();
-
+					
 					return false;
 				} else {
 					//each request onlly allow 10s, or when reached to 64MB ram
-					$est      = microtime( true ) - $start;
-					$currMem  = ( memory_get_peak_usage( true ) / 1024 / 1024 );
+					$est     = microtime( true ) - $start;
+					$currMem = ( memory_get_peak_usage( true ) / 1024 / 1024 );
+					if ( php_sapi_name() == 'cli' ) {
+						echo $queue->current() . PHP_EOL;
+					}
+					//echo $currMem . PHP_EOL;
 					$memLimit = apply_filters( 'defender_scan_memory_alloc', 128 );
 					if ( $est >= 15 || $currMem >= $memLimit || $queue->isEnd() || $queue->key() == 1 ) {
 						//save current process and pause
 						$queue->saveProcess();
-
+						
 						//unlock before return
 						self::releaseLock();
 						//we have to cache the checksum of content here
@@ -280,7 +291,7 @@ class Scan_Api extends Component {
 								$cache->set( Content_Scan::FILES_TRIED, $tries );
 							}
 						}
-
+						
 						return false;
 					}
 				}
@@ -288,7 +299,7 @@ class Scan_Api extends Component {
 			//break at the end to prevent it stuck so long when init, also the heavy part is in the while loop
 			break;
 		}
-
+		
 		if ( $done == count( $steps ) ) {
 			//all done
 			//remove all old records
@@ -300,19 +311,19 @@ class Scan_Api extends Component {
 			$model->status = Scan::STATUS_FINISH;
 			$model->save();
 			if ( $model->logs == 'report' ) {
-				$settings->lastReportSent = time();
+				$settings->last_report_sent = time();
 				$settings->save();
 			}
 			self::flushCache();
 			self::releaseLock();
-
+			
 			return true;
 		}
 		self::releaseLock();
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * remove all scan models
 	 */
@@ -322,7 +333,7 @@ class Scan_Api extends Component {
 			$model->delete();
 		}
 	}
-
+	
 	/**
 	 * Ignoe list will be a global array, so it can share from each scan
 	 * @return Result_Item[]
@@ -331,7 +342,7 @@ class Scan_Api extends Component {
 		if ( is_array( self::$ignoreList ) ) {
 			return self::$ignoreList;
 		}
-
+		
 		$ids = get_site_option( self::IGNORE_LIST );
 		if ( $ids == false ) {
 			$cache = Container::instance()->get( 'cache' );
@@ -340,23 +351,23 @@ class Scan_Api extends Component {
 		} elseif ( ! is_array( $ids ) ) {
 			$ids = unserialize( $ids );
 		}
-
+		
 		if ( empty( $ids ) ) {
 			self::$ignoreList = array();
-
+			
 			return array();
 		}
-
+		
 		$ignoreList = Result_Item::findAll( array(
 			'id' => $ids
 		) );
-
+		
 		self::$ignoreList = $ignoreList;
-
-
+		
+		
 		return $ignoreList;
 	}
-
+	
 	/**
 	 * Check if a file get ignored
 	 *
@@ -371,10 +382,10 @@ class Scan_Api extends Component {
 				return $model->id;
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Add an item to ignore list
 	 *
@@ -394,7 +405,7 @@ class Scan_Api extends Component {
 		$ids[] = $id;
 		update_site_option( self::IGNORE_LIST, $ids );
 	}
-
+	
 	/**
 	 * Remove an item from ignore list
 	 *
@@ -414,12 +425,25 @@ class Scan_Api extends Component {
 		unset( $ids[ array_search( $id, $ids ) ] );
 		update_site_option( self::IGNORE_LIST, $ids );
 	}
-
+	
 	/**
-	 * Get current percent of scan in decimal
-	 * @return float
+	 * Get current percent, if $getFromCache set to true, we will get the last cached value
+	 *
+	 * @param bool $getFromCache
+	 *
+	 * @return float|int
 	 */
-	public static function getScanProgress() {
+	public static function getScanProgress( $getFromCache = false ) {
+		$cache = WP_Helper::getCache();
+		if ( $getFromCache ) {
+			$cache = $cache->get( 'defenderScanPercent' );
+			if ( $cache == false ) {
+				return 0;
+			}
+			
+			return $cache;
+		}
+		
 		$settings     = Settings::instance();
 		$steps        = $settings->getScansAvailable();
 		$total        = 0;
@@ -435,17 +459,16 @@ class Scan_Api extends Component {
 				}
 			}
 		}
-		if ( php_sapi_name() == "cli" ) {
-			echo $total . PHP_EOL;
-		}
-
+		
+		$percent = 0;
 		if ( $total > 0 ) {
-			return round( ( $currentIndex / $total ) * 100, 2 );
-		} else {
-			return ( 0 );
+			$percent = round( ( $currentIndex / $total ) * 100, 2 );
 		}
+		$cache->set( 'defenderScanPercent', $percent, 3600 );
+		
+		return $percent;
 	}
-
+	
 	/**
 	 * flush all cache generated during scan process
 	 */
@@ -468,11 +491,14 @@ class Scan_Api extends Component {
 		delete_site_option( self::SCAN_PATTERN );
 		$cache->delete( 'filestried' );
 		$cache->delete( self::CACHE_CHECKSUMS );
+		$cache->delete( 'defenderScanPercent' );
 		$altCache = WP_Helper::getArrayCache();
 		$altCache->delete( 'lastScan' );
+		$altCache->delete( 'activeScan' );
+		Scan_Api::releaseLock();
 		File_Helper::deleteFolder( Utils::instance()->getDefUploadDir() . '/md5-scan' );
 	}
-
+	
 	/**
 	 * A function for dealing with windows host, as wordpress checksums path all in UNIX format
 	 *
@@ -494,11 +520,11 @@ class Scan_Api extends Component {
 		if ( DIRECTORY_SEPARATOR == '\\' ) {
 			$relative_path = str_replace( '\\', '', $relative_path ); //Make sure the files do not have a /filename.etension or checksum fails
 		}
-
+		
 		return $relative_path;
 	}
-
-
+	
+	
 	/**
 	 * A function for dealing with windows host, Fixes the URL path on Windows
 	 *
@@ -511,18 +537,18 @@ class Scan_Api extends Component {
 		if ( DIRECTORY_SEPARATOR == '\\' ) {
 			$abs_path = rtrim( ABSPATH, '/' );
 			$abs_path = $abs_path . '\\';
-
+			
 			//now getting the relative path
 			$abs_path = str_replace( $abs_path, '', $file );
 			$abs_path = str_replace( '\\', '/', $abs_path );
 			$abs_path = str_replace( '//', '/', $abs_path );
-
+			
 			return $abs_path;
 		}
-
+		
 		return $file;
 	}
-
+	
 	/**
 	 * Get the schedule time for a scan
 	 *
@@ -559,7 +585,7 @@ class Scan_Api extends Component {
 			return $toUTC;
 		}
 	}
-
+	
 	/**
 	 * Create a lock
 	 * @return int
@@ -569,12 +595,12 @@ class Scan_Api extends Component {
 		if ( ! is_dir( $lockPath ) ) {
 			wp_mkdir_p( $lockPath );
 		}
-
+		
 		$lockFile = $lockPath . 'scan-lock';
-
+		
 		return file_put_contents( $lockFile, time(), LOCK_EX );
 	}
-
+	
 	/**
 	 * @return bool
 	 */
@@ -584,18 +610,18 @@ class Scan_Api extends Component {
 		if ( ! is_file( $lockFile ) ) {
 			return false;
 		}
-
+		
 		$time = file_get_contents( $lockFile );
 		if ( strtotime( '+1 minutes', $time ) < time() ) {
 			//this lock locked for too long, unlock it
 			@unlink( $lockFile );
-
+			
 			return false;
 		}
-
+		
 		return true;
 	}
-
+	
 	/**
 	 * release a lock
 	 */
@@ -604,7 +630,7 @@ class Scan_Api extends Component {
 		$lockFile = $lockPath . 'scan-lock';
 		@unlink( $lockFile );
 	}
-
+	
 	/**
 	 * @return array|mixed|object|\WP_Error
 	 */
@@ -613,13 +639,13 @@ class Scan_Api extends Component {
 		if ( ! is_object( $activeScan ) ) {
 			return array();
 		}
-
+		
 		$patterns = get_site_option( Scan_Api::SCAN_PATTERN, null );
 		if ( is_array( $patterns ) ) {
 			//return pattern if that exists, no matter the content
 			return $patterns;
 		}
-
+		
 		$api_endpoint = "https://premium.wpmudev.org/api/defender/v1/signatures";
 		$patterns     = Utils::instance()->devCall( $api_endpoint, array(), array(
 			'method' => 'GET'
@@ -627,10 +653,10 @@ class Scan_Api extends Component {
 		if ( is_wp_error( $patterns ) || $patterns == false ) {
 			$patterns = array();
 		}
-
-
+		
+		
 		update_site_option( Scan_Api::SCAN_PATTERN, $patterns );
-
+		
 		return $patterns;
 	}
 }

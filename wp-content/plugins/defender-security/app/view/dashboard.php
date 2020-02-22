@@ -2,23 +2,59 @@
 list( $hCount, $sCount ) = $controller->countTotalIssues( true );
 $countAll = $hCount + $sCount;
 ?>
-<div class="sui-wrap">
+<div class="sui-wrap <?php echo \WP_Defender\Behavior\Utils::instance()->maybeHighContrast() ?>">
     <div id="wp-defender" class="wp-defender">
         <div class="def-dashboard">
             <div class="sui-header">
                 <h1 class="sui-header-title">
 					<?php _e( "Dashboard", "defender-security" ) ?>
                 </h1>
+				<?php if ( wp_defender()->hideDocLinks === false ): ?>
+                    <div class="sui-actions-right">
+                        <div class="sui-actions-right">
+                            <a href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/defender/" target="_blank"
+                               class="sui-button sui-button-ghost">
+                                <i class="sui-icon-academy"></i> <?php _e( "View Documentation", "defender-security" ) ?>
+                            </a>
+                        </div>
+                    </div>
+				<?php endif; ?>
             </div>
-            <div class="sui-box sui-summary">
+            <div class="sui-box sui-summary <?php echo \WP_Defender\Behavior\Utils::instance()->getSummaryClass() ?>">
                 <div class="sui-summary-image-space" aria-hidden="true"></div>
                 <div class="sui-summary-segment">
                     <div class="sui-summary-details">
                         <span class="sui-summary-large"><?php echo $countAll ?></span>
 						<?php if ( $countAll > 0 ): ?>
-                            <i aria-hidden="true" class="sui-icon-info sui-error"></i>
+							<?php
+							$tooltips = "";
+							if ( $hCount == 1 && $sCount == 0 ) {
+								$tooltips = __( "You have one security tweak left to do. We recommend you action it, or ignore it if it's irrelevant.", "defender-security" );
+							} elseif ( $hCount == 0 && $sCount == 1 ) {
+								$tooltips = __( "We've detected a potential security risk in your file system. We recommend you take a look and action a fix, or ignore the file if it's harmless.", "defender-security" );
+							} elseif ( $hCount == 1 && $sCount == 1 ) {
+								$tooltips = __( "You have one security tweak left to do, and one potential security risk in your file system. We recommend you take a look and action fixes, or ignore the issues if they are harmless.", "defender-security" );
+							} elseif ( $hCount == 1 && $sCount > 1 ) {
+								$tooltips = sprintf( __( "You have one security tweak left to do, and %s potential security risks in your file system. We recommend you take a look and action fixes, or ignore the issues if they are harmless", "defender-security" ), $sCount );
+							} elseif ( $hCount > 1 && $sCount == 1 ) {
+								$tooltips = sprintf( __( "You have %s security tweaks left to do, and one potential security risk in your file system. We recommend you take a look and action fixes, or ignore the issues if they are harmless.", "defender-security" ), $hCount );
+							} elseif ( $hCount > 1 && $sCount > 1 ) {
+								$tooltips = sprintf( __( "You have %s security tweaks left to do, and %s potential security risks in your file system. We recommend you take a look and action fixes, or ignore the issues if they are harmless.", "defender-security" ), $hCount, $sCount );
+							} elseif ( $hCount > 1 && $sCount == 0 ) {
+								$tooltips = sprintf( __( "You have %d security tweaks left to do. We recommend you action it, or ignore it if it's irrelevant.", "defender-security" ), $hCount );
+							} elseif ( $hCount == 0 && $sCount > 1 ) {
+								$tooltips = sprintf( __( "We've detected %d potential security risks in your file system. We recommend you take a look and action a fix, or ignore the file if it's harmless.", "defender-security" ), $sCount );
+							}
+							?>
+                            <span class="sui-tooltip sui-tooltip-top-left sui-tooltip-constrained"
+                                  data-tooltip="<?php echo $tooltips ?>">
+                            <i aria-hidden="true" class="sui-icon-info sui-warning"></i>
+                        </span>
 						<?php else: ?>
+                            <span class="sui-tooltip sui-tooltip-top-left sui-tooltip-constrained"
+                                  data-tooltip="<?php esc_attr_e( "You don't have any outstanding security issues, nice work!", "defender-security" ) ?>">
                             <i class="sui-icon-check-tick sui-success" aria-hidden="true"></i>
+                            </span>
 						<?php endif; ?>
                         <span class="sui-summary-sub"><?php _e( "Security issues", "defender-security" ) ?></span>
                     </div>
@@ -165,45 +201,55 @@ $countAll = $hCount + $sCount;
 
             </div>
 		<?php endif; ?>
-        <div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div>
-		<?php if ( wp_defender()->isFree ): ?>
-            <ul class="sui-footer-nav">
-                <li><a href="https://profiles.wordpress.org/wpmudev#content-plugins" target="_blank">Free Plugins</a>
-                </li>
-                <li><a href="https://premium.wpmudev.org/features/" target="_blank">Membership</a></li>
-                <li><a href="https://premium.wpmudev.org/roadmap/" target="_blank">Roadmap</a></li>
-                <li><a href="https://wordpress.org/support/plugin/plugin-name" target="_blank">Support</a></li>
-                <li><a href="https://premium.wpmudev.org/docs/" target="_blank">Docs</a></li>
-                <li><a href="https://premium.wpmudev.org/hub/" target="_blank">The Hub</a></li>
-                <li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank">Terms of Service</a></li>
-                <li><a href="https://incsub.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
-            </ul>
+		<?php if ( wp_defender()->changeFooter ): ?>
+            <div class="sui-footer"><?php echo wp_defender()->footerText ?></div>
 		<?php else: ?>
-            <ul class="sui-footer-nav">
-                <li><a href="https://premium.wpmudev.org/hub/" target="_blank">The Hub</a></li>
-                <li><a href="https://premium.wpmudev.org/projects/category/plugins/" target="_blank">Plugins</a></li>
-                <li><a href="https://premium.wpmudev.org/roadmap/" target="_blank">Roadmap</a></li>
-                <li><a href="https://premium.wpmudev.org/hub/support/" target="_blank">Support</a></li>
-                <li><a href="https://premium.wpmudev.org/docs/" target="_blank">Docs</a></li>
-                <li><a href="https://premium.wpmudev.org/hub/community/" target="_blank">Community</a></li>
-                <li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank">Terms of Service</a></li>
-                <li><a href="https://incsub.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
+            <div class="sui-footer">Made with <i class="sui-icon-heart"></i> by WPMU DEV</div>
+		<?php endif; ?>
+		<?php if ( wp_defender()->hideDocLinks == false ): ?>
+			<?php if ( wp_defender()->isFree ): ?>
+                <ul class="sui-footer-nav">
+                    <li><a href="https://profiles.wordpress.org/wpmudev#content-plugins" target="_blank">Free
+                            Plugins</a>
+                    </li>
+                    <li><a href="https://premium.wpmudev.org/features/" target="_blank">Membership</a></li>
+                    <li><a href="https://premium.wpmudev.org/roadmap/" target="_blank">Roadmap</a></li>
+                    <li><a href="https://wordpress.org/support/plugin/plugin-name" target="_blank">Support</a></li>
+                    <li><a href="https://premium.wpmudev.org/docs/" target="_blank">Docs</a></li>
+                    <li><a href="https://premium.wpmudev.org/hub/" target="_blank">The Hub</a></li>
+                    <li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank">Terms of Service</a>
+                    </li>
+                    <li><a href="https://incsub.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
+                </ul>
+			<?php else: ?>
+                <ul class="sui-footer-nav">
+                    <li><a href="https://premium.wpmudev.org/hub/" target="_blank">The Hub</a></li>
+                    <li><a href="https://premium.wpmudev.org/projects/category/plugins/" target="_blank">Plugins</a>
+                    </li>
+                    <li><a href="https://premium.wpmudev.org/roadmap/" target="_blank">Roadmap</a></li>
+                    <li><a href="https://premium.wpmudev.org/hub/support/" target="_blank">Support</a></li>
+                    <li><a href="https://premium.wpmudev.org/docs/" target="_blank">Docs</a></li>
+                    <li><a href="https://premium.wpmudev.org/hub/community/" target="_blank">Community</a></li>
+                    <li><a href="https://premium.wpmudev.org/terms-of-service/" target="_blank">Terms of Service</a>
+                    </li>
+                    <li><a href="https://incsub.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
+                </ul>
+			<?php endif; ?>
+            <ul class="sui-footer-social">
+                <li><a href="https://www.facebook.com/wpmudev" target="_blank">
+                        <i class="sui-icon-social-facebook" aria-hidden="true"></i>
+                        <span class="sui-screen-reader-text">Facebook</span>
+                    </a></li>
+                <li><a href="https://twitter.com/wpmudev" target="_blank">
+                        <i class="sui-icon-social-twitter" aria-hidden="true"></i></a>
+                    <span class="sui-screen-reader-text">Twitter</span>
+                </li>
+                <li><a href="https://www.instagram.com/wpmu_dev/" target="_blank">
+                        <i class="sui-icon-instagram" aria-hidden="true"></i>
+                        <span class="sui-screen-reader-text">Instagram</span>
+                    </a></li>
             </ul>
 		<?php endif; ?>
-        <ul class="sui-footer-social">
-            <li><a href="https://www.facebook.com/wpmudev" target="_blank">
-                    <i class="sui-icon-social-facebook" aria-hidden="true"></i>
-                    <span class="sui-screen-reader-text">Facebook</span>
-                </a></li>
-            <li><a href="https://twitter.com/wpmudev" target="_blank">
-                    <i class="sui-icon-social-twitter" aria-hidden="true"></i></a>
-                <span class="sui-screen-reader-text">Twitter</span>
-            </li>
-            <li><a href="https://www.instagram.com/wpmu_dev/" target="_blank">
-                    <i class="sui-icon-instagram" aria-hidden="true"></i>
-                    <span class="sui-screen-reader-text">Instagram</span>
-                </a></li>
-        </ul>
     </div>
 </div>
 

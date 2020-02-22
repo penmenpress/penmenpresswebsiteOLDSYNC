@@ -8,7 +8,7 @@ namespace WP_Defender\Module\Hardener\Component;
 use WP_Defender\Module\Hardener\Rule;
 
 class WP_Version extends Rule {
-	static $slug = 'wp_version';
+	static $slug = 'wp-version';
 	static $service;
 
 	function getDescription() {
@@ -28,6 +28,30 @@ class WP_Version extends Rule {
 
 	public function getTitle() {
 		return __( "Update WordPress to latest version", "defender-security" );
+	}
+
+	/**
+	 * This will return the short summary why this rule show up as issue
+	 *
+	 * @return string
+	 */
+	function getErrorReason() {
+		return sprintf( __( "Your current WordPress version is out of date, which means you could be missing out on the latest security patches in v%s", "defender-security" ), $this->getService()->getLatestVersion() );
+	}
+
+	public function getMiscData() {
+		return [
+			'latest_wp'       => $this->getService()->getLatestVersion(),
+			'core_update_url' => network_admin_url( 'update-core.php' )
+		];
+	}
+
+	/**
+	 * This will return a short summary to show why this rule works
+	 * @return mixed
+	 */
+	function getSuccessReason() {
+		// TODO: Implement getSuccessReason() method.
 	}
 
 	function addHooks() {

@@ -11,9 +11,81 @@ class WD_Main_Activator {
 		add_action( 'init', array( &$this, 'init' ) );
 		add_action( 'wp_loaded', array( &$this, 'maybeShowNotice' ) );
 		add_action( 'wp_ajax_hideDefenderNotice', array( &$this, 'hideNotice' ) );
+		add_action( 'wp_loaded', array( &$this, 'upgradeHook' ), 5 );
 		//add_action( 'activated_plugin', array( &$this, 'redirectToDefender' ) );
 	}
-
+	
+	public function upgradeHook() {
+		$db_ver = get_site_option( 'wd_db_version' );
+		if ( $db_ver != false && version_compare( $db_ver, '2.2.1', '>=' ) ) {
+			return;
+		}
+		
+		\WP_Defender\Module\Setting\Component\Backup_Settings::backupData();
+		if ( $db_ver != false && version_compare( $db_ver, '2.2', '<' ) ) {
+			$scan_settings = get_site_option( 'wd_scan_settings' );
+			$settings      = \WP_Defender\Module\Scan\Model\Settings::instance();
+			if ( isset( $scan_settings['receiptsNotification'] ) ) {
+				$settings->recipients_notification = $scan_settings['receiptsNotification'];
+			}
+			if ( isset( $scan_settings['receipts'] ) ) {
+				$settings->recipients = $scan_settings['receipts'];
+			}
+			if ( isset( $scan_settings['alwaysSendNotification'] ) ) {
+				$settings->always_send_notification = $scan_settings['alwaysSendNotification'];
+			}
+			$result    = $settings->save();
+			$msettings = get_site_option( 'wd_main_settings' );
+			if ( isset( $msettings['high_contrast_mode'] ) ) {
+				$highcontast                  = filter_var( $msettings['high_contrast_mode'], FILTER_VALIDATE_BOOLEAN );
+				$settings                     = \WP_Defender\Module\Setting\Model\Settings::instance();
+				$settings->high_contrast_mode = $highcontast;
+				$ret                          = $settings->save();
+			}
+		}
+		if ( $db_ver != false && version_compare( $db_ver, '2.2.1', '<' ) ) {
+			$mask_url_settings = get_site_option( 'wd_masking_login_settings' );
+			$model             = \WP_Defender\Module\Advanced_Tools\Model\Mask_Settings::instance();
+			
+			if ( isset( $mask_url_settings['maskUrl'] ) ) {
+				$model->mask_url = $mask_url_settings['maskUrl'];
+			}
+			if ( isset( $mask_url_settings['redirectTraffic'] ) ) {
+				$model->redirect_traffic = $mask_url_settings['redirectTraffic'];
+			}
+			if ( isset( $mask_url_settings['redirectTrafficUrl'] ) ) {
+				$model->redirect_traffic_url = $mask_url_settings['redirectTrafficUrl'];
+			}
+			//delete cache to force update
+			$ret              = $model->save();
+			$factors_settings = get_site_option( 'wd_2auth_settings' );
+			$settings         = \WP_Defender\Module\Advanced_Tools\Model\Auth_Settings::instance();
+			if ( isset( $factors_settings['lostPhone'] ) ) {
+				$settings->lost_phone = $factors_settings['lostPhone'];
+			}
+			if ( isset( $factors_settings['forceAuth'] ) ) {
+				$settings->force_auth = $factors_settings['forceAuth'];
+			}
+			if ( isset( $factors_settings['forceAuthMess'] ) ) {
+				$settings->force_auth_mess = $factors_settings['forceAuthMess'];
+			}
+			if ( isset( $factors_settings['userRoles'] ) ) {
+				$settings->user_roles = $factors_settings['userRoles'];
+			}
+			if ( isset( $factors_settings['forceAuthRoles'] ) ) {
+				$settings->force_auth_roles = $factors_settings['forceAuthRoles'];
+			}
+			if ( isset( $factors_settings['customGraphicURL'] ) ) {
+				$settings->custom_graphic_url = $factors_settings['customGraphicURL'];
+			}
+			if ( isset( $factors_settings['customGraphic'] ) ) {
+				$settings->custom_graphic = $factors_settings['customGraphic'];
+			}
+			$ret = $settings->save();
+		}
+		update_site_option( 'wd_db_version', wp_defender()->db_version );
+	}
+	
 	/**
 	 * redirect to defender dahsboard after plugin activated
 	 */
@@ -31,22 +103,10 @@ class WD_Main_Activator {
 	 * Initial
 	 */
 	public function init() {
-		$db_ver = get_site_option( 'wd_db_version' );
-		if ( version_compare( $db_ver, '1.7', '<' ) ) {
-			if ( ! \WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::checkIfTableExists() ) {
-				add_site_option( 'defenderLockoutNeedUpdateLog', 1 );
-				\WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::createTables();
-				update_site_option( 'wd_db_version', "1.7" );
-			}
-		}
-		if ( version_compare( $db_ver, '1.7.1', '<' ) ) {
-			\WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::alterTableFor171();
-			update_site_option( 'wd_db_version', "1.7.1" );
-		}
-
 		add_filter( 'plugin_action_links_' . plugin_basename( wp_defender()->plugin_slug ), array( &$this, 'addSettingsLink' ) );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'register_styles' ) );
 		if ( ! \WP_Defender\Behavior\Utils::instance()->checkRequirement() ) {
+			return;
 		} else {
 			wp_defender()->isFree = true;
 			//check if we do have API
@@ -57,6 +117,8 @@ class WD_Main_Activator {
 			\Hammer\Base\Container::instance()->set( 'audit', new \WP_Defender\Module\Audit() );
 			\Hammer\Base\Container::instance()->set( 'lockout', new \WP_Defender\Module\IP_Lockout() );
 			\Hammer\Base\Container::instance()->set( 'advanced_tool', new \WP_Defender\Module\Advanced_Tools() );
+			\Hammer\Base\Container::instance()->set( 'gdpr', new \WP_Defender\Controller\GDPR() );
+			\Hammer\Base\Container::instance()->set( 'setting', new \WP_Defender\Module\Setting() );
 			//no need to set debug
 			require_once $this->wp_defender->getPluginPath() . 'free-dashboard/module.php';
 			add_filter( 'wdev-email-message-' . plugin_basename( __FILE__ ), array( &$this, 'defenderAdsMessage' ) );
@@ -72,6 +134,23 @@ class WD_Main_Activator {
 				'0cecf2890e'
 			);
 		}
+	}
+
+	private function convertOldToNewRecipients( $data ) {
+		$tmp = array();
+		foreach ( $data as $id ) {
+			if ( filter_var( $id, FILTER_VALIDATE_INT ) ) {
+				$user = get_user_by( 'id', $id );
+				if ( is_object( $user ) ) {
+					$temp[] = array(
+						'first_name' => $user->display_name,
+						'email'      => $user->user_email
+					);
+				}
+			}
+		}
+
+		return $tmp;
 	}
 
 	public function defenderAdsMessage( $message ) {
@@ -129,7 +208,7 @@ class WD_Main_Activator {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( \Hammer\Helper\HTTP_Helper::retrieve_post( 'nonce' ), 'installDefenderPro' ) ) {
+		if ( ! wp_verify_nonce( \Hammer\Helper\HTTP_Helper::retrievePost( 'nonce' ), 'installDefenderPro' ) ) {
 			return;
 		}
 
@@ -195,6 +274,32 @@ class WD_Main_Activator {
 	}
 
 	public function activationHook() {
+		$db_ver = get_site_option( 'wd_db_version' );
+		if ( version_compare( $db_ver, '1.7', '<' ) ) {
+			if ( ! \WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::checkIfTableExists() ) {
+				add_site_option( 'defenderLockoutNeedUpdateLog', 1 );
+				\WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::createTables();
+				update_site_option( 'wd_db_version', "1.7" );
+			}
+		}
+		if ( version_compare( $db_ver, '1.7.1', '<' ) ) {
+			\WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::alterTableFor171();
+			update_site_option( 'wd_db_version', "1.7.1" );
+		}
 
+		if ( $db_ver != false && version_compare( $db_ver, '2.1.1', '<' ) ) {
+			//convert scan notification
+			$settings                          = \WP_Defender\Module\Scan\Model\Settings::instance();
+			$settings->recipients              = $this->convertOldToNewRecipients( $settings->recipients );
+			$settings->recipients_notification = $this->convertOldToNewRecipients( $settings->recipients_notification );
+			$settings->save();
+			//lockout
+			$settings                  = \WP_Defender\Module\IP_Lockout\Model\Settings::instance();
+			$settings->receipts        = $this->convertOldToNewRecipients( $settings->receipts );
+			$settings->report_receipts = $this->convertOldToNewRecipients( $settings->report_receipts );
+			$settings->save();
+
+		}
+		update_site_option( 'wd_db_version', wp_defender()->db_version );
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 /**
  * Author: Hoang Ngo
+ * Version: 1.0
  */
 
 
@@ -35,8 +36,12 @@ require_once __DIR__ . '/vendor/maxmind-db/reader/autoload.php';
  * @return \Hammer\Caching\DB_Cache|\Hammer\Caching\Memcached_Cache
  */
 function initCacheEngine() {
+	if ( ! defined( 'WD_NO_OBJECT_CACHE' ) ) {
+		define( 'WD_NO_OBJECT_CACHE', 0 );
+	}
+	return new \Hammer\Caching\DB_Cache();
 	if ( function_exists( 'wp_using_ext_object_cache' )
-	     && wp_using_ext_object_cache() && ! defined( 'W3TC' ) ) {
+	     && wp_using_ext_object_cache() && ! defined( 'W3TC' ) && WD_NO_OBJECT_CACHE == 0 ) {
 		return new \Hammer\Caching\Memcached_Cache();
 	} else {
 		return new \Hammer\Caching\DB_Cache();

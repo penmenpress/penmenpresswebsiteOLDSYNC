@@ -1,6 +1,7 @@
 <?php
 $checked = $controller->check();
 global $wpdb;
+$prefix = 'wp_' . uniqid();
 ?>
 <div id="db_prefix" class="sui-accordion-item <?php echo $controller->getCssClass() ?>">
     <div class="sui-accordion-item-header">
@@ -19,10 +20,10 @@ global $wpdb;
         <div class="sui-box">
             <div class="sui-box-body">
                 <strong>
-		            <?php _e( "Overview", "defender-security" ) ?>
+					<?php _e( "Overview", "defender-security" ) ?>
                 </strong>
                 <p>
-		            <?php _e( "When you first install WordPress on a new database, the default settings start with wp_ as the prefix to anything that gets stored in the tables. This makes it easier for hackers to perform SQL injection attacks if they find a code vulnerability. ", "defender-security" ) ?>
+					<?php _e( "When you first install WordPress on a new database, the default settings start with wp_ as the prefix to anything that gets stored in the tables. This makes it easier for hackers to perform SQL injection attacks if they find a code vulnerability. ", "defender-security" ) ?>
                 </p>
 				<?php if ( $checked ): ?>
                     <div class="sui-notice sui-notice-success">
@@ -49,21 +50,22 @@ global $wpdb;
                     <div class="sui-border-frame">
                         <div class="sui-form-field ">
                             <label class="sui-label"><?php _e( "New database prefix", "defender-security" ) ?></label>
-                            <input type="text" id="dbprefix" class="sui-form-control"/>
+                            <input type="text" value="<?php echo $prefix ?>" name="dbprefix" id="dbprefix"
+                                   class="sui-form-control"/>
                         </div>
                     </div>
 				<?php endif; ?>
             </div>
             <div class="sui-box-footer">
 				<?php if ( $checked ): ?>
-                    <form method="post" class="hardener-frm rule-process">
-						<?php $controller->createNonceField(); ?>
-                        <input type="hidden" name="action" value="processRevert"/>
-                        <input type="hidden" name="slug" value="<?php echo $controller::$slug ?>"/>
-                        <button class="sui-button" type="submit">
-                            <i class="sui-icon-undo" aria-hidden="true"></i>
-							<?php _e( "Revert", "defender-security" ) ?></button>
-                    </form>
+                    <!--                    <form method="post" class="hardener-frm rule-process">-->
+                    <!--						--><?php //$controller->createNonceField(); ?>
+                    <!--                        <input type="hidden" name="action" value="processRevert"/>-->
+                    <!--                        <input type="hidden" name="slug" value="--><?php //echo $controller::$slug ?><!--"/>-->
+                    <!--                        <button class="sui-button" type="submit">-->
+                    <!--                            <i class="sui-icon-undo" aria-hidden="true"></i>-->
+                    <!--							--><?php //_e( "Revert", "defender-security" ) ?><!--</button>-->
+                    <!--                    </form>-->
 				<?php else: ?>
                     <div class="sui-actions-left">
 						<?php $controller->showIgnoreForm() ?>
@@ -71,7 +73,7 @@ global $wpdb;
                     <div class="sui-actions-right">
                         <form method="post" class="hardener-frm rule-process hardener-frm-process-xml-rpc">
 							<?php $controller->createNonceField(); ?>
-                            <input type="hidden" name="dbprefix"/>
+                            <input type="hidden" name="dbprefix" value="<?php echo $prefix ?>"/>
                             <input type="hidden" name="action" value="processHardener"/>
                             <input type="hidden" name="slug" value="<?php echo $controller::$slug ?>"/>
                             <button class="sui-button sui-button-blue" type="submit">

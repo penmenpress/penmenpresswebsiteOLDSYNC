@@ -61,9 +61,6 @@
                         </div>
                         <div data-panes>
                             <div class="sui-tab-boxed <?php echo $settings->detect_404_lockout_ban == 0 ? 'active' : null ?>">
-                                <p class="sui-description">
-		                            <?php _e( "Choose a timeframe to temporarily lock out blocked the IP for.", "defender-security" ) ?>
-                                </p>
                                 <div class="sui-row">
                                     <div class="sui-col-md-3">
                                         <input value="<?php echo $settings->detect_404_lockout_duration ?>" size="8"
@@ -73,11 +70,11 @@
                                     </div>
                                     <div class="sui-col-md-3">
                                         <select name="detect_404_lockout_duration_unit">
-                                            <option <?php echo selected( 'second', $settings->detect_404_lockout_duration_unit ) ?>
+                                            <option <?php echo selected( 'seconds', $settings->detect_404_lockout_duration_unit ) ?>
                                                     value="seconds"><?php _e( "Seconds", "defender-security" ) ?></option>
-                                            <option <?php echo selected( 'minute', $settings->detect_404_lockout_duration_unit ) ?>
+                                            <option <?php echo selected( 'minutes', $settings->detect_404_lockout_duration_unit ) ?>
                                                     value="minutes"><?php _e( "Minutes", "defender-security" ) ?></option>
-                                            <option <?php echo selected( 'hour', $settings->detect_404_lockout_duration_unit ) ?>
+                                            <option <?php echo selected( 'hours', $settings->detect_404_lockout_duration_unit ) ?>
                                                     value="hours"><?php _e( "Hours", "defender-security" ) ?></option>
                                         </select>
                                     </div>
@@ -157,8 +154,8 @@
                 </div>
                 <div class="sui-box-settings-col-2">
                     <div class="sui-form-field">
+                        <input type="hidden" name="detect_404_logged" value="0"/>
                         <label class="sui-toggle">
-                            <input type="hidden" name="detect_404_logged" value="0"/>
                             <input id="detect_404_logged" <?php checked( 1, $settings->detect_404_logged ) ?>
                                    type="checkbox"
                                    name="detect_404_logged" value="1">

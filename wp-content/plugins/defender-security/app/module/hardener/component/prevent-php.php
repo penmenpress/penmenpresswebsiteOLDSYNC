@@ -17,30 +17,54 @@ class Prevent_Php extends Rule {
 	static $service;
 	static $apache_service;
 	static $iis_service;
-
+	
 	function getDescription() {
 		$this->renderPartial( 'rules/prevent-php-executed' );
 	}
-
+	
+	/**
+	 * This will return the short summary why this rule show up as issue
+	 *
+	 * @return string
+	 */
+	function getErrorReason() {
+		return __( "PHP execution is currently allowed in all directories.", "defender-security" );
+	}
+	
+	/**
+	 * This will return a short summary to show why this rule works
+	 * @return mixed
+	 */
+	function getSuccessReason() {
+		return __( "You've disabled PHP execution, good stuff.", "defender-security" );
+	}
+	
 	/**
 	 * @return bool|false|mixed|null
 	 */
 	function check() {
 		return $this->getService()->check();
 	}
-
+	
+	public function getMiscData() {
+		$settings = Settings::instance();
+		
+		return [
+			'active_server'  => $settings->active_server,
+			'nginx_rules'    => $this->getService()->getNginxRules(),
+			'wp_content_dir' => WP_CONTENT_DIR
+		];
+	}
+	
 	/**
 	 * @return string|void
 	 */
 	public function getTitle() {
 		return __( "Prevent PHP execution", "defender-security" );
 	}
-
-
+	
+	
 	function revert() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
 		$settings = Settings::instance();
 		$server   = $settings->active_server;
 		if ( in_array( $settings->active_server, array( 'apache', 'litespeed' ) ) ) {
@@ -57,6 +81,9 @@ class Prevent_Php extends Rule {
 				$settings->saveExcludedFilePaths( array() );
 				$settings->saveNewHtConfig( array() );
 			}
+			$url = WP_Helper::getUploadUrl();
+			$url = $url . '/wp-defender/index.php';
+			$this->getService()->clearHeadRequest( $url );
 			$settings->addToIssues( self::$slug );
 		} else {
 			wp_send_json_error( array(
@@ -64,25 +91,22 @@ class Prevent_Php extends Rule {
 			) );
 		}
 	}
-
+	
 	function addHooks() {
-		$this->add_action( 'processingHardener' . self::$slug, 'process', 10, 2 );
-		$this->add_action( 'processRevert' . self::$slug, 'revert' );
-		$this->add_action( 'processUpdate' . self::$slug, 'update', 10, 2 );
+		$this->addAction( 'processingHardener' . self::$slug, 'process', 10, 2 );
+		$this->addAction( 'processRevert' . self::$slug, 'revert' );
+		$this->addAction( 'processUpdate' . self::$slug, 'update', 10, 2 );
 	}
-
+	
 	function process() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
-		$file_paths = HTTP_Helper::retrieve_post( 'file_paths' ); //File paths to ignore. Apache and litespeed mainly
+		$file_paths = HTTP_Helper::retrievePost( 'file_paths' ); //File paths to ignore. Apache and litespeed mainly
 		if ( $file_paths ) {
 			$file_paths = sanitize_textarea_field( $file_paths );
 		} else {
 			$file_paths = '';
 		}
-		$server = HTTP_Helper::retrieve_post( 'current_server' ); //Current server
-
+		$server = HTTP_Helper::retrievePost( 'current_server' ); //Current server
+		
 		if ( in_array( $server, array( 'apache', 'litespeed' ) ) ) {
 			$service = $this->getApacheService();
 			$service->setExcludeFilePaths( $file_paths ); //Set the paths
@@ -100,28 +124,31 @@ class Prevent_Php extends Rule {
 			}
 			$settings->setActiveServer( $server );
 			$settings->addToResolved( self::$slug );
+			$url = WP_Helper::getUploadUrl();
+			$url = $url . '/wp-defender/index.php';
+			$this->getService()->clearHeadRequest( $url );
 		} else {
 			wp_send_json_error( array(
 				'message' => $ret->get_error_message()
 			) );
 		}
 	}
-
+	
 	function update() {
 		if ( ! $this->verifyNonce() ) {
 			return;
 		}
 		$settings = Settings::instance();
-
-		$file_paths = HTTP_Helper::retrieve_post( 'file_paths' ); //File paths to ignore. Apache and litespeed mainly
+		
+		$file_paths = HTTP_Helper::retrievePost( 'file_paths' ); //File paths to ignore. Apache and litespeed mainly
 		if ( $file_paths ) {
 			$file_paths = sanitize_textarea_field( $file_paths );
 		} else {
 			$file_paths = '';
 		}
-
-		$server = HTTP_Helper::retrieve_post( 'current_server' ); //Current server
-
+		
+		$server = HTTP_Helper::retrievePost( 'current_server' ); //Current server
+		
 		if ( in_array( $server, array( 'apache', 'litespeed' ) ) ) {
 			$service = $this->getApacheService();
 			$service->setHtConfig( $settings->getNewHtConfig() ); //Set the previous template
@@ -144,7 +171,7 @@ class Prevent_Php extends Rule {
 			) );
 		}
 	}
-
+	
 	/**
 	 * @return Prevent_PHP_Service
 	 */
@@ -152,10 +179,10 @@ class Prevent_Php extends Rule {
 		if ( self::$service == null ) {
 			self::$service = new Prevent_PHP_Service();
 		}
-
+		
 		return self::$service;
 	}
-
+	
 	/**
 	 * @return Apache_Service
 	 */
@@ -163,10 +190,10 @@ class Prevent_Php extends Rule {
 		if ( self::$apache_service == null ) {
 			self::$apache_service = new Apache_Service();
 		}
-
+		
 		return self::$apache_service;
 	}
-
+	
 	/**
 	 * @return Iis_Service
 	 */
@@ -174,7 +201,7 @@ class Prevent_Php extends Rule {
 		if ( self::$iis_service == null ) {
 			self::$iis_service = new Iis_Service();
 		}
-
+		
 		return self::$iis_service;
 	}
 }

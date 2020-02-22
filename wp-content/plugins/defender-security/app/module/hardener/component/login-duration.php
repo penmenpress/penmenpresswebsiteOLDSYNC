@@ -40,6 +40,27 @@ class Login_Duration extends Rule {
 	}
 
 	/**
+	 * This will return the short summary why this rule show up as issue
+	 *
+	 * @return string
+	 */
+	function getErrorReason() {
+		$days = $this->getService()->getDuration();
+
+		return sprintf( __( "Your current login duration is the default %d days.", "defender-security" ), $days );
+	}
+
+	/**
+	 * This will return a short summary to show why this rule works
+	 * @return mixed
+	 */
+	function getSuccessReason() {
+		$days = $this->getService()->getDuration();
+
+		return sprintf( __( "You've adjusted the default login duration to %d days.", "defender-security" ), $days );
+	}
+
+	/**
 	 * @return bool
 	 */
 	function check() {
@@ -47,21 +68,17 @@ class Login_Duration extends Rule {
 	}
 
 	function addHooks() {
-		$this->add_action( 'processingHardener' . self::$slug, 'process' );
-		$this->add_action( 'processRevert' . self::$slug, 'revert' );
-		$this->add_action( 'wp_login', 'login_action_handler', 9, 2 );
+		$this->addAction( 'processingHardener' . self::$slug, 'process' );
+		$this->addAction( 'processRevert' . self::$slug, 'revert' );
+		$this->addAction( 'wp_login', 'login_action_handler', 9, 2 );
 		if ( $this->check() ) {
-			$this->add_filter( 'auth_cookie_expiration', 'cookie_duration', 10, 3 );
-			$this->add_filter( 'login_message', 'login_message' );
-			$this->add_action( 'wp_loaded', 'check_login' );
+			$this->addFilter( 'auth_cookie_expiration', 'cookie_duration', 10, 3 );
+			$this->addFilter( 'login_message', 'login_message' );
 		}
 
 	}
 
 	function revert() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
 		$settings = Settings::instance();
 		$service  = $this->getService();
 		$ret      = $service->revert();
@@ -75,11 +92,8 @@ class Login_Duration extends Rule {
 	}
 
 	function process() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
 		$service  = $this->getService();
-		$duration = HTTP_Helper::retrieve_post( 'duration' );
+		$duration = HTTP_Helper::retrievePost( 'duration' );
 		if ( is_numeric( $duration ) && intval( $duration ) > 0 ) {
 			$service->setDuration( $duration );
 			$ret = $service->process();
@@ -111,84 +125,18 @@ class Login_Duration extends Rule {
 		update_user_meta( $user->ID, 'last_login_time', $last_login_time );
 	}
 
-	/**
-	 * Check login of users
-	 */
-	function check_login() {
-		$defender_logout = HTTP_Helper::retrieve_get( 'defender_logout', false );
-		if ( is_user_logged_in() ) {
-			$current_user = wp_get_current_user();
-			$user_id      = $current_user->ID;
-			if ( ! $defender_logout ) {
-				$current_time    = current_time( 'mysql' );
-				$last_login_time = get_user_meta( $user_id, 'last_login_time', true );
-				$login_period    = $this->getService()->getDuration( true );
-				if ( $last_login_time ) {
-					$current_time    = strtotime( $current_time );
-					$last_login_time = strtotime( $last_login_time );
-					$diff            = $current_time - $last_login_time;
-					//Check if the current and login times are not the same 
-					//so we dont kick out someone who set it to 0
-					if ( ( $current_time != $last_login_time ) && $diff > $login_period ) {
-						$current_url          = Utils::instance()->currentPageURL();
-						$after_logout_payload = array( 'redirect_to' => $current_url, 'msg' => 'session_expired' );
-						if ( is_multisite() ) {
-							set_site_transient( 'defender_logout_payload', $after_logout_payload, 30 * 60 );
-						}
-						set_transient( 'defender_logout_payload', $after_logout_payload, 30 * 60 );
-						$logout_url = add_query_arg( 'defender_logout', '1', site_url() );
-						wp_redirect( $logout_url );
-						exit;
-					}
-				} else {
-					//Incase the user already was logged in
-					$last_login_time = current_time( 'mysql' );
-					update_user_meta( $user_id, 'last_login_time', $last_login_time );
-				}
-			} else {
-				delete_user_meta( $user_id, 'last_login_time' );
-				wp_logout();
-				$after_logout = HTTP_Helper::retrieve_get( 'after_logout', false );
-				if ( $after_logout ) {
-					$after_logout_url = esc_url( $after_logout );
-					wp_redirect( $after_logout_url );
-					exit;
-				}
-				$login_url      = wp_login_url();
-				$logout_payload = ( is_multisite() ? get_site_transient( 'defender_logout_payload' ) : get_transient( 'defender_logout_payload' ) );
-
-				$login_url = add_query_arg( array(
-					'redirect_to'            => $logout_payload['redirect_to'],
-					'defender_login_message' => $logout_payload['msg'],
-				), $login_url );
-				wp_redirect( $login_url );
-				exit;
-			}
-		} else if ( $defender_logout ) {
-			$after_logout = HTTP_Helper::retrieve_get( 'after_logout', false );
-			if ( $after_logout ) {
-				$after_logout_url = esc_url( $after_logout );
-				wp_redirect( $after_logout_url );
-			}
-			$login_url      = wp_login_url();
-			$logout_payload = ( is_multisite() ? get_site_transient( 'defender_logout_payload' ) : get_transient( 'defender_logout_payload' ) );
-
-			$login_url = add_query_arg( array(
-				'redirect_to'            => $logout_payload['redirect_to'],
-				'defender_login_message' => $logout_payload['msg'],
-			), $login_url );
-			wp_redirect( $login_url );
-			exit;
-		}
+	public function getMiscData() {
+		return [
+			'duration' => $this->getService()->getDuration()
+		];
 	}
-
 
 	/**
 	 * Handle the custom login message
 	 *
 	 */
 	function login_message( $message = '' ) {
-		$login_msg = HTTP_Helper::retrieve_get( 'defender_login_message', false );
+		$login_msg = HTTP_Helper::retrieveGet( 'defender_login_message', false );
 		if ( $login_msg ) {
 			$logout_msg = strip_tags( $login_msg );
 			if ( $logout_msg == 'session_expired' ) {
@@ -212,13 +160,17 @@ class Login_Duration extends Rule {
 	 * @return Integer $duration
 	 */
 	function cookie_duration( $duration, $user_id, $remember ) {
-		if ( $remember ) {
-			$duration = $this->getService()->getDuration( true );
+		$dur = $this->getService()->getDuration( true );
+		if ( $dur < 2 ) {
+			//duration set smaller than 2 days, use the custom for both remember & non remeber
+			return $dur;
+		} elseif ( $remember ) {
+			//this case only
+			return $dur;
 		}
 
+		//return default
 		return $duration;
 	}
 
 }
-
-?>

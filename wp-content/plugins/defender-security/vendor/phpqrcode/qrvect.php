@@ -148,7 +148,7 @@
             } else {
                 if($saveandprint===TRUE){
                     QRtools::save($vect, $filename);
-                    //header("Content-Type: image/svg+xml");
+                    header("Content-Type: image/svg+xml");
                     //header('Content-Disposition: filename="'.$filename.'"');
                     echo $vect;
                 }else{

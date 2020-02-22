@@ -6,427 +6,427 @@
 /* global NodeList, Element, define */
 
 (function (global) {
-  'use strict';
+    'use strict';
 
-  var FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled])', 'select:not([disabled])', 'textarea:not([disabled])', 'button:not([disabled])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
-  var TAB_KEY = 9;
-  var ESCAPE_KEY = 27;
-  var focusedBeforeDialog;
+    var FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled])', 'select:not([disabled])', 'textarea:not([disabled])', 'button:not([disabled])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
+    var TAB_KEY = 9;
+    var ESCAPE_KEY = 27;
+    var focusedBeforeDialog;
 
-  /**
-   * Define the constructor to instantiate a dialog
-   *
-   * @constructor
-   * @param {Element} node
-   * @param {(NodeList | Element | string)} targets
-   */
-  function A11yDialog (node, targets) {
-    // Prebind the functions that will be bound in addEventListener and
-    // removeEventListener to avoid losing references
-    this._show = this.show.bind(this);
-    this._hide = this.hide.bind(this);
-    this._maintainFocus = this._maintainFocus.bind(this);
-    this._bindKeypress = this._bindKeypress.bind(this);
+    /**
+     * Define the constructor to instantiate a dialog
+     *
+     * @constructor
+     * @param {Element} node
+     * @param {(NodeList | Element | string)} targets
+     */
+    function A11yDialog(node, targets) {
+        // Prebind the functions that will be bound in addEventListener and
+        // removeEventListener to avoid losing references
+        this._show = this.show.bind(this);
+        this._hide = this.hide.bind(this);
+        // this._maintainFocus = this._maintainFocus.bind(this);
+        this._bindKeypress = this._bindKeypress.bind(this);
 
-    // Keep a reference of the node on the instance
-    this.node = node;
+        // Keep a reference of the node on the instance
+        this.node = node;
 
-    // Keep an object of listener types mapped to callback functions
-    this._listeners = {};
+        // Keep an object of listener types mapped to callback functions
+        this._listeners = {};
 
-    // Initialise everything needed for the dialog to work properly
-    this.create(targets);
-  }
-
-  /**
-   * Set up everything necessary for the dialog to be functioning
-   *
-   * @param {(NodeList | Element | string)} targets
-   * @return {this}
-   */
-  A11yDialog.prototype.create = function (targets) {
-    // Keep a collection of nodes to disable/enable when toggling the dialog
-    this._targets = this._targets || collect(targets) || getSiblings(this.node);
-
-    // Make sure the dialog element is disabled on load, and that the `shown`
-    // property is synced with its value
-    this.node.setAttribute('aria-hidden', true);
-    this.shown = false;
-
-    // Keep a collection of dialog openers, each of which will be bound a click
-    // event listener to open the dialog
-    this._openers = $$('[data-a11y-dialog-show="' + this.node.id + '"]');
-    this._openers.forEach(function (opener) {
-      opener.addEventListener('click', this._show);
-    }.bind(this));
-
-    // Keep a collection of dialog closers, each of which will be bound a click
-    // event listener to close the dialog
-    this._closers = $$('[data-a11y-dialog-hide]', this.node)
-      .concat($$('[data-a11y-dialog-hide="' + this.node.id + '"]'));
-    this._closers.forEach(function (closer) {
-      closer.addEventListener('click', this._hide);
-    }.bind(this));
-
-    // Execute all callbacks registered for the `create` event
-    this._fire('create');
-
-    return this;
-  };
-
-  /**
-   * Show the dialog element, disable all the targets (siblings), trap the
-   * current focus within it, listen for some specific key presses and fire all
-   * registered callbacks for `show` event
-   *
-   * @param {Event} event
-   * @return {this}
-   */
-  A11yDialog.prototype.show = function (event) {
-    // If the dialog is already open, abort
-    if (this.shown) {
-      return this;
+        // Initialise everything needed for the dialog to work properly
+        this.create(targets);
     }
 
-    var overlay = this.node.getElementsByClassName('sui-dialog-overlay');
-    var content = this.node.getElementsByClassName('sui-dialog-content');
-    content[0].className = 'sui-dialog-content sui-bounce-in';
-    overlay[0].className = 'sui-dialog-overlay sui-fade-in';
+    /**
+     * Set up everything necessary for the dialog to be functioning
+     *
+     * @param {(NodeList | Element | string)} targets
+     * @return {this}
+     */
+    A11yDialog.prototype.create = function (targets) {
+        // Keep a collection of nodes to disable/enable when toggling the dialog
+        this._targets = this._targets || collect(targets) || getSiblings(this.node);
 
-    this.shown = true;
-    this.node.removeAttribute('aria-hidden');
+        // Make sure the dialog element is disabled on load, and that the `shown`
+        // property is synced with its value
+        this.node.setAttribute('aria-hidden', true);
+        this.shown = false;
 
-    // Iterate over the targets to disable them by setting their `aria-hidden`
-    // attribute to `true`; in case they already have this attribute, keep a
-    // reference of their original value to be able to restore it later
-    this._targets.forEach(function (target) {
-      var original = target.getAttribute('aria-hidden');
+        // Keep a collection of dialog openers, each of which will be bound a click
+        // event listener to open the dialog
+        this._openers = $$('[data-a11y-dialog-show="' + this.node.id + '"]');
+        this._openers.forEach(function (opener) {
+            opener.addEventListener('click', this._show);
+        }.bind(this));
 
-      if (original) {
-        target.setAttribute('data-a11y-dialog-original', original);
-      }
+        // Keep a collection of dialog closers, each of which will be bound a click
+        // event listener to close the dialog
+        this._closers = $$('[data-a11y-dialog-hide]', this.node)
+            .concat($$('[data-a11y-dialog-hide="' + this.node.id + '"]'));
+        this._closers.forEach(function (closer) {
+            closer.addEventListener('click', this._hide);
+        }.bind(this));
 
-      target.setAttribute('aria-hidden', 'true');
-    });
+        // Execute all callbacks registered for the `create` event
+        this._fire('create');
 
-    // Keep a reference to the currently focused element to be able to restore
-    // it later, then set the focus to the first focusable child of the dialog
-    // element
-    focusedBeforeDialog = document.activeElement;
-    setFocusToFirstItem(this.node);
+        return this;
+    };
 
-    // Bind a focus event listener to the body element to make sure the focus
-    // stays trapped inside the dialog while open, and start listening for some
-    // specific key presses (TAB and ESC)
-    document.body.addEventListener('focus', this._maintainFocus, true);
-    document.addEventListener('keydown', this._bindKeypress);
+    /**
+     * Show the dialog element, disable all the targets (siblings), trap the
+     * current focus within it, listen for some specific key presses and fire all
+     * registered callbacks for `show` event
+     *
+     * @param {Event} event
+     * @return {this}
+     */
+    A11yDialog.prototype.show = function (event) {
+        // If the dialog is already open, abort
+        if (this.shown) {
+            return this;
+        }
 
-    // Add overlay class to document body.
-    document.getElementsByTagName( 'html' )[0].classList.add( 'sui-has-overlay' );
+        this.node.classList.add('sui-fade-in');
+        this.node.classList.remove('sui-fade-out');
+        var content = this.node.getElementsByClassName('sui-dialog-content');
+        content[0].className = 'sui-dialog-content sui-bounce-in';
 
-    // Execute all callbacks registered for the `show` event
-    this._fire('show', event);
+        // Execute all callbacks registered for the `show` event
+        this._fire('show', event);
 
-    return this;
-  };
+        this.shown = true;
+        this.node.removeAttribute('aria-hidden');
 
-  /**
-   * Hide the dialog element, enable all the targets (siblings), restore the
-   * focus to the previously active element, stop listening for some specific
-   * key presses and fire all registered callbacks for `hide` event
-   *
-   * @param {Event} event
-   * @return {this}
-   */
-  A11yDialog.prototype.hide = function (event) {
-    // If the dialog is already closed, abort
-    if (!this.shown) {
-      return this;
+        // Iterate over the targets to disable them by setting their `aria-hidden`
+        // attribute to `true`; in case they already have this attribute, keep a
+        // reference of their original value to be able to restore it later
+        this._targets.forEach(function (target) {
+            var original = target.getAttribute('aria-hidden');
+
+            if (original) {
+                target.setAttribute('data-a11y-dialog-original', original);
+            }
+
+            target.setAttribute('aria-hidden', 'true');
+        });
+
+        // Keep a reference to the currently focused element to be able to restore
+        // it later, then set the focus to the first focusable child of the dialog
+        // element
+        focusedBeforeDialog = document.activeElement;
+        setFocusToFirstItem(this.node);
+
+        // Bind a focus event listener to the body element to make sure the focus
+        // stays trapped inside the dialog while open, and start listening for some
+        // specific key presses (TAB and ESC)
+        // document.body.addEventListener('focus', this._maintainFocus, true);
+        document.addEventListener('keydown', this._bindKeypress);
+
+        // Add overlay class to document body.
+        document.getElementsByTagName('html')[0].classList.add('sui-has-overlay');
+
+
+        return this;
+    };
+
+    /**
+     * Hide the dialog element, enable all the targets (siblings), restore the
+     * focus to the previously active element, stop listening for some specific
+     * key presses and fire all registered callbacks for `hide` event
+     *
+     * @param {Event} event
+     * @return {this}
+     */
+    A11yDialog.prototype.hide = function (event) {
+        // If the dialog is already closed, abort
+        if (!this.shown) {
+            return this;
+        }
+
+
+        var content = this.node.getElementsByClassName('sui-dialog-content');
+
+        content[0].className = 'sui-dialog-content sui-bounce-out';
+        this.node.classList.add('sui-fade-out');
+        this.node.classList.remove('sui-fade-in');
+
+        // Execute all callbacks registered for the `hide` event
+        this._fire('hide', event);
+
+        this.shown = false;
+        // This has been set so there is enough time for the animation to show
+        var timeout_node = this.node;
+        setTimeout(function () {
+            timeout_node.setAttribute('aria-hidden', 'true');
+        }, 300);
+
+        // Iterate over the targets to enable them by remove their `aria-hidden`
+        // attribute or resetting them to their initial value
+        this._targets.forEach(function (target) {
+            var original = target.getAttribute('data-a11y-dialog-original');
+
+
+            if (original) {
+                target.setAttribute('aria-hidden', original);
+                target.removeAttribute('data-a11y-dialog-original');
+            } else {
+                target.removeAttribute('aria-hidden');
+            }
+        });
+
+        // If their was a focused element before the dialog was opened, restore the
+        // focus back to it
+        if (focusedBeforeDialog) {
+            focusedBeforeDialog.focus();
+        }
+
+        // Remove the focus event listener to the body element and stop listening
+        // for specific key presses
+        // document.body.removeEventListener('focus', this._maintainFocus, true);
+        document.removeEventListener('keydown', this._bindKeypress);
+
+        // Remove overlay class to document body.
+        document.getElementsByTagName('html')[0].classList.remove('sui-has-overlay');
+
+
+        return this;
+    };
+
+    /**
+     * Destroy the current instance (after making sure the dialog has been hidden)
+     * and remove all associated listeners from dialog openers and closers
+     *
+     * @return {this}
+     */
+    A11yDialog.prototype.destroy = function () {
+        // Hide the dialog to avoid destroying an open instance
+        this.hide();
+
+        // Remove the click event listener from all dialog openers
+        this._openers.forEach(function (opener) {
+            opener.removeEventListener('click', this._show);
+        }.bind(this));
+
+        // Remove the click event listener from all dialog closers
+        this._closers.forEach(function (closer) {
+            closer.removeEventListener('click', this._hide);
+        }.bind(this));
+
+        // Execute all callbacks registered for the `destroy` event
+        this._fire('destroy');
+
+        // Keep an object of listener types mapped to callback functions
+        this._listeners = {};
+
+        return this;
+    };
+
+    /**
+     * Register a new callback for the given event type
+     *
+     * @param {string} type
+     * @param {Function} handler
+     */
+    A11yDialog.prototype.on = function (type, handler) {
+        if (typeof this._listeners[type] === 'undefined') {
+            this._listeners[type] = [];
+        }
+
+        this._listeners[type].push(handler);
+
+        return this;
+    };
+
+    /**
+     * Unregister an existing callback for the given event type
+     *
+     * @param {string} type
+     * @param {Function} handler
+     */
+    A11yDialog.prototype.off = function (type, handler) {
+        var index = this._listeners[type].indexOf(handler);
+
+        if (index > -1) {
+            this._listeners[type].splice(index, 1);
+        }
+
+        return this;
+    };
+
+    /**
+     * Iterate over all registered handlers for given type and call them all with
+     * the dialog element as first argument, event as second argument (if any).
+     *
+     * @access private
+     * @param {string} type
+     * @param {Event} event
+     */
+    A11yDialog.prototype._fire = function (type, event) {
+        var listeners = this._listeners[type] || [];
+
+        listeners.forEach(function (listener) {
+            listener(this.node, event);
+        }.bind(this));
+    };
+
+    /**
+     * Private event handler used when listening to some specific key presses
+     * (namely ESCAPE and TAB)
+     *
+     * @access private
+     * @param {Event} event
+     */
+    A11yDialog.prototype._bindKeypress = function (event) {
+        // If the dialog is shown and the ESCAPE key is being pressed, prevent any
+        // further effects from the ESCAPE key and hide the dialog
+        if (this.shown && event.which === ESCAPE_KEY) {
+            event.preventDefault();
+            this.hide();
+        }
+
+        // If the dialog is shown and the TAB key is being pressed, make sure the
+        // focus stays trapped within the dialog element
+        if (this.shown && event.which === TAB_KEY) {
+            trapTabKey(this.node, event);
+        }
+    };
+
+    /**
+     * Private event handler used when making sure the focus stays within the
+     * currently open dialog
+     *
+     * @access private
+     * @param {Event} event
+     */
+    A11yDialog.prototype._maintainFocus = function (event) {
+        // If the dialog is shown and the focus is not within the dialog element,
+        // move it back to its first focusable child
+        if (this.shown && !this.node.contains(event.target)) {
+            setFocusToFirstItem(this.node);
+        }
+    };
+
+    /**
+     * Convert a NodeList into an array
+     *
+     * @param {NodeList} collection
+     * @return {Array<Element>}
+     */
+    function toArray(collection) {
+        return Array.prototype.slice.call(collection);
     }
 
-
-    var overlay = this.node.getElementsByClassName('sui-dialog-overlay');
-
-    var content = this.node.getElementsByClassName('sui-dialog-content');
-
-    content[0].className = 'sui-dialog-content sui-bounce-out';
-
-    overlay[0].className = 'sui-dialog-overlay sui-fade-out';
-
-    this.shown = false;
-    // This has been set so there is enough time for the animation to show
-    var timeout_node = this.node;
-    setTimeout(function () {
-		timeout_node.setAttribute('aria-hidden', 'true');
-	}, 300);
-
-    // Iterate over the targets to enable them by remove their `aria-hidden`
-    // attribute or resetting them to their initial value
-    this._targets.forEach(function (target) {
-      var original = target.getAttribute('data-a11y-dialog-original');
-
-
-      if (original) {
-        target.setAttribute('aria-hidden', original);
-        target.removeAttribute('data-a11y-dialog-original');
-      } else {
-        target.removeAttribute('aria-hidden');
-      }
-    });
-
-    // If their was a focused element before the dialog was opened, restore the
-    // focus back to it
-    if (focusedBeforeDialog) {
-      focusedBeforeDialog.focus();
+    /**
+     * Query the DOM for nodes matching the given selector, scoped to context (or
+     * the whole document)
+     *
+     * @param {String} selector
+     * @param {Element} [context = document]
+     * @return {Array<Element>}
+     */
+    function $$(selector, context) {
+        return toArray((context || document).querySelectorAll(selector));
     }
 
-    // Remove the focus event listener to the body element and stop listening
-    // for specific key presses
-    document.body.removeEventListener('focus', this._maintainFocus, true);
-    document.removeEventListener('keydown', this._bindKeypress);
+    /**
+     * Return an array of Element based on given argument (NodeList, Element or
+     * string representing a selector)
+     *
+     * @param {(NodeList | Element | string)} target
+     * @return {Array<Element>}
+     */
+    function collect(target) {
+        if (NodeList.prototype.isPrototypeOf(target)) {
+            return toArray(target);
+        }
 
-    // Remove overlay class to document body.
-    document.getElementsByTagName( 'html' )[0].classList.remove( 'sui-has-overlay' );
+        if (Element.prototype.isPrototypeOf(target)) {
+            return [target];
+        }
 
-    // Execute all callbacks registered for the `hide` event
-    this._fire('hide', event);
-
-    return this;
-  };
-
-  /**
-   * Destroy the current instance (after making sure the dialog has been hidden)
-   * and remove all associated listeners from dialog openers and closers
-   *
-   * @return {this}
-   */
-  A11yDialog.prototype.destroy = function () {
-    // Hide the dialog to avoid destroying an open instance
-    this.hide();
-
-    // Remove the click event listener from all dialog openers
-    this._openers.forEach(function (opener) {
-      opener.removeEventListener('click', this._show);
-    }.bind(this));
-
-    // Remove the click event listener from all dialog closers
-    this._closers.forEach(function (closer) {
-      closer.removeEventListener('click', this._hide);
-    }.bind(this));
-
-    // Execute all callbacks registered for the `destroy` event
-    this._fire('destroy');
-
-    // Keep an object of listener types mapped to callback functions
-    this._listeners = {};
-
-    return this;
-  };
-
-  /**
-   * Register a new callback for the given event type
-   *
-   * @param {string} type
-   * @param {Function} handler
-   */
-  A11yDialog.prototype.on = function (type, handler) {
-    if (typeof this._listeners[type] === 'undefined') {
-      this._listeners[type] = [];
+        if (typeof target === 'string') {
+            return $$(target);
+        }
     }
 
-    this._listeners[type].push(handler);
+    /**
+     * Set the focus to the first focusable child of the given element
+     *
+     * @param {Element} node
+     */
+    function setFocusToFirstItem(node) {
+        var focusableChildren = getFocusableChildren(node);
 
-    return this;
-  };
-
-  /**
-   * Unregister an existing callback for the given event type
-   *
-   * @param {string} type
-   * @param {Function} handler
-   */
-  A11yDialog.prototype.off = function (type, handler) {
-    var index = this._listeners[type].indexOf(handler);
-
-    if (index > -1) {
-      this._listeners[type].splice(index, 1);
+        if (focusableChildren.length) {
+            focusableChildren[0].focus();
+        }
     }
 
-    return this;
-  };
-
-  /**
-   * Iterate over all registered handlers for given type and call them all with
-   * the dialog element as first argument, event as second argument (if any).
-   *
-   * @access private
-   * @param {string} type
-   * @param {Event} event
-   */
-  A11yDialog.prototype._fire = function (type, event) {
-    var listeners = this._listeners[type] || [];
-
-    listeners.forEach(function (listener) {
-      listener(this.node, event);
-    }.bind(this));
-  };
-
-  /**
-   * Private event handler used when listening to some specific key presses
-   * (namely ESCAPE and TAB)
-   *
-   * @access private
-   * @param {Event} event
-   */
-  A11yDialog.prototype._bindKeypress = function (event) {
-    // If the dialog is shown and the ESCAPE key is being pressed, prevent any
-    // further effects from the ESCAPE key and hide the dialog
-    if (this.shown && event.which === ESCAPE_KEY) {
-      event.preventDefault();
-      this.hide();
+    /**
+     * Get the focusable children of the given element
+     *
+     * @param {Element} node
+     * @return {Array<Element>}
+     */
+    function getFocusableChildren(node) {
+        return $$(FOCUSABLE_ELEMENTS.join(','), node).filter(function (child) {
+            return !!(child.offsetWidth || child.offsetHeight || child.getClientRects().length);
+        });
     }
 
-    // If the dialog is shown and the TAB key is being pressed, make sure the
-    // focus stays trapped within the dialog element
-    if (this.shown && event.which === TAB_KEY) {
-      trapTabKey(this.node, event);
-    }
-  };
+    /**
+     * Trap the focus inside the given element
+     *
+     * @param {Element} node
+     * @param {Event} event
+     */
+    function trapTabKey(node, event) {
+        var focusableChildren = getFocusableChildren(node);
+        var focusedItemIndex = focusableChildren.indexOf(document.activeElement);
 
-  /**
-   * Private event handler used when making sure the focus stays within the
-   * currently open dialog
-   *
-   * @access private
-   * @param {Event} event
-   */
-  A11yDialog.prototype._maintainFocus = function (event) {
-    // If the dialog is shown and the focus is not within the dialog element,
-    // move it back to its first focusable child
-    if (this.shown && !this.node.contains(event.target)) {
-      setFocusToFirstItem(this.node);
-    }
-  };
-
-  /**
-   * Convert a NodeList into an array
-   *
-   * @param {NodeList} collection
-   * @return {Array<Element>}
-   */
-  function toArray (collection) {
-    return Array.prototype.slice.call(collection);
-  }
-
-  /**
-   * Query the DOM for nodes matching the given selector, scoped to context (or
-   * the whole document)
-   *
-   * @param {String} selector
-   * @param {Element} [context = document]
-   * @return {Array<Element>}
-   */
-  function $$ (selector, context) {
-    return toArray((context || document).querySelectorAll(selector));
-  }
-
-  /**
-   * Return an array of Element based on given argument (NodeList, Element or
-   * string representing a selector)
-   *
-   * @param {(NodeList | Element | string)} target
-   * @return {Array<Element>}
-   */
-  function collect (target) {
-    if (NodeList.prototype.isPrototypeOf(target)) {
-      return toArray(target);
+        // If the SHIFT key is being pressed while tabbing (moving backwards) and
+        // the currently focused item is the first one, move the focus to the last
+        // focusable item from the dialog element
+        if (event.shiftKey && focusedItemIndex === 0) {
+            focusableChildren[focusableChildren.length - 1].focus();
+            event.preventDefault();
+            // If the SHIFT key is not being pressed (moving forwards) and the currently
+            // focused item is the last one, move the focus to the first focusable item
+            // from the dialog element
+        } else if (!event.shiftKey && focusedItemIndex === focusableChildren.length - 1) {
+            focusableChildren[0].focus();
+            event.preventDefault();
+        }
     }
 
-    if (Element.prototype.isPrototypeOf(target)) {
-      return [target];
+    /**
+     * Retrieve siblings from given element
+     *
+     * @param {Element} node
+     * @return {Array<Element>}
+     */
+    function getSiblings(node) {
+        var nodes = toArray(node.parentNode.childNodes);
+        var siblings = nodes.filter(function (node) {
+            return node.nodeType === 1;
+        });
+
+        siblings.splice(siblings.indexOf(node), 1);
+
+        return siblings;
     }
 
-    if (typeof target === 'string') {
-      return $$(target);
+    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+        module.exports = A11yDialog;
+    } else if (typeof define === 'function' && define.amd) {
+        define('A11yDialog', [], function () {
+            return A11yDialog;
+        });
+    } else if (typeof global === 'object') {
+        global.A11yDialog = A11yDialog;
     }
-  }
-
-  /**
-   * Set the focus to the first focusable child of the given element
-   *
-   * @param {Element} node
-   */
-  function setFocusToFirstItem (node) {
-    var focusableChildren = getFocusableChildren(node);
-
-    if (focusableChildren.length) {
-      focusableChildren[0].focus();
-    }
-  }
-
-  /**
-   * Get the focusable children of the given element
-   *
-   * @param {Element} node
-   * @return {Array<Element>}
-   */
-  function getFocusableChildren (node) {
-    return $$(FOCUSABLE_ELEMENTS.join(','), node).filter(function (child) {
-      return !!(child.offsetWidth || child.offsetHeight || child.getClientRects().length);
-    });
-  }
-
-  /**
-   * Trap the focus inside the given element
-   *
-   * @param {Element} node
-   * @param {Event} event
-   */
-  function trapTabKey (node, event) {
-    var focusableChildren = getFocusableChildren(node);
-    var focusedItemIndex = focusableChildren.indexOf(document.activeElement);
-
-    // If the SHIFT key is being pressed while tabbing (moving backwards) and
-    // the currently focused item is the first one, move the focus to the last
-    // focusable item from the dialog element
-    if (event.shiftKey && focusedItemIndex === 0) {
-      focusableChildren[focusableChildren.length - 1].focus();
-      event.preventDefault();
-    // If the SHIFT key is not being pressed (moving forwards) and the currently
-    // focused item is the last one, move the focus to the first focusable item
-    // from the dialog element
-    } else if (!event.shiftKey && focusedItemIndex === focusableChildren.length - 1) {
-      focusableChildren[0].focus();
-      event.preventDefault();
-    }
-  }
-
-  /**
-   * Retrieve siblings from given element
-   *
-   * @param {Element} node
-   * @return {Array<Element>}
-   */
-  function getSiblings (node) {
-    var nodes = toArray(node.parentNode.childNodes);
-    var siblings = nodes.filter(function (node) {
-      return node.nodeType === 1;
-    });
-
-    siblings.splice(siblings.indexOf(node), 1);
-
-    return siblings;
-  }
-
-  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = A11yDialog;
-  } else if (typeof define === 'function' && define.amd) {
-    define('A11yDialog', [], function () {
-      return A11yDialog;
-    });
-  } else if (typeof global === 'object') {
-    global.A11yDialog = A11yDialog;
-  }
 }(typeof global !== 'undefined' ? global : window));
 
 ( function( $ ) {
@@ -569,9 +569,9 @@
 		return this;
 	};
 
-	if ( 0 !== $( '.sui-2-3-15 .sui-accordion' ).length ) {
+	if ( 0 !== $( '.sui-2-3-22 .sui-accordion' ).length ) {
 
-		$( '.sui-2-3-15 .sui-accordion' ).each( function() {
+		$( '.sui-2-3-22 .sui-accordion' ).each( function() {
 			SUI.suiAccordion( this );
 		});
 	}
@@ -1644,7 +1644,7 @@
     SUI.suiCodeSnippet = function( ) {
 
         // Convert all code snippet.
-        $( '.sui-2-3-15 .sui-code-snippet:not(.sui-no-copy)' ).each( function() {
+        $( '.sui-2-3-22 .sui-code-snippet:not(.sui-no-copy)' ).each( function() {
 
             // backward compat of instantiate new accordion
             $( this ).SUICodeSnippet({});
@@ -1668,11 +1668,370 @@
 		window.SUI = {};
 	}
 
+	SUI.sliderBack = function( el ) {
+
+		var slider = $( el ),
+			dialog = slider.closest( '.sui-dialog' ),
+			slides = slider.find( '.sui-slider-content > li' )
+			;
+
+		var navigation = slider.find( '.sui-slider-navigation' ),
+			navButtons = navigation.find( 'button' ),
+			btnBack    = navigation.find( '.sui-prev' ),
+			btnNext    = navigation.find( '.sui-next' )
+			;
+
+		if ( ! dialog.hasClass( 'sui-dialog-onboard' ) ) {
+			return;
+		}
+
+		function init() {
+
+			var currSlide = slider.find( '.sui-slider-content > li.sui-current' ),
+				prevSlide = currSlide.prev()
+				;
+
+			if ( ! prevSlide.length ) {
+
+				if ( slider.hasClass( 'sui-infinite' ) ) {
+
+					prevSlide = slider.find( '.sui-slider-content > li:last' );
+
+					currSlide.removeClass( 'sui-current' );
+					currSlide.removeClass( 'sui-loaded' );
+
+					prevSlide.addClass( 'sui-current' );
+					prevSlide.addClass( 'fadeInLeft' );
+
+					navButtons.prop( 'disabled', true );
+
+					setTimeout( function() {
+						prevSlide.addClass( 'sui-loaded' );
+						prevSlide.removeClass( 'fadeInLeft' );
+					}, 600 );
+
+					setTimeout( function() {
+						navButtons.prop( 'disabled', false );
+					}, 650 );
+				}
+
+			} else {
+
+				currSlide.removeClass( 'sui-current' );
+				currSlide.removeClass( 'sui-loaded' );
+
+				prevSlide.addClass( 'sui-current' );
+				prevSlide.addClass( 'fadeInLeft' );
+
+				navButtons.prop( 'disabled', true );
+
+				if ( ! slider.hasClass( 'sui-infinite' ) ) {
+
+					btnNext.removeClass( 'sui-hidden' );
+
+					if ( slides.first().data( 'slide' ) === prevSlide.data( 'slide' ) ) {
+						btnBack.addClass( 'sui-hidden' );
+					}
+				}
+
+				setTimeout( function() {
+					prevSlide.addClass( 'sui-loaded' );
+					prevSlide.removeClass( 'fadeInLeft' );
+				}, 600 );
+
+				setTimeout( function() {
+					navButtons.prop( 'disabled', false );
+				}, 650 );
+			}
+		}
+
+		init();
+
+		return this;
+	};
+
+	SUI.sliderNext = function( el ) {
+
+		var slider = $( el ),
+			dialog = slider.closest( '.sui-dialog' ),
+			slides = slider.find( '.sui-slider-content > li' )
+			;
+
+		var navigation = slider.find( '.sui-slider-navigation' ),
+			navButtons = navigation.find( 'button' ),
+			btnBack    = navigation.find( '.sui-prev' ),
+			btnNext    = navigation.find( '.sui-next' )
+			;
+
+		if ( ! dialog.hasClass( 'sui-dialog-onboard' ) ) {
+			return;
+		}
+
+		function init() {
+
+			var currSlide = slider.find( '.sui-slider-content > li.sui-current' ),
+				nextSlide = currSlide.next()
+				;
+
+			if ( ! nextSlide.length ) {
+
+				if ( slider.hasClass( 'sui-infinite' ) ) {
+
+					nextSlide = slider.find( '.sui-slider-content > li:first' );
+
+					currSlide.removeClass( 'sui-current' );
+					currSlide.removeClass( 'sui-loaded' );
+
+					nextSlide.addClass( 'sui-current' );
+					nextSlide.addClass( 'fadeInRight' );
+
+					navButtons.prop( 'disabled', true );
+
+					setTimeout( function() {
+						nextSlide.addClass( 'sui-loaded' );
+						nextSlide.removeClass( 'fadeInRight' );
+					}, 600 );
+
+					setTimeout( function() {
+						navButtons.prop( 'disabled', false );
+					}, 650 );
+
+				}
+
+			} else {
+
+				currSlide.removeClass( 'sui-current' );
+				currSlide.removeClass( 'sui-loaded' );
+
+				nextSlide.addClass( 'sui-current' );
+				nextSlide.addClass( 'fadeInRight' );
+
+				navButtons.prop( 'disabled', true );
+
+				if ( ! slider.hasClass( 'sui-infinite' ) ) {
+
+					btnBack.removeClass( 'sui-hidden' );
+
+					if ( slides.length === nextSlide.data( 'slide' ) ) {
+						btnNext.addClass( 'sui-hidden' );
+					}
+				}
+
+				setTimeout( function() {
+					nextSlide.addClass( 'sui-loaded' );
+					nextSlide.removeClass( 'fadeInRight' );
+				}, 600 );
+
+				setTimeout( function() {
+					navButtons.prop( 'disabled', false );
+				}, 650 );
+
+			}
+		}
+
+		init();
+
+		return this;
+	};
+
+	SUI.sliderStep = function( el ) {
+
+		var slider = $( el ),
+			dialog = slider.closest( '.sui-dialog' )
+			;
+
+		var slides = slider.find( '.sui-slider-content' ),
+			slide  = slides.find( '> li' )
+			;
+
+		var steps  = slider.find( '.sui-slider-steps' ),
+			step   = steps.find( 'li' ),
+			button = step.find( 'button' )
+			;
+
+		var navigation = slider.find( '.sui-slider-navigation' ),
+			navButtons = navigation.find( 'button' ),
+			navBack    = navigation.find( '.sui-prev' ),
+			navNext    = navigation.find( '.sui-next' )
+			;
+
+		if ( ! dialog.hasClass( 'sui-dialog-onboard' ) && ! steps.hasClass( 'sui-clickable' ) ) {
+			return;
+		}
+
+		function reset() {
+
+			// Remove current class
+			slide.removeClass( 'sui-current' );
+
+			// Remove loaded state
+			slide.removeClass( 'sui-loaded' );
+
+		}
+
+		function load( element ) {
+
+			var button  = $( element ),
+				index   = button.data( 'slide' )
+				;
+
+			var curSlide = button.closest( 'li[data-slide]' ),
+				newSlide  = slides.find( '> li[data-slide="' + index + '"]' )
+				;
+
+			newSlide.addClass( 'sui-current' );
+
+			if ( curSlide.data( 'slide' ) < newSlide.data( 'slide' ) ) {
+				newSlide.addClass( 'fadeInRight' );
+			} else {
+				newSlide.addClass( 'fadeInLeft' );
+			}
+
+			navButtons.prop( 'disabled', true );
+
+			if ( ! slider.hasClass( 'sui-infinite' ) ) {
+
+				if ( 1 === newSlide.data( 'slide' ) ) {
+					navBack.addClass( 'sui-hidden' );
+					navNext.removeClass( 'sui-hidden' );
+				}
+
+				if ( slide.length === newSlide.data( 'slide' ) ) {
+					navBack.removeClass( 'sui-hidden' );
+					navNext.addClass( 'sui-hidden' );
+				}
+			}
+
+			setTimeout( function() {
+
+				newSlide.addClass( 'sui-loaded' );
+
+				if ( curSlide.data( 'slide' ) < newSlide.data( 'slide' ) ) {
+					newSlide.removeClass( 'fadeInRight' );
+				} else {
+					newSlide.removeClass( 'fadeInLeft' );
+				}
+			}, 600 );
+
+			setTimeout( function() {
+				navButtons.prop( 'disabled', false );
+			}, 650 );
+		}
+
+		function init() {
+
+			if ( button.length ) {
+
+				button.on( 'click', function( e ) {
+
+					reset();
+
+					load( this );
+
+					e.preventDefault();
+					e.stopPropagation();
+
+				});
+			}
+		}
+
+		init();
+
+		return this;
+	};
+
+	SUI.dialogSlider = function( el ) {
+
+		var slider   = $( el ),
+			dialog   = slider.closest( '.sui-dialog' ),
+			btnBack  = slider.find( '.sui-slider-navigation .sui-prev' ),
+			btnNext  = slider.find( '.sui-slider-navigation .sui-next' ),
+			tourBack = slider.find( '*[data-a11y-dialog-tour-back]' ),
+			tourNext = slider.find( '*[data-a11y-dialog-tour-next]' ),
+			steps    = slider.find( '.sui-slider-steps' )
+			;
+
+		if ( ! dialog.hasClass( 'sui-dialog-onboard' ) || slider.hasClass( 'sui-slider-off' ) ) {
+			return;
+		}
+
+		function init() {
+
+			if ( btnBack.length ) {
+
+				btnBack.on( 'click', function( e ) {
+
+					SUI.sliderBack( slider );
+
+					e.preventDefault();
+
+				});
+			}
+
+			if ( tourBack.length ) {
+
+				tourBack.on( 'click', function( e ) {
+
+					SUI.sliderBack( slider );
+
+					e.preventDefault();
+
+				});
+			}
+
+			if ( btnNext.length ) {
+
+				btnNext.on( 'click', function( e ) {
+
+					SUI.sliderNext( slider );
+
+					e.preventDefault();
+
+				});
+			}
+
+			if ( tourNext.length ) {
+
+				tourNext.on( 'click', function( e ) {
+
+					SUI.sliderNext( slider );
+
+					e.preventDefault();
+
+				});
+			}
+
+			if ( steps.length ) {
+				SUI.sliderStep( slider );
+			}
+		}
+
+		init();
+
+		return this;
+	};
+
+	$( '.sui-2-3-22 .sui-slider' ).each( function() {
+		SUI.dialogSlider( this );
+	});
+
+}( jQuery ) );
+
+( function( $ ) {
+
+	// Enable strict mode.
+	'use strict';
+
+	// Define global SUI object if it doesn't exist.
+	if ( 'object' !== typeof window.SUI ) {
+		window.SUI = {};
+	}
+
 	SUI.linkDropdown = function() {
 
 		function closeAllDropdowns( $except ) {
 
-			var $dropdowns = $( '.sui-2-3-15 .sui-dropdown' );
+			var $dropdowns = $( '.sui-2-3-22 .sui-dropdown' );
 
 			if ( $except ) {
 				$dropdowns = $dropdowns.not( $except );
@@ -1699,7 +2058,7 @@
 
 		$( 'body' ).mouseup( function( e ) {
 
-			var $anchor = $( '.sui-2-3-15 .sui-dropdown-anchor' );
+			var $anchor = $( '.sui-2-3-22 .sui-dropdown-anchor' );
 
 			if ( ( ! $anchor.is( e.target ) ) && ( 0 === $anchor.has( e.target ).length ) ) {
 				closeAllDropdowns();
@@ -1710,6 +2069,20 @@
 	};
 
 	SUI.linkDropdown();
+
+}( jQuery ) );
+
+// This file is to be used for fixing up issues with IE11.
+
+( function( $ ) {
+
+    var colorpickers = $( '.sui-colorpicker-wrap' );
+
+    // If IE11 remove SUI colorpicker styles.
+    if ( !! navigator.userAgent.match( /Trident\/7\./ ) && colorpickers[0]) {
+        colorpickers.find( '.sui-colorpicker' ).hide();
+        colorpickers.removeClass( 'sui-colorpicker-wrap' );
+    }
 
 }( jQuery ) );
 
@@ -1739,9 +2112,9 @@
 ( function( $ ) {
 
 	// This will auto hide the top notice if the classes .sui-can-dismiss or .sui-cant-dismiss aren't present.
-	$( '.sui-2-3-15 .sui-notice-top:not(.sui-can-dismiss, .sui-cant-dismiss)' ).delay( 3000 ).slideUp( 'slow' );
+	$( '.sui-2-3-22 .sui-notice-top:not(.sui-can-dismiss, .sui-cant-dismiss)' ).delay( 3000 ).slideUp( 'slow' );
 
-	$( '.sui-2-3-15 .sui-notice-dismiss' ).click( function( e ) {
+	$( '.sui-2-3-22 .sui-notice-dismiss' ).click( function( e ) {
 		e.preventDefault();
 
         $( this ).parent().stop().slideUp( 'slow' );
@@ -1763,7 +2136,7 @@
 
 	SUI.showHidePassword = function() {
 
-		$( '.sui-2-3-15 .sui-form-field' ).each( function() {
+		$( '.sui-2-3-22 .sui-form-field' ).each( function() {
 
 			var $this = $( this );
 
@@ -1827,7 +2200,7 @@
 		$( el ).prepend( svg ).addClass( 'loaded' ).find( 'circle:last-child' ).css( 'animation', 'sui' + score + ' 3s forwards' );
 	};
 
-	$( '.sui-2-3-15 .sui-circle-score' ).each( function() {
+	$( '.sui-2-3-22 .sui-circle-score' ).each( function() {
 		SUI.loadCircleScore( this );
 	});
 
@@ -2045,7 +2418,7 @@
 	};
 
 	// Convert all select lists to fancy sui Select lists.
-	$( '.sui-2-3-15 select' ).each( function() {
+	$( '.sui-2-3-22 select:not([multiple])' ).each( function() {
 		SUI.suiSelect( this );
 	});
 
@@ -8799,7 +9172,7 @@
     };
 
 
-    if ( 0 !== $( '.sui-2-3-15 .sui-tabs' ).length ) {
+    if ( 0 !== $( '.sui-2-3-22 .sui-tabs' ).length ) {
         SUI.suiTabs();
     }
 
@@ -8817,7 +9190,7 @@
 
 	SUI.upload = function() {
 
-		$( '.sui-2-3-15 .sui-upload-group input[type="file"]' ).on( 'change', function( e ) {
+		$( '.sui-2-3-22 .sui-upload-group input[type="file"]' ).on( 'change', function( e ) {
 			var file = $( this )[0].files[0],
 				message = $( this ).find( '~ .sui-upload-message' );
 

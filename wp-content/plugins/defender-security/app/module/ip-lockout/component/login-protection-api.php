@@ -14,8 +14,10 @@ use WP_Defender\Module\IP_Lockout\Model\Settings;
 
 class Login_Protection_Api extends Component {
 	const COUNT_TOTAL = 'wdCountTotals';
-
+	
 	/**
+	 * This function will be called when
+	 *
 	 * @param Log_Model $log
 	 * @param bool $force
 	 */
@@ -24,29 +26,29 @@ class Login_Protection_Api extends Component {
 		$model = IP_Model::findOne( array(
 			'ip' => $log->ip
 		) );
-
+		
 		if ( is_object( $model ) && $model->status == IP_Model::STATUS_BLOCKED ) {
 			//already locked, just return
 			return;
 		}
-
+		
 		$settings = Settings::instance();
 		//find backward from log date, if there are only log & counter > max attempt, then lock
-		$after = strtotime( '-' . $settings->login_protection_lockout_timeframe . ' ' . $settings->login_protection_lockout_duration_unit );
+		$after = strtotime( '-' . $settings->login_protection_lockout_timeframe . ' seconds' );
 		if ( is_object( $model ) ) {
 			//recal release time, if after time smaller than lock time,then we will use last locktime for check
 			if ( $after < $model->lock_time ) {
 				$after = $model->lock_time;
 			}
 		}
-
+		
 		$attempt = Log_Model::count( array(
 			'ip'      => $log->ip,
 			'type'    => Log_Model::AUTH_FAIL,
 			'blog_id' => get_current_blog_id(),
 			'date'    => array( 'compare' => '>', 'value' => $after )
 		) );
-
+		
 		if ( ! is_object( $model ) ) {
 			//no record, create one
 			$model         = new IP_Model();
@@ -56,7 +58,7 @@ class Login_Protection_Api extends Component {
 		$model->attempt = $attempt;
 		if ( $model->attempt >= $settings->login_protection_login_attempt || $force == true ) {
 			$model->status       = IP_Model::STATUS_BLOCKED;
-			$model->release_time = strtotime( '+ ' . $settings->login_protection_lockout_duration . ' seconds' );
+			$model->release_time = strtotime( '+ ' . $settings->login_protection_lockout_duration . ' ' . $settings->login_protection_lockout_duration_unit );
 			if ( $blacklist && $force ) {
 				$model->lockout_message = esc_html__( "You have been locked out by the administrator for attempting to login with a banned username", "defender-security" );
 			} else {
@@ -82,14 +84,14 @@ class Login_Protection_Api extends Component {
 			if ( $settings->login_protection_lockout_ban || $blacklist ) {
 				$settings->addIpToList( $model->ip, 'blacklist' );
 			}
-
+			
 			//trigger an action
 			do_action( 'wd_login_lockout', $model, $force, $blacklist );
 		} else {
 			$model->save();
 		}
 	}
-
+	
 	/**
 	 * @param Log_Model $log
 	 */
@@ -98,16 +100,16 @@ class Login_Protection_Api extends Component {
 		$model = IP_Model::findOne( array(
 			'ip' => $log->ip
 		) );
-
+		
 		if ( is_object( $model ) && $model->status == IP_Model::STATUS_BLOCKED ) {
 			//already locked, just return
 			return;
 		}
-
+		
 		$settings = Settings::instance();
 		//find backward from log date, if there are only log & counter > max attempt, then lock
 		$after = strtotime( '- ' . $settings->detect_404_timeframe . ' seconds' );
-
+		
 		if ( is_object( $model ) ) {
 			//recal release time, if after time smaller than lock time,then we will use last locktime for check
 			if ( $after < $model->lock_time_404 ) {
@@ -123,14 +125,14 @@ class Login_Protection_Api extends Component {
 				'value'   => $after
 			)
 		) );
-
+		
 		if ( ! is_object( $model ) ) {
 			//no record, create one
 			$model         = new IP_Model();
 			$model->ip     = $log->ip;
 			$model->status = IP_Model::STATUS_NORMAL;
 		}
-
+		
 		//filter out the extension
 		$ignoresFileTypes = $settings->get404Ignorelist();
 		foreach ( $logs as $k => $log ) {
@@ -139,11 +141,11 @@ class Login_Protection_Api extends Component {
 				unset( $logs[ $k ] );
 			}
 		}
-
+		
 		if ( count( $logs ) >= $settings->detect_404_threshold ) {
 			//we need to check the extension
 			$model->status          = IP_Model::STATUS_BLOCKED;
-			$model->release_time    = strtotime( '+ ' . $settings->detect_404_lockout_duration . ' seconds' );
+			$model->release_time    = strtotime( '+ ' . $settings->detect_404_lockout_duration . ' ' . $settings->detect_404_lockout_duration_unit );
 			$model->lockout_message = $settings->detect_404_lockout_message;
 			$model->lock_time_404   = time();
 			$model->save();
@@ -164,12 +166,12 @@ class Login_Protection_Api extends Component {
 			do_action( 'wd_404_lockout', $model, $uri, $isBlacklist );
 		}
 	}
-
+	
 	/**
 	 * @param null $time - unix timestamp
 	 *
-	 * @deprecated
 	 * @return int
+	 * @deprecated
 	 */
 	public static function get404Lockouts( $time = null ) {
 		$logs = Log_Model::count( array(
@@ -179,15 +181,15 @@ class Login_Protection_Api extends Component {
 				'value'   => $time
 			)
 		) );
-
+		
 		return $logs;
 	}
-
+	
 	/**
 	 * @param null $time - unix timestamp
 	 *
-	 * @deprecated
 	 * @return int
+	 * @deprecated
 	 */
 	public static function getLoginLockouts( $time = null ) {
 		$logs = Log_Model::count( array(
@@ -197,15 +199,15 @@ class Login_Protection_Api extends Component {
 				'value'   => $time
 			)
 		) );
-
+		
 		return $logs;
 	}
-
+	
 	/**
 	 * @param null $time - unix timestamp
 	 *
-	 * @deprecated
 	 * @return int
+	 * @deprecated
 	 */
 	public static function getAllLockouts( $time = null ) {
 		$logs = Log_Model::count( array(
@@ -218,10 +220,10 @@ class Login_Protection_Api extends Component {
 				'value'   => $time
 			)
 		) );
-
+		
 		return $logs;
 	}
-
+	
 	/**
 	 * @return Log_Model
 	 * @deprecated
@@ -237,10 +239,10 @@ class Login_Protection_Api extends Component {
 		if ( is_object( $log ) ) {
 			return $log;
 		}
-
+		
 		return null;
 	}
-
+	
 	public static function time_since( $since ) {
 		$since = time() - $since;
 		if ( $since < 0 ) {
@@ -255,7 +257,7 @@ class Login_Protection_Api extends Component {
 			array( 60, esc_html__( "minute" ) ),
 			array( 1, esc_html__( "second" ) )
 		);
-
+		
 		for ( $i = 0, $j = count( $chunks ); $i < $j; $i ++ ) {
 			$seconds = $chunks[ $i ][0];
 			$name    = $chunks[ $i ][1];
@@ -263,12 +265,12 @@ class Login_Protection_Api extends Component {
 				break;
 			}
 		}
-
+		
 		$print = ( $count == 1 ) ? '1 ' . $name : "$count {$name}s";
-
+		
 		return $print;
 	}
-
+	
 	/**
 	 * @return string
 	 */
@@ -277,7 +279,7 @@ class Login_Protection_Api extends Component {
 		$settings  = Settings::instance();
 		$blacklist = $settings->getIpBlacklist();
 		$whitelist = $settings->getIpWhitelist();
-
+		
 		$ip    = Utils::instance()->getUserIp();
 		$nonce = wp_create_nonce( 'lockoutIPAction' );
 		if ( $ip != $log->ip ) {
@@ -287,16 +289,16 @@ class Login_Protection_Api extends Component {
 				$links[] = '<a data-nonce="' . $nonce . '" class="ip-action sui-button sui-button-blue" data-type="unblacklist" data-id="' . esc_attr( $log->id ) . '" data-ip="' . esc_attr( $log->ip ) . '" href="#">' . __( "Unban IP", "defender-security" ) . '</a>';
 			}
 		}
-
+		
 		if ( ! in_array( $log->ip, $whitelist ) ) {
 			$links[] = '<a data-nonce="' . $nonce . '" class="ip-action sui-button sui-button-ghost" data-type="whitelist" data-id="' . esc_attr( $log->id ) . '" data-ip="' . esc_attr( $log->ip ) . '" href="#"><i class="sui-icon-check-tick" aria-hidden="true"></i>' . __( "Add Whitelist", "defender-security" ) . '</a>';
 		} else {
 			$links[] = '<a data-nonce="' . $nonce . '" class="ip-action sui-button sui-button-ghost" data-type="unwhitelist" data-id="' . esc_attr( $log->id ) . '" data-ip="' . esc_attr( $log->ip ) . '" href="#">' . __( "Unwhitelist", "defender-security" ) . '</a>';
 		}
-
+		
 		return implode( '', $links );
 	}
-
+	
 	/**
 	 * Validate import file is in right format and usable for IP Lockout
 	 *
@@ -308,34 +310,33 @@ class Login_Protection_Api extends Component {
 		$fp   = fopen( $file, 'r' );
 		$data = array();
 		while ( ( $line = fgetcsv( $fp ) ) !== false ) {
-
 			if ( count( $line ) != 2 ) {
 				return false;
 			}
-
+			
 			if ( ! in_array( $line[1], array( 'whitelist', 'blacklist' ) ) ) {
 				return false;
 			}
-
+			
 			if ( Settings::instance()->validateIp( $line[0] ) == false ) {
-				return false;
+				continue;
 			}
-
+			
 			$data[] = $line;
-
+			
 		}
 		fclose( $fp );
-
+		
 		return $data;
 	}
-
+	
 	/**
 	 * @return bool
 	 */
 	public static function isActive() {
 		return Settings::instance()->login_protection && Settings::instance()->detect_404;
 	}
-
+	
 	/**
 	 * @param bool $clearCron
 	 *
@@ -363,7 +364,7 @@ class Login_Protection_Api extends Component {
 				$nextTimeString = date( 'Y-m-d', strtotime( $settings->report_day . ' next month' ) ) . ' ' . $settings->report_time . ':00';
 				break;
 		}
-
+		
 		$toUTC = Utils::instance()->localToUtc( $timeString );
 		if ( $toUTC <= time() ) {
 			if ( $utc ) {
@@ -379,7 +380,7 @@ class Login_Protection_Api extends Component {
 			}
 		}
 	}
-
+	
 	/**
 	 * Check if useragent is looks like from google
 	 *
@@ -396,14 +397,14 @@ class Login_Protection_Api extends Component {
 		} else {
 			$userAgent = strtolower( $userAgent );
 		}
-
+		
 		if ( stristr( $userAgent, 'googlebot' ) !== false ) {
 			return true;
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Check if IP is from google, base on https://support.google.com/webmasters/answer/80553?hl=en
 	 *
@@ -423,10 +424,10 @@ class Login_Protection_Api extends Component {
 				}
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Check if IP is from Bing, base on https://www.bing.com/webmaster/help/how-to-verify-bingbot-3905dc26
 	 *
@@ -443,10 +444,10 @@ class Login_Protection_Api extends Component {
 				}
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	public static function isBingUA( $userAgent = '' ) {
 		if ( empty( $userAgent ) ) {
 			$userAgent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : null;
@@ -458,14 +459,14 @@ class Login_Protection_Api extends Component {
 		}
 		//MSN Bot Useragent https://www.bing.com/webmaster/help/which-crawlers-does-bing-use-8c184ec0
 		$msnUA = "Bingbot|MSNBot|MSNBot-Media|AdIdxBot|BingPreview";
-
+		
 		if ( preg_match( '/' . $msnUA . '/i', $userAgent ) ) {
 			return true;
 		}
-
+		
 		return false;
 	}
-
+	
 	public static function maybeSendNotification( $type, $model, $settings ) {
 		$lastSentKey = $type == 'login' ? 'lastSentLockout' : 'lastSent404';
 		$stopTimeKey = $type == 'login' ? 'stopTimeLockout' : 'stopTime404';
@@ -488,7 +489,7 @@ class Login_Protection_Api extends Component {
 			if ( $stopTime && $lastSent < $stopTime ) {
 				$lastSent = $stopTime;
 			}
-
+			
 			$count = Log_Model::count( array(
 				'type'    => $type == 'login' ? Log_Model::AUTH_LOCK : Log_Model::LOCKOUT_404,
 				'blog_id' => get_current_blog_id(),
@@ -502,16 +503,16 @@ class Login_Protection_Api extends Component {
 				$model->updateMeta( $lastSentKey, time() );
 			}
 		}
-
+		
 		return true;
 	}
-
+	
 	/**
 	 *
 	 */
 	public static function createTables() {
 		global $wpdb;
-
+		
 		$charsetCollate = $wpdb->get_charset_collate();
 		$tableName1     = $wpdb->base_prefix . 'defender_lockout';
 		$tableName2     = $wpdb->base_prefix . 'defender_lockout_log';
@@ -525,6 +526,7 @@ class Login_Protection_Api extends Component {
   `lock_time_404` int(11) DEFAULT NULL,
   `attempt` int(11) DEFAULT NULL,
   `attempt_404` int(11) DEFAULT NULL,
+  `meta` text,
   PRIMARY KEY (`id`)
 ) $charsetCollate;
 CREATE TABLE `{$tableName2}` (
@@ -535,13 +537,14 @@ CREATE TABLE `{$tableName2}` (
   `type` varchar(16) DEFAULT NULL,
   `user_agent` varchar(255) DEFAULT NULL,
   `blog_id` int(11) DEFAULT NULL,
+  `tried` VARCHAR (255),
   PRIMARY KEY (`id`)
 ) $charsetCollate;
 ";
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
 	}
-
+	
 	public static function alterTableFor171() {
 		global $wpdb;
 		$tableName1 = $wpdb->base_prefix . 'defender_lockout_log';
@@ -559,7 +562,16 @@ CREATE TABLE `{$tableName2}` (
 			$wpdb->query( $sql );
 		}
 	}
-
+	
+	/**
+	 * @return array
+	 */
+	public static function getIpsLocked() {
+		return IP_Model::findAll( array(
+			'status' => IP_Model::STATUS_BLOCKED
+		) );
+	}
+	
 	/**
 	 * @param $ip
 	 *
@@ -572,21 +584,21 @@ CREATE TABLE `{$tableName2}` (
 		if ( Settings::instance()->isBlacklist( $ip ) ) {
 			return __( "Is blacklisted", "defender-security" );
 		}
-
+		
 		$model = IP_Model::findOne( array(
 			'ip' => $ip
 		) );
 		if ( ! is_object( $model ) ) {
 			return __( "Not banned", "defender-security" );
 		}
-
+		
 		if ( $model->status == IP_Model::STATUS_BLOCKED ) {
 			return __( "Banned", "defender-security" );
 		} elseif ( $model->status == IP_Model::STATUS_NORMAL ) {
 			return __( "Not banned", "defender-security" );
 		}
 	}
-
+	
 	/**
 	 * @return bool
 	 */
@@ -598,7 +610,34 @@ CREATE TABLE `{$tableName2}` (
 		     $wpdb->get_var( "SHOW TABLES LIKE '$tableName2'" ) != $tableName2 ) {
 			return false;
 		}
-
+		
 		return true;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public static function downloadGeoIP() {
+		$url = "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz";
+		if ( ! function_exists( 'download_url' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		$tmp = download_url( $url );
+		if ( ! is_wp_error( $tmp ) ) {
+			$phar    = new \PharData( $tmp );
+			$defPath = Utils::instance()->getDefUploadDir();
+			$path    = $defPath . DIRECTORY_SEPARATOR . 'maxmind';
+			if ( ! is_dir( $path ) ) {
+				mkdir( $path );
+			}
+			$phar->extractTo( $path, null, true );
+			$settings           = Settings::instance();
+			$settings->geoIP_db = $path . DIRECTORY_SEPARATOR . $phar->current()->getFileName() . DIRECTORY_SEPARATOR . 'GeoLite2-Country.mmdb';
+			$settings->save();
+			
+			return true;
+		}
+		
+		return false;
 	}
 }

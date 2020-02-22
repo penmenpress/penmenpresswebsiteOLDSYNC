@@ -2,6 +2,7 @@
 /**
  * Author: Hoang Ngo
  */
+
 namespace WP_Defender\Module\Hardener\Component;
 
 use Hammer\Helper\WP_Helper;
@@ -9,7 +10,7 @@ use WP_Defender\Module\Hardener\Model\Settings;
 use WP_Defender\Module\Hardener\Rule;
 
 class Hide_Error extends Rule {
-	static $slug = 'hide_error';
+	static $slug = 'hide-error';
 	static $service;
 
 	function getDescription() {
@@ -29,15 +30,28 @@ class Hide_Error extends Rule {
 		return $stat;
 	}
 
+	/**
+	 * This will return the short summary why this rule show up as issue
+	 *
+	 * @return string
+	 */
+	function getErrorReason() {
+		return __( "Error debugging is currently allowed.", "defender-security" );
+	}
+
+	/**
+	 * This will return a short summary to show why this rule works
+	 * @return mixed
+	 */
+	function getSuccessReason() {
+		return __( "You've disabled all error reporting, Houston will never report a problem.", "defender-security" );
+	}
+
 	public function getTitle() {
 		return __( "Hide error reporting", "defender-security" );
 	}
 
 	function revert() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
-
 		$ret = $this->getService()->revert();
 		if ( ! is_wp_error( $ret ) ) {
 			Settings::instance()->addToIssues( self::$slug );
@@ -49,14 +63,11 @@ class Hide_Error extends Rule {
 	}
 
 	function addHooks() {
-		$this->add_action( 'processingHardener' . self::$slug, 'process' );
-		$this->add_action( 'processRevert' . self::$slug, 'revert' );
+		$this->addAction( 'processingHardener' . self::$slug, 'process' );
+		$this->addAction( 'processRevert' . self::$slug, 'revert' );
 	}
 
 	function process() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
 		$ret = $this->getService()->process();
 		if ( ! is_wp_error( $ret ) ) {
 			Settings::instance()->addToResolved( self::$slug );

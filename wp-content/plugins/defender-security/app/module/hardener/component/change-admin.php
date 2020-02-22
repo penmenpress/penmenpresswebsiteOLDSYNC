@@ -10,40 +10,54 @@ use WP_Defender\Module\Hardener\Model\Settings;
 use WP_Defender\Module\Hardener\Rule;
 
 class Change_Admin extends Rule {
-	static $slug = 'change_admin';
+	static $slug = 'replace-admin-username';
 	static $service;
-
+	
 	public function getDescription() {
 		$this->renderPartial( 'rules/change-admin' );
 	}
-
+	
+	/**
+	 * This will return the short summary why this rule show up as issue
+	 *
+	 * @return string
+	 */
+	function getErrorReason() {
+		return __( "You have a user account with the admin username.", "defender-security" );
+	}
+	
+	/**
+	 * This will return a short summary to show why this rule works
+	 * @return mixed
+	 */
+	function getSuccessReason() {
+		return __( "You don't have a user account sporting the admin username, great.", "defender-security" );
+	}
+	
 	public function check() {
 		return $this->getService()->check();
 	}
-
+	
 	public function addHooks() {
-		$this->add_action( 'processingHardener' . self::$slug, 'process' );
+		$this->addAction( 'processingHardener' . self::$slug, 'process' );
 	}
-
+	
 	public function revert() {
-		// TODO: Implement revert() method.
+	
 	}
-
+	
 	/**
 	 * @return string
 	 */
 	public function getTitle() {
 		return __( "Change default admin user account", "defender-security" );
 	}
-
+	
 	/**
 	 *
 	 */
 	public function process() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
-		$username = HTTP_Helper::retrieve_post( 'username' );
+		$username = HTTP_Helper::retrievePost( 'username' );
 		$this->getService()->setUsername( $username );
 		$ret = $this->getService()->process();
 		if ( is_wp_error( $ret ) ) {
@@ -51,15 +65,14 @@ class Change_Admin extends Rule {
 				'message' => $ret->get_error_message()
 			) );
 		} else {
-			Settings::instance()->addToResolved( self::$slug );
 			wp_send_json_success( array(
-				'message' => sprintf( __( "Your admin name has changed. You will need to <a href='%s'><strong>%s</strong></a>.<br/>This will auto reload after <span class='hardener-timer'>10</span> seconds.", "defender-security" ), wp_login_url( network_admin_url( 'admin.php?page=wdf-hardener' ) ), "re-login" ),
+				'message' => sprintf( __( "Your admin name has changed. You will need to <a href='%s'><strong>%s</strong></a>.<br/>This will auto reload after <span class='hardener-timer'>5</span> seconds.", "defender-security" ), wp_login_url( network_admin_url( 'admin.php?page=wdf-hardener' ) ), "re-login" ),
 				'reload'  => 5,
 				'url'     => wp_login_url( network_admin_url( 'admin.php?page=wdf-hardener' ) )
 			) );
 		}
 	}
-
+	
 	/**
 	 * @return Change_Admin_Service
 	 */
@@ -67,7 +80,7 @@ class Change_Admin extends Rule {
 		if ( self::$service == null ) {
 			self::$service = new Change_Admin_Service();
 		}
-
+		
 		return self::$service;
 	}
 }

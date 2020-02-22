@@ -26,8 +26,8 @@ $table->prepare_items();
 							<?php selected( 'vuln', \Hammer\Helper\HTTP_Helper::retrieve_get( 'type' ) ) ?>
                                 value="vuln"><?php _e( "Plugins/Themes Vulnerability", "defender-security" ) ?></option>
                         <option
-							<?php selected( 'code', \Hammer\Helper\HTTP_Helper::retrieve_get( 'type' ) ) ?>
-                                value="code"><?php _e( "Suspicious code", "defender-security" ) ?></option>
+							<?php selected( 'content', \Hammer\Helper\HTTP_Helper::retrieve_get( 'type' ) ) ?>
+                                value="content"><?php _e( "Suspicious code", "defender-security" ) ?></option>
                     </select>
                 </div>
             </div>

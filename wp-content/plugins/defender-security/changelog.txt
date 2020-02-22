@@ -1,16 +1,60 @@
 Plugin Name: WP Defender
 Author: Hoang Ngo, Aaron Edwards
-Tested up to: 4.7.4
+Tested up to: 5.3
 
 Change Log:
 
-2.1.1.1 - 2019-20-03
+2.2.5 - 2020-27-01
 ----------------------------------------------------------------------
-- Fix: Two-Factor Authentication QR code not being displayed on new device registration.
+- Fix: Displaying Defender pages after activating the plugin.
 
-2.1.1 - 2019-18-02
+2.2.4 - 2020-16-01
 ----------------------------------------------------------------------
-- Fix: Prevent Information Disclosure corrupts htaccess code
+- Fix: Security tweaks self ping cause performance issues.
+
+2.2.3 - 2019-27-11
+----------------------------------------------------------------------
+- Improvement: Increased the frequency of Security Tweak notifications from daily to weekly.
+- Fix: Two-Factor activate/deactivate not working as expected.
+- Fix: Defender IP Lockouts was blocking Hub services.
+- Fix: Error when bulk deletes lockout logs, without selecting any.
+- Fix: Active Translation in General Settings was not using the language that had been set.
+- Fix: The first time you setup the Blacklist location, it doesn't save.
+- Fix: Security Keys tweaks showing decimals in status.
+- Fix: Enforcing Security Header tweaks revert when you refresh the page.
+- Fix: Lockout duration in email notification now reflects the right setting instead of always in seconds.
+- Fix: Missing logs from the  Audit logging screen.
+- Remove: WordPress REST API security tweak. This feature was causing many sites to break basic functionality so we've decided to remove it.
+- Other minor enhancements and fixes
+
+2.2.1 - 2019-04-10
+----------------------------------------------------------------------
+- Fix: Upgrading from the older version disables the settings in the mask-login
+
+2.2 - 2019-02-10
+----------------------------------------------------------------------
+- Feature: New security tweaks: Security headers
+- Feature: New security tweak: Block WordPress Rest API
+- Feature: New security tweak: Prevent user enumeration
+- Feature: Ability to talk with HUB for syncing Defender settings.
+- Improvement: Add ability to ban by filename/extension
+- Improvement: Allow user to change the retention period of Audit Logs in Defender
+- Improvement: Add the ability for an admin to unblock a temporarily blocked IP.
+- Improvement: Add 'Your current time' to Reporting tabs
+- Fix: Email link still goes to wp-admin instead of masked one, if use Defender Mask Login
+- Fix: Css z-index issue with Quick setup modal
+- Fix: Use hostname instead of wp-defender in authenticator app
+ - Fix: Minor grammar and UX improvements.
+
+2.1.2 - 2019-10-04
+----------------------------------------------------------------------
+- Feature: Defender Pro now supports the WPMU DEV Dashboard’s white label feature.
+- Feature: You can now perform a factory reset of Defender’s settings via the Settings screen, as well as control what happens to data when the plugin is uninstalled.
+- Improvement: Defender File Scanning no longer identifies robots.txt as a potentially harmful file.
+- Improvement: We’ve turned off autocomplete on the two-factor authentication field so that previous codes don’t show up.
+- Fix: Fixed a conflict with Defender where the 404 lockout feature would lock out users who tried to access old Hummingbird cache files.
+- Fix: You can now view date ranges greater than 7 days for IP Lockout logs
+ - Fix: Minor grammar and UX improvements.
 
 2.1 - 2019-18-02
 ----------------------------------------------------------------------

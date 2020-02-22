@@ -11,7 +11,7 @@
 					<?php _e( "Configure your two-factor authentication settings. Our recommendations are enabled by default.", "defender-security" ) ?>
                 </p>
 				<?php
-				$enabledRoles = $settings->userRoles;
+				$enabledRoles = $settings->user_roles;
 				$allRoles     = get_editable_roles();
 				?>
 				<?php if ( isset( wp_defender()->global['compatibility'] ) ): ?>
@@ -89,11 +89,11 @@
                 </div>
                 <div class="sui-box-settings-col-2">
                     <div class="sui-form-field">
+                        <input type="hidden" name="lostPhone" value="0"/>
                         <label class="sui-toggle">
-                            <input type="hidden" name="lostPhone" value="0"/>
                             <input role="presentation" type="checkbox" name="lostPhone" class="toggle-checkbox"
                                    id="lostPhone" value="1"
-								<?php checked( true, $settings->lostPhone ) ?>/>
+								<?php checked( true, $settings->lost_phone ) ?>/>
                             <span class="sui-toggle-slider"></span>
                         </label>
                         <label for="lostPhone" class="sui-toggle-label">
@@ -113,11 +113,11 @@
                 </div>
                 <div class="sui-box-settings-col-2">
                     <div class="sui-form-field">
+                        <input type="hidden" name="forceAuth" value="0"/>
                         <label class="sui-toggle">
-                            <input type="hidden" name="forceAuth" value="0"/>
                             <input role="presentation" type="checkbox" name="forceAuth" class="toggle-checkbox"
                                    id="forceAuth" value="1"
-								<?php checked( true, $settings->forceAuth ) ?>/>
+								<?php checked( true, $settings->force_auth ) ?>/>
                             <span class="sui-toggle-slider"></span>
                         </label>
                         <label for="forceAuth" class="sui-toggle-label">
@@ -127,11 +127,11 @@
                             <?php _e( "Note: Users will be forced to set up two-factor when they next login.", "defender-security" ) ?>
                         </span>
                         <div id="forceAuthRoles" class="sui-border-frame sui-toggle-content"
-                             aria-hidden="<?php echo ! $settings->forceAuth ?>">
+                             aria-hidden="<?php echo ! $settings->force_auth ?>">
                             <strong><?php _e( "User Roles", "defender-security" ) ?></strong>
                             <ul>
 								<?php
-								$forceAuthRoles = $settings->forceAuthRoles;
+								$forceAuthRoles = $settings->force_auth_roles;
 								foreach ( $allRoles as $role => $detail ):
 									?>
                                     <li>
@@ -147,7 +147,7 @@
                             </ul>
                             <strong><?php _e( "Custom warning message", "defender-security" ) ?></strong>
                             <textarea class="sui-form-control"
-                                      name="forceAuthMess"><?php echo $settings->forceAuthMess ?></textarea>
+                                      name="forceAuthMess"><?php echo $settings->force_auth_mess ?></textarea>
                             <span class="sui-description">
                             <?php _e( "Note: This is shown in the users Profile area indicating they must use two-factor authentication.", "defender-security" ) ?>
                         </span>

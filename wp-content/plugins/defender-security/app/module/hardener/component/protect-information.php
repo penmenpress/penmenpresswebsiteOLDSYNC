@@ -18,6 +18,32 @@ class Protect_Information extends Rule {
 	}
 
 	/**
+	 * This will return the short summary why this rule show up as issue
+	 *
+	 * @return string
+	 */
+	function getErrorReason() {
+		return __( "You don't have information disclosure protection active.", "defender-security" );
+	}
+
+	/**
+	 * This will return a short summary to show why this rule works
+	 * @return mixed
+	 */
+	function getSuccessReason() {
+		return __( "You've automatically enabled information disclosure protection.", "defender-security" );
+	}
+
+	public function getMiscData() {
+		$settings = Settings::instance();
+
+		return [
+			'active_server' => $settings->active_server,
+			'nginx_rules'   => $this->getService()->getNginxRules(),
+		];
+	}
+
+	/**
 	 * @return bool|false|mixed|null
 	 */
 	function check() {
@@ -29,9 +55,6 @@ class Protect_Information extends Rule {
 	}
 
 	function revert() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
 		$ret = $this->getService()->revert();
 		if ( ! is_wp_error( $ret ) ) {
 			Settings::instance()->addToIssues( self::$slug );
@@ -43,14 +66,11 @@ class Protect_Information extends Rule {
 	}
 
 	function addHooks() {
-		$this->add_action( 'processingHardener' . self::$slug, 'process' );
-		$this->add_action( 'processRevert' . self::$slug, 'revert' );
+		$this->addAction( 'processingHardener' . self::$slug, 'process' );
+		$this->addAction( 'processRevert' . self::$slug, 'revert' );
 	}
 
 	function process() {
-		if ( ! $this->verifyNonce() ) {
-			return;
-		}
 		$ret = $this->getService()->process();
 		if ( ! is_wp_error( $ret ) ) {
 			Settings::instance()->addToResolved( self::$slug );
