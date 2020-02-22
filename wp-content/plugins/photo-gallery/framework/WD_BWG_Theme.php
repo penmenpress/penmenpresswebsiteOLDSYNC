@@ -523,6 +523,9 @@ class WD_BWG_Theme {
   public $thumb_title_font_style = "Ubuntu";
   public $thumb_title_font_weight = "bold";
   public $thumb_title_margin = "2px";
+  public $thumb_description_font_color = "323A45";
+  public $thumb_description_font_style = "Ubuntu";
+  public $thumb_description_font_size = 12;
   public $thumb_title_pos = "bottom";
   public $thumb_title_shadow = "";
   public $thumb_transition = 1;
@@ -1081,6 +1084,44 @@ class WD_BWG_Theme {
         $this->name = $row->name;
         $this->default_theme = $row->default_theme;
       }
+    }
+  }
+
+  /* get theme font style google or default */
+  public static function font_style($name) {
+    $input_names = [
+      'thumb_gal_title_font_style' => 'thumb_gal_title_google_fonts',
+      'thumb_title_font_style' => 'thumb_title_google_fonts',
+      'thumb_description_font_style' => 'thumb_description_google_fonts',
+      'album_compact_back_font_style' => 'album_compact_back_google_fonts',
+      'album_compact_gal_title_font_style' => 'album_compact_gal_title_google_fonts',
+      'album_compact_title_font_style' => 'album_compact_title_google_fonts',
+      'album_extended_back_font_style' => 'album_extended_back_google_fonts',
+      'album_extended_desc_font_style' => 'album_extended_desc_google_fonts',
+      'album_extended_gal_title_font_style' => 'album_extended_gal_title_google_fonts',
+      'album_extended_title_font_style' => 'album_extended_title_google_fonts',
+      'album_masonry_back_font_style' => 'album_masonry_back_google_fonts',
+      'album_masonry_gal_title_font_style' => 'album_masonry_gal_title_google_fonts',
+      'album_masonry_title_font_style' => 'album_masonry_title_google_fonts',
+      'blog_style_img_font_family' => 'blog_style_img_google_fonts',
+      'blog_style_gal_title_font_style' => 'blog_style_gal_title_google_fonts',
+      'image_browser_gal_title_font_style' => 'image_browser_gal_title_google_fonts',
+      'image_browser_img_font_family' => 'image_browser_img_google_fonts',
+      'lightbox_description_font_style' => 'lightbox_description_google_fonts',
+      'lightbox_comment_font_style' => 'lightbox_comment_google_fonts',
+      'lightbox_hit_font_style' => 'lightbox_hit_google_fonts',
+      'lightbox_title_font_style' => 'lightbox_title_google_fonts',
+      'masonry_description_font_style' => 'masonry_description_google_fonts',
+      'masonry_thumb_gal_title_font_style' => 'masonry_thumb_gal_title_google_fonts',
+      'masonry_thumb_title_font_style' => 'masonry_thumb_title_google_fonts',
+      'mosaic_thumb_gal_title_font_style' => 'mosaic_thumb_gal_title_google_fonts',
+      'mosaic_thumb_title_font_style' => 'mosaic_thumb_title_google_fonts',
+      'page_nav_font_style' => 'page_nav_google_fonts',
+      'slideshow_description_font' => 'slideshow_description_google_fonts',
+      'slideshow_title_font' => 'slideshow_title_google_fonts'
+    ];
+    if ( array_key_exists( $name, $input_names ) ) {
+      return $input_names[ $name ];
     }
   }
 }

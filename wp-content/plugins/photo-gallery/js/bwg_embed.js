@@ -16,7 +16,7 @@ function spider_display_embed(embed_type, file_url, embed_id, attrs) {
       for (attr in attrs) {
         if(!(/src/i).test(attr)){
           if(attr != '' && attrs[attr] != ''){
-            oembed_youtube_html += ' '+ attr + '="'+ attrs[attr] + '"';
+            oembed_youtube_html += ' '+ attr + '="' + attrs[attr] + '"';
           }
         }
       }
@@ -27,12 +27,12 @@ function spider_display_embed(embed_type, file_url, embed_id, attrs) {
     case 'EMBED_OEMBED_VIMEO_VIDEO':
       var oembed_vimeo_html ='<iframe ';
       if(embed_id!=''){
-        oembed_vimeo_html += ' src="' + '//player.vimeo.com/video/'+embed_id + '?enablejsapi=1"';
+        oembed_vimeo_html += ' src="' + '//player.vimeo.com/video/' + embed_id + '?enablejsapi=1"';
       }
       for (attr in attrs) {
         if(!(/src/i).test(attr)){
           if(attr != '' && attrs[attr] != ''){
-            oembed_vimeo_html += ' '+ attr + '="'+ attrs[attr] + '"';
+            oembed_vimeo_html += ' '+ attr + '="' + attrs[attr] + '"';
           }
         }
       }
@@ -246,9 +246,37 @@ function spider_display_embed(embed_type, file_url, embed_id, attrs) {
 
         html_to_insert += oembed_imgur_html;
 
-        break;              
+        break;
+    case 'EMBED_OEMBED_GOOGLE_PHOTO_IMAGE':
+      var oembed_google_photos_html ='<div ';
+      for (attr in attrs) {
+        if(!(/src/i).test(attr)){
+          if(attr != '' && attrs[attr] != ''){
+            oembed_google_photos_html += ' '+ attr + '="'+ attrs[attr] + '"';
+          }
+        }
+      }
+      oembed_google_photos_html += " >";
+      if(embed_id!=''){
+
+        oembed_google_photos_html += '<img src="'+file_url+'"'+
+          ' style=" '+
+          'max-width:'+'100%'+" !important"+
+          '; max-height:'+'100%'+" !important"+
+          '; width:'+'auto'+
+          '; height:'+ 'auto' +
+          ';">';
+      }
+      oembed_google_photos_html +="</div>";
+
+      html_to_insert += oembed_google_photos_html;
+
+      break;
+
     default:
-      ;
+      var html = {content: ''};
+      jQuery(document).trigger('bwg_display_embed', [html, embed_type, file_url, embed_id, attrs]);
+      html_to_insert = html.content;
   }
   
   return html_to_insert;

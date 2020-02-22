@@ -84,7 +84,7 @@ class AlbumsgalleriesView_bwg extends AdminView_bwg {
           $iterator = 0;
           foreach ($params['rows'] as $row) {
             $alternate = (!isset($alternate) || $alternate == '') ? 'class="alternate"' : '';
-                  $preview_image = BWG()->plugin_url . '/images/no-image.png';
+			      $preview_image = BWG()->plugin_url . '/images/no-image.png';
             if ( !empty($row->preview_image) ) {
               $preview_image = BWG()->upload_url . $row->preview_image;
             }
@@ -97,15 +97,15 @@ class AlbumsgalleriesView_bwg extends AdminView_bwg {
             ?>
             <tr id="tr_<?php echo $iterator; ?>" <?php echo $alternate; ?>>
               <th class="table_small_col check-column">
-                <input id="check_<?php echo $iterator; ?>" name="check_<?php echo $iterator; ?>" type="checkbox" data-id="<?php echo $row->id; ?>" data-is-album="<?php echo htmlspecialchars(addslashes($row->is_album)); ?>" data-preview-image="<?php echo htmlspecialchars(addslashes($preview_image)); ?>" data-name="<?php echo htmlspecialchars(addslashes($row->name)); ?>" data-status="<?php echo !$row->published ? 'dashicons-hidden' : 'hidden'; ?>" />
+                <input id="check_<?php echo $iterator; ?>" name="check_<?php echo $iterator; ?>" type="checkbox" data-id="<?php echo $row->id; ?>" data-is-album="<?php echo htmlspecialchars(addslashes($row->is_album)); ?>" data-preview-image="<?php echo esc_url( $preview_image ); ?>" data-name="<?php echo esc_attr( $row->name ); ?>" data-status="<?php echo !$row->published ? 'dashicons-hidden' : 'bwg-hidden'; ?>" />
               </th>
               <td class="column-primary column-title" data-colname="<?php _e('Title', BWG()->prefix); ?>">
                 <strong class="has-media-icon">
-                  <a class="wd-pointer" onclick="window.parent.bwg_add_album_gallery('<?php echo $row->id; ?>', '<?php echo htmlspecialchars(addslashes($row->is_album)); ?>', '<?php echo htmlspecialchars(addslashes($preview_image)); ?>', '<?php echo htmlspecialchars(addslashes($row->name)); ?>','<?php echo !$row->published ? 'dashicons-hidden' : 'hidden' ?>')" id="a_<?php echo $iterator; ?>">
+                  <a class="wd-pointer" onclick="window.parent.bwg_add_album_gallery('<?php echo $row->id; ?>', '<?php echo $row->is_album; ?>', '<?php echo esc_url( $preview_image ); ?>', '<?php echo esc_attr( $row->name ); ?>','<?php echo !$row->published ? 'dashicons-hidden' : 'bwg-hidden' ?>')" id="a_<?php echo $iterator; ?>">
                     <span class="media-icon image-icon">
-                      <img class="preview-image" title="<?php echo $row->name; ?>" src="<?php echo $preview_image; ?>" width="60" height="60" />
+                      <img class="preview-image" title="<?php echo esc_attr( $row->name ); ?>" src="<?php echo esc_url( $preview_image ); ?>" width="60" height="60" />
                     </span>
-                    <?php echo $row->name?>
+                    <?php echo esc_html( $row->name ); ?>
                   </a>
                   <?php if ( !$row->published ) { ?>
                     — <span class="post-state"><?php _e('Unpublished', BWG()->prefix); ?></span>

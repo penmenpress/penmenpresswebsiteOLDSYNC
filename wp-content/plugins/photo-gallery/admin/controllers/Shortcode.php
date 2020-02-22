@@ -6,7 +6,7 @@ class ShortcodeController_bwg {
     $this->model = new ShortcodeModel_bwg();
     $this->view = new ShortcodeView_bwg();
     $this->page = WDWLibrary::get('page');
-    $this->from_menu = ((isset($_GET['page']) && (esc_html($_GET['page']) == 'shortcode_' . BWG()->prefix)) ? TRUE : FALSE);
+    $this->from_menu = ($this->page == 'shortcode_' . BWG()->prefix) ? TRUE : FALSE;
   }
 
   public function execute() {
@@ -24,8 +24,9 @@ class ShortcodeController_bwg {
 
   public function display() {
     $params = array();
-    $params['gutenberg_callback'] = WDWLibrary::get('callback', 0);
-    $params['gutenberg_id'] = WDWLibrary::get('edit', 0);
+    $params['gutenberg_callback'] = WDWLibrary::get('callback');
+    $params['gutenberg_id'] = WDWLibrary::get('edit', 0, 'intval');
+    $params['elementor_callback'] = WDWLibrary::get('elementor_callback', 0, 'intval');
     $params['from_menu'] = $this->from_menu;
     $params['gallery_rows'] = WDWLibrary::get_galleries();
     $params['album_rows'] = WDWLibrary::get_gallery_groups();
@@ -55,10 +56,12 @@ class ShortcodeController_bwg {
 
   public function save() {
     global $wpdb;
-    $tagtext = ((isset($_POST['tagtext'])) ? stripslashes($_POST['tagtext']) : '');
+    $tagtext = WDWLibrary::get('tagtext');
     if ($tagtext) {
-      $id = ((isset($_POST['currrent_id'])) ? (int) esc_html(stripslashes($_POST['currrent_id'])) : 0);
-      $insert = ((isset($_POST['bwg_insert'])) ? (int) esc_html(stripslashes($_POST['bwg_insert'])) : 0);
+      /* clear tags */
+      $tagtext = " " . $tagtext;
+      $id = WDWLibrary::get('currrent_id', 0, 'intval');
+      $insert = WDWLibrary::get('bwg_insert', 0, 'intval');
       if (!$insert) {
         $wpdb->update($wpdb->prefix . 'bwg_shortcode', array(
         'tagtext' => $tagtext

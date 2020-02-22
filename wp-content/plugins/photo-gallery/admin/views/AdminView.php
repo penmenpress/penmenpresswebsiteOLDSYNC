@@ -44,7 +44,7 @@ class AdminView_bwg {
       <?php echo $id ? ' id="' . $id . '"' : ''; ?>
       <?php echo $class ? ' class="' . $class . '"' : ''; ?>
       <?php echo $style ? ' style="' . $style . '"' : ''; ?>
-    ><h1 class="hidden"></h1><?php
+    ><h1 class="bwg-hidden"></h1><?php
       echo $content;
       // Add nonce to form.
       wp_nonce_field(BWG()->nonce, BWG()->nonce);
@@ -185,7 +185,7 @@ class AdminView_bwg {
    * @return string
    */
   protected function search( $params = array() ) {
-    $search = WDWLibrary::get('s', '');
+    $search = WDWLibrary::get('s', '', 'esc_attr');
     ob_start();
     ?>
     <p class="search-box">
@@ -251,14 +251,14 @@ class AdminView_bwg {
         <?php
         if ( $page_number == 1 ) {
           ?>
-          <span class="tablenav-pages-navspan" aria-hidden="true">«</span>
-          <span class="tablenav-pages-navspan" aria-hidden="true">‹</span>
+          <span class="tablenav-pages-navspan button disabled" aria-hidden="true">«</span>
+          <span class="tablenav-pages-navspan button disabled" aria-hidden="true">‹</span>
           <?php
         }
         else {
           ?>
-          <a data-paged="<?php echo 1; ?>" href="<?php echo add_query_arg(array('paged' => 1), $page_url); ?>" class="wd-page first-page"><span class="screen-reader-text"><?php _e('First page', BWG()->prefix); ?></span><span aria-hidden="true">«</span></a>
-          <a data-paged="<?php echo ($page_number == 1 ? 1 : ($page_number - 1)); ?>" href="<?php echo add_query_arg(array('paged' => ($page_number == 1 ? 1 : ($page_number - 1))), $page_url); ?>" class="wd-page previous-page"><span class="screen-reader-text"><?php _e('Previous page', BWG()->prefix); ?></span><span aria-hidden="true">‹</span></a>
+          <a data-paged="<?php echo 1; ?>" href="<?php echo add_query_arg(array('paged' => 1), $page_url); ?>" class="wd-page first-page button"><span class="screen-reader-text"><?php _e('First page', BWG()->prefix); ?></span><span aria-hidden="true">«</span></a>
+          <a data-paged="<?php echo ($page_number == 1 ? 1 : ($page_number - 1)); ?>" href="<?php echo add_query_arg(array('paged' => ($page_number == 1 ? 1 : ($page_number - 1))), $page_url); ?>" class="wd-page previous-page button"><span class="screen-reader-text"><?php _e('Previous page', BWG()->prefix); ?></span><span aria-hidden="true">‹</span></a>
           <?php
         }
         ?>
@@ -273,14 +273,14 @@ class AdminView_bwg {
           <?php
           if ( $page_number >= $pages_count ) {
             ?>
-            <span class="tablenav-pages-navspan" aria-hidden="true">›</span>
-            <span class="tablenav-pages-navspan" aria-hidden="true">»</span>
+            <span class="tablenav-pages-navspan button disabled" aria-hidden="true">›</span>
+            <span class="tablenav-pages-navspan button disabled" aria-hidden="true">»</span>
             <?php
           }
           else {
             ?>
-            <a data-paged="<?php echo ($page_number >= $pages_count ? $pages_count : ($page_number + 1)); ?>" href="<?php echo add_query_arg(array('paged' => ($page_number >= $pages_count ? $pages_count : ($page_number + 1))), $page_url); ?>" class="wd-page next-page"><span class="screen-reader-text"><?php _e('Next page', BWG()->prefix); ?></span><span aria-hidden="true">›</span></a>
-            <a data-paged="<?php echo $pages_count; ?>" href="<?php echo add_query_arg(array('paged' => $pages_count), $page_url); ?>" class="wd-page last-page"><span class="screen-reader-text"><?php _e('Last page', BWG()->prefix); ?></span><span aria-hidden="true">»</span></a>
+            <a data-paged="<?php echo ($page_number >= $pages_count ? $pages_count : ($page_number + 1)); ?>" href="<?php echo add_query_arg(array('paged' => ($page_number >= $pages_count ? $pages_count : ($page_number + 1))), $page_url); ?>" class="wd-page next-page button"><span class="screen-reader-text"><?php _e('Next page', BWG()->prefix); ?></span><span aria-hidden="true">›</span></a>
+            <a data-paged="<?php echo $pages_count; ?>" href="<?php echo add_query_arg(array('paged' => $pages_count), $page_url); ?>" class="wd-page last-page button"><span class="screen-reader-text"><?php _e('Last page', BWG()->prefix); ?></span><span aria-hidden="true">»</span></a>
             <?php
           }
           ?>

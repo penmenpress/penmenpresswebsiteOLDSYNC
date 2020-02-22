@@ -85,7 +85,7 @@ class AddTagsView_bwg extends AdminView_bwg {
                        data-name="<?php echo $row->name; ?>" />
               </th>
               <td class="column-primary column-title" data-colname="<?php _e('Name', BWG()->prefix); ?>">
-                <a class="cursor-pointer" onclick="<?php echo $image_id ? 'window.parent.bwg_add_tag(\'' . $image_id . '\', [\'' . $row->id . '\'],[\'' . htmlspecialchars(addslashes($row->name)) . '\'])' : 'bwg_bulk_add_tags(\'' . $row->id . '\')'; ?>;" id="a_<?php echo $row->id; ?>">
+                <a class="cursor-pointer" onclick="<?php echo $image_id ? 'window.parent.bwg_add_tag(\'' . $image_id . '\', [\'' . $row->id . '\'],[\'' . htmlspecialchars(addslashes($row->name)) . '\'])' : 'bwg_bulk_add_tags(\'' . $row->id . '\', \'' . 'add' . '\')'; ?>;" id="a_<?php echo $row->id; ?>">
                   <?php echo $row->name; ?>
                 </a>
               </td>
@@ -105,7 +105,8 @@ class AddTagsView_bwg extends AdminView_bwg {
 	<div class="media-frame-toolbar">
 		<div class="media-toolbar">
 		  <div class="media-toolbar-primary search-form">
-			<button class="button media-button button-primary button-large media-button-insert" type="button" onclick="<?php echo $image_id ? 'bwg_add_tags(\'' . $image_id . '\')' : 'bwg_bulk_add_tags()'; ?>"><?php _e('Add to image', BWG()->prefix); ?></button>
+      <button class="button media-button button button-large media-button-insert" type="button" onclick="<?php echo $image_id ? 'bwg_remove_tags(\'' . $image_id . '\')' : 'bwg_bulk_add_tags(\'' . '' . '\',\'' . 'remove' . '\')'; ?>"><?php _e('Remove from image', BWG()->prefix); ?></button>
+			<button class="button media-button button-primary button-large media-button-insert" type="button" onclick="<?php echo $image_id ? 'bwg_add_tags(\'' . $image_id . '\')' : 'bwg_bulk_add_tags(\'' . '' . '\',\'' . 'add' . '\')'; ?>"><?php _e('Add to image', BWG()->prefix); ?></button>
 		  </div>
 		</div>
 	</div>
@@ -113,7 +114,7 @@ class AddTagsView_bwg extends AdminView_bwg {
 	jQuery(window).load(function() {
 		jQuery("#loading_div", window.parent.document).hide();
 	});
-    </script>
+  </script>
     <?php
   }
 }

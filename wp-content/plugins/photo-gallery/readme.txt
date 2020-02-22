@@ -2,12 +2,12 @@
 Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 3.4
-Tested up to: 5.1 
-Stable tag: 1.5.21
+Tested up to: 5.3
+Stable tag: 1.5.46
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Photo Gallery is a powerful gallery plugin with a list of advanced options for creating stunning image galleries. Add the responsive plugin with cool gallery views.
+Photo Gallery is a powerful image gallery plugin with a list of advanced options for creating responsive image galleries with beautiful lightbox. Add the plugin with cool gallery views.
 
 == Description ==
 
@@ -23,116 +23,92 @@ Photo Gallery is the leading plugin for building beautiful mobile-friendly galle
     
 [Special Offer for all Premium Plugins](https://10web.io/plugins-bundle-pricing/)    
     
-https://www.youtube.com/watch?v=VDKtGHAJVpc
+https://youtu.be/pA8-5qaMBqM
+
+    
+If you’re looking for a user friendly and feature rich plugin to add responsive galleries and albums to your website, Photo Gallery plugin can be the best option for you. It’s simple in use yet packed with powerful functionality, allowing you to create anything from simple photo galleries to selling digital content right from your website (Premium version). Photo Gallery  comes packed with stunning layout options, gallery and album views, multiple widgets and a number of extensions that take its functionality even further.  WordPress Photo Gallery is a great choice for photography websites and blogs,  as well as sites that want to have robust image galleries with easy navigation.
+Check the extensive feature list of the plugin bellow, have a look at the plugin demo and give it a try. 
 
 
-Are you looking for the perfect gallery plugin to present your photos or products? 
+== Benefits ==
+*   **Increased visitor engagement** -  Images and photos grab attention and make websites more engaging. Using images in your posts and pages will result in increased visitor engagement and can give a boost on your posts’ pageviews. 
+*   **Enhanced SEO** - Adding relevant tags and metadata to the images can enhance your SEO and provide more visibility in relevant search results in Google.
+*   **Better page navigation** - Organized galleries and albums will make your website look more professional, easy to navigate and result in a better user experience. 
+*   **Modern web design** - Relevant  high-resolution photos displayed in beautiful layouts are an integral part of a well-designed website that gets results.
+*   **Full Control** - Plugin gives you flexibility in terms of the design and customization of your galleries. You’ll get full control over the style, optimization and display of visual content on your website. 
+*   **Support** - Get timely and effective support to all its users. We keep standards high and response time low.  
+
+== What’s in it ==
+
+= CUSTOMIZABLE VIEWS =
+
+Photo Gallery provides a number of view options to organize your galleries and albums in beautiful views, including Slideshow, Thumbnails, Masonry (Premium version), Image Browser, Extended and Compact Album, Blog Style (Premium version),  Mosaic (Premium version). The layouts give you the flexibility to customize them to match your needs. 
+
+= UNLIMITED PHOTOS, GALLERIES AND ALBUMS =
+
+Sounds great, right? With plugin you can have as many galleries and albums as you want, and stuff them with unlimited number of photos and videos. Kinda unlimited everything.
+
+= POWERFUL LIGHTBOX =
+
+You can display your media content in a responsive lightbox that comes with 15 slideshow effects (Premium version), supports social sharing (Premium version), full width view option, filmstrip (Premium version), image commenting (Premium version), lightbox autoplay and many more options that make your lightbox look awesome.
+
+= AUDIO AND VIDEO SUPPORT =
+
+The Photo Gallery plugin allows you to include both videos and images within a single gallery. The WordPress Plugin supports YouTube, Vimeo, Instagram, Flickr or Dailymotion videos within Galleries. All you need to do is copy the URL of the video you want to include in the gallery plugin. It’s also possible to add audio tracks for the image slideshow.
+
+= MULTIPLE WIDGETS =
+
+There are four widgets in the gallery plugin: WordPress Standard Tag Cloud, Dynamic Tags Cloud (Premium version), Slideshow and Gallery widget. Use one of these widgets to display your albums on the sidebar areas of your website. 
+
+= IMAGE WATERMARKING AND RIGHT CLICK PROTECTION =
+
+With watermarking feature of the Photo Gallery plugin you can add text or image watermarks on the photos in your galleries and albums, and protect them from illegal use. Right click protection will protect your images from unlawful distribution.
+
+= PRELOADED THEMES =
+
+The plugin comes with two default Themes. Premium version adds more themes which are fully customizable, giving you the option to add new themes with custom styling, colors, layout settings, and image navigation options.  
+
+= SOCIAL SHARING =
+
+With Premium version you can allow users to share photos on Facebook, Twitter, Google+, Pinterest and Tumblr with social sharing buttons.
+
+= ADD-ONS =
+
+Photo Gallery comes with a number of add-ons that can help you sell digital images right from your website, display your Facebook albums, and import/export galleries and albums from one WordPress website to another. 
+ 
 
 
-== Photo Gallery Features ==
-
-**Intuitive Interface**   
-Drag and drop to build amazing photo galleries in a few clicks.
-
-**Stunning Gallery Views**   
-Thumbnails, Slideshow, Image Browser, and more.
-
-**Mobile-Friendly & Responsive**   
-Your galleries will look wonderful on all resolutions and devices, be it mobile, tablet or desktop.
-
-**Customizable Themes\***   
-Pick one of our two ready-made themes or make your own.
-
-**Advanced Lightbox\***   
-Your gallery will have a customizable lightbox with 15 transition effects, filmstrip, and full width view option.
-
-
-**Social Sharing\***   
-Your users will be able to share your photos on Facebook, Twitter, Tumblr, Pinterest and Google+.
-
-**Gallery Groups & Tags**   
-Organize your galleries into gallery groups. Add tags to your photos.
-
-**Ecommerce Extension\***   
-Install this extension to sell photos or products directly from your gallery. Integrated with Paypal and Stripe.
-
-**Watermark & Copyright Protection**   
-Add watermarks to your photos and disable right click.
-
-**SEO-Optimized**   
-Google will index your galleries and your photos will appear in search results.
-
-**Instagram-Integrated\***   
-Import images on Instagram in just a click. 
-
-**Video galleries\***   
-Include YouTube, Vimeo, Dailymotion or custom videos in your gallery.
-
-**Widgets**   
-WordPress Standard Tag Cloud, Dynamic Tags Cloud, Slideshow, and Gallery widgets.
-
-**Export/Import Extension**   
-Install this extension to move your photos and galleries from one WP site to another.
-
-_\* Premium version only_
-   
-   
-
-== World Class Customer Support ==
-*  Low response time
-We always respond within a few hours.
-*  Quick issue resolution
-Resolving an issue never takes more than 24 hours.
-   
-   
-
-== FEATURED REVIEWS ==
-
-> The gallery and ecommerce plugins are fantastic. Even better, the customer support is awesome.  
-> Quick, friendly, competent. A rare breed.  
-> Highly recommended.  
-> **by @jaebaeli**
-
-> This plugin really came through for me. I was in a hurry and needed something that worked well for a photo gallery.  
-> Easy setup and looks great. Thank you!  
-> **by @donnakfitch**
-
-> I can say it’s very easy to use, customizable, perfect working plug-in. I spent many hours searching for simple web-publishing system for > my photos and this is the right one, meets all my requirements. And the support team, in case of any problem, works fast and reliably!
-> **by @praguestreets**
-
-== Steps for creating a beautiful gallery ==
-1. Install Photo Gallery by 10Web.   
-2. Upload your images.   
-3. Publish your gallery.   
-
-
-> **[Premium version adds](https://10web.io/plugins/wordpress-photo-gallery/)**
-> 
-> *   Masonry gallery View.
-> *   Mosaic gallery View
-> *   Blog Style View
-> *   Masonry Album view
-> *   Slideshow/Lightbox 15 effects
-> *   Editable themes
-> *   Instagram Integration
-> *   Commenting possibility with Captcha protection
-> *   Social sharing (Facebook, Google+, Twitter, Pinterest and Tumblr)
-> *   Dynamic Tag Cloud widget with image tag cloud and text tag cloud options
-> *   Possibility to include both videos and images within a single gallery
-> *   Extensions support.
-> *   Possibility of changing the roles of who can edit the galleries/albums/images (Author/All Users)
-
-== Photo Gallery Extensions ==
-[Ecommerce Extension](https://10web.io/plugins/wordpress-photo-gallery/) - Display your digital content and sell it directly from your website.      
-[Export/Import Extension](https://10web.io/plugins/wordpress-photo-gallery/)  Export/import galleries, albums and all related data from one WordPress site to another. 
-
-== SETTINGS/CUSTOMIZATION ==
-*Some customizations described here are available in Premium version. Please refer to feature summary for additional info.*
+ 
+= SETTINGS/CUSTOMIZATION =
+*Some customizations described here are available in [Premium version](https://10web.io/plugins/wordpress-photo-gallery/)  . Please refer to feature summary for additional info.
 
 Photo Gallery allows you to create unlimited galleries and organize them into different photo albums providing detailed gallery descriptions and tags.The plugin supports both image and video content (Premium feature). 
 Adding photos and videos to the galleries from the WordPress dashboard is simple and easy with its user-friendly admin panel. You’ll get all the tools you need to add and edit photos in the galleries.The file manager will help to rename, upload, remove, copy images and/or image directories with a few simple steps.  Under the options (settings) tab in admin panel you’ll find an extensive list of settings for galleries, thumbnails,watermarking,social accounts and slideshow that you can configure based on your needs. Plugin features a powerful lightbox that supports filmstrip and image carousel display. Also, you can enable image comments options and show the comments of the images right in the lightbox (Premium feature). There is a dedicated section for lightbox settings where you can choose to enable/disable AddThis display, image download option, image count,and other lightbox features. 
 Under the social options tab you’ll find settings for the Instagram and Facebook galleries, where you can specify Instagram feed auto update interval (Premium feature). With the available user roles you can choose who can add/edit galleries, images, albums and tags (Premium feature). 
 
+
+[Premium version adds](https://10web.io/plugins/wordpress-photo-gallery/)  
+
+*   Masonry gallery View.
+*   Mosaic gallery View
+*   Blog Style View
+*   Masonry Album view
+*   Slideshow/Lightbox 15 effects
+*   Editable themes
+*   Instagram Integration
+*   Commenting possibility with Captcha protection
+*   Social sharing (Facebook, Google+, Twitter, Pinterest and Tumblr)
+*   Dynamic Tag Cloud widget with image tag cloud and text tag cloud options
+*   Possibility to include both videos and images within a single gallery
+*   Add ons support.
+*   Possibility of changing the roles of who can edit the galleries/albums/images (Author/All Users)
+
+= Photo Gallery Add-ons =
+[Ecommerce Add-on](https://10web.io/plugins/wordpress-photo-gallery/) - Display your digital content and sell it directly from your website.      
+[Export/Import Add-on](https://10web.io/plugins/wordpress-photo-gallery/)  Export/import galleries, albums and all related data from one WordPress site to another. 
+
+###IMPORTANT:    
+If you think you found a bug in Photo Gallery or have any problem/question concerning the plugin, please check out [Support Forum](https://wordpress.org/support/plugin/photo-gallery) in our website.
 
 
 == Installation ==
@@ -189,7 +165,7 @@ Instagram: http://instagram.com/p/ykvv0puS4u, if you want to add the image toget
 Flickr: https://www.flickr.com/photos/sui-fong/15250186998/in/gallery-flickr-72157648726328108/
 **Videos**
 YouTube: https://www.youtube.com/watch?v=fa4RLje-yM8
-Vimeos: http://vimeo.com/8110647
+Vimeo: http://vimeo.com/8110647
 Dailymotion: http://www.dailymotion.com/video/xexaq0_frank-sinatra-strangers-in-the-nigh_music
 
 **Bulk Embed.** This option will allow adding more than one images from specific social media (currently only Instagram account, but more options will be added with the upcoming updates) into the standard gallery. You should keep in mind that the images will be added without the possibility of auto-update.  
@@ -292,7 +268,7 @@ To publish gallery plugin widgets, go to Appearance > Widgets. Here select the w
 **Slideshow effect.** Select the effect to apply to the slideshow.   
 **Time interval.** Define the time interval between the images in seconds.     
 **Enable shuffle.** Choose whether to have shuffle for the slideshow images or not.   
-**Theme.** Choose the theme to be applied to the gallery slideshow.    
+**Theme.** Choose the theme to be applied to the gallery slideshow.
  
 **Photo Gallery Widget**
 
@@ -304,8 +280,149 @@ Choose whether to display random or the first/last specific number of images.
 **Dimensions.** Specify the width and height of the widget.
 **Theme.** Choose the theme, which will be applied to the gallery/album.
 
-
 == Changelog ==
+
+= 1.5.46 =
+* Fixed: Security issue. (This vulnerability was discovered by Vishnupriya Ilango of Fortinet's FortiGuard Labs.)
+
+= 1.5.45 =
+* Fixed: Slideshow and carousel view description.
+
+= 1.5.44 =
+* Fixed: Opening lightbox.
+
+= 1.5.43 =
+* Fixed: Elementor widget.
+
+= 1.5.42 =
+* Added: Shortcode options to Elementor widget.
+* Added: Possibility to add image description to thumbnail view.
+* Added: Possibility to upload svg files.
+* Fixed: Masonry layout with Lazy load.
+* Fixed: Title styles for masonry.
+* Fixed: Gallery group load with enabled dynamic URLs.
+* Fixed: Notice on lightbox opening from widget.
+* Fixed: Image thumbnails dimensions for Google photos.
+* Fixed: XML Sitemap for Gallery Groups.
+
+= 1.5.41 =
+* Fixed: Minor bug.
+
+= 1.5.40 =
+* Fixed: Opening lightbox from widget.
+
+= 1.5.39 =
+* Fixed: Control buttons container height.
+* Fixed: Allow to write url as advertisement text.
+* Fixed: Conflict with Bootstrap classes.
+* Fixed: Scroll load with "Enable dynamic URLs for galleries and gallery groups" is on.
+* Fixed: Pagination with disabled "Enable href attribute" and "Enable dynamic URLs for galleries and gallery groups" options set to Yes.
+* Fixed: Hit counter.
+* Fixed: Bulk deleting galleries/gallery groups.
+* Fixed: Sharing with 'Enable dynamic URLs for galleries and gallery groups' is on.
+* Fixed: Lazy load with disabled 'Enable dynamic URLs for galleries and gallery groups'.
+* Fixed: Masonry view with 'Resizable thumbnails' set to No.
+* Fixed: Load with galleries in tab.
+* Fixed: Bug on masonry view with image title "Show on hover" option on.
+
+= 1.5.38 =
+* Fixed: Bug breaking Sitemaps with Gallery Group shortcodes.
+
+= 1.5.37 =
+* Fixed: View count.
+* Fixed: Galleries/gallery groups bulk deleting.
+
+= 1.5.36 =
+* Added: Ask a question button.
+* Fixed: Issue with lightbox opening.
+
+= 1.5.35 =
+* Added: Gallery, Gallery group, Tag edit links in widget for Elementor.
+* Improved: Add gallery images to the XML generated with Yoast or Seo by 10Web.
+* Updated: jQuery File Upload framework.
+* Fixed: Shortcode buttons behaviour in Text widget of Divi Builder.
+* Fixed: Vulnerabilities.
+* Fixed: Opening shared URLs.
+* Fixed: Click action on image title click.
+* Fixed: Filmstrip arrows alignment.
+* Fixed: Masonry layout after closing lightbox.
+* Fixed: Do not reset shortcode options on 'Use default options' enable/disable.
+* Fixed: Titles on masonry view.
+* Fixed: Images ordering in lightbox.
+* Fixed: Don't delete tags on deleting all images.
+* Removed: Webinar banner.
+
+= 1.5.34 =
+* Added: Webinar banner.
+* Fixed: More than one mosaic gallery on a page.
+
+= 1.5.33 =
+* Fixed: Error from Instagram after connecting a Personal account.
+
+= 1.5.32 =
+* Added: Possibility to bulk remove tags.
+* Added: Possibility to use AND operator for tag filtering.
+* Added: 'How to insert a shortcode in Gutenberg?' to 'How to use'.
+* Fixed: Minor bug on file upload and import from media library.
+* Fixed: Link in gallery group description.
+* Fixed: Removing link from images alt.
+* Fixed: Order by date in filemanager for folders.
+* Fixed: Scroll load and load more loading should not cover all gallery.
+* Fixed: Instagram sign in.
+* Improved: Automatically select image after upload.
+* Improved: Automatically deactivate gallery after uninstalling.
+* Improved: Auto rotate images depend on image orientation saved in metadata.
+* Improved: Short url for lightbox.
+
+= 1.5.31 =
+* Fixed: Vulnerability problem reported by 'Tin Duong of Fortinet's FortiGuard Labs'.
+
+= 1.5.30 =
+* Removed: Banner to check website performance.
+
+= 1.5.29 =
+* Added: Functionality to disable ajax actions to open galleries by URL.
+* Fixed: Notice on adding Instagram whole post.
+* Fixed: Pagination styles on admin pages.
+* Fixed: Zip upload.
+* Fixed: Filmstrip scroll in fullscreen mode.
+* Fixed: Message on saving global options.
+
+= 1.5.28 =
+* Changed: Banner text.
+
+= 1.5.27 =
+* Added: Banner to check website performance.
+
+= 1.5.26 =
+* Fixed: Embed issue.
+* Fixed: Issue with uploading multiple images at once.
+
+= 1.5.25 =
+* Fixed: Security issue.
+
+= 1.5.24 =
+* Fixed: Major bug.
+
+= 1.5.23 =
+* Fixed: Authenticated stored XSS.  
+* Fixed: Google fonts with 'Developer mode' set to 'No'.  
+* Fixed: Add images to gallery with exclamation mark in tag name.   
+* Fixed: Galleries list page with big data.  
+* Fixed: Filter in comments page.  
+* Fixed: Random ordering for lightbox.  
+* Fixed: Carousel view.  
+* Fixed: Scroll bar for image info.  
+* Fixed: Do not allow to save <a> tag in image alt.  
+* Fixed: Do not allow backslash in image alt and description.  
+* Fixed: HTML in alt/description.   
+* Changed: Polish translation.
+* Added: Integration with Google photos.  
+* Added: Lazy load(optional).  
+* Removed: Google+.   
+
+= 1.5.22 =
+* Changed: Banner to install image optimizer plugin.   
 
 = 1.5.21 =
 * Added: Ebook delivery confirmation and instructions popup.  
@@ -385,9 +502,9 @@ Choose whether to display random or the first/last specific number of images.
 * Added: Free plugin flow: When installing Manager, store plugin name or slug in a WP option.   
 
 = 1.5.11 =
-* Fixed: Upload image when there is a qoute in the image metadata.   
+* Fixed: Upload image when there is a quote in the image metadata.   
 * Fixed: Bug on slideshow autoplay.   
-* Fixed: Bug when you put album after a gallery with scroll load.   
+* Fixed: Bug when you put a Gallery Group after a Gallery with scroll load.   
 * Fixed: Conflict with "BigSlam" theme.
 * Fixed: Conflict with some ajax themes.   
 * Fixed: PNG and GIF crop.   
@@ -470,8 +587,8 @@ Choose whether to display random or the first/last specific number of images.
 * Improved: Use the largest image file instead of the original image when the original file doesn't exist to prevent errors.  
 * Improved: Gallery edit page load time.  
 * Improved: Disabled the cron functionality in the free version.  
-* Improved: Masonry view HTML / CSS / JS sturcture.  
-* Improved: Mosaic view HTML / CSS / JS sturcture.  
+* Improved: Masonry view HTML / CSS / JS structure.
+* Improved: Mosaic view HTML / CSS / JS structure.
 * Improved: Albums "Back" button styles.  
 * Improved: Filemanager load time.   
 * Improved: Do not add hashtag ids to browser history.  
@@ -547,6 +664,7 @@ Choose whether to display random or the first/last specific number of images.
 * Fixed: Bug on opening lightbox with embed media.   
 
 = 1.4.10 =
+* Fixed: Removed Bom from Galleries.php.
 * Changed: Separate buttons for deactivation.  
 
 = 1.4.9 =
@@ -844,7 +962,7 @@ Choose whether to display random or the first/last specific number of images.
 
 = 1.3.16 =
 * Fixed: Ampersand in watermark and advertisement text.   
-* Fixed: Lightbox controlls toggle button on mobile.   
+* Fixed: Lightbox controls toggle button on mobile.
 * Added: Google fonts.    
 * Changed: UploadHandler class name to prevent conflict with some themes.   
   
@@ -937,14 +1055,14 @@ IMPORTANT: Instagram changed the API. You need to get a new access token by usin
 * Added: Effect duration option.    
 
 = 1.2.103 =
-* Fixed: Text watermark responsivness.   
+* Fixed: Text watermark responsiveness.
 * Added: Set/Reset watermark to all images at once.   
 * Fixed: Description for masonry album views.   
 
 = 1.2.102 =
 * Fixed: Search also in description.   
 * Added: Options for slideshow widget.   
-* Fixed: Import from media libruary.   
+* Fixed: Import from media library.
 * Fixed: File manager loading.    
 
 = 1.2.101 =
@@ -1019,11 +1137,11 @@ IMPORTANT: Instagram changed the API. You need to get a new access token by usin
 
 = 1.2.84 =
 *  Added: Placeholder for search by name (optional).    
-*  Fixed: Styles conflct with Twenty Sixteen theme.    
+*  Fixed: Styles conflict with Twenty Sixteen theme.
 
 = 1.2.83 =
 *  Fixed: Add selected images to gallery.     
-*  Fixed: Controll buttons and filmstrip conflict in lightbox.     
+*  Fixed: Control buttons and filmstrip conflict in lightbox.
 
 = 1.2.82 =
 *  Added: "Load More..." translation.    
@@ -1042,7 +1160,7 @@ IMPORTANT: Instagram changed the API. You need to get a new access token by usin
 *  Fixed: Russian translation (Thanks to Ruslan Tertyshny).    
 
 = 1.2.78 =
-*  Fixed: Compability with Wordpress 4.4.             
+*  Fixed: Compatibility with Wordpress 4.4.
 *  Fixed: Undefined property on album widget.         
 *  Fixed: German backend translation.        
 *  Fixed: Dutch backend translation.           
@@ -1153,10 +1271,10 @@ IMPORTANT: Instagram changed the API. You need to get a new access token by usin
 = 1.2.52 =
 *  Added: Images count parameter for load more.   
 *  Fixed: Pinterest share.   
-*  Fixed: Depricated function in carousel.   
+*  Fixed: Deprecated function in carousel.
 
 = 1.2.51 =
-*  Changed: Compability with Wordpress 4.3.   
+*  Changed: Compatibility with Wordpress 4.3.
 
 = 1.2.50 =
 *  Fixed: JavaScript conflict with some themes.
@@ -1304,7 +1422,7 @@ This vulnerability was discovered by Fortinet's FortiGuard Labs.
 
 = 1.2.11 =
 *  security issue fixed.    
-*  bug in fullscreen button and laoding image animation fixed.
+*  bug in fullscreen button and loading image animation fixed.
 
 = 1.2.9 =
 *  updated font-awesome to 4.2.0 version.    
@@ -1426,16 +1544,18 @@ This vulnerability was discovered by Fortinet's FortiGuard Labs.
 *  improved filemanager functionality, fix bug on widget.
 
 = 1.0.5 =
-*  bug fixed in file manager. 
+*  Fixed: File manager.
 
 = 1.0.4 =
-*  added shortcode generator, thumbnail title, thumb size in filemanager, bug  fixed in slideshow. 
+*  New: Added shortcode generator
+*  New: Thumbnail title, thumb size in filemanager.
+*  Fixed: Slideshow.
 
 = 1.0.3 =
-*  bug fixed in album view .
+*  Fixed: Album view.
 
 = 1.0.2 =
-*  php 5.2 capability.
+*  Fixed: php 5.2 compatibility.
 
 = 1.0.1 =
 *  Initial version.
@@ -1445,7 +1565,7 @@ This vulnerability was discovered by Fortinet's FortiGuard Labs.
 1.  Photo Gallery - Popup View   
 2.  Photo Gallery - Thumbnails View   
 3.  Photo Gallery - Image Browser View 
-4.  Photo Gallery - Mansory View (Premium version)   
+4.  Photo Gallery - Masonry View (Premium version)
 5.  Photo Gallery - Mosaic View (Premium version) 
-6.  Photo Gallery - Shorecode popup   
+6.  Photo Gallery - Shortcode popup
 7.  Photo Gallery - Galleries list

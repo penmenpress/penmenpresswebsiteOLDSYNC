@@ -421,17 +421,11 @@ class BWGUpdate {
       $wpdb->query($file_paths_tbl);
     }
 
-    if ( version_compare($version, '1.5.19' ) == -1 ) {
-      $rows = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'bwg_image');
-      if ( !empty($rows) ) {
-        foreach ( $rows as $row ) {
-          $wpdb->update($wpdb->prefix . 'bwg_image',
-            array( 'date' => date('Y-m-d H:i:s', strtotime($row->date) )),
-            array( 'id' => $row->id )
-          );
-        }
-      }
+    if ( version_compare($version, '1.5.23' ) == -1 ) {
+      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_file_paths ADD `resolution_thumb` varchar(15)");
+      $wpdb->query("ALTER TABLE " . $wpdb->prefix . "bwg_image ADD `resolution_thumb` varchar(128)");
     }
+
     return;
   }
 }

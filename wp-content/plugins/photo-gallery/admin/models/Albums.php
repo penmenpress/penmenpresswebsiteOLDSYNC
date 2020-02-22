@@ -269,6 +269,8 @@ class AlbumsModel_bwg {
     }
     $user_data = get_userdata($row->author);
     $row->author = ($user_data != FALSE ? $user_data->display_name : '');
+    $row->name = stripslashes(esc_html($row->name));
+    $row->description = stripslashes(esc_html($row->description));
 
     return $row;
   }
@@ -288,11 +290,11 @@ class AlbumsModel_bwg {
     $slug = WDWLibrary::get('slug');
     $slug = $this->create_unique_slug((empty($slug) ? $name : $slug), $id);
     $old_slug = WDWLibrary::get('old_slug');
-	$published = WDWLibrary::get('published', 0);
-    $preview_image = WDWLibrary::get('preview_image');
-    $description = WDWLibrary::get('description', '', FALSE);
+	$published = WDWLibrary::get('published', 0, 'intval');
+    $preview_image = WDWLibrary::get('preview_image', '', 'esc_url_raw');
+    $description = strip_tags(htmlspecialchars_decode(WDWLibrary::get('description', '', 'wp_filter_post_kses')),"<b>,<p>,<a>,<strong>,<span>");
     $albumgallery_ids = WDWLibrary::get('albumgallery_ids');
-    $modified_date = WDWLibrary::get('modified_date', time());
+    $modified_date = WDWLibrary::get('modified_date', time(),'intval');
     $data = array(
       'name' => $name,
       'slug' => $slug,

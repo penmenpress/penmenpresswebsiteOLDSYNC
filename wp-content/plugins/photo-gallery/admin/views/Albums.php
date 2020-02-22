@@ -98,9 +98,9 @@ class AlbumsView_bwg extends AdminView_bwg {
 							<strong class="has-media-icon">
 								<a href="<?php echo $edit_url; ?>">
 								  <span class="media-icon image-icon">
-									<img class="preview-image" title="<?php echo $row->name; ?>" src="<?php echo $preview_image; ?>" width="60" height="60" />
+									<img class="preview-image" title="<?php echo esc_attr( $row->name ); ?>" src="<?php echo esc_url( $preview_image ); ?>" width="60" height="60" />
 								  </span>
-								  <?php echo $row->name; ?>
+								  <?php echo esc_html( $row->name ); ?>
 								</a>
 								<?php if ( !$row->published ) { ?>
 								  — <span class="post-state"><?php _e('Unpublished', BWG()->prefix); ?></span>
@@ -111,7 +111,7 @@ class AlbumsView_bwg extends AdminView_bwg {
 								<span><a href="<?php echo $publish_url; ?>"><?php echo ($row->published ? __('Unpublish', BWG()->prefix) : __('Publish', BWG()->prefix)); ?></a> |</span>
 								<span><a href="<?php echo $duplicate_url; ?>"><?php _e('Duplicate', BWG()->prefix); ?></a> |</span>
 								<span class="trash"><a onclick="if (!confirm('<?php echo addslashes(__('Do you want to delete selected item?', BWG()->prefix)); ?>')) {return false;}" href="<?php echo $delete_url; ?>"><?php _e('Delete', BWG()->prefix); ?></a> |</span>
-								<span><a href="<?php echo $preview_url; ?>" target="_blank"><?php _e('Preview', BWG()->prefix); ?></a></span>
+								<span><a href="<?php echo esc_url( $preview_url ); ?>" target="_blank"><?php _e('Preview', BWG()->prefix); ?></a></span>
 							</div>
 							<button class="toggle-row" type="button">
 								<span class="screen-reader-text"><?php _e('Show more details', BWG()->prefix); ?></span>
@@ -172,7 +172,7 @@ class AlbumsView_bwg extends AdminView_bwg {
     <div class="bwg-page-header">
       <div class="wd-page-title wd-header">
         <h1 class="wp-heading-inline"><?php _e('Gallery Group Title', BWG()->prefix); ?></h1>
-        <input type="text" id="name" name="name" value="<?php echo !empty($row->name) ? $row->name : ''; ?>">
+        <input type="text" id="name" name="name" value="<?php echo !empty($row->name) ? esc_attr( $row->name ) : ''; ?>">
         <div class="bwg-page-actions">
           <?php
           if ( $params['shortcode_id'] ) {
@@ -208,9 +208,9 @@ class AlbumsView_bwg extends AdminView_bwg {
 					<a href="<?php echo $params['add_preview_image_action']; ?>" id="button_preview_image" class="button wd-preview-image-btn thickbox thickbox-preview <?php echo ($row->preview_image == '') ? 'bwg_not-preview-image' : '' ?>" title="<?php _e('Add Preview Image', BWG()->prefix); ?>" onclick="return false;" style="<?php echo !empty($row->preview_image)?'display:none;':'' ?>">
 						<span class="dashicons dashicons-camera"></span><?php _e('Add', BWG()->prefix); ?>
 					</a>
-					<img id="img_preview_image" src="<?php echo $row->preview_image ? (BWG()->upload_url . $row->preview_image) : ''; ?>" style="<?php echo empty($row->preview_image)?'display:none;':'' ?>"/>
+					<img id="img_preview_image" src="<?php echo $row->preview_image ? (BWG()->upload_url . esc_url( $row->preview_image )) : ''; ?>" style="<?php echo empty($row->preview_image)?'display:none;':'' ?>"/>
 					<span id="delete_preview_image" class="spider_delete_img dashicons dashicons-no-alt" onclick="spider_remove_url('button_preview_image', 'preview_image', 'delete_preview_image', 'img_preview_image')" style="<?php echo empty($row->preview_image)?'display:none;':'' ?>"></span>
-					<input type="hidden" id="preview_image" name="preview_image" value="<?php echo $row->preview_image; ?>"/>
+					<input type="hidden" id="preview_image" name="preview_image" value="<?php echo esc_url( $row->preview_image ); ?>"/>
 					<p class="description"><?php _e('Add a preview image, which will be displayed as the cover image of the gallery group when it is published in a parent gallery group.', BWG()->prefix); ?></p>
 				  </div>
 				</div>
@@ -239,18 +239,18 @@ class AlbumsView_bwg extends AdminView_bwg {
               <div class="inside">
                 <div class="wd-group">
                   <label class="wd-label"><?php _e('Author', BWG()->prefix); ?></label>
-                  <span><?php echo $row->author; ?></span>
+                  <span><?php echo esc_html( $row->author ); ?></span>
                 </div>
                 <div class="wd-group">
                   <label class="wd-label" for="slug"><?php _e('Slug', BWG()->prefix); ?></label>
-                  <input type="text" id="slug" name="slug" value="<?php echo $row->slug; ?>">
-                  <input type="hidden" id="old_slug" name="old_slug" value="<?php echo $row->slug; ?>">
+                  <input type="text" id="slug" name="slug" value="<?php echo esc_attr( $row->slug ); ?>">
+                  <input type="hidden" id="old_slug" name="old_slug" value="<?php echo esc_attr( $row->slug ); ?>">
                 </div>
                 <div class="wd-group">
                   <label class="wd-label" for="description"><?php _e('Description', BWG()->prefix); ?> </label>
                   <?php
                   if ( user_can_richedit() && $enable_wp_editor ) {
-                    wp_editor($row->description, 'description', array(
+                    wp_editor(esc_html( $row->description ), 'description', array(
                       'teeny' => TRUE,
                       'textarea_name' => 'description',
                       'media_buttons' => FALSE,
@@ -259,7 +259,7 @@ class AlbumsView_bwg extends AdminView_bwg {
                   }
                   else {
                     ?>
-                    <textarea cols="36" rows="5" id="description" name="description" class="wd-resize-vertical"><?php echo $row->description; ?></textarea>
+                    <textarea cols="36" rows="5" id="description" name="description" class="wd-resize-vertical"><?php echo esc_html( $row->description ); ?></textarea>
                     <?php
                   }
                   ?>
@@ -278,7 +278,7 @@ class AlbumsView_bwg extends AdminView_bwg {
               <div id="bwg_tabs" class="bwg_tabs">
                 <?php
                 foreach ($params['albums_galleries'] as $item) {
-                  $item->published = !$item->published ? 'dashicons-hidden' : 'hidden';
+                  $item->published = !$item->published ? 'dashicons-hidden' : 'bwg-hidden';
                   $item->preview_image = 'style="background-image:url(&quot;'. $item->preview_image .'&quot;)"';
                   echo $this->albumgallery_template($item);
                 }

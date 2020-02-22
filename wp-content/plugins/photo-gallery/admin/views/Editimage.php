@@ -6,13 +6,13 @@ class EditimageView_bwg {
 
   public function display() {
 	wp_print_scripts('jquery');
-    $popup_width = (int) WDWLibrary::get('width', 650);
+    $popup_width = WDWLibrary::get('width', 650, 'intval');
     $image_width = $popup_width - 40;
-    $popup_height = (int) WDWLibrary::get('height', 500);
+    $popup_height = WDWLibrary::get('height', 500, 'intval');
     $image_height = $popup_height - 40;
 
-    $instagram_post_width  = (int) WDWLibrary::get('instagram_post_width', $image_width);
-    $instagram_post_height = (int) WDWLibrary::get('instagram_post_height', $image_height);
+    $instagram_post_width  = WDWLibrary::get('instagram_post_width', $image_width, 'intval');
+    $instagram_post_height = WDWLibrary::get('instagram_post_height', $image_height, 'intval');
     $modified_date = WDWLibrary::get('modified_date', '');
     $FeedbackSocialProofHeight = 176;
     if ( $instagram_post_width ) {
@@ -96,11 +96,11 @@ class EditimageView_bwg {
   }
 
   public function thumb_display() {
-    $popup_width = ((int) (isset($_GET['width']) ? esc_html($_GET['width']) : '1000')) - 30;
+    $popup_width = WDWLibrary::get('width', 1000, 'intval') - 30;
     $image_width = $popup_width - 40;
-    $popup_height = ((int) (isset($_GET['height']) ? esc_html($_GET['height']) : '600')) - 50;
+    $popup_height = WDWLibrary::get('width', 600, 'intval') - 50;
     $image_height = $popup_height - 40;
-    $image_id = (isset($_GET['image_id']) ? esc_html($_GET['image_id']) : '0');
+    $image_id = WDWLibrary::get('image_id', 0, 'intval');
     $modified_date = WDWLibrary::get('modified_date', '');
     ?>
     <div style="display:table; width:100%; height:<?php echo $popup_height; ?>px;">
@@ -216,6 +216,8 @@ class EditimageView_bwg {
         <?php
       }
       $where = ' `id` = ' . $image_id;
+      $resolution_thumb = intval($thumb_width)."x".intval($thumb_height);
+      WDWLibrary::update_thumb_dimansions($resolution_thumb, $where);
       $updated_image = WDWLibrary::update_image_modified_date( $where );
       $image_data->image_url = WDWLibrary::image_url_version($image_data->image_url, $updated_image['modified_date']);
     }
@@ -315,7 +317,7 @@ class EditimageView_bwg {
 		  <input id="h" type="hidden" name="h" value="" />
 		</form>
 
-    <div id="croped_preview"  class="hidden wp-core-ui">
+    <div id="croped_preview"  class="bwg-hidden wp-core-ui">
       <span id="success_msg" class="notice notice-success"><p><?php _e('The thumbnail was successfully cropped.', BWG()->prefix); ?></p></span>
       <div id="croped_image_cont" style="height: 445px; display: grid;">
         <img id='croped_image_thumb'>
@@ -437,8 +439,8 @@ class EditimageView_bwg {
     $image_data = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . $wpdb->prefix . 'bwg_image WHERE id="%d"', $id));
     if ( !$image_data ) {
       $image_data = new stdClass();
-      $image_data->image_url = (isset($_GET['image_url']) ? esc_html(stripcslashes($_GET['image_url'])) : '');
-      $image_data->thumb_url = (isset($_GET['thumb_url']) ? esc_html(stripcslashes($_GET['thumb_url'])) : '');
+      $image_data->image_url = WDWLibrary::get('image_url', '', 'esc_url_raw');
+      $image_data->thumb_url = WDWLibrary::get('thumb_url', '', 'esc_url_raw');
     }
     $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
     $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
@@ -450,19 +452,19 @@ class EditimageView_bwg {
   }
 
   public function rotate($image_data = array()) {
-    $popup_width = ((int) (isset($_GET['width']) ? esc_html($_GET['width']) : '650')) - 30;
+    $popup_width = WDWLibrary::get('width', 650, 'intval') - 30;
     $image_width = $popup_width - 40;
-    $popup_height = ((int) (isset($_GET['height']) ? esc_html($_GET['height']) : '500')) - 55;
+    $popup_height = WDWLibrary::get('height', 500, 'intval') - 55;
     $image_height = $popup_height - 70;
-    $image_id = (isset($_GET['image_id']) ? esc_html($_GET['image_id']) : '0');
-    $edit_type = (isset($_POST['edit_type']) ? esc_html($_POST['edit_type']) : '');
-    $brightness_val = (isset($_POST['brightness_val']) ? esc_html($_POST['brightness_val']) : 0);
-    $contrast_val = (isset($_POST['contrast_val']) ? esc_html($_POST['contrast_val']) : 0);
+    $image_id = WDWLibrary::get('image_id', 0, 'intval');
+    $edit_type = WDWLibrary::get('edit_type');
+    $brightness_val = WDWLibrary::get('brightness_val', 0, 'intval');
+    $contrast_val = WDWLibrary::get('contrast_val', 0, 'intval');
     $image_data = new stdClass();
     $modified_date = time();
-    if ( isset($_GET['image_url']) ) {
-      $image_data->image_url = (isset($_GET['image_url']) ? esc_html(stripcslashes($_GET['image_url'])) : '');
-      $image_data->thumb_url = (isset($_GET['thumb_url']) ? esc_html(stripcslashes($_GET['thumb_url'])) : '');
+    if ( !empty(WDWLibrary::get('image_url')) ) {
+      $image_data->image_url = WDWLibrary::get('image_url', '', 'esc_url_raw');
+      $image_data->thumb_url = WDWLibrary::get('thumb_url', '', 'esc_url_raw');
       $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
       $thumb_filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->thumb_url, ENT_COMPAT | ENT_QUOTES);
       $form_action = add_query_arg(array(
@@ -772,13 +774,18 @@ class EditimageView_bwg {
     }
     elseif ( $edit_type == 'recover' ) {
       global $wpdb;
-      $id = ((isset($_POST['image_id'])) ? (int) esc_html(stripslashes($_POST['image_id'])) : 0);
+      $id = WDWLibrary::get('image_id', 0, 'intval');
       $thumb_width = BWG()->options->thumb_width;
       $thumb_height = BWG()->options->thumb_height;
       $this->recover_image($id, $thumb_width, $thumb_height);
     }
     @ini_restore('memory_limit');
     if ( !empty($edit_type) ) {
+      $resolution_thumb = WDWLibrary::get_thumb_size( $image_data->thumb_url );
+      if ( $resolution_thumb != '' ) {
+        WDWLibrary::update_thumb_dimansions($resolution_thumb, "id = $image_id");
+      }
+
       $where = ' `id` = ' . $image_id;
       $updated_image = WDWLibrary::update_image_modified_date( $where );
       $image_data->image_url = WDWLibrary::image_url_version($image_data->image_url, $updated_image['modified_date']);

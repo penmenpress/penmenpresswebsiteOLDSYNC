@@ -49,7 +49,7 @@ class AlbumsgalleriesController_bwg {
     $params = array();
     $params['page_title'] = __('Galleries / Gallery groups', BWG()->prefix);
     $params['page_url'] = $this->page;
-    $params['album_id'] = WDWLibrary::get('album_id', 0);
+    $params['album_id'] = WDWLibrary::get('album_id', 0, 'intval');
     $params['order'] = WDWLibrary::get('order', 'asc');
     $params['orderby'] = WDWLibrary::get('orderby', 'is_album');
     // To prevent SQL injections.
@@ -58,10 +58,10 @@ class AlbumsgalleriesController_bwg {
       $params['orderby'] = 'is_album';
     }
     $params['items_per_page'] = $this->items_per_page;
-    $page = (int) WDWLibrary::get('paged', 1);
+    $page = WDWLibrary::get('paged', 1, 'intval');
     $page_num = $page ? ($page - 1) * $params['items_per_page'] : 0;
     $params['page_num'] = $page_num;
-    $params['search'] = WDWLibrary::get('s', '');
+    $params['search'] = WDWLibrary::get('s');
 
     $params['rows'] = $this->model->get_rows_data($params);
     $params['total'] = $this->model->total($params);

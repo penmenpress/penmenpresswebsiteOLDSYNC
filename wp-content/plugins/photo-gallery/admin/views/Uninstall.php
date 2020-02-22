@@ -25,30 +25,11 @@ class UninstallView_bwg extends AdminView_bwg {
    * @param $params
    */
   public function body( $params = array() ) {
-    $deactivate_url = add_query_arg(array(
-                                      'action' => 'deactivate',
-                                      'plugin' => BWG()->main_file,
-                                    ), admin_url('plugins.php'));
-    $deactivate_url = wp_nonce_url($deactivate_url, 'deactivate-plugin_' . BWG()->main_file);
-    echo $this->title(array(
-                        'title' => $params['page_title'],
-                        'title_class' => 'wd-header',
-                        'add_new_button' => FALSE,
-                      ));
-
-    if ( isset($params['deactivate']) && $params['deactivate'] == TRUE ) {
-      ?>
-      <p><strong><?php echo sprintf(__("%s to Finish the Uninstallation and %s will be Deactivated Automatically.", BWG()->prefix), '<a href="' . $deactivate_url . '" class="bwg_deactivate_link" data-uninstall="1">' . __("Click Here", BWG()->prefix) . '</a>', BWG()->nicename); ?></strong></p>
-      <?php
-
-      return;
-    }
-
     ?>
     <div class="goodbye-text">
       <?php
-      $support_team = '<a href="https://10web.io/contact-us/?source=photo-gallery" target="_blank">' . __('support team', BWG()->prefix) . '</a>';
-      $contact_us = '<a href="https://10web.io/contact-us/?source=photo-gallery" target="_blank">' . __('Contact us', BWG()->prefix) . '</a>';
+      $support_team = '<a href="https://10web.io/contact-us/' . BWG()->utm_source . '" target="_blank">' . __('support team', BWG()->prefix) . '</a>';
+      $contact_us = '<a href="https://10web.io/contact-us/' . BWG()->utm_source . '" target="_blank">' . __('Contact us', BWG()->prefix) . '</a>';
       echo sprintf(__("Before uninstalling the plugin, please Contact our %s. We'll do our best to help you out with your issue. We value each and every user and value what's right for our users in everything we do.<br />
       However, if anyway you have made a decision to uninstall the plugin, please take a minute to %s and tell what you didn't like for our plugins further improvement and development. Thank you !!!", BWG()->prefix), $support_team, $contact_us); ?>
     </div>

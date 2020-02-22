@@ -20,7 +20,7 @@ class WidgetView_bwg {
 		$show  = (!empty($instance['show']) ? $instance['show'] : "random");
 		$sort_by = 'order';
 		if ($show == 'random') {
-			$sort_by = 'RAND()';
+			$sort_by = 'random';
 		}
 		$order_by = 'ASC';
 		if ($show == 'last') {
@@ -183,23 +183,23 @@ class WidgetView_bwg {
 		  </select>
 		</p>
 		<script>
-      function bwg_change_type(event, obj) {
-        var div = jQuery(obj).closest("div");
-        if (jQuery(jQuery(div).find(".sel_gallery")[0]).prop("checked")) {
-          jQuery(jQuery(div).find("#p_galleries")).css("display", "");
-          jQuery(jQuery(div).find("#p_albums")).css("display", "none");
-          jQuery(obj).nextAll(".bwg_hidden").first().attr("value", "gallery");
-          jQuery(jQuery(div).find("#view_type_container")).css("display", "block");
-          jQuery(jQuery(div).find("#view_type_container")).next("p.description").css("display", "block");
-        }
-        else {
-          jQuery(jQuery(div).find("#p_galleries")).css("display", "none");
-          jQuery(jQuery(div).find("#p_albums")).css("display", "");
-          jQuery(obj).nextAll(".bwg_hidden").first().attr("value", "album");
-          jQuery(jQuery(div).find("#view_type_container")).css("display", "none");
-          jQuery(jQuery(div).find("#view_type_container")).next("p.description").css("display", "none");
-        }
-      }
+		  function bwg_change_type(event, obj) {
+			var div = jQuery(obj).closest("div");
+			if (jQuery(jQuery(div).find(".sel_gallery")[0]).prop("checked")) {
+			  jQuery(jQuery(div).find("#p_galleries")).css("display", "");
+			  jQuery(jQuery(div).find("#p_albums")).css("display", "none");
+			  jQuery(obj).nextAll(".bwg_hidden").first().attr("value", "gallery");
+			  jQuery(jQuery(div).find("#view_type_container")).css("display", "block");
+			  jQuery(jQuery(div).find("#view_type_container")).next("p.description").css("display", "block");
+			}
+			else {
+			  jQuery(jQuery(div).find("#p_galleries")).css("display", "none");
+			  jQuery(jQuery(div).find("#p_albums")).css("display", "");
+			  jQuery(obj).nextAll(".bwg_hidden").first().attr("value", "album");
+			  jQuery(jQuery(div).find("#view_type_container")).css("display", "none");
+			  jQuery(jQuery(div).find("#view_type_container")).next("p.description").css("display", "none");
+			}
+		  }
 		</script>
     <?php
 	}

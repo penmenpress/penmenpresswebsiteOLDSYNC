@@ -23,7 +23,7 @@ class FilemanagerController {
   }
 
   public function execute() {
-    $task = isset($_REQUEST['task']) ? stripslashes(esc_html($_REQUEST['task'])) : 'display';
+    $task = isset($_REQUEST['task']) ? stripslashes(WDWLibrary::get('task','','sanitize_text_field','REQUEST')) : 'display';
     if (method_exists($this, $task)) {
       $this->$task();
     }
@@ -153,14 +153,15 @@ class FilemanagerController {
 	}
 
   public function make_dir() {
+
     global $wpdb;
-    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', esc_html($_REQUEST['dir'])) : '');
+    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', WDWLibrary::get('dir','','sanitize_text_field','REQUEST')) : '');
     $input_dir = htmlspecialchars_decode($input_dir, ENT_COMPAT | ENT_QUOTES);
     $input_dir = $this->esc_dir($input_dir);
 
     $cur_dir_path = $input_dir == '' ? $this->uploads_dir : $this->uploads_dir . '/' . $input_dir;
 
-    $new_dir_path_name = isset($_REQUEST['new_dir_name']) ? stripslashes(esc_html($_REQUEST['new_dir_name'])) : '';
+    $new_dir_path_name = isset($_REQUEST['new_dir_name']) ? stripslashes(WDWLibrary::get('new_dir_name','','sanitize_text_field','REQUEST')) : '';
 
     // Do not sanitize folder name, if it contents mime types in name
     $mime_types = wp_get_mime_types();
@@ -180,12 +181,13 @@ class FilemanagerController {
       $msg = '';
       $path = $input_dir . '/';
       $data = array(
-      'is_dir' => 1,
-      'path' => $path,
-      'name' => $new_dir_path_name,
-      'alt' => str_replace("_", " ", $new_dir_path_name),
-      'filename' => str_replace("_", " ", $new_dir_path_name),
-      'thumb' => '/filemanager/images/dir.png'
+		'is_dir' => 1,
+		'path' => $path,
+		'name' => $new_dir_path_name,
+		'alt' => str_replace("_", " ", $new_dir_path_name),
+		'filename' => str_replace("_", " ", $new_dir_path_name),
+		'thumb' => '/filemanager/images/dir.png',
+		'date_modified' => date("Y-m-d H:i:s")
       );
       $wpdb->insert($wpdb->prefix . 'bwg_file_paths', $data);
       mkdir($new_dir_path);
@@ -196,8 +198,8 @@ class FilemanagerController {
       'bwg_width' => '850',
       'bwg_height' => '550',
       'task' => 'display',
-      'extensions' => esc_html($_REQUEST['extensions']),
-      'callback' => esc_html($_REQUEST['callback']),
+      'extensions' => WDWLibrary::get('extensions'),
+      'callback' => WDWLibrary::get('callback'),
       'dir' => $input_dir,
       'TB_iframe' => '1',
     );
@@ -207,11 +209,11 @@ class FilemanagerController {
     exit;
   }
 
-	public function parsing_items() {
+  public function parsing_items() {
 		$dir = $this->model->get_from_session('dir', '');
 		$dir = ($dir == '' || $dir == '/') ? '/' : $dir .'/';
-		$input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', esc_html($_REQUEST['dir'])) : '');
-		$valid_types = explode(',', isset($_REQUEST['extensions']) ? strtolower(esc_html($_REQUEST['extensions'])) : '*');
+		$input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', WDWLibrary::get('dir','','sanitize_text_field','REQUEST')) : '');
+		$valid_types = explode(',', isset($_REQUEST['extensions']) ? strtolower(WDWLibrary::get('extensions','','sanitize_text_field','REQUEST')) : '*');
 		$parsing = $this->model->files_parsing_db(array(
 			'refresh' => true,
 			'dir' => BWG()->upload_dir . $dir,
@@ -225,8 +227,8 @@ class FilemanagerController {
 			'width' => '850',
 			'height' => '550',
 			'task' => 'display',
-			'extensions' => esc_html($_REQUEST['extensions']),
-			'callback' => esc_html($_REQUEST['callback']),
+			'extensions' => WDWLibrary::get('extensions'),
+			'callback' => WDWLibrary::get('callback'),
 			'dir' => $input_dir,
 			'TB_iframe' => '1',
 		);
@@ -238,18 +240,19 @@ class FilemanagerController {
 
   public function rename_item() {
 	global $wpdb;
-    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', esc_html($_REQUEST['dir'])) : '');
+    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', WDWLibrary::get('dir','','sanitize_text_field','REQUEST')) : '');
     $input_dir = htmlspecialchars_decode($input_dir, ENT_COMPAT | ENT_QUOTES);
     $input_dir = $this->esc_dir($input_dir);
 
     $cur_dir_path = $input_dir == '' ? $this->uploads_dir : $this->uploads_dir . '/' . $input_dir;
 
-    $file_names = explode('**#**', (isset($_REQUEST['file_names']) ? stripslashes(esc_html($_REQUEST['file_names'])) : ''));
+    $file_names = explode('**#**', (isset($_REQUEST['file_names']) ? stripslashes(WDWLibrary::get('file_names','','sanitize_text_field','REQUEST')) : ''));
+
     $file_name = $file_names[0];
     $file_name = htmlspecialchars_decode($file_name, ENT_COMPAT | ENT_QUOTES);
     $file_name = str_replace('../', '', $file_name);
 
-    $file_new_name = (isset($_REQUEST['file_new_name']) ? stripslashes(esc_html($_REQUEST['file_new_name'])) : '');
+    $file_new_name = (isset($_REQUEST['file_new_name']) ? stripslashes(WDWLibrary::get('file_new_name','','sanitize_text_field','REQUEST')) : '');
     $file_new_name = htmlspecialchars_decode($file_new_name, ENT_COMPAT | ENT_QUOTES);
     $file_new_name = $this->esc_dir($file_new_name);
 
@@ -337,8 +340,8 @@ class FilemanagerController {
       'bwg_width' => '850',
       'bwg_height' => '550',
       'task' => 'display',
-      'extensions' => esc_html($_REQUEST['extensions']),
-      'callback' => esc_html($_REQUEST['callback']),
+      'extensions' => WDWLibrary::get('extensions'),
+      'callback' => WDWLibrary::get('callback'),
       'dir' => $input_dir,
       'TB_iframe' => '1',
     );
@@ -350,13 +353,13 @@ class FilemanagerController {
 
   public function remove_items() {
     global $wpdb;
-    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', ($_REQUEST['dir'])) : '');
+    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', (WDWLibrary::get('dir','','sanitize_text_field','REQUEST'))) : '');
     $input_dir = htmlspecialchars_decode($input_dir, ENT_COMPAT | ENT_QUOTES);
     $input_dir = $this->esc_dir($input_dir);
 
     $cur_dir_path = $input_dir == '' ? $this->uploads_dir : $this->uploads_dir . '/' . $input_dir;
 
-    $file_names = explode('**#**', (isset($_REQUEST['file_names']) ? stripslashes(esc_html($_REQUEST['file_names'])) : ''));
+    $file_names = explode('**#**', (isset($_REQUEST['file_names']) ? stripslashes(WDWLibrary::get('file_names','','sanitize_text_field','REQUEST')) : ''));
     $path = $input_dir .'/';
     $msg = '';
 	$file_path_tbl = $wpdb->prefix . 'bwg_file_paths';
@@ -398,8 +401,8 @@ class FilemanagerController {
       'bwg_width' => '850',
       'bwg_height' => '550',
       'task' => 'show_file_manager',
-      'extensions' => esc_html($_REQUEST['extensions']),
-      'callback' => esc_html($_REQUEST['callback']),
+      'extensions' => WDWLibrary::get('extensions'),
+      'callback' => WDWLibrary::get('callback'),
       'dir' => $input_dir,
       'TB_iframe' => '1',
     );
@@ -411,30 +414,31 @@ class FilemanagerController {
 
   public function paste_items() {
 	global $wpdb;
-	$input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', ($_REQUEST['dir'])) : '');
+	$input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', (WDWLibrary::get('dir','','sanitize_text_field','REQUEST'))) : '');
 	$input_dir = htmlspecialchars_decode($input_dir, ENT_COMPAT | ENT_QUOTES);
 	$input_dir = $this->esc_dir($input_dir);
+
 
 	$msg = '';
 	$flag = TRUE;
 
-	$file_names = explode('**#**', (isset($_REQUEST['clipboard_files']) ? stripslashes($_REQUEST['clipboard_files']) : ''));
-	$src_dir = (isset($_REQUEST['clipboard_src']) ? stripslashes($_REQUEST['clipboard_src']) : '');
+	$file_names = explode('**#**', (isset($_REQUEST['clipboard_files']) ? stripslashes(WDWLibrary::get('clipboard_files','','sanitize_text_field','REQUEST')) : ''));
+	$src_dir = (isset($_REQUEST['clipboard_src']) ? stripslashes(WDWLibrary::get('clipboard_src','','sanitize_text_field','REQUEST')) : '');
 	$relative_source_dir = $src_dir;
 	$src_dir = $src_dir == '' ? $this->uploads_dir : $this->uploads_dir . '/' . $src_dir;
 	$src_dir = htmlspecialchars_decode($src_dir, ENT_COMPAT | ENT_QUOTES);
 	$src_dir = $this->esc_dir($src_dir);
 
-	$dest_dir = (isset($_REQUEST['clipboard_dest']) ? stripslashes($_REQUEST['clipboard_dest']) : '');
+	$dest_dir = (isset($_REQUEST['clipboard_dest']) ? stripslashes(WDWLibrary::get('clipboard_dest','','sanitize_text_field','REQUEST')) : '');
 	$dest_dir = $dest_dir == '' ? $this->uploads_dir : $this->uploads_dir . '/' . $dest_dir;
 	$dest_dir = htmlspecialchars_decode($dest_dir, ENT_COMPAT | ENT_QUOTES);
 	$dest_dir = $this->esc_dir($dest_dir);
 
-	$path_old = (isset($_REQUEST['clipboard_src']) ? stripslashes($_REQUEST['clipboard_src']) .'/' : '/');
-	$path_new = (isset($_REQUEST['clipboard_dest']) ? stripslashes($_REQUEST['clipboard_dest']) .'/' : '/');
+	$path_old = (isset($_REQUEST['clipboard_src']) ? stripslashes(WDWLibrary::get('clipboard_src','','sanitize_text_field','REQUEST')) .'/' : '/');
+	$path_new = (isset($_REQUEST['clipboard_dest']) ? stripslashes(WDWLibrary::get('clipboard_dest','','sanitize_text_field','REQUEST')) .'/' : '/');
 	$file_path_tbl = $wpdb->prefix . 'bwg_file_paths';
 
-	switch ((isset($_REQUEST['clipboard_task']) ? stripslashes($_REQUEST['clipboard_task']) : '')) {
+	switch ((isset($_REQUEST['clipboard_task']) ? stripslashes(WDWLibrary::get('clipboard_task','','sanitize_text_field','REQUEST')) : '')) {
 		case 'copy': {
 			foreach ($file_names as $file_name) {
 				$file = $wpdb->get_row( 'SELECT * FROM `' . $file_path_tbl . '` WHERE `path` ="' . $path_old . '" AND `name`="' . $file_name . '"', 'ARRAY_A' );
@@ -493,7 +497,7 @@ class FilemanagerController {
 				}
 				else {
 					$path_where = '/'. $file_name .'/';
-					$path_file = (isset($_REQUEST['clipboard_dest']) ? stripslashes($_REQUEST['clipboard_dest']) .'/' : '');
+					$path_file = (isset($_REQUEST['clipboard_dest']) ? stripslashes(WDWLibrary::get('clipboard_dest','','sanitize_text_field','REQUEST')) .'/' : '');
 
 					$file['path'] = $path_file;
 					$file['name'] = !empty($new_file_title) ? $new_file_title : $file['name'];
@@ -588,11 +592,12 @@ class FilemanagerController {
       'bwg_width' => '850',
       'bwg_height' => '550',
       'task' => 'show_file_manager',
-      'extensions' => esc_html($_REQUEST['extensions']),
-      'callback' => esc_html($_REQUEST['callback']),
+      'extensions' => WDWLibrary::get('extensions','','sanitize_text_field','REQUEST'),
+      'callback' => WDWLibrary::get('callback','','sanitize_text_field','REQUEST'),
       'dir' => $input_dir,
       'TB_iframe' => '1',
     );
+
     $query_url = wp_nonce_url( admin_url('admin-ajax.php'), 'addImages', 'bwg_nonce' );
     $query_url = add_query_arg($args, $query_url);
     header('Location: ' . $query_url);
@@ -602,16 +607,17 @@ class FilemanagerController {
   public function import_items() {
     $args = array(
       'action' => 'bwg_UploadHandler',
-      'importer_thumb_width' => esc_html($_REQUEST['importer_thumb_width']),
-      'importer_thumb_height' => esc_html($_REQUEST['importer_thumb_height']),
-      'callback' => esc_html($_REQUEST['callback']),
-      'file_namesML' => esc_html($_REQUEST['file_namesML']),
-      'importer_img_width' => esc_html($_REQUEST['importer_img_width']),
-      'importer_img_height' => esc_html($_REQUEST['importer_img_height']),
+      'importer_thumb_width' => WDWLibrary::get('importer_thumb_width','','intval','REQUEST'),
+      'importer_thumb_height' => WDWLibrary::get('importer_thumb_height','','intval','REQUEST'),
+      'callback' => WDWLibrary::get('callback','','sanitize_text_field','REQUEST'),
+      'file_namesML' => WDWLibrary::get('file_namesML','','sanitize_text_field','REQUEST'),
+      'importer_img_width' => WDWLibrary::get('importer_img_width','','intval','REQUEST'),
+      'importer_img_height' => WDWLibrary::get('importer_img_height','','intval','REQUEST'),
       'import' => 'true',
-      'redir' => esc_html($_REQUEST['dir']),
-      'dir' => esc_html($_REQUEST['dir']) . '/',
+      'redir' => WDWLibrary::get('dir','','sanitize_text_field','REQUEST'),
+      'dir' => WDWLibrary::get('dir','','sanitize_text_field','REQUEST') . '/',
     );
+
     $query_url = wp_nonce_url( admin_url('admin-ajax.php'), 'bwg_UploadHandler', 'bwg_nonce' );
     $query_url = add_query_arg($args, $query_url);
     header('Location: ' . $query_url);

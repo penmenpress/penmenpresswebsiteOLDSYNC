@@ -1,7 +1,7 @@
 <?php
 class BWGControllerGalleryBox {
   public function execute() {
-    $ajax_task = (isset($_POST['ajax_task']) ? esc_html($_POST['ajax_task']) : '');
+    $ajax_task = WDWLibrary::get('ajax_task');
     if (method_exists($this, $ajax_task)) {
 	 $this->$ajax_task();
     }
@@ -22,8 +22,8 @@ class BWGControllerGalleryBox {
 
   public function save_rate() {
     global $wpdb;
-    $image_id = (isset($_POST['image_id']) ? esc_html(stripslashes($_POST['image_id'])) : 0);
-    $rate = (isset($_POST['rate']) ? esc_html(stripslashes($_POST['rate'])) : '');
+    $image_id = WDWLibrary::get('image_id', 0, 'intval');
+    $rate = WDWLibrary::get('rate');
     $ip = BWG()->options->save_ip ? $_SERVER['REMOTE_ADDR'] : '';
     if ( !$ip || !$wpdb->get_var($wpdb->prepare('SELECT `image_id` FROM `' . $wpdb->prefix . 'bwg_image_rate` WHERE `ip`="%s" AND `image_id`="%d"', $ip, $image_id)) ) {
       $wpdb->insert($wpdb->prefix . 'bwg_image_rate', array(
@@ -48,7 +48,7 @@ class BWGControllerGalleryBox {
 
   public function save_hit_count() {
     global $wpdb;
-    $image_id = (isset($_POST['image_id']) ? esc_html(stripslashes($_POST['image_id'])) : 0);
+    $image_id = WDWLibrary::get('image_id', 0, 'intval');
     $wpdb->query($wpdb->prepare('UPDATE ' . $wpdb->prefix . 'bwg_image SET hit_count = hit_count + 1 WHERE id="%d"', $image_id));
   }
 
@@ -61,7 +61,7 @@ class BWGControllerGalleryBox {
 		$json =  array();
 		$error_messages = array();
 		// get post data.
-		$image_id = WDWLibrary::get('comment_image_id', '');
+		$image_id = WDWLibrary::get('comment_image_id', 0);
 		$name = trim(WDWLibrary::get('comment_name', ''));
 		$email = WDWLibrary::get('comment_email', '');
 		$comment = trim(WDWLibrary::get('comment_text', ''));
@@ -89,7 +89,7 @@ class BWGControllerGalleryBox {
 		}
 		if ( WDWLibrary::get('popup_enable_captcha') ) {
 			 WDWLibrary::bwg_session_start();
-			 $captcha = WDWLibrary::get('comment_captcha','');
+			 $captcha = WDWLibrary::get('comment_captcha');
 			 $session_captcha = (isset($_SESSION['bwg_captcha_code']) ? esc_html(stripslashes($_SESSION['bwg_captcha_code'])) : '');
 			 if ( empty($captcha) ) {
 				$error = true;
@@ -160,8 +160,8 @@ class BWGControllerGalleryBox {
 		global $wpdb;
 		$error = false;
 		$json = array();
-		$id_image = (isset($_POST['id_image']) ? (int) $_POST['id_image'] : 0);
-		$id_comment = (isset($_POST['id_comment']) ? (int) $_POST['id_comment'] : 0);
+		$id_image = WDWLibrary::get('id_image', 0, 'intval');
+		$id_comment = WDWLibrary::get('id_comment', 0, 'intval');
 		if ( $id_image && $id_comment ) {
 			$delete = $wpdb->query($wpdb->prepare('DELETE FROM `' . $wpdb->prefix . 'bwg_image_comment` WHERE `id` = "%d"', $id_comment));
 			$update = $wpdb->query($wpdb->prepare('UPDATE `' . $wpdb->prefix . 'bwg_image` SET `comment_count` = (CASE WHEN comment_count <= 0 THEN 0 ELSE `comment_count`-1 END) WHERE `id`="%d"', $id_image));

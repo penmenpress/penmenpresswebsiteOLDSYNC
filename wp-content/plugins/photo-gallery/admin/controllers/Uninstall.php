@@ -43,6 +43,7 @@ class UninstallController_bwg {
     $task = WDWLibrary::get('task');
 
     if ( method_exists($this, $task) ) {
+      check_admin_referer(BWG()->nonce, BWG()->nonce);
       $this->$task();
     }
     else {
@@ -95,10 +96,18 @@ class UninstallController_bwg {
     $this->model->delete_folder();
     $this->model->delete_db_tables($params);
     // Deactivate all addons.
-    WDWLibrary::deactivate_all_addons();
+    WDWLibrary::deactivate_all_addons(BWG()->main_file);
     $params['page_title'] = sprintf(__('Uninstall %s', BWG()->prefix), BWG()->nicename);
-    $params['deactivate'] = TRUE;
-
-    $this->view->display($params);
+    $deactivate_url =
+            add_query_arg(
+                array(
+                    'action'   => 'deactivate',
+                    'plugin'   => BWG()->main_file,
+                    '_wpnonce' => wp_create_nonce('deactivate-plugin_' . BWG()->main_file)
+                ),
+                admin_url('plugins.php')
+            );
+    wp_redirect($deactivate_url);
+    exit();
   }
 }

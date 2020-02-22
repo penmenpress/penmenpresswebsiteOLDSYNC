@@ -448,18 +448,34 @@
 .bwg-topbar-container * {
   box-sizing: border-box;
 }
-.bwg-topbar {
+.bwg-topbar-container .bwg-topbar {
   background-color: #FFFFFF;
   border: 1px solid #D0D0D080;
   border-radius: 7px;
   color: #000000;
-  padding: 5px;
+  padding: 10px;
 }
+
+.bwg-topbar_cont {
+  display: flex;
+}
+
+.bwg-topbar-container .bwg-topbar.bwg-topbar_support_forum {
+  background-color: #4786FF;
+  margin-left: 20px;
+}
+
+.bwg-topbar-container .bwg-topbar.bwg-topbar_support_forum:hover
+ {
+  background-color: #3077FF;
+  opacity:1
+}
+
 .bwg-topbar-content {
   display: flex;
   justify-content: space-between;
   flex: auto;
-  margin: 0 2px 0 0;
+  margin: 0 20px 0 0;
   padding: 10px 15px;
   height: 60px;
 }
@@ -486,17 +502,26 @@
   width: 170px;
   line-height: 50px;
 }
+
 .bwg-topbar-links * {
   font-size: 18px;
 }
 .bwg-topbar-links a,
 .bwg-topbar-links a:focus {
-  text-decoration: none;
   align-self: center;
   box-shadow: none;
   color: #000000;
-  cursor:pointer;
+  text-decoration: none;
 }
+
+.bwg-topbar-links a.bwg-topbar_support_forum {
+  color: #fff;
+}
+
+.bwg-topbar-links a.bwg-topbar_support_forum .help_icon {
+  margin-right: 10px;
+}
+
 .bwg-topbar-links a:hover {
   opacity: 0.5;
   text-decoration: none;
@@ -738,3 +763,12 @@
 	color: rgba(0, 115, 170, 0.8);
 }
 /* Add-ons end */
+@media screen and (max-width: 450px) {
+  .bwg-topbar_cont {
+    display: block;
+  }
+
+  .bwg-topbar-container .bwg-topbar.bwg-topbar_support_forum {
+    margin-left: 0px;
+  }
+}

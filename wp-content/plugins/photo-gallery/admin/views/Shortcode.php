@@ -1,6 +1,7 @@
 <?php
 
 class ShortcodeView_bwg extends AdminView_bwg {
+
   public function display( $params = array() ) {
     $from_menu = $params['from_menu'];
     if ( !$from_menu ) {
@@ -25,7 +26,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
     $form_attr = array(
       'id' => BWG()->prefix . '_shortcode_form',
       'name' => BWG()->prefix . '_shortcode_form',
-      'class' => BWG()->prefix . '_shortcode_form wd-form wp-core-ui js hidden',
+      'class' => BWG()->prefix . '_shortcode_form wd-form wp-core-ui js bwg-hidden',
       'action' => '#',
     );
     echo $this->form(ob_get_clean(), $form_attr);
@@ -50,7 +51,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
     <input type="hidden" id="currrent_id" name="currrent_id" value="" />
     <input type="hidden" id="title" name="title" value="" />
     <input type="hidden" id="bwg_insert" name="bwg_insert" value="" />
-    <div class="<?php echo (isset($_GET['callback']) && $_GET['callback']=='wdg_cb_tw/bwg') ? 'bwg_tw-container' : '' ?>">
+
+    <div class="<?php echo (isset($_GET['callback']) && $_GET['callback'] == 'wdg_cb_tw/bwg') ? 'bwg_tw-container' : '' ?>">
       <div class="bwg_tabs meta-box-sortables">
         <ul class="bwg-tabs">
           <li class="tabs">
@@ -422,12 +424,12 @@ class ShortcodeView_bwg extends AdminView_bwg {
         <div class="media-frame-toolbar">
           <div class="media-toolbar">
             <div class="media-toolbar-primary search-form">
-              <button class="button media-button button-primary button-large media-button-insert button-hero" type="button" id="insert" name="insert" onClick="bwg_insert_shortcode('');"><?php _e('Insert into post', BWG()->prefix); ?></button>
+              <button class="button media-button button-primary button-large media-button-insert button-hero" type="button" id="insert" name="insert" <?php if($params['elementor_callback']) { ?> data-callback="elementor" <?php } ?> onClick="bwg_insert_shortcode('');"><?php _e('Insert into post', BWG()->prefix); ?></button>
             </div>
             <?php if ( !BWG()->is_pro ) { ?>
               <div class="media-toolbar-primary search-form" style="float: left;">
             <span class="media-button button-large">
-              <a id="bwg_pro_version_link" class="bwg_link_shortcode" target="_blank" href="https://demo.10web.io/photo-gallery/"><?php _e('Please see ', BWG()->prefix) ?><span id="bwg_pro_version"><?php _e('Thumbnails', BWG()->prefix) ?></span> <?php _e('View in Premium version', BWG()->prefix) ?></a>
+              <a id="bwg_pro_version_link" class="bwg_link_shortcode" target="_blank" href="https://demo.10web.io/photo-gallery/<?php echo BWG()->utm_source; ?>"><?php _e('Please see ', BWG()->prefix) ?><span id="bwg_pro_version"><?php _e('Thumbnails', BWG()->prefix) ?></span> <?php _e('View in Premium version', BWG()->prefix) ?></a>
             </span>
               </div>
             <?php } ?>
@@ -438,9 +440,9 @@ class ShortcodeView_bwg extends AdminView_bwg {
       else {
         $tagtext = '';
         $tagfunction = '';
-        if ( isset($_POST['currrent_id']) ) {
-          $currrent_id = stripslashes($_POST['currrent_id']);
-          $title = ((isset($_POST['title'])) ? stripslashes($_POST['title']) : '');
+		$currrent_id = WDWLibrary::get('currrent_id', 0, 'intval');
+        if ( $currrent_id ) {
+          $title = WDWLibrary::get('title');
           $tagtext = '[Best_Wordpress_Gallery id="' . $currrent_id . '"' . $title . ']';
           $tagfunction = "<?php echo if( function_exists('photo_gallery') ) { photo_gallery(" . $currrent_id . "); } ?>";
         }
@@ -509,25 +511,32 @@ class ShortcodeView_bwg extends AdminView_bwg {
       var bwg_insert = 1;
       <?php
       if ($params['gutenberg_callback']) {
-      if ($params['gutenberg_id'] == 0) {
-      ?>
-      var content = '';
-      <?php
-      }
-      else {
-      ?>
-      var content = '[Best_Wordpress_Gallery id="<?php echo $params['gutenberg_id']; ?>"]';
-      <?php
-      }
-      }
-      elseif (!$from_menu) { ?>
+        if ($params['gutenberg_id'] == 0) {
+        ?>
+        var content = '';
+        <?php
+        }
+        else {
+        ?>
+        var content = '[Best_Wordpress_Gallery id="<?php echo $params['gutenberg_id']; ?>"]';
+        <?php
+        }
+      } elseif ( $params['elementor_callback'] ) {
+        ?>
+        if(jQuery(".elementor-control-bwg_elementor_shortcode input", window.parent.document).val() == "") {
+          var content = '';
+        } else {
+          var content = 'elementor_callback';
+        }
+        <?php
+      } elseif (!$from_menu) { ?>
       var content;
-      if (top.tinyMCE.activeEditor && !top.tinyMCE.activeEditor.hidden && top.tinyMCE.activeEditor.selection) {
-        content = top.tinyMCE.activeEditor.selection.getContent();
-      }
-      else {
-        content = bwg_get_textarea_selection(top.wpActiveEditor);
-      }
+        if (top.tinyMCE.activeEditor && !top.tinyMCE.activeEditor.hidden && top.tinyMCE.activeEditor.selection) {
+          content = top.tinyMCE.activeEditor.selection.getContent();
+        }
+        else {
+          content = bwg_get_textarea_selection(top.wpActiveEditor);
+        }
       <?php } else { ?>
       var content = jQuery("#bwg_shortcode").val();
       <?php } ?>
@@ -586,10 +595,9 @@ class ShortcodeView_bwg extends AdminView_bwg {
           jQuery("select[id=album] option[value='" + short_code['album_id'] + "']").attr('selected', 'selected');
           jQuery("select[id=tag] option[value='" + short_code['tag'] + "']").attr('selected', 'selected');
           bwg_gallery_type(short_code['gallery_type']);
-          if (short_code['use_option_defaults'] == 1) {
-            return false;
+          if (short_code['use_option_defaults'] != 1) {
+            jQuery("#use_option_defaults").prop('checked', false).trigger('change');
           }
-          jQuery("#use_option_defaults").prop('checked', false).trigger('change');
           switch (short_code['gallery_type']) {
             case 'thumbnails': {
               jQuery("#thumb_width").val(short_code['thumb_width']);
@@ -655,6 +663,12 @@ class ShortcodeView_bwg extends AdminView_bwg {
               }
               else {
                 jQuery("#image_title_show_hover_2").attr('checked', 'checked');
+              }
+              if( short_code['show_thumb_description'] == 1 ) {
+                jQuery("#thumb_desc_1").attr('checked', 'checked');
+              }
+              else {
+                jQuery("#thumb_desc_0").attr('checked', 'checked');
               }
               if (short_code['play_icon'] == 1) {
                 jQuery("#play_icon_yes").attr('checked', 'checked');
@@ -855,11 +869,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
               if (short_code['image_title'] == 'hover') {
                 jQuery("#mosaic_image_title_show_hover_1").attr('checked', 'checked');
               }
-              else if (short_code['image_title'] == 'show') {
-                jQuery("#mosaic_image_title_show_hover_0").attr('checked', 'checked');
-              }
               else {
-                jQuery("#mosaic_image_title_show_hover_2").attr('checked', 'checked');
+                jQuery("#mosaic_image_title_show_hover_0").attr('checked', 'checked');
               }
               if (short_code['play_icon'] == 1) {
                 jQuery("#mosaic_play_icon_yes").attr('checked', 'checked');
@@ -1039,7 +1050,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
               }
               jQuery("select[id=blog_style_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
               jQuery("select[id=blog_style_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
-			  if (short_code['showthumbs_name'] == 1) {
+			         if (short_code['showthumbs_name'] == 1) {
                 jQuery("#blog_style_thumb_name_yes").attr('checked', 'checked');
               }
               else {
@@ -1144,7 +1155,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
               jQuery("#album_images_per_page").val(short_code['compuct_album_images_per_page']);
               jQuery("select[id=compact_album_sort_by] option[value='" + short_code['all_album_sort_by'] + "']").attr('selected', 'selected');
               jQuery("select[id=compact_album_order_by] option[value='" + short_code['all_album_order_by'] + "']").attr('selected', 'selected');
-			  jQuery("select[id=album_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
+			        jQuery("select[id=album_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
               jQuery("select[id=album_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
 
               if (short_code['show_search_box'] == 1) {
@@ -1184,8 +1195,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#album_show_gallery_description_0").attr('checked', 'checked');
               }
               jQuery("input[name=album_title_show_hover][value=" + short_code['compuct_album_title'] + "]").attr('checked', 'checked');
-			  jQuery('#album_view_type').find('option').removeAttr("selected");
-			  jQuery("#album_view_type option[value='"+ short_code['compuct_album_view_type'] +"']").attr('selected', 'selected');
+			       jQuery('#album_view_type').find('option').removeAttr("selected");
+			       jQuery("#album_view_type option[value='"+ short_code['compuct_album_view_type'] +"']").attr('selected', 'selected');
               jQuery("input[name='album_image_title_show_hover'][value='" + short_code['compuct_album_image_title'] + "']").attr('checked', 'checked');
               if (short_code['compuct_album_mosaic_hor_ver'] == "vertical") {
                 jQuery("#album_mosaic_0").attr('checked', 'checked');
@@ -1347,8 +1358,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
               else {
                 jQuery("#album_extended_show_gallery_description_0").attr('checked', 'checked');
               }
-			  jQuery('#album_extended_view_type').find('option').removeAttr("selected");
-			  jQuery("#album_extended_view_type option[value='"+ short_code['extended_album_view_type'] +"']").attr('selected', 'selected');
+			        jQuery('#album_extended_view_type').find('option').removeAttr("selected");
+			        jQuery("#album_extended_view_type option[value='"+ short_code['extended_album_view_type'] +"']").attr('selected', 'selected');
               jQuery("input[name='album_extended_image_title_show_hover'][value='" + short_code['extended_album_image_title'] + "']").attr('checked', 'checked');
               if (short_code['extended_album_mosaic_hor_ver'] == "vertical") {
                 jQuery("#album_extended_mosaic_0").attr('checked', 'checked');
@@ -1559,12 +1570,6 @@ class ShortcodeView_bwg extends AdminView_bwg {
               else {
                 jQuery("#popup_enable_twitter_0").attr('checked', 'checked');
               }
-              if (short_code['popup_enable_google'] == 1) {
-                jQuery("#popup_enable_google_1").attr('checked', 'checked');
-              }
-              else {
-                jQuery("#popup_enable_google_0").attr('checked', 'checked');
-              }
               if (short_code['popup_enable_pinterest'] == 1) {
                 jQuery("#popup_enable_pinterest_1").attr('checked', 'checked');
               }
@@ -1645,27 +1650,38 @@ class ShortcodeView_bwg extends AdminView_bwg {
 
       // Get shortcodes attributes.
       function get_params(module_name) {
-        <?php if ($params['gutenberg_callback']) {
-        if ( $params['gutenberg_id'] == 0) {
-        ?>
-        return false;
         <?php
-        }
-        ?>
-        var short_code_attr = new Array();
-        short_code_attr['id'] = <?php echo (int) $params['gutenberg_id']; ?>;
-        return short_code_attr;
-        <?php
-        }
-        elseif (!$from_menu) { ?>
-        var selected_text;
-        if (top.tinyMCE.activeEditor && !top.tinyMCE.activeEditor.hidden && top.tinyMCE.activeEditor.selection) {
-          selected_text = top.tinyMCE.activeEditor.selection.getContent();
-        }
+        if ($params['gutenberg_callback']) {
+            if ( $params['gutenberg_id'] == 0) {
+            ?>
+            return false;
+            <?php
+            }
+            ?>
+
+            var short_code_attr = new Array();
+            short_code_attr['id'] = <?php echo (int) $params['gutenberg_id']; ?>;
+            return short_code_attr;
+            <?php
+        } elseif ($params['elementor_callback']) {
+          ?>
+          var el_shortcode_id = new Array();
+          el_shortcode_id['id'] = jQuery('.elementor-control-bwg_elementor_shortcode input', window.parent.document).val();
+          if( el_shortcode_id['id'] != "" && parseInt(el_shortcode_id['id'])){
+            return el_shortcode_id;
+          }
+          return false;
+          <?php
+        } elseif (!$from_menu) { ?>
+            var selected_text;
+            if (top.tinyMCE.activeEditor && !top.tinyMCE.activeEditor.hidden && top.tinyMCE.activeEditor.selection) {
+              selected_text = top.tinyMCE.activeEditor.selection.getContent();
+            }
         else {
-          selected_text = bwg_get_textarea_selection(top.wpActiveEditor);
+            selected_text = bwg_get_textarea_selection(top.wpActiveEditor);
         }
-        <?php } else { ?>
+        <?php
+        } else { ?>
         var shortcode_val = jQuery("#shortcode").val();
         var selected_text = shortcode_val ? '[Best_Wordpress_Gallery id="' + shortcode_val + '"]' : '';
         <?php } ?>
@@ -1713,6 +1729,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
         var title = "";
         var short_code = '[Best_Wordpress_Gallery';
         var tagtext = ' gallery_type="' + gallery_type + '" theme_id="' + theme + '"';
+        var curr = jQuery(this);
         tagtext += ' use_option_defaults="' + use_options_defaults + '"';
         switch (gallery_type) {
           case 'thumbnails': {
@@ -1735,6 +1752,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
             tagtext += ' showthumbs_name="' + jQuery("input[name=showthumbs_name]:checked").val() + '"';
             tagtext += ' show_gallery_description="' + jQuery("input[name=show_gallery_description]:checked").val() + '"';
             tagtext += ' image_title="' + jQuery("input[name=image_title_show_hover]:checked").val() + '"';
+            tagtext += ' show_thumb_description="' + jQuery("input[name=show_thumb_description]:checked").val() + '"';
             tagtext += ' play_icon="' + jQuery("input[name=play_icon]:checked").val() + '"';
             tagtext += ' gallery_download="' + jQuery("input[name=gallery_download]:checked").val() + '"';
             tagtext += ' ecommerce_icon="' + jQuery("input[name=ecommerce_icon_show_hover]:checked").val() + '"';
@@ -1825,7 +1843,6 @@ class ShortcodeView_bwg extends AdminView_bwg {
             title = ' gal_title="' + jQuery.trim(jQuery('#gallery option:selected').text().replace("'", "").replace('"', '')) + '"';
             tagtext += ' gallery_id="' + jQuery("#gallery").val() + '"';
             tagtext += ' tag="' + jQuery("#tag").val() + '"';
-
             tagtext += ' image_browser_width="' + jQuery("#image_browser_width").val() + '"';
             tagtext += ' image_browser_title_enable="' + jQuery("input[name=image_browser_title_enable]:checked").val() + '"';
             tagtext += ' image_browser_description_enable="' + jQuery("input[name=image_browser_description_enable]:checked").val() + '"';
@@ -1886,7 +1903,6 @@ class ShortcodeView_bwg extends AdminView_bwg {
           case 'album_compact_preview': {
             title = ' gal_title="' + jQuery.trim(jQuery('#album option:selected').text().replace("'", "").replace('"', '')) + '"';
             tagtext += ' album_id="' + jQuery("#album").val() + '"';
-
             tagtext += ' compuct_album_column_number="' + jQuery("#album_column_number").val() + '"';
             tagtext += ' compuct_album_thumb_width="' + jQuery("#album_thumb_width").val() + '"';
             tagtext += ' compuct_album_thumb_height="' + jQuery("#album_thumb_height").val() + '"';
@@ -1957,9 +1973,9 @@ class ShortcodeView_bwg extends AdminView_bwg {
             tagtext += ' extended_album_enable_page="' + jQuery("input[name=album_extended_enable_page]:checked").val() + '"';
             tagtext += ' extended_albums_per_page="' + jQuery("#albums_extended_per_page").val() + '"';
             tagtext += ' extended_album_images_per_page="' + jQuery("#album_extended_images_per_page").val() + '"';
-			tagtext += ' all_album_sort_by="' + jQuery("#extended_album_sort_by").val() + '"';
-			tagtext += ' all_album_order_by="' + jQuery("#extended_album_order_by").val() + '"';
-			tagtext += ' sort_by="' + jQuery("#album_extended_sort_by").val() + '"';
+            tagtext += ' all_album_sort_by="' + jQuery("#extended_album_sort_by").val() + '"';
+            tagtext += ' all_album_order_by="' + jQuery("#extended_album_order_by").val() + '"';
+            tagtext += ' sort_by="' + jQuery("#album_extended_sort_by").val() + '"';
             tagtext += ' order_by="' + jQuery("#album_extended_order_by").val() + '"';
             tagtext += ' show_search_box="' + jQuery("input[name=album_extended_show_search_box]:checked").val() + '"';
             tagtext += ' placeholder="' + jQuery("#album_extended_placeholder").val() + '"';
@@ -1979,6 +1995,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
             tagtext += ' ecommerce_icon="' + jQuery("input[name=album_extended_ecommerce_icon_show_hover]:checked").val() + '"';
             break;
           }
+          default:
+            break;
         }
         // Lightbox paramteres.
         tagtext += ' thumb_click_action="' + jQuery("input[name=thumb_click_action]:checked").val() + '"';
@@ -2012,7 +2030,6 @@ class ShortcodeView_bwg extends AdminView_bwg {
         tagtext += ' addthis_profile_id="' + jQuery("#addthis_profile_id").val() + '"';
         tagtext += ' popup_enable_facebook="' + jQuery("input[name=popup_enable_facebook]:checked").val() + '"';
         tagtext += ' popup_enable_twitter="' + jQuery("input[name=popup_enable_twitter]:checked").val() + '"';
-        tagtext += ' popup_enable_google="' + jQuery("input[name=popup_enable_google]:checked").val() + '"';
         tagtext += ' popup_enable_pinterest="' + jQuery("input[name=popup_enable_pinterest]:checked").val() + '"';
         tagtext += ' popup_enable_tumblr="' + jQuery("input[name=popup_enable_tumblr]:checked").val() + '"';
         tagtext += ' popup_enable_ecommerce="' + jQuery("input[name=popup_enable_ecommerce]:checked").val() + '"';
@@ -2060,13 +2077,19 @@ class ShortcodeView_bwg extends AdminView_bwg {
           post_data
         ).success(function (data, textStatus, errorThrown) {
           if (top.tinymce.isIE && content) {
-            // IE and Update.
-            var all_content = top.tinyMCE.activeEditor.getContent();
-            all_content = all_content.replace('<p></p><p>[Best_Wordpress_Gallery', '<p>[Best_Wordpress_Gallery');
-            top.tinyMCE.activeEditor.setContent(all_content.replace(content, '[Best_Wordpress_Gallery id="' + shortcode_id + '"' + title + ']'));
+              // IE and Update.
+              var all_content = top.tinyMCE.activeEditor.getContent();
+              all_content = all_content.replace('<p></p><p>[Best_Wordpress_Gallery', '<p>[Best_Wordpress_Gallery');
+              top.tinyMCE.activeEditor.setContent(all_content.replace(content, '[Best_Wordpress_Gallery id="' + shortcode_id + '"' + title + ']'));
+          } else if( typeof jQuery("#insert").attr('data-callback') != "undefined" && jQuery("#insert").attr('data-callback').length ) {
+              window.parent.jQuery('.elementor-control-bwg_elementor_shortcode input').val(shortcode_id).trigger("input");
+              jQuery('.elementor-control-bwg_view_type_shortcode input', window.parent.document).val("temp");
+              jQuery(".elementor-control-bwg_view_type_shortcode .elementor-choices-label", window.parent.document).trigger('click');
+              jQuery('.elementor-control-bwg_view_type_shortcode input', window.parent.document).val(shortcode_id);
+              jQuery(".elementor-control-bwg_view_type_shortcode .elementor-choices-label", window.parent.document).trigger('click');
           }
           else {
-            top.send_to_editor(short_code);
+              top.send_to_editor(short_code);
           }
           top.tinyMCE.execCommand('mceRepaint');
           /* Close shortcode editor after insert.*/
@@ -2095,7 +2118,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
           <?php
           if ( $params['gutenberg_callback'] ) {
           ?>
-          window.parent['<?php echo $params['gutenberg_callback']; ?>'](content, shortcode_id);
+			window.parent.window.jQuery(".edit-post-layout__content").css({"z-index":"0","overflow":"auto"});
+			window.parent['<?php echo $params['gutenberg_callback']; ?>'](content, shortcode_id);
           return;
           <?php
           }
@@ -2117,7 +2141,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
         return;
       }
       function bwg_before_shortcode_add_builder_editor() {
-        if ( top.jQuery('body').hasClass('elementor-editor-active') || top.jQuery('body').hasClass('fl-builder') ) {
+        if ( top.jQuery('body').hasClass('elementor-editor-active') || top.jQuery('body').hasClass('fl-builder') || top.jQuery('body').hasClass('et_divi_theme') ) {
           return true;
         }
         return false;

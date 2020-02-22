@@ -49,6 +49,12 @@ class FilemanagerModel {
 		$dir = $params['dir'];
 		$orderby = $params['orderby'];
 		$order = $params['order'];
+		if ( $orderby != 'size' && $orderby != 'name' ) {
+		  $orderby = 'date_modified';
+		}
+		if ( $order != 'asc' ) {
+		  $order = 'desc';
+		}
 		$search = $params['search'];
 		$page_num = $params['page_num'];
 		$page_per = $params['page_per'];
@@ -100,6 +106,7 @@ class FilemanagerModel {
 			case 'png':
 			case 'bmp':
 			case 'gif':
+			case 'svg':
 				return true;
 			break;
 		}
@@ -148,6 +155,12 @@ class FilemanagerModel {
 		$search = $params['search'];
 		$orderby = $params['orderby'];
 		$order = $params['order'];
+		if ( $orderby != 'size' && $orderby != 'name' ) {
+		  $orderby = 'date_modified';
+		}
+		if ( $order != 'asc' ) {
+		  $order = 'desc';
+		}
 
 		$query  = ' SELECT * FROM `' . $wpdb->prefix . 'bwg_file_paths`';
 		$query .= ' WHERE `path` = "' . $dir . '"';
@@ -225,6 +238,7 @@ class FilemanagerModel {
 					$file['size'] = $file_size_kb . ' KB';
 					$image_info = getimagesize(htmlspecialchars_decode($item, ENT_COMPAT | ENT_QUOTES));
 					$file['resolution'] = $this->is_img($file['type']) ? $image_info[0]  . ' x ' . $image_info[1] . ' px' : '';
+					$file['resolution_thumb'] = WDWLibrary::get_thumb_size($file['thumb'] );
 					$exif = WDWLibrary::read_image_metadata( $dir . '/.original/' . $name );
 					$file['alt'] = BWG()->options->read_metadata && $exif['title'] ? $exif['title'] : str_replace("_", " ", $filename);
 					$file['credit'] = !empty($exif['credit']) ? $exif['credit'] : '';
@@ -261,7 +275,7 @@ class FilemanagerModel {
    */
 	public function get_from_session( $key, $default ) {
 		if (isset($_REQUEST[$key])) {
-			$_REQUEST[$key] = stripslashes($_REQUEST[$key]);
+			$_REQUEST[$key] = stripslashes(WDWLibrary::get($key,'','sanitize_text_field','REQUEST'));
 		}
 		else {
 			$_REQUEST[$key] = stripslashes($default);

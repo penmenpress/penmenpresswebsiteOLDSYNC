@@ -358,42 +358,36 @@ span.ctrl_bar_divider {
 }
 
 #uploader_hitter {
-  position: absolute;
-  top: 40px;
-  bottom: 160px;
-  left: 0;
-  right: 0;
-}
-
-#drag_message {
-  position: absolute;
-  top: 40px;
-  bottom: 130px;
-  left: 40px;
-  right: 40px;
-  outline: #c0c0c0 dashed 5px;
-  text-align: center;
-}
-
-#drag_message span {
-  position: absolute;
-  top: 20%;
-  left: 0;
-  right: 0;
-  font-size: 24pt !important;
-  color: #c0c0c0;
-  line-height: 33px;
+	position: relative;
+	margin: 70px 40px 10px 40px;
 }
 
 #btnBrowseContainer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 40px;
-  vertical-align: middle;
-  text-align: center;
-  visibility: hidden;
+	padding: 30px 0;
+    vertical-align: middle;
+    text-align: center;
+    outline: rgb(192, 192, 192) dashed 5px;
+}
+
+#btnBrowseContainer .bwg-select-file-text {
+    width: 240px;
+    margin: 0 auto;
+    line-height: 33px;
+    text-align: center;
+	font-size: 24pt !important;
+    color: #c0c0c0;
+}
+
+#btnBrowseContainer .bwg-select-file-text .button {
+    margin-top: 10px;
+}
+
+#jQueryUploader {
+	position: absolute;
+    width: 75px;
+    margin: 0px !important;
+    padding: 0px !important;
+	visibility: hidden;
 }
 
 #bwg-errors-wrap {
@@ -407,7 +401,6 @@ span.ctrl_bar_divider {
   overflow-x: auto;
   overflow-y: scroll;
 }
-
 #bwg-errors-wrap .bwg-files-item {
   margin: 5px 0 0 0;
   padding: 1px 12px;
@@ -601,22 +594,9 @@ a.wd-btn-primary:link {
   .upload_thumb .thumb_title {
     display: table-row;
   }
-}
 
-@media screen and (max-width: 640px) {
   .ctrls_bar .ctrls_right_img {
     float: left;
-  }
-
-  #drag_message {
-    top: 100px !important;
-    height: 250px !important;
-  }
-
-  #drag_message span {
-    font-size: 24pt !important;
-    line-height: 33px !important;
-    top: 35%;
   }
 }
 
@@ -631,17 +611,6 @@ a.wd-btn-primary:link {
 
   #explorer_body_container {
     top: 60px !important;
-  }
-
-  #drag_message span {
-    font-size: 14pt !important;
-    line-height: 24px !important;
-    top: 35%;
-  }
-
-  #drag_message {
-    top: 130px !important;
-    height: 200px !important;
   }
 
   #jQueryUploader {
@@ -723,20 +692,21 @@ a.wd-btn-primary:link {
     width: 100%;
   }
 
-}
-@media screen and (max-height: 480px) {
-  #drag_message {
-    top: 120px !important;
-    height: 120px !important;
+  #btnBrowseContainer .bwg-select-file-text {
+	line-height: 30px;
+    font-size: 20pt !important;
   }
+}
 
+@media screen and (max-height: 480px) {
   #jQueryUploader {
     margin: 60px 30px;
   }
-
-  #drag_message span {
-    font-size: 12pt !important;
-    line-height: 16px !important;
+  .bwg-select-file-text {
+    font-size: 15pt !important;
+  }
+  #bwg-errors-wrap {
+	height: 90px;
   }
 }
 
@@ -745,9 +715,7 @@ a.wd-btn-primary:link {
   .wd-btn-cancel {
     background-position: 50% 50%;
   }
-}
 
-@media screen and (max-width:409px) {
   .ctrls_left.header_bar {
     width: 100%;
   }
@@ -848,6 +816,9 @@ and (orientation: landscape) {
   #wrapper, #file_manager, #uploader {
     width: 568px;
   }
+  #uploader_hitter {
+	margin-top: 170px;
+  }
 }
 
 /* ----------- iPhone 6, 6S, 7 and 8 ----------- */
@@ -886,5 +857,12 @@ and (-webkit-min-device-pixel-ratio: 2)
 and (orientation: portrait) {
   #wrapper, #file_manager, #uploader {
     width: 320px;
+  }
+  #uploader_hitter {
+	margin-top: 170px;
+  }
+  #btnBrowseContainer .bwg-select-file-text {
+	line-height: 25px;
+    font-size: 17pt !important;
   }
 }

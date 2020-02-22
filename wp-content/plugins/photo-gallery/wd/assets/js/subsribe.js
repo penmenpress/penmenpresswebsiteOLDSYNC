@@ -6,7 +6,7 @@ jQuery(document).on("ready", function () {
   });
   jQuery(".allow_and_continue, .skip").on("click", function () {
     var url = jQuery(this).attr("href");
-    if ( url ) {
+    if (url) {
       jQuery(".allow_and_continue, .skip").css("opacity", "0.5");
       jQuery(".allow_and_continue, .skip").attr("disabled", "disabled");
       jQuery(".allow_and_continue, .skip").removeAttr("href");

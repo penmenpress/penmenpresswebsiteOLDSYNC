@@ -8,7 +8,8 @@ class UninstallModel_bwg {
    * Delete images folder.
    */
   public function delete_folder() {
-    if ( isset($_POST['bwg_delete_files']) ) {
+    $delete_files = WDWLibrary::get('bwg_delete_files');
+    if ( !empty($delete_files) ) {
       function delfiles($del_file) {
         if (is_dir($del_file)) {
           $del_folder = scandir($del_file);

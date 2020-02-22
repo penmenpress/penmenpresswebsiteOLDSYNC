@@ -198,6 +198,7 @@ function submitFiles() {
           fileData['filetype'] = wdb_all_files_filtered[i]["type"];
           fileData['date_modified'] = wdb_all_files_filtered[i]["date_modified"];
           fileData['resolution'] = wdb_all_files_filtered[i]["resolution"];
+          fileData['resolution_thumb'] = wdb_all_files_filtered[i]["resolution_thumb"];
           fileData['aperture'] = wdb_all_files_filtered[i]["aperture"];
           fileData['credit'] = wdb_all_files_filtered[i]["credit"];
           fileData['camera'] =wdb_all_files_filtered[i]["camera"];
@@ -227,6 +228,7 @@ function submitFiles() {
         fileData['filetype'] = jQuery(file_object).attr("filetype");
         fileData['date_modified'] = jQuery(file_object).attr("date_modified");
         fileData['resolution'] = jQuery(file_object).attr("fileresolution");
+        fileData['resolution_thumb'] = jQuery(file_object).attr("fileresolution_thumb");
         fileData['aperture'] = jQuery(file_object).attr("fileAperture");
         fileData['credit'] = jQuery(file_object).attr("fileCredit");
         fileData['camera'] = jQuery(file_object).attr("fileCamera");

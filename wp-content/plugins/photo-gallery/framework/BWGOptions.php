@@ -11,11 +11,13 @@ class WD_BWG_Options {
   public $upload_thumb_width = 500;
   public $upload_thumb_height = 500;
   public $image_quality = 75;
+  public $lazyload_images = 0;
   public $preload_images = 1;
   public $preload_images_count = 10;
   public $show_hide_custom_post = 0;
   public $noindex_custom_post = 1;
   public $show_hide_post_meta = 0;
+  public $tags_filter_and_or = 0;
   public $save_ip = 1;
   public $image_right_click = 0;
   public $use_inline_stiles_and_scripts = 0;
@@ -23,6 +25,8 @@ class WD_BWG_Options {
   public $enable_wp_editor = 0;
   public $enable_seo = 1;
   public $read_metadata = 1;
+  public $auto_rotate = 0;
+  public $front_ajax = 0;
   public $developer_mode = 0;
 
   // Thumbnail
@@ -42,6 +46,7 @@ class WD_BWG_Options {
   public $showthumbs_name = 0;
   public $show_gallery_description = 0;
   public $image_title_show_hover = 'hover';
+  public $show_thumb_description = 0;
   public $play_icon = 1;
   public $gallery_download = 0;
   public $ecommerce_icon_show_hover = 'none';
@@ -280,7 +285,6 @@ class WD_BWG_Options {
   public $addthis_profile_id = '';
   public $popup_enable_facebook = 1;
   public $popup_enable_twitter = 1;
-  public $popup_enable_google = 1;
   public $popup_enable_pinterest = 0;
   public $popup_enable_tumblr = 0;
   public $popup_enable_ecommerce = 1;
@@ -364,5 +368,9 @@ class WD_BWG_Options {
 
     $this->jpeg_quality = $this->image_quality;
     $this->png_quality = 9 - round(9 * $this->image_quality / 100);
+  }
+
+  public function __get($name) {
+    return isset($this->$name) ? $this->$name : '';
   }
 }

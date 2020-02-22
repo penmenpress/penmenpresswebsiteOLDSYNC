@@ -8,6 +8,7 @@ public function display($params = array(), $bwg = 0) {
   $image_rows = $image_rows['images'];
   $images_count = count($image_rows);
   $content = '';
+  $lazyload = BWG()->options->lazyload_images;
 
   if ( $images_count ) {
     $filmstrip_direction = 'horizontal';
@@ -99,8 +100,8 @@ public function display($params = array(), $bwg = 0) {
         if ( !wp_script_is('bwg_embed', 'done') ) {
         wp_print_scripts('bwg_embed');
         }
-        if ( !wp_script_is('bwg_jquery_mobile', 'done') ) {
-        wp_print_scripts('bwg_jquery_mobile');
+        if ( !wp_script_is('jquery-mobile', 'done') ) {
+        wp_print_scripts('jquery-mobile');
         }
       }
       else {
@@ -128,8 +129,8 @@ public function display($params = array(), $bwg = 0) {
                                                  ), esc_html('<br />'), $image_row->description);
       }
       $data[$bwg][$key]["id"] = $image_row->id;
-      $data[$bwg][$key]["alt"] = htmlspecialchars(str_replace(array( "\r\n", "\n", "\r" ), esc_html('<br />'), $image_row->alt), ENT_COMPAT | ENT_QUOTES);
-      $data[$bwg][$key]["description"] = htmlspecialchars(str_replace(array("\r\n", "\n", "\r"), esc_html('<br />'), $image_row->description), ENT_COMPAT | ENT_QUOTES);
+      $data[$bwg][$key]["alt"] = htmlspecialchars(str_replace(array( "\r\n", "\n", "\r" ), esc_html('<br />'), esc_html($image_row->alt)), ENT_COMPAT | ENT_QUOTES);
+      $data[$bwg][$key]["description"] =  htmlspecialchars(str_replace(array("\r\n", "\n", "\r"), esc_html('<br />'), esc_html($image_row->description)), ENT_QUOTES);
       $data[$bwg][$key]["filetype"] = $image_row->filetype;
       $data[$bwg][$key]["filename"] = $image_row->filename;
       $data[$bwg][$key]["image_url"] = htmlspecialchars($image_row->image_url, ENT_COMPAT | ENT_QUOTES);
@@ -239,6 +240,13 @@ public function display($params = array(), $bwg = 0) {
                   $image_thumb_height = $slideshow_filmstrip_height;
                 }
               }
+              if ( is_null($image_thumb_width) || is_null($image_thumb_height) ) {
+                $res = explode('x', $image_row->resolution_thumb);
+                if ( !empty($res) && isset($res[1]) ) {
+                  $image_thumb_width = $res[0];
+                  $image_thumb_height = $res[1];
+                }
+              }
               $scale = max($slideshow_filmstrip_width / $image_thumb_width, $slideshow_filmstrip_height / $image_thumb_height);
               $image_thumb_width *= $scale;
               $image_thumb_height *= $scale;
@@ -246,7 +254,14 @@ public function display($params = array(), $bwg = 0) {
               $thumb_top = ($slideshow_filmstrip_height - $image_thumb_height) / 2;
               ?>
               <div id="bwg_filmstrip_thumbnail_<?php echo $key; ?>_<?php echo $bwg; ?>" class="bwg_slideshow_filmstrip_thumbnail_<?php echo $bwg; ?> <?php echo(($image_row->id == $current_image_id) ? 'bwg_slideshow_thumb_active_' . $bwg : 'bwg_slideshow_thumb_deactive_' . $bwg); ?>">
-                <img style="width:<?php echo $image_thumb_width; ?>px; height:<?php echo $image_thumb_height; ?>px; margin-left: <?php echo $thumb_left; ?>px; margin-top: <?php echo $thumb_top; ?>px;" class="skip-lazy bwg_filmstrip_thumbnail_img bwg_slideshow_filmstrip_thumbnail_img_<?php echo $bwg; ?>" src="<?php echo ($is_embed ? "" : BWG()->upload_url) . $image_row->thumb_url; ?>" onclick="bwg_change_image(parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()), '<?php echo $key; ?>', '', '', '<?php echo $bwg; ?>')" image_id="<?php echo $image_row->id; ?>" image_key="<?php echo $key; ?>" alt="<?php echo $image_row->alt; ?>" />
+                <img style="width:<?php echo $image_thumb_width; ?>px; height:<?php echo $image_thumb_height; ?>px; margin-left: <?php echo $thumb_left; ?>px; margin-top: <?php echo $thumb_top; ?>px;"
+                     class="skip-lazy bwg_filmstrip_thumbnail_img bwg_slideshow_filmstrip_thumbnail_img_<?php echo $bwg; ?> <?php if( $lazyload ) { ?> bwg_lazyload <?php } ?>"
+                     src="<?php if( !$lazyload ) { echo ($is_embed ? "" : BWG()->upload_url) . $image_row->thumb_url; } else { echo BWG()->plugin_url."/images/lazy_placeholder.gif"; } ?>"
+                     data-original="<?php echo ($is_embed ? "" : BWG()->upload_url) . $image_row->thumb_url; ?>"
+                     onclick="bwg_change_image(parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()), '<?php echo $key; ?>', '', '', '<?php echo $bwg; ?>')"
+                     image_id="<?php echo $image_row->id; ?>"
+                     image_key="<?php echo $key; ?>"
+                     alt="<?php echo $image_row->alt; ?>" />
               </div>
               <?php
             }
@@ -299,8 +314,13 @@ public function display($params = array(), $bwg = 0) {
                         <?php
                         if ( !$is_embed ) {
                           ?>
-                          <a <?php echo($params['thumb_click_action'] == 'open_lightbox' ? (' class="bwg_lightbox"' . (BWG()->options->enable_seo ? ' href="' . ($is_embed ? $image_row->thumb_url : BWG()->upload_url . $image_row->image_url) . '"' : '') . ' data-image-id="' . $image_row->id . '"') : ($params['thumb_click_action'] == 'redirect_to_url' && $image_row->redirect_url ? 'href="' . $image_row->redirect_url . '" target="' . ($params['thumb_link_target'] ? '_blank' : '') . '"' : '')) ?>>
-                          <img id="bwg_slideshow_image_<?php echo $bwg; ?>" class="skip-lazy bwg_slide bwg_slideshow_image_<?php echo $bwg; ?>" src="<?php echo BWG()->upload_url . $image_row->image_url; ?>" image_id="<?php echo $image_row->id; ?>" alt="<?php echo $image_row->alt; ?>" />
+                          <a <?php echo($params['thumb_click_action'] == 'open_lightbox' ? (' class="bwg-a bwg_lightbox"' . (BWG()->options->enable_seo ? ' href="' . ($is_embed ? $image_row->thumb_url : BWG()->upload_url . $image_row->image_url) . '"' : '') . ' data-image-id="' . $image_row->id . '"') : ('class="bwg-a" ' . ($params['thumb_click_action'] == 'redirect_to_url' && $image_row->redirect_url ? 'href="' . $image_row->redirect_url . '" target="' . ($params['thumb_link_target'] ? '_blank' : '') . '"' : ''))); ?>>
+                          <img id="bwg_slideshow_image_<?php echo $bwg; ?>"
+                               class="skip-lazy bwg_slide bwg_slideshow_image_<?php echo $bwg; ?> <?php if( $lazyload ) { ?> bwg_lazyload <?php } ?>"
+                               src="<?php if( !$lazyload ) { echo BWG()->upload_url . $image_row->image_url; } else { echo BWG()->plugin_url."/images/lazy_placeholder.gif"; } ?>"
+                               data-original="<?php echo BWG()->upload_url . $image_row->image_url; ?>"
+                               image_id="<?php echo $image_row->id; ?>"
+                               alt="<?php echo $image_row->alt; ?>" />
                           </a>
                           <?php
                         }
@@ -363,8 +383,13 @@ public function display($params = array(), $bwg = 0) {
                         <?php
                         if ( !$is_embed ) {
                           ?>
-                          <a <?php echo($params['thumb_click_action'] == 'open_lightbox' ? (' class="bwg_lightbox_' . $bwg . '"' . (BWG()->options->enable_seo ? ' href="' . ($is_embed ? $image_row->thumb_url : BWG()->upload_url . $image_row->image_url) . '"' : '') . ' data-image-id="' . $image_row->id . '"') : ($params['thumb_click_action'] == 'redirect_to_url' && $image_row->redirect_url ? 'href="' . $image_row->redirect_url . '" target="' . ($params['thumb_link_target'] ? '_blank' : '') . '"' : '')) ?>>
-                          <img id="bwg_slideshow_image_<?php echo $bwg; ?>" class="skip-lazy bwg_slide bwg_slideshow_image_<?php echo $bwg; ?>" src="<?php echo BWG()->upload_url . $image_row->image_url; ?>" image_id="<?php echo $image_row->id; ?>" alt="<?php echo $image_row->alt; ?>" />
+                          <a <?php echo($params['thumb_click_action'] == 'open_lightbox' ? (' class="bwg-a bwg_lightbox_' . $bwg . '"' . (BWG()->options->enable_seo ? ' href="' . ($is_embed ? $image_row->thumb_url : BWG()->upload_url . $image_row->image_url) . '"' : '') . ' data-image-id="' . $image_row->id . '"') : ('class="bwg-a" ' . ($params['thumb_click_action'] == 'redirect_to_url' && $image_row->redirect_url ? 'href="' . $image_row->redirect_url . '" target="' . ($params['thumb_link_target'] ? '_blank' : '') . '"' : ''))) ?>>
+                          <img id="bwg_slideshow_image_<?php echo $bwg; ?>"
+                               class="skip-lazy  bwg_slide bwg_slideshow_image_<?php echo $bwg; ?> <?php if( $lazyload ) { ?> bwg_lazyload lazy_loader <?php } ?>"
+                               src="<?php if( !$lazyload ) { echo BWG()->upload_url . $image_row->image_url; } else { echo BWG()->plugin_url."/images/lazy_placeholder.gif"; } ?>"
+                               data-original="<?php echo BWG()->upload_url . $image_row->image_url; ?>"
+                               image_id="<?php echo $image_row->id; ?>"
+                               alt="<?php echo $image_row->alt; ?>" />
                           </a>
                           <?php
                         }
@@ -422,9 +447,9 @@ public function display($params = array(), $bwg = 0) {
       <?php
       if ( $enable_slideshow_ctrl ) {
         ?>
-        <a id="spider_slideshow_left_<?php echo $bwg; ?>" onclick="bwg_change_image(parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()), (parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()) + <?php echo count($data[$bwg]); ?> - bwg_iterator(<?php echo $bwg; ?>)) % <?php echo count($data[$bwg]); ?>, '', '', <?php echo $bwg; ?>); return false;"><span id="spider_slideshow_left-ico_<?php echo $bwg; ?>"><span><i class="<?php echo $theme_row->slideshow_rl_btn_style; ?>-left bwg_slideshow_prev_btn_<?php echo $bwg; ?>"></i></span></span></a>
+        <a class="bwg-a" id="spider_slideshow_left_<?php echo $bwg; ?>" onclick="bwg_change_image(parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()), (parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()) + <?php echo count($data[$bwg]); ?> - bwg_iterator(<?php echo $bwg; ?>)) % <?php echo count($data[$bwg]); ?>, '', '', <?php echo $bwg; ?>); return false;"><span id="spider_slideshow_left-ico_<?php echo $bwg; ?>"><span><i class="<?php echo $theme_row->slideshow_rl_btn_style; ?>-left bwg_slideshow_prev_btn_<?php echo $bwg; ?>"></i></span></span></a>
         <span id="bwg_slideshow_play_pause_<?php echo $bwg; ?>" class="bwg_slideshow_play_pause" style="display: <?php echo $play_pause_button_display; ?>;"><span><span id="bwg_slideshow_play_pause-ico_<?php echo $bwg; ?>"><i class="bwg-icon-play bwg_ctrl_btn_<?php echo $bwg; ?> bwg_slideshow_play_pause_<?php echo $bwg; ?>"></i></span></span></span>
-        <a id="spider_slideshow_right_<?php echo $bwg; ?>" onclick="bwg_change_image(parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()), (parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()) + bwg_iterator(<?php echo $bwg; ?>)) % <?php echo count($data[$bwg]); ?>, '', '', <?php echo $bwg; ?>); return false;"><span id="spider_slideshow_right-ico_<?php echo $bwg; ?>"><span><i class="<?php echo $theme_row->slideshow_rl_btn_style; ?>-right bwg_slideshow_next_btn_<?php echo $bwg; ?>"></i></span></span></a>
+        <a class="bwg-a" id="spider_slideshow_right_<?php echo $bwg; ?>" onclick="bwg_change_image(parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()), (parseInt(jQuery('#bwg_current_image_key_<?php echo $bwg; ?>').val()) + bwg_iterator(<?php echo $bwg; ?>)) % <?php echo count($data[$bwg]); ?>, '', '', <?php echo $bwg; ?>); return false;"><span id="spider_slideshow_right-ico_<?php echo $bwg; ?>"><span><i class="<?php echo $theme_row->slideshow_rl_btn_style; ?>-right bwg_slideshow_next_btn_<?php echo $bwg; ?>"></i></span></span></a>
         <?php
       }
       ?>
@@ -439,7 +464,7 @@ public function display($params = array(), $bwg = 0) {
                 <?php
                 if ( $params['watermark_type'] == 'image' ) {
                   ?>
-                  <a href="<?php echo urldecode($watermark_link); ?>" target="_blank">
+                  <a class="bwg-a" href="<?php echo urldecode($watermark_link); ?>" target="_blank">
                   <img class="bwg_slideshow_watermark_image_<?php echo $bwg; ?> bwg_slideshow_watermark_<?php echo $bwg; ?>" src="<?php echo urldecode($watermark_url); ?>" />
                 </a>
                   <?php
@@ -463,7 +488,7 @@ public function display($params = array(), $bwg = 0) {
           <div>
               <span class="bwg_slideshow_title_spun_<?php echo $bwg; ?>">
                 <div class="bwg_slideshow_title_text_<?php echo $bwg; ?> <?php if ( !$current_image_alt ) {
-                  echo 'hidden';
+                  echo 'bwg-hidden';
                 } ?>">
                   <?php echo html_entity_decode($current_image_alt); ?>
                 </div>
@@ -480,7 +505,7 @@ public function display($params = array(), $bwg = 0) {
           <div>
               <span class="bwg_slideshow_description_spun_<?php echo $bwg; ?>">
                 <div class="bwg_slideshow_description_text_<?php echo $bwg; ?> <?php if ( !$current_image_description ) {
-                  echo 'hidden';
+                  echo 'bwg-hidden';
                 } ?>">
                   <?php echo html_entity_decode(str_replace("\r\n", esc_html('<br />'), $current_image_description)); ?>
                 </div>
@@ -560,7 +585,6 @@ public function inline_styles($bwg, $theme_row, $params, $image_width, $image_he
 	  font-size: <?php echo $theme_row->slideshow_rl_btn_size; ?>px;
 	  width: <?php echo $theme_row->slideshow_rl_btn_width; ?>px;
 	  opacity: <?php echo number_format($theme_row->slideshow_close_btn_transparent / 100, 2, ".", ""); ?>;
-	  filter: Alpha(opacity=<?php echo $theme_row->slideshow_close_btn_transparent; ?>);
   }
   #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> #spider_slideshow_left-ico_<?php echo $bwg; ?>:hover,
   #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> #spider_slideshow_right-ico_<?php echo $bwg; ?>:hover {
@@ -621,8 +645,7 @@ public function inline_styles($bwg, $theme_row, $params, $image_width, $image_he
 	  border: <?php echo $theme_row->slideshow_filmstrip_thumb_active_border_width; ?>px solid #<?php echo $theme_row->slideshow_filmstrip_thumb_active_border_color; ?>;
   }
   #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> .bwg_slideshow_thumb_deactive_<?php echo $bwg; ?> {
-	opacity: <?php echo number_format($theme_row->slideshow_filmstrip_thumb_deactive_transparent / 100, 2, ".", ""); ?>;
-	filter: Alpha(opacity=<?php echo $theme_row->slideshow_filmstrip_thumb_deactive_transparent; ?>);
+    opacity: <?php echo number_format($theme_row->slideshow_filmstrip_thumb_deactive_transparent / 100, 2, ".", ""); ?>;
   }
   #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> .bwg_slideshow_filmstrip_left_<?php echo $bwg; ?> {
 	  background-color: #<?php echo $theme_row->slideshow_filmstrip_rl_bg_color; ?>;
@@ -662,7 +685,6 @@ public function inline_styles($bwg, $theme_row, $params, $image_width, $image_he
 	  max-height: <?php echo $watermark_height; ?>px;
 	  max-width: <?php echo $watermark_width; ?>px;
 	  opacity: <?php echo number_format($watermark_opacity / 100, 2, ".", ""); ?>;
-	  filter: Alpha(opacity=<?php echo $watermark_opacity; ?>);
   }
   #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> .bwg_slideshow_watermark_text_<?php echo $bwg; ?>,
   #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> .bwg_slideshow_watermark_text_<?php echo $bwg; ?>:hover {
@@ -676,8 +698,7 @@ public function inline_styles($bwg, $theme_row, $params, $image_width, $image_he
 	  font-family: <?php echo $theme_row->slideshow_title_font; ?>;
 	  color: #<?php echo $theme_row->slideshow_title_color; ?> !important;
 	  opacity: <?php echo number_format($theme_row->slideshow_title_opacity / 100, 2, ".", ""); ?>;
-	  filter: Alpha(opacity=<?php echo $theme_row->slideshow_title_opacity; ?>);
-	  border-radius: <?php echo $theme_row->slideshow_title_border_radius; ?>;
+    border-radius: <?php echo $theme_row->slideshow_title_border_radius; ?>;
 	  background-color: #<?php echo $theme_row->slideshow_title_background_color; ?>;
 	  padding: <?php echo $theme_row->slideshow_title_padding; ?>;
 	  <?php if($params['slideshow_title_full_width']) { ?>
@@ -692,8 +713,7 @@ public function inline_styles($bwg, $theme_row, $params, $image_width, $image_he
 	  font-family: <?php echo $theme_row->slideshow_description_font; ?>;
 	  color: #<?php echo $theme_row->slideshow_description_color; ?> !important;
 	  opacity: <?php echo number_format($theme_row->slideshow_description_opacity / 100, 2, ".", ""); ?>;
-	  filter: Alpha(opacity=<?php echo $theme_row->slideshow_description_opacity; ?>);
-	  border-radius: <?php echo $theme_row->slideshow_description_border_radius; ?>;
+    border-radius: <?php echo $theme_row->slideshow_description_border_radius; ?>;
 	  background-color: #<?php echo $theme_row->slideshow_description_background_color; ?>;
 	  padding: <?php echo $theme_row->slideshow_description_padding; ?>;
 	  <?php if (!$enable_slideshow_filmstrip && $slideshow_description_position[0] == $theme_row->slideshow_filmstrip_pos) echo $theme_row->slideshow_filmstrip_pos . ':' . ($theme_row->slideshow_dots_height + 4) . 'px;'; ?>

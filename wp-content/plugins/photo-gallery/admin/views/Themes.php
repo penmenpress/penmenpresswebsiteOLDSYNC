@@ -6,6 +6,7 @@ class ThemesView_bwg extends AdminView_bwg {
   public function __construct() {
     parent::__construct();
   	wp_enqueue_script(BWG()->prefix . '_jscolor');
+    wp_enqueue_script(BWG()->prefix . '_fontselect');
   }
 
   /**
@@ -137,6 +138,48 @@ class ThemesView_bwg extends AdminView_bwg {
       ?>
       </tbody>
     </table>
+    <?php
+  }
+
+  /**
+   *
+   * Generate row for font styles google fonts
+   */
+  public function font_style_row( $saved_style, $font_style, $label_text, $radio_name) {
+    $google_fonts = WDWLibrary::get_google_fonts();
+    $font_families = array(
+      'arial' => 'Arial',
+      'lucida grande' => 'Lucida grande',
+      'segoe ui' => 'Segoe ui',
+      'tahoma' => 'Tahoma',
+      'trebuchet ms' => 'Trebuchet ms',
+      'verdana' => 'Verdana',
+      'cursive' =>'Cursive',
+      'fantasy' => 'Fantasy',
+      'monospace' => 'Monospace',
+      'serif' => 'Serif',
+    );
+    $is_google_fonts = (in_array($saved_style, $google_fonts)) ? true : false;
+    ?>
+      <td class="spider_label"><label for="<?php $font_style ?>"><?php  echo $label_text ?> </label></td>
+      <td>
+        <input value="<?php echo $is_google_fonts ?  $saved_style : 'Ubuntu'; ?>" name="<?php echo $font_style; ?>" id="<?php echo $font_style; ?>" class="google_font" type="text">
+        <select  name="<?php echo $font_style . '_default'; ?>" id="<?php echo $font_style . '_default'; ?>" class="default-font" style="display:<?php echo $is_google_fonts ? 'none' : 'block'; ?>; font-family:<?php echo $saved_style; ?>" >
+          <?php
+          foreach ( $font_families as $key => $font_family ) {
+            ?>
+            <option value="<?php echo $key; ?>" <?php echo (($saved_style == $key) ? 'selected="selected"' : ''); ?> style="font-family:<?php echo $font_family; ?>"><?php echo $font_family; ?></option>
+            <?php
+          }
+          ?>
+        </select>
+        <div class="radio_google_fonts">
+          <input type="radio" name="<?php echo $radio_name; ?>" id="<?php echo $radio_name . '1'; ?>" onchange="bwg_change_fonts('<?php echo $font_style; ?>', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
+          <label for="<?php echo $radio_name . '1'; ?>" id="<?php echo $radio_name . '1_lbl'; ?>"><?php echo __('Google fonts', BWG()->prefix); ?></label>
+          <input type="radio" name="<?php echo $radio_name; ?>" id="<?php echo $radio_name . '0'; ?>" onchange="bwg_change_fonts('<?php echo $font_style; ?>', jQuery(this).attr('id') )" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
+          <label for="<?php echo $radio_name . '0'; ?>" id="<?php echo $radio_name . '0_lbl'; ?>"><?php echo __('Default', BWG()->prefix); ?></label>
+        </div>
+      </td>
     <?php
   }
 
@@ -389,29 +432,11 @@ class ThemesView_bwg extends AdminView_bwg {
 											<input type="text" name="thumb_title_font_color_hover" id="thumb_title_font_color_hover" value="<?php echo $row->thumb_title_font_color_hover; ?>" class="color" />
 										  </td>
 										</tr>
-										<tr>
-										  <td class="spider_label"><label for="thumb_title_font_style"><?php echo __('Title font family:', BWG()->prefix); ?> </label></td>
-										  <td>
-											<select name="thumb_title_font_style" id="thumb_title_font_style">
-											<?php
-											   $is_google_fonts = (in_array($row->thumb_title_font_style, $google_fonts)) ? true : false;
-											  $thumb_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-											  foreach ($thumb_font_families as $key => $font_family) {
-												?>
-												<option value="<?php echo $key; ?>" <?php echo (($row->thumb_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-												<?php
-											  }
-											  ?>
-											</select>
-											<div>
-												<input type="radio" name="thumb_title_google_fonts" id="thumb_title_google_fonts1" onchange="bwg_change_fonts('thumb_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-												<label for="thumb_title_google_fonts1" id="thumb_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-												<input type="radio" name="thumb_title_google_fonts" id="thumb_title_google_fonts0" onchange="bwg_change_fonts('thumb_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-												<label for="thumb_title_google_fonts0" id="thumb_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-											</div>
-										  </td>
-										</tr>
-										<tr>
+                    <tr>
+                      <!--generate font style with google fonts -->
+                      <?php $this->font_style_row( $row->thumb_title_font_style, 'thumb_title_font_style', __('Title font family:', BWG()->prefix), 'thumb_title_google_fonts' ); ?>
+                    </tr>
+                    <tr>
 										  <td class="spider_label"><label for="thumb_title_font_weight"><?php echo __('Title font weight:', BWG()->prefix); ?> </label></td>
 										  <td>
 											<select name="thumb_title_font_weight" id="thumb_title_font_weight">
@@ -439,7 +464,24 @@ class ThemesView_bwg extends AdminView_bwg {
 											<div class="spider_description"><?php echo __('Use CSS type values.', BWG()->prefix); ?></div>
 										  </td>
 										</tr>
-										<tr>
+                    <tr>
+                      <td class="spider_label"><label for="thumb_description_font_size"><?php echo __('Thumb description font size:', BWG()->prefix); ?> </label></td>
+                      <td>
+                        <input type="text" name="thumb_description_font_size" id="thumb_description_font_size" value="<?php echo
+                        $row->thumb_description_font_size; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> px
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="spider_label"><label for="thumb_description_font_color"><?php echo __('Thumb description font color:', BWG()->prefix); ?> </label></td>
+                      <td>
+                        <input type="text" name="thumb_description_font_color" id="thumb_description_font_color" value="<?php echo $row->thumb_description_font_color; ?>" class="color" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <!--generate font style with google fonts -->
+                      <?php $this->font_style_row( $row->thumb_description_font_style, 'thumb_description_font_style', __('Description font family:', BWG()->prefix), 'thumb_description_google_fonts' ); ?>
+                    </tr>
+                    <tr>
 										  <td class="spider_label"><label for="thumb_gal_title_font_size"><?php echo __('Gallery title/description font size:', BWG()->prefix); ?> </label></td>
 										  <td>
 											<input type="text" name="thumb_gal_title_font_size" id="thumb_gal_title_font_size" value="<?php echo
@@ -452,29 +494,11 @@ class ThemesView_bwg extends AdminView_bwg {
 											<input type="text" name="thumb_gal_title_font_color" id="thumb_gal_title_font_color" value="<?php echo $row->thumb_gal_title_font_color; ?>" class="color" />
 										  </td>
 										</tr>
-										<tr>
-										  <td class="spider_label"><label for="thumb_gal_title_font_style"><?php echo __('Gallery title/description font family:', BWG()->prefix); ?> </label></td>
-										  <td>
-											<select name="thumb_gal_title_font_style" id="thumb_gal_title_font_style">
-											  <?php
-											  $is_google_fonts = (in_array($row->thumb_gal_title_font_style, $google_fonts)) ? true : false;
-											  $thumb_gal_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-											  foreach ($thumb_gal_font_families as $key => $font_family) {
-												?>
-												<option value="<?php echo $key; ?>" <?php echo (($row->thumb_gal_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-												<?php
-											  }
-											  ?>
-											</select>
-											<div>
-												<input type="radio" name="thumb_gal_title_google_fonts" id="thumb_gal_title_google_fonts1" onchange="bwg_change_fonts('thumb_gal_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-												<label for="thumb_gal_title_google_fonts1" id="thumb_gal_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-												<input type="radio" name="thumb_gal_title_google_fonts" id="thumb_gal_title_google_fonts0" onchange="bwg_change_fonts('thumb_gal_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-												<label for="thumb_gal_title_google_fonts0" id="thumb_gal_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-											</div>
-										  </td>
-										</tr>
-										<tr>
+                    <tr>
+                      <!--generate font style with google fonts -->
+                      <?php $this->font_style_row( $row->thumb_gal_title_font_style, 'thumb_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'thumb_gal_title_google_fonts' ); ?>
+                    </tr>
+                    <tr>
 										  <td class="spider_label"><label for="thumb_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
 										  <td>
 											<select name="thumb_gal_title_font_weight" id="thumb_gal_title_font_weight">
@@ -685,28 +709,10 @@ class ThemesView_bwg extends AdminView_bwg {
 											<input type="text" name="masonry_thumb_title_font_color_hover" id="masonry_thumb_title_font_color_hover" value="<?php echo $row->masonry_thumb_title_font_color_hover; ?>" class="color" />
 										  </td>
 										</tr>
-										<tr>
-										  <td class="spider_label"><label for="masonry_thumb_title_font_style"><?php echo __('Title font family:', BWG()->prefix); ?> </label></td>
-										  <td>
-											<select name="masonry_thumb_title_font_style" id="masonry_thumb_title_font_style">
-											<?php
-											   $is_google_fonts = (in_array($row->thumb_title_font_style, $google_fonts)) ? true : false;
-											  $thumb_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-											  foreach ($thumb_font_families as $key => $font_family) {
-												?>
-												<option value="<?php echo $key; ?>" <?php echo (($row->thumb_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-												<?php
-											  }
-											  ?>
-											</select>
-											<div>
-												<input type="radio" name="masonry_thumb_title_google_fonts" id="masonry_thumb_title_google_fonts1" onchange="bwg_change_fonts('masonry_thumb_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-												<label for="masonry_thumb_title_google_fonts1"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-												<input type="radio" name="masonry_thumb_title_google_fonts" id="masonry_thumb_title_google_fonts0" onchange="bwg_change_fonts('masonry_thumb_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-												<label for="masonry_thumb_title_google_fonts0"><?php echo __('Default', BWG()->prefix); ?></label>
-											</div>
-										  </td>
-										</tr>
+                    <tr>
+                      <!--generate font style with google fonts -->
+                      <?php $this->font_style_row( $row->masonry_thumb_title_font_style, 'masonry_thumb_title_font_style', __('Title font family:', BWG()->prefix), 'masonry_thumb_title_google_fonts' ); ?>
+                    </tr>
 										<tr>
 										  <td class="spider_label"><label for="masonry_thumb_title_font_weight"><?php echo __('Title font weight:', BWG()->prefix); ?> </label></td>
 										  <td>
@@ -740,28 +746,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="masonry_description_color" id="masonry_description_color" value="<?php echo $row->masonry_description_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="masonry_description_font_style"><?php echo __('Description font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="masonry_description_font_style" id="masonry_description_font_style">
-										<?php
-										  $is_google_fonts = (in_array($row->masonry_description_font_style, $google_fonts)) ? true : false;
-										  $masonry_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($masonry_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->masonry_description_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="masonry_description_google_fonts" id="masonry_description_google_fonts1" onchange="bwg_change_fonts('masonry_description_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="masonry_description_google_fonts1" id="masonry_description_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="masonry_description_google_fonts" id="masonry_description_google_fonts0" onchange="bwg_change_fonts('masonry_description_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="masonry_description_google_fonts0" id="masonry_description_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->masonry_description_font_style, 'masonry_description_font_style', __('Description font family:', BWG()->prefix), 'masonry_description_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="masonry_thumb_gal_title_font_size"><?php echo __('Gallery title/description font size:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -774,28 +762,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="masonry_thumb_gal_title_font_color" id="masonry_thumb_gal_title_font_color" value="<?php echo $row->masonry_thumb_gal_title_font_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="masonry_thumb_gal_title_font_style"><?php echo __('Gallery title/description font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="masonry_thumb_gal_title_font_style" id="masonry_thumb_gal_title_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->masonry_thumb_gal_title_font_style, $google_fonts)) ? true : false;
-										  $masonry_thumb_gal_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($masonry_thumb_gal_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->masonry_thumb_gal_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="masonry_thumb_gal_title_google_fonts" id="masonry_thumb_gal_title_google_fonts1" onchange="bwg_change_fonts('masonry_thumb_gal_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="masonry_thumb_gal_title_google_fonts1" id="masonry_thumb_gal_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="masonry_thumb_gal_title_google_fonts" id="masonry_thumb_gal_title_google_fonts0" onchange="bwg_change_fonts('masonry_thumb_gal_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="masonry_thumb_gal_title_google_fonts0" id="masonry_thumb_gal_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->masonry_thumb_gal_title_font_style, 'masonry_thumb_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'masonry_thumb_gal_title_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="masonry_thumb_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -1003,34 +973,16 @@ class ThemesView_bwg extends AdminView_bwg {
 											<input type="text" name="mosaic_thumb_title_font_color" id="mosaic_thumb_title_font_color" value="<?php echo $row->mosaic_thumb_title_font_color; ?>" class="color" />
 										  </td>
 										</tr>
-										<tr>
-										  <td class="spider_label"><label for="mosaic_thumb_title_font_color_hover"><?php echo __('Title font color (Show on hover):', BWG()->prefix); ?> </label></td>
-										  <td>
-											<input type="text" name="mosaic_thumb_title_font_color_hover" id="mosaic_thumb_title_font_color_hover" value="<?php echo $row->mosaic_thumb_title_font_color_hover; ?>" class="color" />
-										  </td>
-										</tr>
-										<tr>
-										  <td class="spider_label"><label for="mosaic_thumb_title_font_style"><?php echo __('Title font family:', BWG()->prefix); ?> </label></td>
-										  <td>
-											<select name="mosaic_thumb_title_font_style" id="mosaic_thumb_title_font_style">
-											  <?php
-											  $is_google_fonts = (in_array($row->mosaic_thumb_title_font_style, $google_fonts)) ? true : false;
-											  $mosaic_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-											  foreach ($mosaic_font_families as $key => $font_family) {
-												?>
-												<option value="<?php echo $key; ?>" <?php echo (($row->mosaic_thumb_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-												<?php
-											  }
-											  ?>
-											</select>
-											<div>
-												<input type="radio" name="mosaic_thumb_title_google_fonts" id="mosaic_thumb_title_google_fonts1" onchange="bwg_change_fonts('mosaic_thumb_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-												<label for="mosaic_thumb_title_google_fonts1" id="mosaic_thumb_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-												<input type="radio" name="mosaic_thumb_title_google_fonts" id="mosaic_thumb_title_google_fonts0" onchange="bwg_change_fonts('mosaic_thumb_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-												<label for="mosaic_thumb_title_google_fonts0" id="mosaic_thumb_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-											</div>
-										  </td>
-										</tr>
+                    <tr>
+                      <td class="spider_label"><label for="mosaic_thumb_title_font_color_hover"><?php echo __('Title font color (Show on hover):', BWG()->prefix); ?> </label></td>
+                      <td>
+                        <input type="text" name="mosaic_thumb_title_font_color_hover" id="mosaic_thumb_title_font_color_hover" value="<?php echo $row->mosaic_thumb_title_font_color_hover; ?>" class="color" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <!--generate font style with google fonts -->
+                      <?php $this->font_style_row( $row->mosaic_thumb_title_font_style, 'mosaic_thumb_title_font_style', __('Title font family:', BWG()->prefix), 'mosaic_thumb_title_google_fonts' ); ?>
+                    </tr>
 										<tr>
 										  <td class="spider_label"><label for="mosaic_thumb_title_font_weight"><?php echo __('Title font weight:', BWG()->prefix); ?> </label></td>
 										  <td>
@@ -1071,29 +1023,11 @@ class ThemesView_bwg extends AdminView_bwg {
 											<input type="text" name="mosaic_thumb_gal_title_font_color" id="mosaic_thumb_gal_title_font_color" value="<?php echo $row->mosaic_thumb_gal_title_font_color; ?>" class="color" />
 										  </td>
 										</tr>
-										<tr>
-										  <td class="spider_label"><label for="mosaic_thumb_gal_title_font_style"><?php echo __('Gallery title/description font family:', BWG()->prefix); ?> </label></td>
-										  <td>
-											<select name="mosaic_thumb_gal_title_font_style" id="mosaic_thumb_gal_title_font_style">
-											  <?php
-											  $is_google_fonts = (in_array($row->mosaic_thumb_gal_title_font_style, $google_fonts)) ? true : false;
-											  $mosaic_thumb_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-											  foreach ($mosaic_thumb_font_families as $key => $font_family) {
-												?>
-												<option value="<?php echo $key; ?>" <?php echo (($row->mosaic_thumb_gal_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-												<?php
-											  }
-											  ?>
-											</select>
-											<div>
-												<input type="radio" name="mosaic_thumb_gal_title_google_fonts" id="mosaic_thumb_gal_title_google_fonts1" onchange="bwg_change_fonts('mosaic_thumb_gal_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-												<label for="mosaic_thumb_gal_title_google_fonts1" id="mosaic_thumb_gal_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-												<input type="radio" name="mosaic_thumb_gal_title_google_fonts" id="mosaic_thumb_gal_title_google_fonts0" onchange="bwg_change_fonts('mosaic_thumb_gal_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-												<label for="mosaic_thumb_gal_title_google_fonts0" id="mosaic_thumb_gal_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-											</div>
-											</td>
-										</tr>
-										<tr>
+                    <tr>
+                      <!--generate font style with google fonts -->
+                      <?php $this->font_style_row( $row->mosaic_thumb_gal_title_font_style, 'mosaic_thumb_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'mosaic_thumb_gal_title_google_fonts' ); ?>
+                    </tr>
+                    <tr>
 										  <td class="spider_label"><label for="mosaic_thumb_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
 										  <td>
 											<select name="mosaic_thumb_gal_title_font_weight" id="mosaic_thumb_gal_title_font_weight">
@@ -1455,28 +1389,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="slideshow_title_color" id="slideshow_title_color" value="<?php echo $row->slideshow_title_color; ?>" class="color"/>
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="slideshow_title_font"><?php echo __('Title font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="slideshow_title_font" id="slideshow_title_font">
-											<?php
-											   $is_google_fonts = (in_array($row->slideshow_title_font, $google_fonts)) ? true : false;
-											   $slideshow_title_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-											  foreach ($slideshow_title_font_families as $key => $font_family) {
-												?>
-												<option value="<?php echo $key; ?>" <?php echo (($row->slideshow_title_font == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-												<?php
-											  }
-											?>
-										</select>
-										<div>
-											<input type="radio" name="slideshow_title_google_fonts" id="slideshow_title_google_fonts1" onchange="bwg_change_fonts('slideshow_title_font', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="slideshow_title_google_fonts1" id="slideshow_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="slideshow_title_google_fonts" id="slideshow_title_google_fonts0" onchange="bwg_change_fonts('slideshow_title_font', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="slideshow_title_google_fonts0" id="slideshow_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->slideshow_title_font, 'slideshow_title_font', __('Title font family:', BWG()->prefix), 'slideshow_title_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="slideshow_description_background_color"><?php echo __('Description background color:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -1516,28 +1432,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="slideshow_description_color" id="slideshow_description_color" value="<?php echo $row->slideshow_description_color; ?>" class="color"/>
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="slideshow_description_font"><?php echo __('Description font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="slideshow_description_font" id="slideshow_description_font">
-										  <?php
-										  $is_google_fonts = (in_array($row->slideshow_description_font, $google_fonts) ) ? true : false;
-										  $slideshow_description_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($slideshow_description_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->slideshow_description_font == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="slideshow_description_google_fonts" id="slideshow_description_google_fonts1" onchange="bwg_change_fonts('slideshow_description_font', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="slideshow_description_google_fonts1" id="slideshow_description_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="slideshow_description_google_fonts" id="slideshow_description_google_fonts0" onchange="bwg_change_fonts('slideshow_description_font', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="slideshow_description_google_fonts0" id="slideshow_description_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->slideshow_description_font, 'slideshow_description_font', __('Description font family:', BWG()->prefix), 'slideshow_description_google_fonts' ); ?>
+                  </tr>
 								  </tbody>
 								</table>
 							</div>
@@ -1741,29 +1639,11 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="image_browser_img_font_color" id="image_browser_img_font_color" value="<?php echo $row->image_browser_img_font_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="image_browser_img_font_family"><?php echo __('Font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="image_browser_img_font_family" id="image_browser_img_font_family">
-										  <?php
-										  $is_google_fonts = (in_array($row->image_browser_img_font_family, $google_fonts)) ? true : false;
-										  $image_browser_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($image_browser_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->image_browser_img_font_family == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="image_browser_img_google_fonts" id="image_browser_img_google_fonts1" onchange="bwg_change_fonts('image_browser_img_font_family', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="image_browser_img_google_fonts1" id="image_browser_img_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="image_browser_img_google_fonts" id="image_browser_img_google_fonts0" onchange="bwg_change_fonts('image_browser_img_font_family', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="image_browser_img_google_fonts0" id="image_browser_img_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
-									<tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->image_browser_img_font_family, 'image_browser_img_font_family', __('Font family:', BWG()->prefix), 'image_browser_img_google_fonts' ); ?>
+                  </tr>
+                  <tr>
 									  <td class="spider_label"><label for="image_browser_image_description_margin"><?php echo __('Description margin:', BWG()->prefix); ?> </label></td>
 									  <td>
 										<input type="text" name="image_browser_image_description_margin" id="image_browser_image_description_margin" value="<?php echo $row->image_browser_image_description_margin; ?>" class="spider_char_input" />
@@ -1829,28 +1709,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="image_browser_gal_title_font_color" id="image_browser_gal_title_font_color" value="<?php echo $row->image_browser_gal_title_font_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="image_browser_gal_title_font_style"><?php echo __('Gallery title/description font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="image_browser_gal_title_font_style" id="image_browser_gal_title_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->image_browser_gal_title_font_style, $google_fonts)) ? true : false;
-										  $image_browser_gal_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($image_browser_gal_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->image_browser_gal_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="image_browser_gal_title_google_fonts" id="image_browser_gal_title_google_fonts1" onchange="bwg_change_fonts('image_browser_gal_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="image_browser_gal_title_google_fonts1" id="image_browser_gal_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="image_browser_gal_title_google_fonts" id="image_browser_gal_title_google_fonts0" onchange="bwg_change_fonts('image_browser_gal_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="image_browser_gal_title_google_fonts0" id="image_browser_gal_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->image_browser_gal_title_font_style, 'image_browser_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'image_browser_gal_title_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="image_browser_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -2087,29 +1949,11 @@ class ThemesView_bwg extends AdminView_bwg {
                       <input type="text" name="album_compact_title_font_color_hover" id="album_compact_title_font_color_hover" value="<?php echo $row->album_compact_title_font_color_hover; ?>" class="color" />
                     </td>
                   </tr>
-									<tr>
-									  <td class="spider_label"><label for="album_compact_title_font_style"><?php echo __('Title font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="album_compact_title_font_style" id="album_compact_title_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->album_compact_title_font_style, $google_fonts) ) ? true : false;
-										  $album_compact_title_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($album_compact_title_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->album_compact_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="album_compact_title_google_fonts" id="album_compact_title_google_fonts1" onchange="bwg_change_fonts('album_compact_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="album_compact_title_google_fonts1" id="album_compact_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="album_compact_title_google_fonts" id="album_compact_title_google_fonts0" onchange="bwg_change_fonts('album_compact_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="album_compact_title_google_fonts0" id="album_compact_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
-									<tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->album_compact_title_font_style, 'album_compact_title_font_style', __('Title font family:', BWG()->prefix), 'album_compact_title_google_fonts' ); ?>
+                  </tr>
+                  <tr>
 									  <td class="spider_label"><label for="album_compact_title_font_weight"><?php echo __('Title font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
 										<select name="album_compact_title_font_weight" id="album_compact_title_font_weight">
@@ -2149,28 +1993,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="album_compact_back_font_color" id="album_compact_back_font_color" value="<?php echo $row->album_compact_back_font_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="album_compact_back_font_style"><?php echo __('Back Font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="album_compact_back_font_style" id="album_compact_back_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->album_compact_back_font_style, $google_fonts) ) ? true : false;
-										  $album_compact_back_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($album_compact_back_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->album_compact_back_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="album_compact_back_google_fonts" id="album_compact_back_google_fonts1" onchange="bwg_change_fonts('album_compact_back_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="album_compact_back_google_fonts1" id="album_compact_back_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="album_compact_back_google_fonts" id="album_compact_back_google_fonts0" onchange="bwg_change_fonts('album_compact_back_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="album_compact_back_google_fonts0" id="album_compact_back_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->album_compact_back_font_style, 'album_compact_back_font_style', __('Back Font family:', BWG()->prefix), 'album_compact_back_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="album_compact_back_font_weight"><?php echo __('Back Font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -2204,28 +2030,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="album_compact_gal_title_font_color" id="album_compact_gal_title_font_color" value="<?php echo $row->album_compact_gal_title_font_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="album_compact_gal_title_font_style"><?php echo __('Gallery title/description font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="album_compact_gal_title_font_style" id="album_compact_gal_title_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->album_compact_gal_title_font_style, $google_fonts)) ? true : false;
-										  $album_compact_gal_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($album_compact_gal_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->album_compact_gal_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="album_compact_gal_title_google_fonts" id="album_compact_gal_title_google_fonts1" onchange="bwg_change_fonts('album_compact_gal_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="album_compact_gal_title_google_fonts1" id="album_compact_gal_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="album_compact_gal_title_google_fonts" id="album_compact_gal_google_fonts0" onchange="bwg_change_fonts('album_compact_gal_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="album_compact_gal_google_fonts0" id="album_compact_gal_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->album_compact_gal_title_font_style, 'album_compact_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'album_compact_gal_title_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="album_compact_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -2540,28 +2348,10 @@ class ThemesView_bwg extends AdminView_bwg {
 											<input type="text" name="album_extended_back_font_color" id="album_extended_back_font_color" value="<?php echo $row->album_extended_back_font_color; ?>" class="color"/>
 										  </td>
 										</tr>
-										<tr>
-										  <td class="spider_label"><label for="album_extended_back_font_style"><?php echo __('Back font family:', BWG()->prefix); ?> </label></td>
-										  <td>
-											<select name="album_extended_back_font_style" id="album_extended_back_font_style">
-											  <?php
-											  $is_google_fonts = (in_array($row->album_extended_back_font_style, $google_fonts) ) ? true : false;
-											  $album_extended_back_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-											  foreach ($album_extended_back_font_families as $key => $font_family) {
-												?>
-												<option value="<?php echo $key; ?>" <?php echo (($row->album_extended_back_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-												<?php
-											  }
-											  ?>
-											</select>
-											<div>
-												<input type="radio" name="album_extended_back_google_fonts" id="album_extended_back_google_fonts1" onchange="bwg_change_fonts('album_extended_back_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-												<label for="album_extended_back_google_fonts1" id="album_extended_back_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-												<input type="radio" name="album_extended_back_google_fonts" id="album_extended_back_google_fonts0" onchange="bwg_change_fonts('album_extended_back_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-												<label for="album_extended_back_google_fonts0" id="album_extended_back_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-											</div>
-										  </td>
-										</tr>
+                    <tr>
+                      <!--generate font style with google fonts -->
+                      <?php $this->font_style_row( $row->album_extended_back_font_style, 'album_extended_back_font_style', __('Back font family:', BWG()->prefix), 'album_extended_back_google_fonts' ); ?>
+                    </tr>
 										<tr>
 										  <td class="spider_label"><label for="album_extended_back_font_weight"><?php echo __('Back font weight:', BWG()->prefix); ?> </label></td>
 										  <td>
@@ -2697,28 +2487,10 @@ class ThemesView_bwg extends AdminView_bwg {
 									<input type="text" name="album_extended_title_font_color" id="album_extended_title_font_color" value="<?php echo $row->album_extended_title_font_color; ?>" class="color"/>
 								  </td>
 								</tr>
-								<tr>
-								  <td class="spider_label"><label for="album_extended_title_font_style"><?php echo __('Title font family:', BWG()->prefix); ?> </label></td>
-								  <td>
-									<select name="album_extended_title_font_style" id="album_extended_title_font_style">
-									  <?php
-									  $is_google_fonts = (in_array($row->album_extended_title_font_style, $google_fonts)) ? true : false;
-									  $album_extended_title_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-									  foreach ($album_extended_title_font_families as $key => $font_family) {
-										?>
-										<option value="<?php echo $key; ?>" <?php echo (($row->album_extended_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-										<?php
-									  }
-									  ?>
-									</select>
-									<div>
-										<input type="radio" name="album_extended_title_google_fonts" id="album_extended_title_google_fonts1" onchange="bwg_change_fonts('album_extended_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-										<label for="album_extended_title_google_fonts1" id="album_extended_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-										<input type="radio" name="album_extended_title_google_fonts" id="album_extended_title_google_fonts0" onchange="bwg_change_fonts('album_extended_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-										<label for="album_extended_title_google_fonts0" id="album_extended_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-									</div>
-								  </td>
-								</tr>
+                <tr>
+                  <!--generate font style with google fonts -->
+                  <?php $this->font_style_row( $row->album_extended_title_font_style, 'album_extended_title_font_style', __('Title font family:', BWG()->prefix), 'album_extended_title_google_fonts' ); ?>
+                </tr>
 								<tr>
 								  <td class="spider_label"><label for="album_extended_title_font_weight"><?php echo __('Title font weight:', BWG()->prefix); ?> </label></td>
 								  <td>
@@ -2778,28 +2550,10 @@ class ThemesView_bwg extends AdminView_bwg {
 									<input type="text" name="album_extended_desc_font_color" id="album_extended_desc_font_color" value="<?php echo $row->album_extended_desc_font_color; ?>" class="color"/>
 								  </td>
 								</tr>
-								<tr>
-								  <td class="spider_label"><label for="album_extended_desc_font_style"><?php echo __('Description font family:', BWG()->prefix); ?> </label></td>
-								  <td>
-									<select name="album_extended_desc_font_style" id="album_extended_desc_font_style">
-									  <?php
-									  $is_google_fonts = (in_array($row->album_extended_desc_font_style, $google_fonts)) ? true : false;
-									  $album_extended_desc_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-									  foreach ($album_extended_desc_font_families as $key => $font_family) {
-										?>
-										<option value="<?php echo $key; ?>" <?php echo (($row->album_extended_desc_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-										<?php
-									  }
-									  ?>
-									</select>
-									<div>
-										<input type="radio" name="album_extended_desc_google_fonts" id="album_extended_desc_google_fonts1" onchange="bwg_change_fonts('album_extended_desc_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-										<label for="album_extended_desc_google_fonts1" id="album_extended_desc_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-										<input type="radio" name="album_extended_desc_google_fonts" id="album_extended_desc_google_fonts0" onchange="bwg_change_fonts('album_extended_desc_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-										<label for="album_extended_desc_google_fonts0" id="album_extended_desc_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-									</div>
-								  </td>
-								</tr>
+                <tr>
+                  <!--generate font style with google fonts -->
+                  <?php $this->font_style_row( $row->album_extended_desc_font_style, 'album_extended_desc_font_style', __('Description font family:', BWG()->prefix), 'album_extended_desc_google_fonts' ); ?>
+                </tr>
 								<tr>
 								  <td class="spider_label"><label for="album_extended_desc_font_weight"><?php echo __('Description font weight:', BWG()->prefix); ?> </label></td>
 								  <td>
@@ -2838,28 +2592,10 @@ class ThemesView_bwg extends AdminView_bwg {
 									<input type="text" name="album_extended_gal_title_font_color" id="album_extended_gal_title_font_color" value="<?php echo $row->album_extended_gal_title_font_color; ?>" class="color" />
 								  </td>
 								</tr>
-								<tr>
-								  <td class="spider_label"><label for="album_extended_gal_title_font_style"><?php echo __('Gallery title/description font family:', BWG()->prefix); ?> </label></td>
-								  <td>
-									<select name="album_extended_gal_title_font_style" id="album_extended_gal_title_font_style">
-									  <?php
-									  $is_google_fonts = (in_array($row->album_extended_gal_title_font_style, $google_fonts)) ? true : false;
-									  $album_extended_gal_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-									  foreach ($album_extended_gal_font_families as $key => $font_family) {
-										?>
-										<option value="<?php echo $key; ?>" <?php echo (($row->album_extended_gal_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-										<?php
-									  }
-									  ?>
-									</select>
-									<div>
-										<input type="radio" name="album_extended_gal_title_google_fonts" id="album_extended_gal_title_google_fonts1" onchange="bwg_change_fonts('album_extended_gal_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-										<label for="album_extended_gal_title_google_fonts1" id="album_extended_gal_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-										<input type="radio" name="album_extended_gal_title_google_fonts" id="album_extended_gal_title_google_fonts0" onchange="bwg_change_fonts('album_extended_gal_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-										<label for="album_extended_gal_title_google_fonts0" id="album_extended_gal_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-									</div>
-								  </td>
-								</tr>
+                <tr>
+                  <!--generate font style with google fonts -->
+                  <?php $this->font_style_row( $row->album_extended_gal_title_font_style, 'album_extended_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'album_extended_gal_title_google_fonts' ); ?>
+                </tr>
 								<tr>
 								  <td class="spider_label"><label for="album_extended_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
 								  <td>
@@ -3076,28 +2812,10 @@ class ThemesView_bwg extends AdminView_bwg {
                       <input type="text" name="album_masonry_thumb_title_font_color_hover" id="album_masonry_thumb_title_font_color_hover" value="<?php echo $row->album_masonry_thumb_title_font_color_hover; ?>" class="color" />
                     </td>
                   </tr>
-									<tr>
-									  <td class="spider_label"><label for="album_masonry_title_font_style"><?php echo __('Title font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="album_masonry_title_font_style" id="album_masonry_title_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->album_masonry_title_font_style, $google_fonts)) ? true : false;
-										  $album_masonry_title_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($album_masonry_title_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->album_masonry_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="album_masonry_title_google_fonts" id="album_masonry_title_google_fonts1" onchange="bwg_change_fonts('album_masonry_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="album_masonry_title_google_fonts1" id="album_masonry_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="album_masonry_title_google_fonts" id="album_masonry_title_google_fonts0" onchange="bwg_change_fonts('album_masonry_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="album_masonry_title_google_fonts0" id="album_masonry_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->album_masonry_title_font_style, 'album_masonry_title_font_style', __('Title font family:', BWG()->prefix), 'album_masonry_title_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="album_masonry_title_font_weight"><?php echo __('Title font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -3131,28 +2849,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="album_masonry_back_font_color" id="album_masonry_back_font_color" value="<?php echo $row->album_masonry_back_font_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="album_masonry_back_font_style"><?php echo __('Back Font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="album_masonry_back_font_style" id="album_masonry_back_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->album_masonry_back_font_style, $google_fonts)) ? true : false;
-										  $album_masonry_back_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($album_masonry_back_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->album_masonry_back_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="album_masonry_back_google_fonts" id="album_masonry_back_google_fonts1" onchange="bwg_change_fonts('album_masonry_back_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="album_masonry_back_google_fonts1" id="album_masonry_back_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="album_masonry_back_google_fonts" id="album_masonry_back_google_fonts0" onchange="bwg_change_fonts('album_masonry_back_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="album_masonry_back_google_fonts0" id="album_masonry_back_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->album_masonry_back_font_style, 'album_masonry_back_font_style', __('Back Font family:', BWG()->prefix), 'album_masonry_back_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="album_masonry_back_font_weight"><?php echo __('Back Font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -3186,28 +2886,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="album_masonry_gal_title_font_color" id="album_masonry_gal_title_font_color" value="<?php echo $row->album_masonry_gal_title_font_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="album_masonry_gal_title_font_style"><?php echo __('Gallery title/description font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="album_masonry_gal_title_font_style" id="album_masonry_gal_title_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->album_masonry_gal_title_font_style, $google_fonts)) ? true : false;
-										  $album_masonry_gal_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($album_masonry_gal_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->album_masonry_gal_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="album_masonry_gal_title_google_fonts" id="album_masonry_gal_title_google_fonts1" onchange="bwg_change_fonts('album_masonry_gal_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="album_masonry_gal_title_google_fonts1" id="album_masonry_gal_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="album_masonry_gal_title_google_fonts" id="album_masonry_gal_title_google_fonts0" onchange="bwg_change_fonts('album_masonry_gal_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="album_masonry_gal_title_google_fonts0" id="album_masonry_gal_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->album_masonry_gal_title_font_style, 'album_masonry_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'album_masonry_gal_title_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="album_masonry_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -3322,29 +3004,11 @@ class ThemesView_bwg extends AdminView_bwg {
 							<div class="wd-box-content">
 								<table style="clear:both;">
 								  <tbody>
-									<tr>
-									  <td class="spider_label"><label for="blog_style_img_font_family"><?php echo __('Font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="blog_style_img_font_family" id="blog_style_img_font_family">
-										  <?php
-										  $is_google_fonts = (in_array($row->blog_style_img_font_family, $google_fonts)) ? true : false;
-										  $blog_style_img_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($blog_style_img_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->blog_style_img_font_family == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="blog_style_img_google_fonts" id="blog_style_img_google_fonts1" onchange="bwg_change_fonts('blog_style_img_font_family', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="blog_style_img_google_fonts1" id="blog_style_img_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="blog_style_img_google_fonts" id="blog_style_img_google_fonts0" onchange="bwg_change_fonts('blog_style_img_font_family', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="blog_style_img_google_fonts0" id="blog_style_img_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
-									<tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->blog_style_img_font_family, 'blog_style_img_font_family', __('Font family:', BWG()->prefix), 'blog_style_img_google_fonts' ); ?>
+                  </tr>
+                  <tr>
 									  <td class="spider_label"><label for="blog_style_img_font_size"><?php echo __('Font size:', BWG()->prefix); ?> </label></td>
 									  <td>
 										<input type="text" name="blog_style_img_font_size" id="blog_style_img_font_size" value="<?php echo $row->blog_style_img_font_size; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> px
@@ -3491,28 +3155,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="blog_style_gal_title_font_color" id="blog_style_gal_title_font_color" value="<?php echo $row->blog_style_gal_title_font_color; ?>" class="color" />
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="blog_style_gal_title_font_style"><?php echo __('Gallery title/description font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="blog_style_gal_title_font_style" id="blog_style_gal_title_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->blog_style_gal_title_font_style, $google_fonts)) ? true : false;
-										  $blog_style_gal_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($blog_style_gal_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->blog_style_gal_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-										<input type="radio" name="blog_style_gal_title_google_fonts" id="blog_style_gal_title_google_fonts1" onchange="bwg_change_fonts('blog_style_gal_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-										<label for="blog_style_gal_title_google_fonts1" id="blog_style_gal_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-										<input type="radio" name="blog_style_gal_title_google_fonts" id="blog_style_gal_title_google_fonts0" onchange="bwg_change_fonts('blog_style_gal_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-										<label for="blog_style_gal_title_google_fonts0" id="blog_style_gal_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->blog_style_gal_title_font_style, 'blog_style_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'blog_style_gal_title_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="blog_style_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -4138,29 +3784,11 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="lightbox_hit_color" id="lightbox_hit_color" value="<?php echo $row->lightbox_hit_color; ?>" class="color"/>
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="lightbox_hit_font_style"><?php echo __('Hit counter font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="lightbox_hit_font_style" id="lightbox_hit_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->lightbox_hit_font_style, $google_fonts)) ? true : false;
-										  $lightbox_hit_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($lightbox_hit_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->lightbox_hit_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-										<input type="radio" name="lightbox_hit_google_fonts" id="lightbox_hit_google_fonts1" onchange="bwg_change_fonts('lightbox_hit_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-										<label for="lightbox_hit_google_fonts1" id="lightbox_hit_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-										<input type="radio" name="lightbox_hit_google_fonts" id="lightbox_hit_google_fonts0" onchange="bwg_change_fonts('lightbox_hit_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-										<label for="lightbox_hit_google_fonts0" id="lightbox_hit_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
-									<tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->lightbox_hit_font_style, 'lightbox_hit_font_style', __('Hit counter font family:', BWG()->prefix), 'lightbox_hit_google_fonts' ); ?>
+                  </tr>
+                  <tr>
 									  <td class="spider_label"><label for="lightbox_hit_font_weight"><?php echo __('Hit counter font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
 										<select name="lightbox_hit_font_weight" id="lightbox_hit_font_weight">
@@ -4280,29 +3908,11 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="lightbox_title_color" id="lightbox_title_color" value="<?php echo $row->lightbox_title_color; ?>" class="color"/>
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="lightbox_title_font_style"><?php echo __('Title font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="lightbox_title_font_style" id="lightbox_title_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->lightbox_title_font_style, $google_fonts) ) ? true : false;
-										  $lightbox_title_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($lightbox_title_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->lightbox_title_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="lightbox_title_google_fonts" id="lightbox_title_google_fonts1" onchange="bwg_change_fonts('lightbox_title_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="lightbox_title_google_fonts1" id="lightbox_title_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="lightbox_title_google_fonts" id="lightbox_title_google_fonts0" onchange="bwg_change_fonts('lightbox_title_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="lightbox_title_google_fonts0" id="lightbox_title_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
-									<tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->lightbox_title_font_style, 'lightbox_title_font_style', __('Title font family:', BWG()->prefix), 'lightbox_title_google_fonts' ); ?>
+                  </tr>
+                  <tr>
 									  <td class="spider_label"><label for="lightbox_title_font_weight"><?php echo __('Title font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
 										<select name="lightbox_title_font_weight" id="lightbox_title_font_weight">
@@ -4329,28 +3939,10 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="lightbox_description_color" id="lightbox_description_color" value="<?php echo $row->lightbox_description_color; ?>" class="color"/>
 									  </td>
 									</tr>
-									<tr>
-									  <td class="spider_label"><label for="lightbox_description_font_style"><?php echo __('Description font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="lightbox_description_font_style" id="lightbox_description_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->lightbox_description_font_style, $google_fonts)) ? true : false;
-										  $lightbox_description_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($lightbox_description_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->lightbox_description_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="lightbox_description_google_fonts" id="lightbox_description_google_fonts1" onchange="bwg_change_fonts('lightbox_description_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="lightbox_description_google_fonts1" id="lightbox_description_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="lightbox_description_google_fonts" id="lightbox_description_google_fonts0" onchange="bwg_change_fonts('lightbox_description_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="lightbox_description_google_fonts0" id="lightbox_description_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
-									</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->lightbox_description_font_style, 'lightbox_description_font_style', __('Description font family:', BWG()->prefix), 'lightbox_description_google_fonts' ); ?>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="lightbox_description_font_weight"><?php echo __('Description font weight:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -4406,26 +3998,8 @@ class ThemesView_bwg extends AdminView_bwg {
 									  </td>
 									</tr>
 									<tr id="lightbox_comment15">
-									  <td class="spider_label"><label for="lightbox_comment_font_style"><?php echo __('Comments font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="lightbox_comment_font_style" id="lightbox_comment_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->lightbox_comment_font_style, $google_fonts)) ? true : false;
-										  $lightbox_comment_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($lightbox_comment_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->lightbox_comment_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="lightbox_comment_google_fonts" id="lightbox_comment_google_fonts1" onchange="bwg_change_fonts('lightbox_comment_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="lightbox_comment_google_fonts1" id="lightbox_comment_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="lightbox_comment_google_fonts" id="lightbox_comment_google_fonts0" onchange="bwg_change_fonts('lightbox_comment_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="lightbox_comment_google_fonts0" id="lightbox_comment_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->lightbox_comment_font_style, 'lightbox_comment_font_style', __('Comments font family:', BWG()->prefix), 'lightbox_comment_google_fonts' ); ?>
 									</tr>
 									<tr id="lightbox_comment10">
 									  <td class="spider_label"><label for="lightbox_comment_author_font_size"><?php echo __('Comments author font size:', BWG()->prefix); ?> </label>
@@ -4590,26 +4164,8 @@ class ThemesView_bwg extends AdminView_bwg {
 									  </td>
 									</tr>
 									<tr>
-									  <td class="spider_label"><label for="page_nav_font_style"><?php echo __('Font family:', BWG()->prefix); ?> </label></td>
-									  <td>
-										<select name="page_nav_font_style" id="page_nav_font_style">
-										  <?php
-										  $is_google_fonts = (in_array($row->page_nav_font_style, $google_fonts)) ? true : false;
-										  $page_nav_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-										  foreach ($page_nav_font_families as $key => $font_family) {
-											?>
-											<option value="<?php echo $key; ?>" <?php echo (($row->page_nav_font_style == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-											<?php
-										  }
-										  ?>
-										</select>
-										<div>
-											<input type="radio" name="page_nav_google_fonts" id="page_nav_google_fonts1" onchange="bwg_change_fonts('page_nav_font_style', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-											<label for="page_nav_google_fonts1" id="page_nav_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-											<input type="radio" name="page_nav_google_fonts" id="page_nav_google_fonts0" onchange="bwg_change_fonts('page_nav_font_style', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-											<label for="page_nav_google_fonts0" id="page_nav_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-										</div>
-									  </td>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->page_nav_font_style, 'page_nav_font_style', __('Font family:', BWG()->prefix), 'page_nav_google_fonts' ); ?>
 									</tr>
 									<tr>
 									  <td class="spider_label"><label for="page_nav_font_weight"><?php echo __('Font weight:', BWG()->prefix); ?> </label></td>
@@ -4974,28 +4530,10 @@ class ThemesView_bwg extends AdminView_bwg {
 								  </td>
 								</tr>
 								<tr>
-								 <tr>
-								  <td class="spider_label"><label for="carousel_font_family"><?php echo __('Title Font family:', BWG()->prefix); ?> </label></td>
-								  <td>
-									<select name="carousel_font_family" id="carousel_font_family">
-									  <?php
-									  $is_google_fonts = (in_array($row->carousel_font_family, $google_fonts)) ? true : false;
-									  $carousel_font_families = ($is_google_fonts == true) ? $google_fonts : $font_families;
-									  foreach ($carousel_font_families as $key => $font_family) {
-										?>
-										<option value="<?php echo $key; ?>" <?php echo (($row->carousel_font_family == $key) ? 'selected="selected"' : ''); ?>><?php echo $font_family; ?></option>
-										<?php
-									  }
-									  ?>
-									</select>
-									<div>
-										<input type="radio" name="carousel_google_fonts" id="carousel_google_fonts1" onchange="bwg_change_fonts('carousel_font_family', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts == true) echo 'checked="checked"'; ?> />
-										<label for="carousel_google_fonts1" id="carousel_google_fonts1_lbl"><?php echo __('Google fonts', BWG()->prefix); ?></label>
-										<input type="radio" name="carousel_google_fonts" id="carousel_google_fonts0" onchange="bwg_change_fonts('carousel_font_family', '')" value="0" <?php if ($is_google_fonts == false) echo 'checked="checked"'; ?> />
-										<label for="carousel_google_fonts0" id="carousel_google_fonts0_lbl"><?php echo __('Default', BWG()->prefix); ?></label>
-									</div>
-								  </td>
-								</tr>
+                  <tr>
+                    <!--generate font style with google fonts -->
+                    <?php $this->font_style_row( $row->carousel_font_family, 'carousel_font_family', __('Title Font family:', BWG()->prefix), 'carousel_google_fonts' ); ?>
+                  </tr>
 								  <td class="spider_label"><label for="carousel_caption_p_font_size"><?php echo __('Title font size:', BWG()->prefix); ?> </label></td>
 								  <td>
 									<input type="text" name="carousel_caption_p_font_size" id="carousel_caption_p_font_size" value="<?php echo $row->carousel_caption_p_font_size; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)" /> px
