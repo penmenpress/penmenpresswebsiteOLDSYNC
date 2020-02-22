@@ -3,8 +3,8 @@ Contributors: OneSignal
 Donate link: https://onesignal.com
 Tags: chrome, firefox, safari, push, push notifications, push notification, chrome push, safari push, firefox push, notification, notifications, web push, notify, mavericks, android, android push, android notifications, android notification, mobile notification, mobile notifications, mobile, desktop notification, roost, goroost, desktop notifications, gcm, push messages, onesignal
 Requires at least: 3.8
-Tested up to: 5.0.3
-Stable tag: 1.17.0
+Tested up to: 5.3.2
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,10 +18,10 @@ After setup, your visitors opt-in to receive push notifications when you publish
 
 You can configure notification delivery at preset intervals, create user segments, and customize the opt-in process for visitors.
 
-OneSignal is free for up to 30,000 subscribers; there are no limits on the number of push notifications you can send. Contact [support@onesignal.com](mailto:support@onesignal.com) if you have any questions. We’d love to hear from you.
+OneSignal’s free plan allows targeting up to 30,000 subscribers with push notifications. Contact support@onesignal.com if you have any questions. We’d love to hear from you!
 
 = Company =
-OneSignal is trusted by over 600,000 developers and marketing strategists. We power push notifications for everyone from early stage startups to Fortune 500 Companies, sending 4 billion notifications per day. It is the most popular push notification plugin on Wordpress with 90,000+ installations.
+OneSignal is trusted by over 860,000 developers and marketing strategists. We power push notifications for everyone from early stage startups to Fortune 500 Companies, sending 4 billion notifications per day. It is the most popular push notification plugin on Wordpress with 90,000+ installations.
 
 = Features =
 * **Supports Chrome** (Desktop & Android), **Safari** (Mac OS X), **Microsoft Edge** (Desktop & Android), **Opera** (Desktop & Android) and **Firefox** (Desktop & Android) on both HTTP and HTTPS sites.
@@ -64,6 +64,60 @@ OneSignal is trusted by over 600,000 developers and marketing strategists. We po
 HTTPS Setup Video: [youtube https://www.youtube.com/watch?v=BeTZ2KgytC0]
 
 == Changelog ==
+
+= 2.1.1 =
+
+- Minor bug fixes: check native_prompt setting key exists, reworked checkbox logic to support custom post statuses
+
+= 2.1.0 = 
+
+- OneSignal config page interface changes to prompting options to discourage native prompt use, bug fixes
+
+= 2.0.1 =
+
+- Bug fix: link expired issue due to failing nonce check when creating posts from other WordPress plugins
+
+= 2.0.0 =
+
+- Wordpress VIP support, general refactoring, bug fixes
+
+= 1.17.9 =
+
+- Rolled back sending notifications on scheduled posts to be when its status changes to published
+
+= 1.17.8 =
+
+- Added escaping to fields in OneSignal config to remove invalid characters, bug fixes
+
+= 1.17.7 =
+
+- Fixed bug from 1.17.6 where updating old posts would result in 400 level errors
+
+= 1.17.6 =
+
+- Fixed bug where scheduled posts would send notifications immediately, added Gutenberg support for scheduled notifications
+
+= 1.17.5 =
+
+- Updated notice message to reflect changes to time limiter, removed extra newline from description
+
+= 1.17.4 = 
+
+- Changed time limiter to 2 minutes from 1 hour to ease restrictions on sending update notifications
+
+= 1.17.3 =
+
+- Added debug to logging to responses with non 200-level status codes
+- Made notices unique
+- Bug fixes
+
+= 1.17.2 =
+
+- Lengthened timeout, debugging tool, status-code bug fixes
+
+= 1.17.1 =
+
+- Support for more detailed error messages
 
 = 1.17.0 =
 
