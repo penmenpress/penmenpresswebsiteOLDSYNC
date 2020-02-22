@@ -66,7 +66,7 @@ div.cme-listhoriz h3 {
 margin: 0.2em;
 }
 
-table .cme-typecaps {
+div.cme-cap-type-tables {
 border: 1px solid black;
 }
 
@@ -82,6 +82,10 @@ padding-right: 0.3em;
 
 table.cme-typecaps span.cap-x {
 display: none;
+}
+
+h3.cme-cap-section {
+margin-top:0;
 }
 
 a.neg-cap, a.cap-on, a.type-on, a.neg-type-caps, a.cme-neg-all {
@@ -158,8 +162,16 @@ padding-right: 10px;
 margin-top: 5px;
 }
 
+#akmin input.button-primary {
+margin: 5px;
+}
+
 #akmin td.sidebar {
 width: 300px;
+}
+
+#akmin .cme-backup-tool a {
+padding-left:0;
 }
 
 #akmin input.regular-text {
@@ -177,7 +189,35 @@ margin-top:5px;
 }
 
 td.cm-has-via-pp {
-background-color: #7f7;
+background-color: #84fb84;
 }
 
-#akmin span.publishpress,#akmin span.publishpress a,#akmin span.publishpress a:visited {color:#655997;font-weight:bold}
+div.pressshack-admin-wrapper footer {
+padding-right: 270px;
+}
+
+body.capabilities_page_capsman-tool div.pressshack-admin-wrapper footer {
+padding-right: 5px;
+}
+
+#akmin div.publishpress-headline {line-height:25px}
+#akmin span.publishpress-thanks{margin-left:5px;color:#655997;white-space:nowrap}
+#akmin span.publishpress-thanks,#akmin span.publishpress-thanks a,#akmin span.publishpress-thanks a:visited {color:#655997;font-weight:bold;}
+
+table#akmin td.sidebar li.publishpress-contact{text-align:center}
+table#akmin td.sidebar li.publishpress-contact a{padding:5px 0 5px 0;}
+
+#pp_features {display:none;border:1px solid #eee;padding:5px;text-align:center;min-width:600px}
+#pp_features div.pp-logo { text-align: center }
+#pp_features div.features-wrap { margin-left: auto; margin-right: auto; text-align: center; width: 600px; }
+#pp_features ul.pp-features { list-style: none; padding-top:10px; text-align:left; margin-left: auto }
+#pp_features ul.pp-features li:before { content: "\2713\0020"; }
+#pp_features ul.pp-features li { padding-bottom: 5px }
+#pp_features img.cme-play { margin-bottom: -3px; margin-left: 5px;}
+
+div.publishpress-caps-manage span.manage-members {margin-left:5px; font-weight:normal; color: #777}
+div.publishpress-caps-manage span.manage-members a {color: #777}
+div.publishpress-caps-manage span.manage-members a:hover {text-decoration: underline; color:#655997 }
+
+div.publishpress-headline .cme-subtext a {font-weight: bold}
+div.publishpress-headline .cme-subtext a:hover {text-decoration: underline}

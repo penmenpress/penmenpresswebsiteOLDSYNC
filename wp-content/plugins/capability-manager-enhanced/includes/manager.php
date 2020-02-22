@@ -4,43 +4,83 @@
  * Plugin to create and manage roles and capabilities.
  *
  * @author		Jordi Canals, Kevin Behrens
- * @copyright   Copyright (C) 2009, 2010 Jordi Canals, (C) 2019 PublishPress
+ * @copyright   Copyright (C) 2009, 2010 Jordi Canals, (C) 2020 PublishPress
  * @license		GNU General Public License version 2
- * @link		https://publishpress.com
+ * @link		https://publishpress.com/
  *
-
-	Copyright 2009, 2010 Jordi Canals <devel@jcanals.cat>
-	Modifications Copyright 2019, PublishPress <help@publishpress.com>
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	version 2 as published by the Free Software Foundation.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	Copyright 2009, 2010 Jordi Canals <devel@jcanals.cat>
+ *
+ *	Modifications Copyright 2020, PublishPress <help@publishpress.com>
+ *
+ *	This program is free software; you can redistribute it and/or
+ *	modify it under the terms of the GNU General Public License
+ *	version 2 as published by the Free Software Foundation.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 add_action( 'init', 'cme_update_pp_usage' );  // update early so resulting post type cap changes are applied for this request's UI construction
 
 function cme_update_pp_usage() {
-	if ( defined( 'PP_ACTIVE' ) && ( ! empty($_REQUEST['update_filtered_types']) || ! empty($_REQUEST['SaveRole']) ) ) {
+	if ( ! empty($_REQUEST['update_filtered_types']) || ! empty($_REQUEST['update_filtered_taxonomies']) || ! empty($_REQUEST['update_detailed_taxonomies']) || ! empty($_REQUEST['SaveRole']) ) {
 		require_once( dirname(__FILE__).'/pp-handler.php' );
 		return _cme_update_pp_usage();
 	}
 }
 
+// Core WP roles to apply safeguard preventing accidental lockout from dashboard
+function _cme_core_roles() {
+	return apply_filters( 'pp_caps_core_roles', array( 'administrator', 'editor', 'revisor', 'author', 'contributor', 'subscriber' ) );
+}
+
+function _cme_core_caps() {
+	$core_caps = array_fill_keys( array( 'switch_themes', 'edit_themes', 'activate_plugins', 'edit_plugins', 'edit_users', 'edit_files', 'manage_options', 'moderate_comments', 
+	'manage_links', 'upload_files', 'import', 'unfiltered_html', 'read', 'delete_users', 'create_users', 'unfiltered_upload', 'edit_dashboard',
+	'update_plugins', 'delete_plugins', 'install_plugins', 'update_themes', 'install_themes', 
+	'update_core', 'list_users', 'remove_users', 'promote_users', 'edit_theme_options', 'delete_themes', 'export' ), true );
+	
+	ksort( $core_caps );
+	return $core_caps;
+}
+
+function _cme_is_read_removal_blocked( $role_name ) {
+	$role = get_role($role_name);
+	$rcaps = $role->capabilities;
+	
+	$core_caps = array_diff_key( _cme_core_caps(), array_fill_keys( array( 'unfiltered_html', 'unfiltered_upload', 'upload_files', 'edit_files', 'read' ), true ) );
+	
+	if ( empty( $rcaps['dashboard_lockout_ok'] ) ) {
+		$edit_caps = array();
+		foreach ( get_post_types( array( 'public' => true ), 'object' ) as $type_obj ) {
+			$edit_caps = array_merge( $edit_caps, array_values( array_diff_key( (array) $type_obj->cap, array( 'read_private_posts' => true ) ) ) );
+		}
+		
+		$edit_caps = array_fill_keys( $edit_caps, true );
+		unset( $edit_caps['read'] );
+		unset( $edit_caps['upload_files'] );
+		unset( $edit_caps['edit_files'] );
+		
+		if ( $role_has_admin_caps = in_array( $role_name, _cme_core_roles() ) && ( array_intersect_key( $rcaps, array_diff_key( $core_caps, array( 'read' => true ) ) ) || array_intersect_key( $rcaps, $edit_caps ) ) ) {
+			return true;
+		}
+	}
+	
+	return false;
+}
 
 /**
  * Class CapabilityManager.
  * Sets the main environment for all Capability Manager components.
  *
  * @author		Jordi Canals, Kevin Behrens
- * @link		https://publishpress.com
+ * @link		https://publishpress.com/
  */
 class CapabilityManager
 {
@@ -57,11 +97,6 @@ class CapabilityManager
 	 * @var array
 	 */
 	var $roles = array();
-	
-	/**
-	 * Roles to monitor for removal of essential capabilities
-	 */
-	var $core_roles = array();
 	
 	/**
 	 * Current role we are managing
@@ -91,14 +126,16 @@ class CapabilityManager
 		$this->ID = 'capsman';
 		$this->mod_url = plugins_url( '', CME_FILE );
 		
-		$this->core_roles = apply_filters( 'pp_caps_core_roles', array( 'administrator', 'editor', 'revisor', 'author', 'contributor', 'subscriber' ) );
-		
 		$this->moduleLoad();
 		
 		add_action('admin_menu', array($this, 'adminMenus'), 5);  // execute prior to PP, to use menu hook
 
 		// Load styles
 		add_action('admin_print_styles', array($this, 'adminStyles'));
+
+		if ( isset($_REQUEST['page']) && ( 'capsman' == $_REQUEST['page'] ) ) {
+			add_action('admin_enqueue_scripts', array($this, 'adminScriptsPP'));
+		}
 	}
 
     /**
@@ -113,15 +150,17 @@ class CapabilityManager
 		if ( empty( $_REQUEST['page'] ) || ! in_array( $_REQUEST['page'], array( 'capsman', 'capsman-tool' ) ) )
 			return;
 		
-		wp_register_style( $this->ID . 'framework_admin', $this->mod_url . '/framework/styles/admin.css', false, CAPSMAN_ENH_VERSION);
+		wp_enqueue_style('cme-admin-common', $this->mod_url . '/common/css/pressshack-admin.css', [], PUBLISHPRESS_CAPS_VERSION);
+
+		wp_register_style( $this->ID . 'framework_admin', $this->mod_url . '/framework/styles/admin.css', false, PUBLISHPRESS_CAPS_VERSION);
    		wp_enqueue_style( $this->ID . 'framework_admin');
 		
-   		wp_register_style( $this->ID . '_admin', $this->mod_url . '/admin.css', false, CAPSMAN_ENH_VERSION);
+   		wp_register_style( $this->ID . '_admin', $this->mod_url . '/admin.css', false, PUBLISHPRESS_CAPS_VERSION);
    		wp_enqueue_style( $this->ID . '_admin');
 		
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 		$url = $this->mod_url . "/admin{$suffix}.js";
-		wp_enqueue_script( 'cme_admin', $url, array('jquery'), CAPSMAN_VERSION, true );
+		wp_enqueue_script( 'cme_admin', $url, array('jquery'), PUBLISHPRESS_CAPS_VERSION, true );
 		wp_localize_script( 'cme_admin', 'cmeAdmin', array( 
 			'negationCaption' => __( 'Explicity negate this capability by storing as disabled', 'capsman-enhanced' ),
 			'typeCapsNegationCaption' => __( 'Explicitly negate these capabilities by storing as disabled', 'capsman-enhanced' ),
@@ -132,6 +171,12 @@ class CapabilityManager
 		);
     }
 	
+	function adminScriptsPP() {
+		wp_enqueue_style( 'plugin-install' );
+		wp_enqueue_script( 'plugin-install' );
+		add_thickbox();
+	}
+
 	/**
 	 * Creates some filters at module load time.
 	 *
@@ -140,8 +185,8 @@ class CapabilityManager
     protected function moduleLoad ()
     {
 		$old_version = get_option($this->ID . '_version');
-		if ( version_compare( $old_version, CAPSMAN_ENH_VERSION, 'ne') ) {
-			update_option($this->ID . '_version', CAPSMAN_ENH_VERSION);
+		if ( version_compare( $old_version, PUBLISHPRESS_CAPS_VERSION, 'ne') ) {
+			update_option($this->ID . '_version', PUBLISHPRESS_CAPS_VERSION);
 			$this->pluginUpdate();
 		}
 		
@@ -151,29 +196,34 @@ class CapabilityManager
         // Users with roles that cannot be managed, are not allowed to be edited.
         add_filter('map_meta_cap', array(&$this, 'filterUserEdit'), 10, 4);
 		
-		// ensure storage, retrieval of db-stored customizations to bbPress dynamic roles
-		global $wpdb;
-		$role_key = $wpdb->prefix . 'user_roles';
-		add_filter( 'option_' . $role_key, array( &$this, 'log_db_roles' ), 0 );
-		add_filter( 'option_' . $role_key, array( &$this, 'reinstate_db_roles' ), 50 );
+		// ensure storage, retrieval of db-stored customizations to dynamic roles
+		if ( isset($_REQUEST['page']) && in_array( $_REQUEST['page'], array( 'capsman', 'capsman-tool' ) ) ) {
+			global $wpdb;
+			$role_key = $wpdb->prefix . 'user_roles';
+			$this->log_db_roles();
+			add_filter( 'option_' . $role_key, array( &$this, 'reinstate_db_roles' ), PHP_INT_MAX );
+		}
 		
 		add_filter( 'plugins_loaded', array( &$this, 'processRoleUpdate' ) );
     }
-	
-	function log_db_roles( $passthru_roles ) {
-		global $wp_roles;
 
-		if ( isset($wp_roles) )
-			$this->log_db_role_objects = $wp_roles->role_objects;
+	// Direct query of stored role definitions
+	function log_db_roles( $legacy_arg = '' ) {
+		global $wpdb;
 
-		return $passthru_roles;
+		$results = (array) maybe_unserialize( $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = '{$wpdb->prefix}user_roles' LIMIT 1") );
+		foreach( $results as $_role_name => $_role ) {
+			$this->log_db_role_objects[$_role_name] = (object) $_role;
+		}
+
+		return $legacy_arg;
 	}
-	
+
 	// note: this is only applied when accessing the cme role edit form
 	function reinstate_db_roles( $passthru_roles = array() ) {
 		global $wp_roles;
 
-		if ( $this->log_db_role_objects ) {
+		if ( isset($wp_roles) && $this->log_db_role_objects ) {
 			$intersect = array_intersect_key( $wp_roles->role_objects, $this->log_db_role_objects );
 			foreach( array_keys( $intersect ) as $key ) {
 				if ( ! empty( $this->log_db_role_objects[$key]->capabilities ) )
@@ -215,20 +265,35 @@ class CapabilityManager
 			$this->setAdminCapability();
 		}
 
-		add_action( 'admin_menu', array( &$this, 'cme_menu' ), 20 );
+		add_action( 'admin_menu', array( &$this, 'cme_menu' ), 18 );
 	}
 
 	public function cme_menu() {
 		$cap_name = ( is_super_admin() ) ? 'manage_capabilities' : 'restore_roles';
-		add_management_page(__('Capability Manager', 'capsman-enhanced'),  __('Capability Manager', 'capsman-enhanced'), $cap_name, $this->ID . '-tool', array($this, 'backupTool'));
 		
-		if ( did_action( 'pp_admin_menu' ) ) { // Put Capabilities link on Permissions menu if Press Permit is active and user has access to it
-			global $pp_admin;
-			$menu_caption = ( defined('WPLANG') && WPLANG && ( 'en_EN' != WPLANG ) ) ? __('Capabilities', 'capsman-enhanced') : 'Role Capabilities';
-			add_submenu_page( $pp_admin->get_menu('options'), __('Capability Manager', 'capsman-enhanced'),  $menu_caption, 'manage_capabilities', $this->ID, array($this, 'generalManager') );
-		} else {
-			add_users_page( __('Capability Manager', 'capsman-enhanced'),  __('Capabilities', 'capsman-enhanced'), 'manage_capabilities', $this->ID, array($this, 'generalManager'));
-		}	
+		$permissions_title = __('Capabilities', 'capsman-enhanced');
+
+		$menu_order = 72;
+
+		if (defined('PUBLISHPRESS_PERMISSIONS_MENU_GROUPING')) {
+			foreach (get_option('active_plugins') as $plugin_file) {
+				if ( false !== strpos($plugin_file, 'publishpress.php') ) {
+					$menu_order = 27;
+				}
+			}
+		}
+
+		add_menu_page(
+			$permissions_title,
+			$permissions_title,
+			$cap_name,
+			'capsman',
+			array($this, 'generalManager'),
+			'dashicons-admin-network',
+			$menu_order
+		);
+
+		add_submenu_page('capsman',  __('Backup', 'capsman-enhanced'), __('Backup', 'capsman-enhanced'), $cap_name, $this->ID . '-tool', array($this, 'backupTool'));
 	}
 	
 	/**
@@ -319,18 +384,38 @@ class CapabilityManager
 	}
 
 	function processRoleUpdate() {
-		$this->current = get_option('default_role');	// By default we manage the default role.
-		
 		if ( 'POST' == $_SERVER['REQUEST_METHOD'] && ( ! empty($_REQUEST['SaveRole']) || ! empty($_REQUEST['AddCap']) ) ) {
 			if ( ! current_user_can('manage_capabilities') && ! current_user_can('administrator') ) {
 				// TODO: Implement exceptions.
 				wp_die('<strong>' .__('What do you think you\'re doing?!?', 'capsman-enhanced') . '</strong>');
 			}
 
-			//$this->current = get_option('default_role');	// By default we manage the default role.
-
-			check_admin_referer('capsman-general-manager');
-			$this->processAdminGeneral();
+			if ( ! empty($_REQUEST['current']) ) { // don't process role update unless form variable is received
+				check_admin_referer('capsman-general-manager');
+				
+				$role = get_role($_REQUEST['current']);
+				$current_level = ($role) ? ak_caps2level($role->capabilities) : 0;
+				
+				$this->processAdminGeneral();
+				
+				$set_level = (isset($_POST['level'])) ? $_POST['level'] : 0;
+				
+				if ($set_level != $current_level) {
+					global $wp_roles, $wp_version;
+					
+					if ( version_compare($wp_version, '4.9', '>=') ) {
+						$wp_roles->for_site();
+					} else {
+						$wp_roles->reinit();
+					}
+					
+					foreach( get_users(array('role' => $_REQUEST['current'], 'fields' => 'ID')) as $ID ) {
+						$user = new WP_User($ID);
+						$user->get_role_caps();
+						$user->update_user_level_from_caps();
+					}
+				}
+			}
 		}
 	}
 	
@@ -355,6 +440,10 @@ class CapabilityManager
 			} elseif ( ! empty($_REQUEST['AddCap']) ) {
 				ak_admin_notify( $this->message );
 			}
+		} else {
+			if (!empty($_REQUEST['added'])) {
+				ak_admin_notify(__('New capability added to role.'));
+			}
 		}
 
 		$this->generateNames();
@@ -365,11 +454,21 @@ class CapabilityManager
 			$capsman_modify = new CapsmanHandler( $this );
 			$capsman_modify->adminDeleteRole();
 		}
+		
+		if ( ! isset($this->current) ) { // By default, we manage the default role
+			if (empty($_POST) && !empty($_REQUEST['role'])) {
+				$this->current = $_REQUEST['role'];
+			}
+		}
 
+		if (!isset($this->current) || !get_role($this->current)) {
+				$this->current = get_option('default_role');
+		}
+		
 		if ( ! in_array($this->current, $roles) ) {    // Current role has been deleted.
 			$this->current = array_shift($roles);
 		}
-
+		
 		include ( dirname(CME_FILE) . '/includes/admin.php' );
 	}
 
@@ -519,4 +618,46 @@ class CapabilityManager
 
 		include ( dirname(CME_FILE) . '/includes/backup.php' );
 	}
+}
+
+function cme_publishpressFooter() {
+	?>
+	<footer>
+
+	<div class="pp-rating">
+	<a href="https://wordpress.org/support/plugin/capability-manager-enhanced/reviews/#new-post" target="_blank" rel="noopener noreferrer">
+	<?php printf( 
+		__('If you like %s, please leave us a %s rating. Thank you!', 'capsman-enhanced'),
+		'<strong>PublishPress Capabilities</strong>',
+		'<span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span><span class="dashicons dashicons-star-filled"></span>'
+		);
+	?>
+	</a>
+	</div>
+
+	<hr>
+	<nav>
+	<ul>
+	<li><a href="https://publishpress.com/capability-manager/" target="_blank" rel="noopener noreferrer" title="<?php _e('About PublishPress Capabilities', 'capsman-enhanced');?>"><?php _e('About', 'capsman-enhanced');?>
+	</a></li>
+	<li><a href="https://publishpress.com/knowledge-base/how-to-use-capability-manager/" target="_blank" rel="noopener noreferrer" title="<?php _e('Capabilites Documentation', 'capsman-enhanced');?>"><?php _e('Documentation', 'capsman-enhanced');?>
+	</a></li>
+	<li><a href="https://publishpress.com/contact" target="_blank" rel="noopener noreferrer" title="<?php _e('Contact the PublishPress team', 'capsman-enhanced');?>"><?php _e('Contact', 'capsman-enhanced');?>
+	</a></li>
+	<li><a href="https://twitter.com/publishpresscom" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-twitter"></span>
+	</a></li>
+	<li><a href="https://facebook.com/publishpress" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-facebook"></span>
+	</a></li>
+	</ul>
+	</nav>
+
+	<div class="pp-pressshack-logo">
+	<a href="https://publishpress.com" target="_blank" rel="noopener noreferrer">
+
+	<img src="<?php echo plugins_url('', CME_FILE) . '/common/img/publishpress-logo.png';?>" />
+	</a>
+	</div>
+
+	</footer>
+	<?php
 }
