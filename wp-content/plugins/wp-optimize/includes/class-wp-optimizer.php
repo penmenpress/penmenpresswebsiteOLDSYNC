@@ -149,7 +149,7 @@ class WP_Optimizer {
 			return $optimization;
 		}
 
-		$this->change_time_limit();
+		WP_Optimize()->change_time_limit();
 
 		$optimization->init();
 	
@@ -191,7 +191,7 @@ class WP_Optimizer {
 		
 		if (is_wp_error($optimization)) return $optimization;
 
-		$this->change_time_limit();
+		WP_Optimize()->change_time_limit();
 
 		$optimization->before_get_info();
 
@@ -234,7 +234,7 @@ class WP_Optimizer {
 
 				if ('auto' == $which_option && empty($optimization->available_for_auto)) continue;
 
-				$this->change_time_limit();
+				WP_Optimize()->change_time_limit();
 
 				$results[$optimization_id] = $this->do_optimization($optimization);
 			}
@@ -261,19 +261,24 @@ class WP_Optimizer {
 	/**
 	 * Returns information about database tables.
 	 *
+	 * @param bool $update refresh or no cached data
+	 *
 	 * @return mixed
 	 */
-	public function get_tables() {
+	public function get_tables($update = false) {
 		static $tables_info = null;
 
-		if (null !== $tables_info) return $tables_info;
+		if (false === $update && null !== $tables_info) return $tables_info;
 
-		$table_status = WP_Optimize()->get_db_info()->get_show_table_status();
+		$table_status = WP_Optimize()->get_db_info()->get_show_table_status($update);
 
 		// Filter on the site's DB prefix (was not done in releases up to 1.9.1).
 		$table_prefix = $this->get_table_prefix();
 		
 		if (is_array($table_status)) {
+
+			$corrupted_tables_count = 0;
+
 			foreach ($table_status as $index => $table) {
 				$table_name = $table->Name;
 				
@@ -291,10 +296,14 @@ class WP_Optimizer {
 				$table_status[$index]->is_optimizable = WP_Optimize()->get_db_info()->is_table_optimizable($table_name);
 				$table_status[$index]->is_type_supported = WP_Optimize()->get_db_info()->is_table_type_optimize_supported($table_name);
 				// add information about corrupted tables.
-				$table_status[$index]->is_needing_repair = WP_Optimize()->get_db_info()->is_table_needing_repair($table_name);
+				$is_needing_repair = WP_Optimize()->get_db_info()->is_table_needing_repair($table_name);
+				$table_status[$index]->is_needing_repair = $is_needing_repair;
+				if ($is_needing_repair) $corrupted_tables_count++;
 
 				$table_status[$index] = $this->join_plugin_information($table_name, $table_status[$index]);
 			}
+
+			WP_Optimize()->get_options()->update_option('corrupted-tables-count', $corrupted_tables_count);
 		}
 
 		$tables_info = apply_filters('wp_optimize_get_tables', $table_status);
@@ -527,16 +536,5 @@ class WP_Optimizer {
 		}
 		
 		return array('output' => $output);
-	}
-
-	/**
-	 * Try to change PHP script time limit.
-	 */
-	private function change_time_limit() {
-		$time_limit = (defined('WP_OPTIMIZE_SET_TIME_LIMIT') && WP_OPTIMIZE_SET_TIME_LIMIT > 15) ? WP_OPTIMIZE_SET_TIME_LIMIT : 1800;
-
-		// Try to reduce the chances of PHP self-terminating via reaching max_execution_time.
-		// @codingStandardsIgnoreLine
-		@set_time_limit($time_limit);
 	}
 }
