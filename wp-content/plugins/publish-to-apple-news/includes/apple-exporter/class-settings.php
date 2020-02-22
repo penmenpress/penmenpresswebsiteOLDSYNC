@@ -29,24 +29,24 @@ class Settings {
 	 * @var array
 	 * @access private
 	 */
-	private $_settings = array(
-		'api_async' => 'no',
-		'api_autosync' => 'yes',
-		'api_autosync_delete' => 'yes',
-		'api_autosync_update' => 'yes',
-		'api_channel' => '',
-		'api_key' => '',
-		'api_secret' => '',
-		'apple_news_admin_email' => '',
+	private $settings = array(
+		'api_async'                   => 'no',
+		'api_autosync'                => 'yes',
+		'api_autosync_delete'         => 'yes',
+		'api_autosync_update'         => 'yes',
+		'api_channel'                 => '',
+		'api_key'                     => '',
+		'api_secret'                  => '',
+		'apple_news_admin_email'      => '',
 		'apple_news_enable_debugging' => 'no',
-		'component_alerts' => 'none',
-		'enable_cover_art' => 'no',
-		'full_bleed_images' => 'no',
-		'html_support' => 'yes',
-		'json_alerts' => 'warn',
-		'post_types' => array( 'post' ),
-		'show_metabox' => 'yes',
-		'use_remote_images' => 'no',
+		'component_alerts'            => 'none',
+		'enable_cover_art'            => 'no',
+		'full_bleed_images'           => 'no',
+		'html_support'                => 'yes',
+		'json_alerts'                 => 'warn',
+		'post_types'                  => array( 'post' ),
+		'show_metabox'                => 'yes',
+		'use_remote_images'           => 'yes',
 	);
 
 	/**
@@ -65,12 +65,12 @@ class Settings {
 		}
 
 		// Check for regular settings.
-		if ( isset( $this->_settings[ $name ] ) ) {
-			return $this->_settings[ $name ];
+		if ( isset( $this->settings[ $name ] ) ) {
+			return $this->settings[ $name ];
 		}
 
 		// Fall back to trying to get the setting dynamically from the theme.
-		$theme = \Apple_Exporter\Theme::get_used();
+		$theme       = \Apple_Exporter\Theme::get_used();
 		$method_name = 'get_' . $name;
 		if ( method_exists( $theme, $method_name ) ) {
 			$value = call_user_func( array( $theme, $method_name ) );
@@ -118,7 +118,7 @@ class Settings {
 		}
 
 		// Check for regular settings.
-		if ( isset( $this->_settings[ $name ] ) ) {
+		if ( isset( $this->settings[ $name ] ) ) {
 			return true;
 		}
 
@@ -134,7 +134,7 @@ class Settings {
 	 * @access public
 	 */
 	public function __set( $name, $value ) {
-		$this->_settings[ $name ] = $value;
+		$this->settings[ $name ] = $value;
 	}
 
 	/**
@@ -144,7 +144,7 @@ class Settings {
 	 * @return array The array of all settings defined in this class.
 	 */
 	public function all() {
-		return $this->_settings;
+		return $this->settings;
 	}
 
 	/**

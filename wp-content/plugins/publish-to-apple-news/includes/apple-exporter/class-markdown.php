@@ -31,7 +31,7 @@ class Markdown {
 	 * @access private
 	 * @var int
 	 */
-	private $_list_index = 1;
+	private $list_index = 1;
 
 	/**
 	 * List mode for lists being transformed to Markdown.
@@ -39,7 +39,7 @@ class Markdown {
 	 * @access private
 	 * @var string
 	 */
-	private $_list_mode = 'ul';
+	private $list_mode = 'ul';
 
 	/**
 	 * Parse an array of nodes into the specified format.
@@ -54,7 +54,7 @@ class Markdown {
 		// Loop over each DOMElement and pass off for parsing.
 		$result = '';
 		foreach ( $nodes as $node ) {
-			$result .= $this->_parse_node( $node );
+			$result .= $this->parse_node( $node );
 		}
 
 		return $result;
@@ -68,37 +68,37 @@ class Markdown {
 	 * @access private
 	 * @return string The processed content, converted to a Markdown string.
 	 */
-	private function _parse_node( $node ) {
-		switch ( $node->nodeName ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+	private function parse_node( $node ) {
+		switch ( $node->nodeName ) {
 			case 'strong':
-				return $this->_parse_node_strong( $node );
+				return $this->parse_node_strong( $node );
 			case 'i':
 			case 'em':
-				return $this->_parse_node_emphasis( $node );
+				return $this->parse_node_emphasis( $node );
 			case 'br':
 				return "\n";
 			case 'p':
-				return $this->_parse_node_paragraph( $node );
+				return $this->parse_node_paragraph( $node );
 			case 'a':
-				return $this->_parse_node_hyperlink( $node );
+				return $this->parse_node_hyperlink( $node );
 			case 'ul':
-				return $this->_parse_node_unordered_list( $node );
+				return $this->parse_node_unordered_list( $node );
 			case 'ol':
-				return $this->_parse_node_ordered_list( $node );
+				return $this->parse_node_ordered_list( $node );
 			case 'li':
-				return $this->_parse_node_list_item( $node );
+				return $this->parse_node_list_item( $node );
 			case 'h1':
 			case 'h2':
 			case 'h3':
 			case 'h4':
 			case 'h5':
 			case 'h6':
-				return $this->_parse_node_heading( $node );
+				return $this->parse_node_heading( $node );
 			case '#comment':
 				return '';
 			case '#text':
 			default:
-				return $this->_parse_node_text( $node );
+				return $this->parse_node_text( $node );
 		}
 	}
 
@@ -110,10 +110,10 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_emphasis( $node ) {
+	private function parse_node_emphasis( $node ) {
 
 		// If there is no text for this node, bail.
-		$text  = $this->parse_nodes( $node->childNodes ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$text  = $this->parse_nodes( $node->childNodes );
 		$check = trim( $text );
 		if ( empty( $check ) ) {
 			return '';
@@ -130,10 +130,10 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_heading( $node ) {
+	private function parse_node_heading( $node ) {
 
 		// If there is no text for this node, bail.
-		$text  = $this->parse_nodes( $node->childNodes ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$text  = $this->parse_nodes( $node->childNodes );
 		$check = trim( $text );
 		if ( empty( $check ) ) {
 			return '';
@@ -141,7 +141,7 @@ class Markdown {
 
 		return sprintf(
 			'%s %s' . "\n",
-			str_repeat( '#', intval( substr( $node->nodeName, 1, 1 ) ) ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+			str_repeat( '#', intval( substr( $node->nodeName, 1, 1 ) ) ),
 			$text
 		);
 	}
@@ -154,13 +154,13 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_hyperlink( $node ) {
+	private function parse_node_hyperlink( $node ) {
 
 		// Set the URL from the HREF parameter on the tag.
 		$url = $node->getAttribute( 'href' );
 
 		// Set the text from the content of the child nodes.
-		$text = $this->parse_nodes( $node->childNodes ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$text = $this->parse_nodes( $node->childNodes );
 
 		/**
 		 * Allows for filtering of the formatted content before return.
@@ -188,20 +188,20 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_list_item( $node ) {
+	private function parse_node_list_item( $node ) {
 
 		// If there is no text for this node, bail.
-		$text  = $this->parse_nodes( $node->childNodes ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$text  = $this->parse_nodes( $node->childNodes );
 		$check = trim( $text );
 		if ( empty( $check ) ) {
 			return '';
 		}
 
 		// Fork for ordered list items.
-		if ( 'ol' === $this->_list_mode ) {
+		if ( 'ol' === $this->list_mode ) {
 			return sprintf(
 				'%d. %s',
-				$this->_list_index ++,
+				$this->list_index ++,
 				$text
 			);
 		}
@@ -217,12 +217,12 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_ordered_list( $node ) {
-		$this->_list_mode = 'ol';
-		$this->_list_index = 1;
+	private function parse_node_ordered_list( $node ) {
+		$this->list_mode  = 'ol';
+		$this->list_index = 1;
 
 		// If there is no text for this node, bail.
-		$text  = $this->parse_nodes( $node->childNodes ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$text  = $this->parse_nodes( $node->childNodes );
 		$check = trim( $text );
 		if ( empty( $check ) ) {
 			return '';
@@ -239,10 +239,10 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_paragraph( $node ) {
+	private function parse_node_paragraph( $node ) {
 
 		// If there is no text for this node, bail.
-		$text  = $this->parse_nodes( $node->childNodes ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$text  = $this->parse_nodes( $node->childNodes );
 		$check = trim( $text );
 		if ( empty( $check ) ) {
 			return '';
@@ -259,10 +259,10 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_strong( $node ) {
+	private function parse_node_strong( $node ) {
 
 		// If there is no text for this node, bail.
-		$text  = $this->parse_nodes( $node->childNodes ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$text  = $this->parse_nodes( $node->childNodes );
 		$check = trim( $text );
 		if ( empty( $check ) ) {
 			return '';
@@ -279,8 +279,8 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_text( $node ) {
-		return str_replace( '!', '\\!', $node->nodeValue ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+	private function parse_node_text( $node ) {
+		return str_replace( '!', '\\!', $node->nodeValue );
 	}
 
 	/**
@@ -291,11 +291,11 @@ class Markdown {
 	 * @access private
 	 * @return string The processed node, converted to a string.
 	 */
-	private function _parse_node_unordered_list( $node ) {
-		$this->_list_mode = 'ul';
+	private function parse_node_unordered_list( $node ) {
+		$this->list_mode = 'ul';
 
 		// If there is no text for this node, bail.
-		$text  = $this->parse_nodes( $node->childNodes ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$text  = $this->parse_nodes( $node->childNodes );
 		$check = trim( $text );
 		if ( empty( $check ) ) {
 			return '';

@@ -22,17 +22,9 @@ class Facebook extends Component {
 	 * A list of regular expression patterns for whitelisted Facebook oEmbed formats.
 	 *
 	 * @see https://developer.apple.com/library/prerelease/content/documentation/General/Conceptual/Apple_News_Format_Ref/FacebookPost.html#//apple_ref/doc/uid/TP40015408-CH106-SW1
-	 *
-	 * @access private
-	 * @var array
+	 * @see https://developers.facebook.com/docs/plugins/oembed-endpoints/
 	 */
-	private static $_formats = array(
-		'/^https:\/\/www\.facebook\.com\/[^\/]+\/posts\/[^\/]+\/?$/',
-		'/^https:\/\/www\.facebook\.com\/[^\/]+\/activity\/[^\/]+\/?$/',
-		'/^https:\/\/www\.facebook\.com\/photo.php\?fbid=.+$/',
-		'/^https:\/\/www\.facebook\.com\/photos\/[^\/]+\/?$/',
-		'/^https:\/\/www\.facebook\.com\/permalink\.php\?story_fbid=.+$/',
-	);
+	const FACEBOOK_MATCH = '/(?:https?:\/\/)?(?:www\.)?(?:facebook|fb|m\.facebook)\.(?:com|me)\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[\w\-]*\/)*([\w\-\.]+)(?:\/)?/i';
 
 	/**
 	 * Regular expressions for extracting post URLs from HTML markup.
@@ -40,7 +32,7 @@ class Facebook extends Component {
 	 * @access private
 	 * @var array
 	 */
-	private static $_url_signatures = array(
+	private static $url_signatures = array(
 		'/data-href="([^"]+)"/i',
 		'/<(?:fb:)?post\s.*?href="([^"]+)"/i',
 	);
@@ -56,7 +48,7 @@ class Facebook extends Component {
 			__( 'JSON', 'apple-news' ),
 			array(
 				'role' => 'facebook_post',
-				'URL' => '#url#',
+				'URL'  => '#url#',
 			)
 		);
 	}
@@ -70,14 +62,22 @@ class Facebook extends Component {
 	 */
 	public static function node_matches( $node ) {
 
-		// Check for element with just facebook url.
-		if ( false !== self::_get_facebook_url( $node->nodeValue ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		// Handling for a Gutenberg Facebook embed.
+		if (
+			'figure' === $node->nodeName
+			&& self::node_has_class( $node, 'wp-block-embed-facebook' )
+		) {
 			return $node;
 		}
 
-		// Handling for a rendered facebook embed.
+		// Check for element with just a Facebook url.
+		if ( false !== self::get_facebook_url( $node->nodeValue ) ) {
+			return $node;
+		}
+
+		// Handling for a rendered Facebook embed.
 		if (
-			'div' === $node->nodeName // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+			'div' === $node->nodeName
 			&& self::node_has_class( $node, 'fb-post' )
 		) {
 
@@ -87,19 +87,19 @@ class Facebook extends Component {
 			// Ensure we have a valid facebook embed url.
 			if (
 				! empty( $fb_url )
-				&& false !== self::_get_facebook_url( $fb_url )
+				&& false !== self::get_facebook_url( $fb_url )
 			) {
 				return $node;
 			}
 		}
 
 		// Handling for a rendered WordPress.com Facebook embed.
-		$html = $node->ownerDocument->saveXML( $node ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		$html = $node->ownerDocument->saveXML( $node );
 		if ( preg_match( '/<(?:fb:)?post\s.*?href="([^"]+)"/i', $html, $matches ) ) {
 
 			// Ensure we have a valid Facebook embed URL.
 			if ( ! empty( $matches[1] )
-				&& false !== self::_get_facebook_url( $matches[1] )
+				&& false !== self::get_facebook_url( $matches[1] )
 			) {
 				return $node;
 			}
@@ -118,7 +118,7 @@ class Facebook extends Component {
 	protected function build( $html ) {
 
 		// Check for href properties on rendered embeds.
-		foreach ( self::$_url_signatures as $signature ) {
+		foreach ( self::$url_signatures as $signature ) {
 			if ( preg_match( $signature, $html, $matches ) ) {
 				$html = $matches[1];
 				break;
@@ -126,7 +126,7 @@ class Facebook extends Component {
 		}
 
 		// Try to get Facebook URL.
-		$url = self::_get_facebook_url( strip_tags( $html ) );
+		$url   = self::get_facebook_url( wp_strip_all_tags( $html ) );
 		$check = trim( $url );
 		if ( empty( $check ) ) {
 			return;
@@ -148,13 +148,10 @@ class Facebook extends Component {
 	 * @access private
 	 * @return string|false The Facebook URL on success, or false on failure.
 	 */
-	private static function _get_facebook_url( $text ) {
+	private static function get_facebook_url( $text ) {
 
-		// Loop through whitelisted formats looking for matches.
-		foreach ( self::$_formats as $format ) {
-			if ( preg_match( $format, $text ) ) {
-				return untrailingslashit( $text );
-			}
+		if ( preg_match( self::FACEBOOK_MATCH, $text ) ) {
+			return untrailingslashit( $text );
 		}
 
 		return false;

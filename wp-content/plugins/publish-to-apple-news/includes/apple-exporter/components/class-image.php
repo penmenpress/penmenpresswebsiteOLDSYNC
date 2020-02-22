@@ -8,6 +8,8 @@
 
 namespace Apple_Exporter\Components;
 
+use Apple_Exporter\Components\Component;
+
 /**
  * Represents a simple image.
  *
@@ -23,9 +25,10 @@ class Image extends Component {
 	 * @return \DOMElement|null The node on success, or null on no match.
 	 */
 	public static function node_matches( $node ) {
+
 		// Is this an image node?
 		if (
-			( 'img' === $node->nodeName || 'figure' === $node->nodeName ) // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+			( self::node_has_class( $node, 'wp-block-cover' ) || 'img' === $node->nodeName || ( 'figure' === $node->nodeName && Component::is_embed_figure( $node ) ) )
 			&& self::remote_file_exists( $node )
 		) {
 			return $node;
@@ -44,8 +47,8 @@ class Image extends Component {
 			'json-without-caption',
 			__( 'JSON without caption', 'apple-news' ),
 			array(
-				'role' => 'photo',
-				'URL'  => '#url#',
+				'role'   => 'photo',
+				'URL'    => '#url#',
 				'layout' => '#layout#',
 			)
 		);
@@ -54,34 +57,35 @@ class Image extends Component {
 			'json-with-caption',
 			__( 'JSON with caption', 'apple-news' ),
 			array(
-				'role' => 'container',
+				'role'       => 'container',
 				'components' => array(
 					array(
-						'role' => 'photo',
-						'URL'  => '#url#',
-						'layout' => '#layout#',
+						'role'    => 'photo',
+						'URL'     => '#url#',
+						'layout'  => '#layout#',
 						'caption' => '#caption#',
 					),
 					array(
-						'role' => 'caption',
-						'text' => '#caption#',
+						'role'      => 'caption',
+						'text'      => '#caption_text#',
+						'format'    => 'html',
 						'textStyle' => array(
 							'textAlignment' => '#text_alignment#',
-							'fontName' => '#caption_font#',
-							'fontSize' => '#caption_size#',
-							'tracking' => '#caption_tracking#',
-							'lineHeight' => '#caption_line_height#',
-							'textColor' => '#caption_color#',
+							'fontName'      => '#caption_font#',
+							'fontSize'      => '#caption_size#',
+							'tracking'      => '#caption_tracking#',
+							'lineHeight'    => '#caption_line_height#',
+							'textColor'     => '#caption_color#',
 						),
-						'layout' => array(
-							'margin' => array(
+						'layout'    => array(
+							'margin'               => array(
 								'top' => 20,
 							),
 							'ignoreDocumentMargin' => '#full_bleed_images#',
 						),
 					),
 				),
-				'layout' => array(
+				'layout'     => array(
 					'ignoreDocumentMargin' => '#full_bleed_images#',
 				),
 			)
@@ -93,7 +97,7 @@ class Image extends Component {
 			array(
 				'margin' => array(
 					'bottom' => 25,
-					'top' => 25,
+					'top'    => 25,
 				),
 			)
 		);
@@ -102,11 +106,11 @@ class Image extends Component {
 			'non-anchored-image',
 			__( 'Non Anchored Layout', 'apple-news' ),
 			array(
-				'margin' => array(
+				'margin'      => array(
 					'bottom' => 25,
-					'top' => 25,
+					'top'    => 25,
 				),
-				'columnSpan' => '#layout_columns_minus_4#',
+				'columnSpan'  => '#layout_columns_minus_4#',
 				'columnStart' => 2,
 			)
 		);
@@ -115,9 +119,9 @@ class Image extends Component {
 			'non-anchored-full-bleed-image',
 			__( 'Non Anchored with Full Bleed Images Layout', 'apple-news' ),
 			array(
-				'margin' => array(
+				'margin'               => array(
 					'bottom' => 25,
-					'top' => 25,
+					'top'    => 25,
 				),
 				'ignoreDocumentMargin' => true,
 			)
@@ -131,6 +135,8 @@ class Image extends Component {
 	 * @access protected
 	 */
 	protected function build( $html ) {
+		// Is this is Gutenberg Cover Bloock?
+		$is_cover_block = preg_match( '#class="wp-block-cover#', $html );
 
 		// Extract the URL from the text.
 		$url = self::url_from_src( $html );
@@ -150,8 +156,8 @@ class Image extends Component {
 
 		// Add the URL as a parameter for replacement.
 		$filename = preg_replace( '/\\?.*/', '', \Apple_News::get_filename( $url ) );
-		$values = array(
-			'#url#'  => $this->maybe_bundle_source( $url, $filename ),
+		$values   = array(
+			'#url#' => $this->maybe_bundle_source( $url, $filename ),
 		);
 
 		// Determine image alignment.
@@ -168,11 +174,16 @@ class Image extends Component {
 		}
 
 		// Check for caption.
-		if ( preg_match( '#<figcaption.*?>(.*?)</figcaption>#m', $html, $matches ) ) {
-			$caption = trim( $matches[1] );
-			$values['#caption#'] = $caption;
-			$values = $this->group_component( $caption, $values );
-			$spec_name = 'json-with-caption';
+		$caption_regex = $is_cover_block ? '#<div.*?>?\n(.*)#m' : '#<figcaption.*?>(.*?)</figcaption>#m';
+		if ( preg_match( $caption_regex, $html, $matches ) ) {
+			$caption                  = trim( $matches[1] );
+			$values['#caption#']      = ! $is_cover_block ? $caption : array(
+				'text'   => $caption,
+				'format' => 'html',
+			);
+			$values['#caption_text#'] = $caption;
+			$values                   = $this->group_component( $values['#caption#'], $values );
+			$spec_name                = 'json-with-caption';
 		} else {
 			$spec_name = 'json-without-caption';
 		}
@@ -228,7 +239,7 @@ class Image extends Component {
 			$spec_name = 'non-anchored-full-bleed-image';
 		} else {
 			$layout_values['#layout_columns_minus_4#'] = $theme->get_layout_columns() - 4;
-			$spec_name = 'non-anchored-image';
+			$spec_name                                 = 'non-anchored-image';
 		}
 
 		// Register the layout.
@@ -253,7 +264,6 @@ class Image extends Component {
 		// Get information about the currently loaded theme.
 		$theme = \Apple_Exporter\Theme::get_used();
 
-		$text_alignment = null;
 		if ( Component::ANCHOR_NONE === $this->get_anchor_position() ) {
 			return 'center';
 		}
@@ -288,14 +298,14 @@ class Image extends Component {
 		$values = array_merge(
 			$values,
 			array(
-				'#caption#' => $caption,
-				'#text_alignment#' => $this->find_caption_alignment(),
-				'#caption_font#' => $theme->get_value( 'caption_font' ),
-				'#caption_size#' => intval( $theme->get_value( 'caption_size' ) ),
-				'#caption_tracking#' => intval( $theme->get_value( 'caption_tracking' ) ) / 100,
+				'#caption#'             => $caption,
+				'#text_alignment#'      => $this->find_caption_alignment(),
+				'#caption_font#'        => $theme->get_value( 'caption_font' ),
+				'#caption_size#'        => intval( $theme->get_value( 'caption_size' ) ),
+				'#caption_tracking#'    => intval( $theme->get_value( 'caption_tracking' ) ) / 100,
 				'#caption_line_height#' => intval( $theme->get_value( 'caption_line_height' ) ),
-				'#caption_color#' => $theme->get_value( 'caption_color' ),
-				'#full_bleed_images#' => ( 'yes' === $this->get_setting( 'full_bleed_images' ) ),
+				'#caption_color#'       => $theme->get_value( 'caption_color' ),
+				'#full_bleed_images#'   => ( 'yes' === $this->get_setting( 'full_bleed_images' ) ),
 			)
 		);
 

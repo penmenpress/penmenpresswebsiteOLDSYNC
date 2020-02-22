@@ -39,7 +39,7 @@ class Apple_News {
 	 * @var string
 	 * @access public
 	 */
-	public static $version = '1.4.3';
+	public static $version = '2.0.3';
 
 	/**
 	 * Link to support for the plugin on WordPress.org.
@@ -55,7 +55,7 @@ class Apple_News {
 	 * @var bool
 	 * @access private
 	 */
-	private static $_is_initialized;
+	private static $is_initialized;
 
 	/**
 	 * Plugin domain.
@@ -79,7 +79,7 @@ class Apple_News {
 	 * @var array
 	 * @access private
 	 */
-	private $_contexts = array(
+	private $contexts = array(
 		'post.php',
 		'post-new.php',
 		'toplevel_page_apple_news_index',
@@ -123,7 +123,7 @@ class Apple_News {
 
 		// Remove any URL parameters.
 		// This is important for sites using WordPress VIP or Jetpack Photon.
-		$url_parts = parse_url( $path );
+		$url_parts = wp_parse_url( $path );
 		if ( empty( $url_parts['path'] ) ) {
 			return '';
 		}
@@ -158,7 +158,7 @@ class Apple_News {
 
 		// Remove tags, if requested.
 		if ( 'text' === $format ) {
-			$support_info = strip_tags( $support_info );
+			$support_info = wp_strip_all_tags( $support_info );
 		}
 
 		// Add leading padding, if requested.
@@ -182,15 +182,15 @@ class Apple_News {
 	public static function is_initialized() {
 
 		// Look up required information in plugin settings, if necessary.
-		if ( null === self::$_is_initialized ) {
-			$settings = get_option( self::$option_name );
-			self::$_is_initialized = ( ! empty( $settings['api_channel'] )
+		if ( null === self::$is_initialized ) {
+			$settings             = get_option( self::$option_name );
+			self::$is_initialized = ( ! empty( $settings['api_channel'] )
 				&& ! empty( $settings['api_key'] )
 				&& ! empty( $settings['api_secret'] )
 			);
 		}
 
-		return self::$_is_initialized;
+		return self::$is_initialized;
 	}
 
 	/**
@@ -201,11 +201,21 @@ class Apple_News {
 	public function __construct() {
 		add_action(
 			'admin_enqueue_scripts',
-			array( $this, 'action_admin_enqueue_scripts' )
+			[ $this, 'action_admin_enqueue_scripts' ]
+		);
+		add_action(
+			'enqueue_block_editor_assets',
+			[ $this, 'action_enqueue_block_editor_assets' ]
 		);
 		add_action(
 			'plugins_loaded',
-			array( $this, 'action_plugins_loaded' )
+			[ $this, 'action_plugins_loaded' ]
+		);
+		add_filter(
+			'update_post_metadata',
+			[ $this, 'filter_update_post_metadata' ],
+			10,
+			5
 		);
 	}
 
@@ -217,9 +227,8 @@ class Apple_News {
 	 * @access public
 	 */
 	public function action_admin_enqueue_scripts( $hook ) {
-
 		// Ensure we are in an appropriate context.
-		if ( ! in_array( $hook, $this->_contexts, true ) ) {
+		if ( ! in_array( $hook, $this->contexts, true ) ) {
 			return;
 		}
 
@@ -245,13 +254,44 @@ class Apple_News {
 
 		// Localize scripts.
 		wp_localize_script(
-			$this->plugin_slug . '_cover_art_js', 'apple_news_cover_art', array(
-				'image_sizes' => Admin_Apple_News::get_image_sizes(),
-				'image_too_small' => esc_html__( 'You must select an image that is at least the height and width specified above.', 'apple-news' ),
+			$this->plugin_slug . '_cover_art_js',
+			'apple_news_cover_art',
+			array(
+				'image_sizes'        => Admin_Apple_News::get_image_sizes(),
+				'image_too_small'    => esc_html__( 'You must select an image that is at least the height and width specified above.', 'apple-news' ),
 				'media_modal_button' => esc_html__( 'Select image', 'apple-news' ),
-				'media_modal_title' => esc_html__( 'Choose an image', 'apple-news' ),
+				'media_modal_title'  => esc_html__( 'Choose an image', 'apple-news' ),
 			)
 		);
+	}
+
+	/**
+	 * Enqueues scripts for the block editor.
+	 *
+	 * @access public
+	 */
+	public function action_enqueue_block_editor_assets() {
+		// Bail if the post type is not one of the Publish to Apple News post types configured in settings.
+		if ( ! in_array( get_post_type(), Admin_Apple_Settings_Section::$loaded_settings['post_types'], true ) ) {
+			return;
+		}
+
+		// Bail if this post isn't using the block editor.
+		if ( ! function_exists( 'use_block_editor_for_post' )
+			|| ! use_block_editor_for_post( get_the_ID() )
+		) {
+			return;
+		}
+
+		// Add the PluginSidebar.
+		wp_enqueue_script(
+			'publish-to-apple-news-plugin-sidebar',
+			plugins_url( 'build/pluginSidebar.js', __DIR__ ),
+			[ 'wp-i18n', 'wp-edit-post' ],
+			self::$version,
+			true
+		);
+		$this->inline_locale_data( 'apple-news-plugin-sidebar' );
 	}
 
 	/**
@@ -303,9 +343,9 @@ class Apple_News {
 		}
 
 		// Build the theme formatting settings from the base settings array.
-		$theme = new \Apple_Exporter\Theme();
-		$options = \Apple_Exporter\Theme::get_options();
-		$wp_settings = get_option( self::$option_name, array() );
+		$theme          = new \Apple_Exporter\Theme();
+		$options        = \Apple_Exporter\Theme::get_options();
+		$wp_settings    = get_option( self::$option_name, array() );
 		$theme_settings = array();
 		foreach ( $options as $option_key => $option ) {
 			if ( isset( $wp_settings[ $option_key ] ) ) {
@@ -329,6 +369,55 @@ class Apple_News {
 	}
 
 	/**
+	 * A filter callback for update_post_metadata to fix a bug with WordPress
+	 * whereby meta values passed via the REST API that require slashing but are
+	 * otherwise the same as the existing value in the database will cause a failure
+	 * during post save.
+	 *
+	 * @see \update_metadata
+	 *
+	 * @param null|bool $check      Whether to allow updating metadata for the given type.
+	 * @param int       $object_id  Object ID.
+	 * @param string    $meta_key   Meta key.
+	 * @param mixed     $meta_value Meta value. Must be serializable if non-scalar.
+	 * @param mixed     $prev_value Optional. If specified, only update existing.
+	 * @return null|bool True if the conditions are ripe for the fix, otherwise the existing value of $check.
+	 */
+	public function filter_update_post_metadata( $check, $object_id, $meta_key, $meta_value, $prev_value ) {
+		if ( empty( $prev_value ) ) {
+			$old_value = get_metadata( 'post', $object_id, $meta_key );
+			if ( 1 === count( $old_value ) ) {
+				if ( $old_value[0] === $meta_value ) {
+					return true;
+				}
+			}
+		}
+
+		return $check;
+	}
+
+	/**
+	 * Creates a new Jed instance with specified locale data configuration.
+	 *
+	 * @param string $to_handle The script handle to attach the inline script to.
+	 */
+	public function inline_locale_data( $to_handle ) {
+		// Define locale data for Jed.
+		$locale_data = [
+			'' => [
+				'domain' => 'publish-to-apple-news',
+				'lang'   => get_user_locale(),
+			],
+		];
+
+		// Pass the Jed configuration to the admin to properly register i18n.
+		wp_add_inline_script(
+			$to_handle,
+			'wp.i18n.setLocaleData( ' . wp_json_encode( $locale_data ) . ", 'publish-to-apple-news' );"
+		);
+	}
+
+	/**
 	 * Initialize the value of api_autosync_delete if not set.
 	 *
 	 * @access public
@@ -341,7 +430,7 @@ class Apple_News {
 		 */
 		$wp_settings = get_option( self::$option_name );
 		if ( empty( $wp_settings['api_autosync_delete'] )
-			 && ! empty( $wp_settings['api_autosync_update'] )
+			&& ! empty( $wp_settings['api_autosync_update'] )
 		) {
 			$wp_settings['api_autosync_delete'] = $wp_settings['api_autosync_update'];
 			update_option( self::$option_name, $wp_settings, 'no' );
@@ -357,8 +446,9 @@ class Apple_News {
 
 		// Check for the presence of blockquote-specific settings.
 		$wp_settings = get_option( self::$option_name );
-		if ( $this->_all_keys_exist(
-			$wp_settings, array(
+		if ( $this->all_keys_exist(
+			$wp_settings,
+			array(
 				'blockquote_background_color',
 				'blockquote_border_color',
 				'blockquote_border_style',
@@ -375,7 +465,7 @@ class Apple_News {
 
 		// Set the background color to 90% of the body background.
 		if ( ! isset( $wp_settings['blockquote_background_color'] )
-			 && isset( $wp_settings['body_background_color'] )
+			&& isset( $wp_settings['body_background_color'] )
 		) {
 
 			// Get current octets.
@@ -406,17 +496,17 @@ class Apple_News {
 		}
 
 		// Clone settings, as necessary.
-		$wp_settings = $this->_clone_settings(
+		$wp_settings = $this->clone_settings(
 			$wp_settings,
 			array(
 				'blockquote_border_color' => 'pullquote_border_color',
 				'blockquote_border_style' => 'pullquote_border_style',
 				'blockquote_border_width' => 'pullquote_border_width',
-				'blockquote_color' => 'body_color',
-				'blockquote_font' => 'body_font',
-				'blockquote_line_height' => 'body_line_height',
-				'blockquote_size' => 'body_size',
-				'blockquote_tracking' => 'body_tracking',
+				'blockquote_color'        => 'body_color',
+				'blockquote_font'         => 'body_font',
+				'blockquote_line_height'  => 'body_line_height',
+				'blockquote_size'         => 'body_size',
+				'blockquote_tracking'     => 'body_tracking',
 			)
 		);
 
@@ -433,8 +523,9 @@ class Apple_News {
 
 		// Check for the presence of caption-specific settings.
 		$wp_settings = get_option( self::$option_name );
-		if ( $this->_all_keys_exist(
-			$wp_settings, array(
+		if ( $this->all_keys_exist(
+			$wp_settings,
+			array(
 				'caption_color',
 				'caption_font',
 				'caption_line_height',
@@ -447,20 +538,20 @@ class Apple_News {
 
 		// Clone and modify font size, if necessary.
 		if ( ! isset( $wp_settings['caption_size'] )
-			 && isset( $wp_settings['body_size'] )
-			 && is_numeric( $wp_settings['body_size'] )
+			&& isset( $wp_settings['body_size'] )
+			&& is_numeric( $wp_settings['body_size'] )
 		) {
 			$wp_settings['caption_size'] = $wp_settings['body_size'] - 2;
 		}
 
 		// Clone settings, as necessary.
-		$wp_settings = $this->_clone_settings(
+		$wp_settings = $this->clone_settings(
 			$wp_settings,
 			array(
-				'caption_color' => 'body_color',
-				'caption_font' => 'body_font',
+				'caption_color'       => 'body_color',
+				'caption_font'        => 'body_font',
 				'caption_line_height' => 'body_line_height',
-				'caption_tracking' => 'body_tracking',
+				'caption_tracking'    => 'body_tracking',
 			)
 		);
 
@@ -488,7 +579,7 @@ class Apple_News {
 		foreach ( $components as $component_class ) {
 
 			// Negotiate the component key.
-			$component = new $component_class();
+			$component     = new $component_class();
 			$component_key = $component->get_component_name();
 
 			// Try to get the custom JSON for this component.
@@ -499,7 +590,7 @@ class Apple_News {
 
 			// Loop over custom JSON and add each.
 			foreach ( $custom_json as $legacy_key => $values ) {
-				$new_key = str_replace( 'apple_news_json_', '', $legacy_key );
+				$new_key                                      = str_replace( 'apple_news_json_', '', $legacy_key );
 				$json_templates[ $component_key ][ $new_key ] = $values;
 			}
 		}
@@ -514,7 +605,7 @@ class Apple_News {
 			$theme = new \Apple_Exporter\Theme();
 			$theme->set_name( $theme_name );
 			$theme->load();
-			$settings = $theme->all_settings();
+			$settings                   = $theme->all_settings();
 			$settings['json_templates'] = $json_templates;
 			$theme->load( $settings );
 			$theme->save();
@@ -537,27 +628,28 @@ class Apple_News {
 		// Check for presence of any legacy header setting.
 		$wp_settings = get_option( self::$option_name );
 		if ( empty( $wp_settings['header_font'] )
-			 && empty( $wp_settings['header_color'] )
-			 && empty( $wp_settings['header_line_height'] )
+			&& empty( $wp_settings['header_color'] )
+			&& empty( $wp_settings['header_line_height'] )
 		) {
 			return;
 		}
 
 		// Clone settings, as necessary.
-		$wp_settings = $this->_clone_settings(
-			$wp_settings, array(
-				'header1_color' => 'header_color',
-				'header2_color' => 'header_color',
-				'header3_color' => 'header_color',
-				'header4_color' => 'header_color',
-				'header5_color' => 'header_color',
-				'header6_color' => 'header_color',
-				'header1_font' => 'header_font',
-				'header2_font' => 'header_font',
-				'header3_font' => 'header_font',
-				'header4_font' => 'header_font',
-				'header5_font' => 'header_font',
-				'header6_font' => 'header_font',
+		$wp_settings = $this->clone_settings(
+			$wp_settings,
+			array(
+				'header1_color'       => 'header_color',
+				'header2_color'       => 'header_color',
+				'header3_color'       => 'header_color',
+				'header4_color'       => 'header_color',
+				'header5_color'       => 'header_color',
+				'header6_color'       => 'header_color',
+				'header1_font'        => 'header_font',
+				'header2_font'        => 'header_font',
+				'header3_font'        => 'header_font',
+				'header4_font'        => 'header_font',
+				'header5_font'        => 'header_font',
+				'header6_font'        => 'header_font',
 				'header1_line_height' => 'header_line_height',
 				'header2_line_height' => 'header_line_height',
 				'header3_line_height' => 'header_line_height',
@@ -592,11 +684,11 @@ class Apple_News {
 		// For each potential value, see if the WordPress option exists.
 		// If so, migrate its value into the new array format.
 		// If it doesn't exist, just use the default value.
-		$settings = new \Apple_Exporter\Settings();
-		$all_settings = $settings->all();
+		$settings          = new \Apple_Exporter\Settings();
+		$all_settings      = $settings->all();
 		$migrated_settings = array();
 		foreach ( $all_settings as $key => $default ) {
-			$value = get_option( $key, $default );
+			$value                     = get_option( $key, $default );
 			$migrated_settings[ $key ] = $value;
 		}
 
@@ -616,7 +708,7 @@ class Apple_News {
 
 		// Loop through formatting settings and remove them from saved settings.
 		$formatting_settings = array_keys( \Apple_Exporter\Theme::get_options() );
-		$wp_settings = get_option( self::$option_name, array() );
+		$wp_settings         = get_option( self::$option_name, array() );
 		foreach ( $formatting_settings as $setting_key ) {
 			if ( isset( $wp_settings[ $setting_key ] ) ) {
 				unset( $wp_settings[ $setting_key ] );
@@ -642,20 +734,20 @@ class Apple_News {
 
 		// Establish mapping between old settings and new.
 		$settings_map = array(
-			'table_border_color' => 'blockquote_border_color',
-			'table_border_style' => 'blockquote_border_style',
-			'table_body_background_color' => 'body_background_color',
-			'table_body_color' => 'body_color',
-			'table_body_font' => 'body_font',
-			'table_body_line_height' => 'body_line_height',
-			'table_body_size' => 'body_size',
-			'table_body_tracking' => 'body_tracking',
+			'table_border_color'            => 'blockquote_border_color',
+			'table_border_style'            => 'blockquote_border_style',
+			'table_body_background_color'   => 'body_background_color',
+			'table_body_color'              => 'body_color',
+			'table_body_font'               => 'body_font',
+			'table_body_line_height'        => 'body_line_height',
+			'table_body_size'               => 'body_size',
+			'table_body_tracking'           => 'body_tracking',
 			'table_header_background_color' => 'blockquote_background_color',
-			'table_header_color' => 'blockquote_color',
-			'table_header_font' => 'body_font',
-			'table_header_line_height' => 'blockquote_line_height',
-			'table_header_size' => 'blockquote_size',
-			'table_header_tracking' => 'blockquote_tracking',
+			'table_header_color'            => 'blockquote_color',
+			'table_header_font'             => 'body_font',
+			'table_header_line_height'      => 'blockquote_line_height',
+			'table_header_size'             => 'blockquote_size',
+			'table_header_tracking'         => 'blockquote_tracking',
 		);
 
 		// Set the new values based on the old.
@@ -718,7 +810,7 @@ class Apple_News {
 		}
 
 		// Default cover art to on for existing installations.
-		$wp_settings = get_option( self::$option_name );
+		$wp_settings                     = get_option( self::$option_name );
 		$wp_settings['enable_cover_art'] = 'yes';
 		update_option( self::$option_name, $wp_settings, 'no' );
 	}
@@ -732,12 +824,12 @@ class Apple_News {
 
 		// Set configuration for example themes.
 		$example_themes = array(
-			'classic' => __( 'Classic', 'apple-news' ),
+			'classic'  => __( 'Classic', 'apple-news' ),
 			'colorful' => __( 'Colorful', 'apple-news' ),
-			'dark' => __( 'Dark', 'apple-news' ),
-			'default' => __( 'Default', 'apple-news' ),
-			'modern' => __( 'Modern', 'apple-news' ),
-			'pastel' => __( 'Pastel', 'apple-news' ),
+			'dark'     => __( 'Dark', 'apple-news' ),
+			'default'  => __( 'Default', 'apple-news' ),
+			'modern'   => __( 'Modern', 'apple-news' ),
+			'pastel'   => __( 'Pastel', 'apple-news' ),
 		);
 
 		// Loop over example theme configuration and load each.
@@ -752,7 +844,7 @@ class Apple_News {
 
 			// Load the theme data from the JSON configuration file.
 			$filename = dirname( __DIR__ ) . '/assets/themes/' . $slug . '.json';
-			$options = json_decode( file_get_contents( $filename ), true );
+			$options  = json_decode( file_get_contents( $filename ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
 			// Negotiate screenshot URL.
 			$options['screenshot_url'] = plugins_url(
@@ -775,7 +867,7 @@ class Apple_News {
 	 * @access private
 	 * @return bool True if all keys exist in the array, false if not.
 	 */
-	private function _all_keys_exist( $compare, $keys ) {
+	private function all_keys_exist( $compare, $keys ) {
 		if ( ! is_array( $compare ) || ! is_array( $keys ) ) {
 			return false;
 		}
@@ -797,7 +889,7 @@ class Apple_News {
 	 * @access private
 	 * @return array The modified settings array.
 	 */
-	private function _clone_settings( $wp_settings, $settings_map ) {
+	private function clone_settings( $wp_settings, $settings_map ) {
 
 		// Loop over each setting in the map and clone if conditions are favorable.
 		foreach ( $settings_map as $to => $from ) {

@@ -27,8 +27,16 @@ class Instagram extends Component {
 	 */
 	public static function node_matches( $node ) {
 
+		// Handling for a Gutenberg Instagram embed.
+		if (
+			'figure' === $node->nodeName
+			&& self::node_has_class( $node, 'wp-block-embed-instagram' )
+		) {
+			return $node;
+		}
+
 		// Handle Instagram oEmbed URLs.
-		if ( false !== self::_get_instagram_url( $node->nodeValue ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		if ( false !== self::get_instagram_url( $node->nodeValue ) ) {
 			return $node;
 		}
 
@@ -65,7 +73,7 @@ class Instagram extends Component {
 	protected function build( $html ) {
 
 		// Try to get URL using oEmbed.
-		$url = self::_get_instagram_url( $html );
+		$url = self::get_instagram_url( $html );
 
 		// Fall back to old-style full embed if oEmbed failed.
 		if ( empty( $url ) ) {
@@ -97,7 +105,7 @@ class Instagram extends Component {
 	 * @access private
 	 * @return string|false The Instagram URL on success, or false on failure.
 	 */
-	private static function _get_instagram_url( $text ) {
+	private static function get_instagram_url( $text ) {
 
 		// Check for matches against the WordPress oEmbed signature for Instagram.
 		if ( preg_match( '#^https?://(www\.)?instagr(\.am|am\.com)/p/.*$#i', $text ) ) {

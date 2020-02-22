@@ -27,7 +27,7 @@ class Text_Styles extends Builder {
 	 * @access private
 	 * @var array
 	 */
-	private $_styles = array();
+	private $styles = array();
 
 	/**
 	 * Constructor.
@@ -42,7 +42,7 @@ class Text_Styles extends Builder {
 
 		// Determine whether to add the styles for HTML content.
 		if ( 'yes' === $this->get_setting( 'html_support' ) ) {
-			$this->_add_html_styles();
+			$this->add_html_styles();
 		}
 	}
 
@@ -61,7 +61,7 @@ class Text_Styles extends Builder {
 		 *
 		 * @param array $styles The styles to be filtered.
 		 */
-		return apply_filters( 'apple_news_text_styles', $this->_styles );
+		return apply_filters( 'apple_news_text_styles', $this->styles );
 	}
 
 	/**
@@ -75,12 +75,12 @@ class Text_Styles extends Builder {
 	public function register_style( $name, $values ) {
 
 		// Only register once, since styles have unique names.
-		if ( array_key_exists( $name, $this->_styles ) ) {
+		if ( array_key_exists( $name, $this->styles ) ) {
 			return;
 		}
 
 		// Register the style.
-		$this->_styles[ $name ] = $values;
+		$this->styles[ $name ] = $values;
 	}
 
 	/**
@@ -88,44 +88,47 @@ class Text_Styles extends Builder {
 	 *
 	 * @access private
 	 */
-	private function _add_html_styles() {
+	private function add_html_styles() {
 
 		// Get information about the currently loaded theme.
 		$theme = \Apple_Exporter\Theme::get_used();
 
 		// Add style for <code> tags.
 		$this->register_style(
-			'default-tag-code', array(
-				'fontName' => $theme->get_value( 'monospaced_font' ),
-				'fontSize' => intval( $theme->get_value( 'monospaced_size' ) ),
-				'tracking' => intval( $theme->get_value( 'monospaced_tracking' ) ) / 100,
+			'default-tag-code',
+			array(
+				'fontName'   => $theme->get_value( 'monospaced_font' ),
+				'fontSize'   => intval( $theme->get_value( 'monospaced_size' ) ),
+				'tracking'   => intval( $theme->get_value( 'monospaced_tracking' ) ) / 100,
 				'lineHeight' => intval( $theme->get_value( 'monospaced_line_height' ) ),
-				'textColor' => $theme->get_value( 'monospaced_color' ),
+				'textColor'  => $theme->get_value( 'monospaced_color' ),
 			)
 		);
 
 		// Add style for <pre> tags.
 		$this->register_style(
-			'default-tag-pre', array(
-				'textAlignment' => 'left',
-				'fontName' => $theme->get_value( 'monospaced_font' ),
-				'fontSize' => intval( $theme->get_value( 'monospaced_size' ) ),
-				'tracking' => intval( $theme->get_value( 'monospaced_tracking' ) ) / 100,
-				'lineHeight' => intval( $theme->get_value( 'monospaced_line_height' ) ),
-				'textColor' => $theme->get_value( 'monospaced_color' ),
+			'default-tag-pre',
+			array(
+				'textAlignment'          => 'left',
+				'fontName'               => $theme->get_value( 'monospaced_font' ),
+				'fontSize'               => intval( $theme->get_value( 'monospaced_size' ) ),
+				'tracking'               => intval( $theme->get_value( 'monospaced_tracking' ) ) / 100,
+				'lineHeight'             => intval( $theme->get_value( 'monospaced_line_height' ) ),
+				'textColor'              => $theme->get_value( 'monospaced_color' ),
 				'paragraphSpacingBefore' => 18,
-				'paragraphSpacingAfter' => 18,
+				'paragraphSpacingAfter'  => 18,
 			)
 		);
 
 		// Add style for <samp> tags.
 		$this->register_style(
-			'default-tag-samp', array(
-				'fontName' => $theme->get_value( 'monospaced_font' ),
-				'fontSize' => intval( $theme->get_value( 'monospaced_size' ) ),
-				'tracking' => intval( $theme->get_value( 'monospaced_tracking' ) ) / 100,
+			'default-tag-samp',
+			array(
+				'fontName'   => $theme->get_value( 'monospaced_font' ),
+				'fontSize'   => intval( $theme->get_value( 'monospaced_size' ) ),
+				'tracking'   => intval( $theme->get_value( 'monospaced_tracking' ) ) / 100,
 				'lineHeight' => intval( $theme->get_value( 'monospaced_line_height' ) ),
-				'textColor' => $theme->get_value( 'monospaced_color' ),
+				'textColor'  => $theme->get_value( 'monospaced_color' ),
 			)
 		);
 	}

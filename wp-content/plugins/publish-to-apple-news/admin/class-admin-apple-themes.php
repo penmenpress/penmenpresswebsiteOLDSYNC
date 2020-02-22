@@ -34,7 +34,7 @@ class Admin_Apple_Themes extends Apple_News {
 	 * @var array
 	 * @access private
 	 */
-	private $_valid_actions;
+	private $valid_actions;
 
 	/**
 	 * Renders a theme option field for use in a form.
@@ -155,33 +155,33 @@ class Admin_Apple_Themes extends Apple_News {
 	 * @access public
 	 */
 	public function __construct() {
-		$this->theme_page_name = $this->plugin_domain . '-themes';
+		$this->theme_page_name      = $this->plugin_domain . '-themes';
 		$this->theme_edit_page_name = $this->plugin_domain . '-theme-edit';
 
-		$this->_valid_actions = array(
-			'apple_news_upload_theme' => array(
-				'callback' => array( $this, '_upload_theme' ),
-				'nonce' => 'apple_news_themes',
+		$this->valid_actions = array(
+			'apple_news_upload_theme'        => array(
+				'callback' => array( $this, 'upload_theme' ),
+				'nonce'    => 'apple_news_themes',
 			),
-			'apple_news_export_theme' => array(
-				'callback' => array( $this, '_export_theme' ),
-				'nonce' => 'apple_news_themes',
+			'apple_news_export_theme'        => array(
+				'callback' => array( $this, 'export_theme' ),
+				'nonce'    => 'apple_news_themes',
 			),
-			'apple_news_delete_theme' => array(
-				'callback' => array( $this, '_delete_theme' ),
-				'nonce' => 'apple_news_themes',
+			'apple_news_delete_theme'        => array(
+				'callback' => array( $this, 'delete_theme' ),
+				'nonce'    => 'apple_news_themes',
 			),
-			'apple_news_save_edit_theme' => array(
-				'callback' => array( $this, '_save_edit_theme' ),
-				'nonce' => 'apple_news_save_edit_theme',
+			'apple_news_save_edit_theme'     => array(
+				'callback' => array( $this, 'save_edit_theme' ),
+				'nonce'    => 'apple_news_save_edit_theme',
 			),
-			'apple_news_set_theme' => array(
-				'callback' => array( $this, '_set_theme' ),
-				'nonce' => 'apple_news_themes',
+			'apple_news_set_theme'           => array(
+				'callback' => array( $this, 'set_theme' ),
+				'nonce'    => 'apple_news_themes',
 			),
 			'apple_news_load_example_themes' => array(
 				'callback' => array( $this, 'load_example_themes' ),
-				'nonce' => 'apple_news_themes',
+				'nonce'    => 'apple_news_themes',
 			),
 		);
 
@@ -203,18 +203,18 @@ class Admin_Apple_Themes extends Apple_News {
 		$action = isset( $_REQUEST['action'] )
 			? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )
 			: null;
-		if ( ( empty( $action ) || ! array_key_exists( $action, $this->_valid_actions ) ) ) {
+		if ( ( empty( $action ) || ! array_key_exists( $action, $this->valid_actions ) ) ) {
 			return;
 		}
 
 		// Check the nonce.
-		check_admin_referer( $this->_valid_actions[ $action ]['nonce'] );
+		check_admin_referer( $this->valid_actions[ $action ]['nonce'] );
 
 		// Call the callback for the action for further processing.
-		if ( isset( $this->_valid_actions[ $action ]['callback'] )
-			&& is_callable( $this->_valid_actions[ $action ]['callback'] )
+		if ( isset( $this->valid_actions[ $action ]['callback'] )
+			&& is_callable( $this->valid_actions[ $action ]['callback'] )
 		) {
-			call_user_func( $this->_valid_actions[ $action ]['callback'] );
+			call_user_func( $this->valid_actions[ $action ]['callback'] );
 		}
 	}
 
@@ -269,8 +269,8 @@ class Admin_Apple_Themes extends Apple_News {
 		// Negotiate theme object.
 		$error = '';
 		$theme = new \Apple_Exporter\Theme();
-		if ( isset( $_GET['theme'] ) ) {
-			$theme_name = sanitize_text_field( wp_unslash( $_GET['theme'] ) );
+		if ( isset( $_GET['theme'] ) ) { // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
+			$theme_name = sanitize_text_field( wp_unslash( $_GET['theme'] ) ); // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.Security.NonceVerification.Recommended
 			$theme->set_name( $theme_name );
 			if ( false === $theme->load() ) {
 				$error = sprintf(
@@ -312,10 +312,12 @@ class Admin_Apple_Themes extends Apple_News {
 	 */
 	public function register_assets( $hook ) {
 		if ( ! in_array(
-			$hook, array(
+			$hook,
+			array(
 				'apple-news_page_apple-news-themes',
 				'admin_page_apple-news-theme-edit',
-			), true
+			),
+			true
 		) ) {
 			return;
 		}
@@ -331,14 +333,17 @@ class Admin_Apple_Themes extends Apple_News {
 			'apple-news-themes-js',
 			plugin_dir_url( __FILE__ ) . '../assets/js/themes.js',
 			array( 'jquery' ),
-			self::$version
+			self::$version,
+			false
 		);
 
 		wp_localize_script(
-			'apple-news-themes-js', 'appleNewsThemes', array(
+			'apple-news-themes-js',
+			'appleNewsThemes',
+			array(
 				'deleteWarning' => __( 'Are you sure you want to delete the theme', 'apple-news' ),
-				'noNameError' => __( 'Please enter a name for the new theme.', 'apple-news' ),
-				'tooLongError' => __( 'Theme names must be 45 characters or less.', 'apple-news' ),
+				'noNameError'   => __( 'Please enter a name for the new theme.', 'apple-news' ),
+				'tooLongError'  => __( 'Theme names must be 45 characters or less.', 'apple-news' ),
 			)
 		);
 
@@ -361,7 +366,8 @@ class Admin_Apple_Themes extends Apple_News {
 				'apple-news-select2-js',
 				plugin_dir_url( __FILE__ ) . '../assets/js/select2.full.min.js',
 				array( 'jquery' ),
-				self::$version
+				self::$version,
+				false
 			);
 			wp_enqueue_script(
 				'apple-news-theme-edit-js',
@@ -374,11 +380,14 @@ class Admin_Apple_Themes extends Apple_News {
 					'iris',
 					'apple-news-preview-js',
 				),
-				self::$version
+				self::$version,
+				false
 			);
 
 			wp_localize_script(
-				'apple-news-theme-edit-js', 'appleNewsThemeEdit', array(
+				'apple-news-theme-edit-js',
+				'appleNewsThemeEdit',
+				array(
 					'fontNotice' => __( 'Font preview is only available on macOS', 'apple-news' ),
 				)
 			);
@@ -551,13 +560,13 @@ class Admin_Apple_Themes extends Apple_News {
 	 *
 	 * @access private
 	 */
-	private function _delete_theme() {
+	private function delete_theme() {
 
 		// Check the nonce.
 		$action = isset( $_REQUEST['action'] )
 			? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )
 			: null;
-		check_admin_referer( $this->_valid_actions[ $action ]['nonce'] );
+		check_admin_referer( $this->valid_actions[ $action ]['nonce'] );
 
 		// Attempt to get the name of the theme from postdata.
 		if ( empty( $name ) && ! empty( $_POST['apple_news_theme'] ) ) {
@@ -592,13 +601,13 @@ class Admin_Apple_Themes extends Apple_News {
 	 *
 	 * @access private
 	 */
-	private function _export_theme() {
+	private function export_theme() {
 
 		// Check the nonce.
 		$action = isset( $_REQUEST['action'] )
 			? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )
 			: null;
-		check_admin_referer( $this->_valid_actions[ $action ]['nonce'] );
+		check_admin_referer( $this->valid_actions[ $action ]['nonce'] );
 
 		// Get the theme name from POST data.
 		if ( ! empty( $_POST['apple_news_theme'] ) ) {
@@ -656,13 +665,13 @@ class Admin_Apple_Themes extends Apple_News {
 	 *
 	 * @access private
 	 */
-	private function _save_edit_theme() {
+	private function save_edit_theme() {
 
 		// Check the nonce.
 		$action = isset( $_REQUEST['action'] )
 			? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )
 			: null;
-		check_admin_referer( $this->_valid_actions[ $action ]['nonce'] );
+		check_admin_referer( $this->valid_actions[ $action ]['nonce'] );
 
 		// Create a theme object.
 		$theme = new \Apple_Exporter\Theme();
@@ -761,13 +770,13 @@ class Admin_Apple_Themes extends Apple_News {
 	 *
 	 * @access private
 	 */
-	private function _set_theme() {
+	private function set_theme() {
 
 		// Check the nonce.
 		$action = isset( $_REQUEST['action'] )
 			? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )
 			: null;
-		check_admin_referer( $this->_valid_actions[ $action ]['nonce'] );
+		check_admin_referer( $this->valid_actions[ $action ]['nonce'] );
 
 		// Get the theme name from postdata.
 		if ( ! empty( $_POST['apple_news_active_theme'] ) ) {
@@ -803,7 +812,7 @@ class Admin_Apple_Themes extends Apple_News {
 	 *
 	 * @access private
 	 */
-	private function _upload_theme() {
+	private function upload_theme() {
 
 		// Try to handle the file upload.
 		$file = wp_import_handle_upload();
@@ -846,8 +855,8 @@ class Admin_Apple_Themes extends Apple_News {
 		}
 
 		// Get the contents of the file and clean up.
-		$file_contents = file_get_contents( $file['file'] );
-		$import_data = json_decode( $file_contents, true );
+		$file_contents = file_get_contents( $file['file'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$import_data   = json_decode( $file_contents, true );
 		wp_import_cleanup( $this->file_id );
 
 		// Try to get the theme name prior to import.

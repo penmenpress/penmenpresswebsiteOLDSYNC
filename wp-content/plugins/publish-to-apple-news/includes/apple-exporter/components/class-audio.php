@@ -26,7 +26,7 @@ class Audio extends Component {
 	 */
 	public static function node_matches( $node ) {
 		// Is this an audio node?
-		if ( 'audio' === $node->nodeName && self::remote_file_exists( $node ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		if ( 'audio' === $node->nodeName && self::remote_file_exists( $node ) ) {
 			return $node;
 		}
 
@@ -44,7 +44,7 @@ class Audio extends Component {
 			__( 'JSON', 'apple-news' ),
 			array(
 				'role' => 'audio',
-				'URL' => '#url#',
+				'URL'  => '#url#',
 			)
 		);
 	}

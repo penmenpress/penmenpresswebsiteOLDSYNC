@@ -27,11 +27,20 @@
 					<?php \Admin_Apple_Meta_Boxes::build_sections_override( $post->ID ); ?>
 					<div class="apple-news-sections">
 						<?php \Admin_Apple_Meta_Boxes::build_sections_field( $post->ID ); ?>
-						<p class="description"><?php esc_html_e( 'Select the sections in which to publish this article. Uncheck them all for a standalone article.', 'apple-news' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Select the sections in which to publish this article. If none are selected, it will be published to the default section.', 'apple-news' ); ?></p>
 					</div>
 				</td>
 			</tr>
 			<?php endif; ?>
+			<tr>
+				<th scope="row"><?php esc_html_e( 'Paid?', 'apple-news' ); ?></th>
+				<td>
+					<label for="apple-news-is-paid">
+						<input id="apple-news-is-paid" name="apple_news_is_paid" type="checkbox" value="1" <?php checked( $post_meta['apple_news_is_paid'][0] ); ?>>
+						<?php esc_html_e( 'Check this to indicate that viewing the article requires a paid subscription.', 'apple-news' ); ?>
+					</label>
+				</td>
+			</tr>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Preview?', 'apple-news' ); ?></th>
 				<td>
