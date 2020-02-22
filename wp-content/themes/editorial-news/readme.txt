@@ -2,15 +2,15 @@
 
 Contributors:       Mystery Themes Team
 Requires at least:  WordPress 4.0
-Tested up to:       WordPress 4.9
-Version:            1.0.2
+Tested up to:       WordPress 5.3
+Version:            1.0.3
 License:            GPLv3 or later
 License URI:        http://www.gnu.org/licenses/gpl-3.0.html
 Tags:               news, grid-layout, custom-colors, one-column, two-columns, three-columns, left-sidebar, right-sidebar, footer-widgets, full-width-template, theme-options, translation-ready, rtl-language-support
 
 == Description ==
 
-Editorial News is a child theme of Editorial Magazine WordPress theme. Editorial News is free Magazine WordPress Theme suitable for magazines, news&media, personal blogs, or photography websites which gives clean and modern layouts. Get free support at https://mysterythemes.com/support/forum/themes/child-themes/ and check the demo at http://demo.mysterythemes.com/editorial-news/
+Editorial News is a child theme of Editorial Magazine WordPress theme. Editorial News is free Magazine WordPress Theme suitable for magazines, news&media, personal blogs, or photography websites which gives clean and modern layouts. Get free support at https://mysterythemes.com/support/forum/themes/child-themes/ and check the demo at http://demo.mysterythemes.com/child-theme/editorial-news/
 
 == Installation ==
     
@@ -50,6 +50,12 @@ Editorial News bundles the following third-party resources:
     https://www.pexels.com/photo/high-angle-view-of-people-on-bicycle-248547/
 
 == Changelog ==
+
+= 1.0.3 =
+    * Added requires php and requires at least version along with updated tested version information 
+    * Removed Unwanted Space
+    * Menu Bug fixed
+    * Some design bug fixed in single post and pages
 
 = 1.0.2 =
     * Some design tweaks done

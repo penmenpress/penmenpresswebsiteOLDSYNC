@@ -16,7 +16,7 @@ if ( ! function_exists( 'editorial_news_setup' ) ) :
  * as indicating support for post thumbnails.
  */
 function editorial_news_setup() {
-    
+
     add_image_size( 'editorial-news-block-thumb', 322, 235, true );
 
     $editorial_news_theme_info = wp_get_theme();
@@ -96,8 +96,6 @@ function editorial_news_scripts() {
 
 	wp_enqueue_style( 'editorial-news-style', get_stylesheet_uri(), array(), esc_attr( $editorial_news_version ) );
 
-    
-
     $en_theme_color = esc_attr( get_theme_mod( 'editorial_theme_color', '#FF7D0E' ) );
     
     $get_categories = get_terms( 'category', array( 'hide_empty' => false ) );
@@ -109,7 +107,7 @@ function editorial_news_scripts() {
         $cat_color = esc_attr( get_theme_mod( 'editorial_category_color_'.strtolower( $category->name ), $en_theme_color ) );
         $cat_hover_color = esc_attr( editorial_hover_color( $cat_color, '-50' ) );
         $cat_id = esc_attr( $category->term_id );
-        
+
         if( !empty( $cat_color ) ) {
             $output_css .= ".category-button.mt-cat-".$cat_id." a { background: ". $cat_color ."}\n";
 
@@ -118,7 +116,7 @@ function editorial_news_scripts() {
             $output_css .= ".block-header.mt-cat-".$cat_id." { border-bottom: 3px solid ".$cat_color." }\n";
 
             //$output_css .= ".rtl .block-header.mt-cat-".$cat_id." { border-left: none; border-right: 2px solid ".$cat_color." }\n";
-             
+
             $output_css .= ".archive .page-header.mt-cat-".$cat_id." { border-left: 4px solid ".$cat_color." }\n";
 
             $output_css .= ".rtl.archive .page-header.mt-cat-".$cat_id." { border-left: none; border-right: 4px solid ".$cat_color." }\n";
@@ -137,7 +135,7 @@ function editorial_news_scripts() {
 
         $output_css .= ".archive .page-header,.block-header, .widget .widget-title-wrapper, .related-articles-wrapper .widget-title-wrapper{ border-left-color:". $en_theme_color ."}\n";
 
-        $output_css .= "a,a:hover,a:focus,a:active,.entry-footer a:hover,.comment-author .fn .url:hover,#cancel-comment-reply-link,#cancel-comment-reply-link:before, .logged-in-as a,.top-menu ul li a:hover,#footer-navigation ul li a:hover,#site-navigation ul li a:hover,#site-navigation ul li.current-menu-item a,.mt-slider-section .slide-title a:hover,.featured-post-wrapper .featured-title a:hover,.editorial_block_grid .post-title a:hover,.slider-meta-wrapper span:hover,.slider-meta-wrapper a:hover,.featured-meta-wrapper span:hover,.featured-meta-wrapper a:hover,.post-meta-wrapper > span:hover,.post-meta-wrapper span > a:hover ,.grid-posts-block .post-title a:hover,.list-posts-block .single-post-wrapper .post-content-wrapper .post-title a:hover,.column-posts-block .single-post-wrapper.secondary-post .post-content-wrapper .post-title a:hover,.widget a:hover,.widget a:hover::before,.widget li:hover::before,.entry-title a:hover,.entry-meta span a:hover,.post-readmore a:hover,.archive-classic .entry-title a:hover,
+        $output_css .= "a,a:hover,a:focus,a:active,.entry-footer a:hover,.comment-author .fn .url:hover,#cancel-comment-reply-link,#cancel-comment-reply-link:before, .logged-in-as a,.top-menu ul li a:hover,#footer-navigation ul li a:hover,#site-navigation ul li a:hover#site-navigation ul li:hover > a,#site-navigation ul li.current-menu-item > a,#site-navigation ul li.current_page_ancestor > a,#site-navigation ul li.current_page_item > a,#site-navigation ul li.current-menu-ancestor > a,.mt-slider-section .slide-title a:hover,.featured-post-wrapper .featured-title a:hover,.editorial_block_grid .post-title a:hover,.slider-meta-wrapper span:hover,.slider-meta-wrapper a:hover,.featured-meta-wrapper span:hover,.featured-meta-wrapper a:hover,.post-meta-wrapper > span:hover,.post-meta-wrapper span > a:hover ,.grid-posts-block .post-title a:hover,.list-posts-block .single-post-wrapper .post-content-wrapper .post-title a:hover,.column-posts-block .single-post-wrapper.secondary-post .post-content-wrapper .post-title a:hover,.widget a:hover,.widget a:hover::before,.widget li:hover::before,.entry-title a:hover,.entry-meta span a:hover,.post-readmore a:hover,.archive-classic .entry-title a:hover,
             .archive-columns .entry-title a:hover,.related-posts-wrapper .post-title a:hover,.block-header .block-title a:hover,.widget .widget-title a:hover,.related-articles-wrapper .related-title a:hover,#colophon .widget_archive a:hover, #colophon .widget_categories a:hover, #colophon .widget_recent_entries a:hover, #colophon .widget_meta a:hover, #colophon .widget_recent_comments li, #colophon .widget_rss li, #colophon .widget_pages li a:hover, #colophon .widget_nav_menu li a:hover, #colophon .widget .widget-title,.home.blog .archive-desc-wrapper .entry-title a:hover { color:". $en_theme_color ."}\n";
 
     $refine_output_css = editorial_css_strip_whitespace( $output_css );
