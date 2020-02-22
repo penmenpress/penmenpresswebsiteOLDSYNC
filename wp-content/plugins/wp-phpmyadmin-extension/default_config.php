@@ -6,12 +6,13 @@ $i = 0;
 
 $i++;
 $cfg['Servers'][$i]['host'] 			= ___HOSTADR___;
+$cfg['Servers'][$i]['connect_type'] 	= ___CONNECTIONTYPE___;
+$cfg['Servers'][$i]['socket'] 			= ___SOCKET___;
 $cfg['Servers'][$i]['AllowNoPassword']	= ___ALLOWNOPASS___;   // true/false
 $cfg['blowfish_secret']					= ___BLOWFISHSECRET___ ;  // i.e. '$b~`lnkwm>^^jNUEE;(4xB$L\'b?."\'o9' 
 $cfg['DefaultLang']						= ___LANG___;		// 'en'
 $cfg['Servers'][$i]['only_db']			= ___DBARRAY___ ;    //i.e. array('db1', 'db2') Show only listed databases
 $cfg['PmaAbsoluteUri'] 					= ___PmaAbsoluteUri___;			//used, if different directory by htaccess ; or parse_url($GLOBALS['PMA_PHP_SELF']);
-
 //$cfg['LoginCookieValidity']			= 14400;
 
 $cfg['ForceSSL'] = false;

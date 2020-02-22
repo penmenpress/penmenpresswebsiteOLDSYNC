@@ -4,17 +4,17 @@
  * Description:		The famous database browser & manager (for MySQL & MariaDB) - use it inside WordPress Dashboard without an extra hassle.
  * Text Domain:		wp-phpmyadmin-extension
  * Domain Path:		/languages
- * Version:			2.3
+ * Version:			3.01
  * WordPress URI:	https://wordpress.org/plugins/wp-phpmyadmin-extension/
  * Plugin URI:		https://puvox.software/wordpress/
- * Contributors: 	puvoxsoftware,tazotodua
+ * Contributors: 	puvoxsoftware,ttodua
  * Author:			Puvox.software
  * Author URI:		https://puvox.software/
- * Donate Link:		https://paypal.me/ProtectPagesCom
+ * Donate Link:		https://paypal.me/puvox
  * License:			GPL-3.0
  * License URI:		https://www.gnu.org/licenses/gpl-3.0.html
  
- * @copyright:		2019 Puvox.software
+ * @copyright:		Puvox.software
 */
 
 namespace WpPhpMyAdminExtension
@@ -24,14 +24,13 @@ namespace WpPhpMyAdminExtension
   if( file_exists($lib_start=__DIR__."/$name") && !defined("_puvox_machine_") ) { rename($lib_start, $lib_final); } require_once($lib_final);
 
 
-  class PluginClass
+  class PluginClass extends \default_plugin__PuvoxSoftware
   {
-	use \default_methods__Puvox_Software;
-
+	protected $required_version = "7.1.3";
 	public function declare_settings()
 	{
-		$this->initial_static_options = array
-		(
+		$this->initial_static_options =
+		[
 			'has_pro_version'	=>0, 
 			'show_opts'			=>true, 
 			'show_rating_message'=>true, 
@@ -39,64 +38,78 @@ namespace WpPhpMyAdminExtension
 			'required_role'		=>'install_plugins', 
 			'default_managed'	=>'network',			// network, singlesite
 			'menu_button_level'	=>'mainmenu', 
-			"menu_icon"			=>$this->plugin_URL.'/assets/media/menu_icon.png" style="width:30px;',   
+			"menu_icon"			=>$this->helpers->pluginURL.'/assets/media/menu_icon.png" style="width:30px;',   
 			'menu_button_name'	=>'WP-phpMyAdmin' 
-		);
-
-		$this->initial_user_options	= array
-		(	
-			'randomCookieName'		=> "pma_".$this->randomString(16), 
-			'randomCookieValue'		=> "pma_".$this->randomString(16), 
-			'RandomFolderSuffix'	=> "_".$this->randomString(23), 
+		];
+	
+		$this->initial_user_options	= 
+		[		
+			'randomCookieName'		=> "pma_".$this->helpers->randomString(16), 
+			'randomCookieValue'		=> "pma_".$this->helpers->randomString(16), 
+			'RandomFolderSuffix'	=> "_".$this->helpers->randomString(23), 
 			'manual_pma_login_url'	=> '',
 			'require_ip'			=> true,
 			'hide_phma_errors'		=> false,
-			'strip_slashes'			=> false,
+			'strip_slashes'			=> true,
 			'use_https'				=> true,
-			'is_localhost'			=> $this->is_localhost
-		); 
+			'is_localhost'			=> $this->helpers->is_localhost
+		];
+		
+		$this->is_new_php = $this->helpers->above_version($this->required_version);
 	}
  
 	//by default, this will is disabled per requirements. Users can enable only for themselves.
 	private $pma_installed_using_ajax = false;
-	private $pma_installed_using_download = false;
 	
 	public function __construct_my()
 	{
-		add_action('init', array($this, 'setup_files'), 2 ); 
+		add_action('init', [$this, 'setup_files'], 2 ); 
 	}
 
 	// ============================================================================================================== //
 	// ============================================================================================================== //
 
-	public function setup_files(){
-		
-		$this->pma_name_randomed	= "phpMyAdmin". $this->opts['RandomFolderSuffix']; 
-		
+	public function setup_files()
+	{
+		// Don't save in DB table ! this is for multi-instance installations
+		if ( file_exists($a=__DIR__.'/lib/name.php') )
+		{
+			$suffix = str_replace('<?php //','', file_get_contents($a));
+		}
+		else
+		{
+			$suffix = $this->opts['RandomFolderSuffix'];
+			file_put_contents($a, '<?php //'.$suffix);
+		}
+
 		$this->lib_relpath			= '/lib';    
-		$this->lib_absPath			= __DIR__ . $this->lib_relpath;       
-		//$this->pma_relpath			= $this->lib_relpath . '/phpMyAdmin';     
-		//$this->pma_relpath_randomed	= $this->lib_relpath . '/'. $this->pma_name_randomed;
-		$this->pma_relpath			= $this->lib_relpath . '/'. $this->pma_name_randomed;
+		$this->lib_absPath			= __DIR__ . $this->lib_relpath;      
+		$this->pma_name				= "phpMyAdmin". $suffix;   
+		$this->pma_name_real		= "phpMyAdmin"; 
+		$this->pma_relpath			= $this->lib_relpath . '/'. $this->pma_name;
+		$this->pma_relpath_real		= $this->lib_relpath . '/'. $this->pma_name_real;
 		$this->pma_abspath			= __DIR__ . $this->pma_relpath;     
+		$this->pma_abspath_real		= __DIR__ . $this->pma_relpath_real;
 		 
 		$this->pma_mainpage_relpath_from_plugin	= $this->pma_relpath.'/index.php' ;
 		$this->pma_mainpage_relpath_from_plugin_URL = $this->pma_relpath.'/index.php' ;
-		$this->pma_mainpage_url		= $this->plugin_URL	. substr($this->pma_mainpage_relpath_from_plugin,1);
+		$this->pma_mainpage_url		= $this->helpers->pluginURL	. substr($this->pma_mainpage_relpath_from_plugin,1);
 		$this->pma_mainpage_path	= $this->pma_abspath	. '/index.php';
 		
 		$this->pma_zipPath			= $this->lib_absPath	. '/phpMyAdmin.zip'; 
 		$this->pma_sessionfile		= $this->pma_abspath	. '/_session_temp.php'; 
-		$this->pma_sessionAllowfile	= $this->pma_abspath	. '/_session_temp_allow.php'; 
-		$this->path_to_def_config	= __DIR__ . '/default_config.php';
+		$this->pma_sessionAllowfile	= $this->pma_abspath	. '/_session_temp_allow.php';
+		$this->pma_sessionDbfile	= $this->pma_abspath	. '/_session_temp_db_name_'.$_SERVER['HTTP_HOST'].'.php';
 		$this->path_to_pma_config	= $this->pma_abspath	. '/config.inc.php';
-		$this->path_to_pma_common_2	= __DIR__ . '/default_common_inc_code.php';
+		$this->path_to_def_config	= __DIR__ . '/default_config.php';
 		$this->path_to_pma_common	= $this->pma_abspath	. '/libraries/common.inc.php';
+		$this->path_to_def_common	= __DIR__ . '/default_common_inc_code.php';
 		//deleted targets //details: https://goo.gl/tCWdEv
-		$this->pma_delete_dirs		= array('/vendor/tecnickcom/tcpdf', '/locale', '/theme/original', '/doc', '/setup', '/examples', '/install', '/js/vendor/openlayers' );	
-		$this->pma_create_files		= array('/vendor/tecnickcom/tcpdf/tcpdf.php');	
+		$this->pma_delete_dirs		= ['/vendor/tecnickcom/tcpdf', '/locale', '/themes/original', '/doc', '/setup', '/examples', '/install', '/js/vendor/openlayers' ];	  //vendor\phpmyadmin\sql-parser\locale
+		$this->pma_create_files		= ['/vendor/tecnickcom/tcpdf/tcpdf.php'];	
 		$this->conflict_file_1		= $this->pma_abspath . '/vendor/phpmyadmin/motranslator/src/functions.php';
-
+		$this->old_pma_zip			= 'https://files.phpmyadmin.net/phpMyAdmin/4.9.4/phpMyAdmin-4.9.4-all-languages.zip';
+		
 		$this->if_redirect_to_pma();
 	}
 		
@@ -104,88 +117,114 @@ namespace WpPhpMyAdminExtension
 		$x = glob($this->lib_absPath.'/phpMyAdmin*',  GLOB_ONLYDIR);  return (!empty($x) ? $x[0] : "");
 	}
 
-	private function download_install_pma()
+	private function initialize_unpacked_pma()
 	{
-		if( !is_dir($this->pma_abspath) )
+		if( is_dir($this->pma_abspath_real) && !is_dir($this->pma_abspath) )
 		{
-			$this->locker	= fopen( WP_CONTENT_DIR."/lock.txt","w+"); //__DIR__.'/readme.txt';
-			if (flock($this->locker,LOCK_EX) && !is_dir($this->pma_abspath) )  //check again after LOCK 
-			{
-				$this->try_increase_exec_time(120);
-				//rename files
-				$dir =  $this->getPMA_FolderName();
-				if(!empty($dir) && !rename($dir, $this->pma_abspath )) {
-					$this->rmdir_recursive($dir);  exit(__('Failure: can\'t rename <code>'.$dir.'</code> to <code>'.$this->pma_abspath.'</code>. Either do it manually from FTP, or try completely re-install the plugin.', 'wp-phpmyadmin-extension') );
-					usleep(500000);
-				}
-				
-				// delete extra directories
-				foreach($this->pma_delete_dirs as $eachDir){
-					$fullPath = $this->pma_abspath.'/'.$eachDir.'/';
-					if( is_dir($fullPath) ){
-						$this->rmdir_recursive($fullPath);
+			// avoid simultaneous re-creations caused by WP load from other instances
+			$this->lockFile=__DIR__."/install_lock.txt";
+			$this->locker	= fopen( $this->lockFile, "w+"); 
+			if (flock($this->locker,LOCK_EX))  
+			{ 
+				if( is_dir($this->pma_abspath_real) && !is_dir($this->pma_abspath) ) //check again after LOCK 
+				{
+					$this->helpers->try_increase_exec_time(120);
+
+					//rename files
+					$dir = $this->pma_abspath_real; // $this->getPMA_FolderName();
+					if(!empty($dir) && !rename($dir, $this->pma_abspath )) {
+						exit(__('Failure: can\'t rename <code>'.$dir.'</code> to <code>'.$this->pma_abspath.'</code>. Either do it manually from FTP, or try completely re-install the plugin.', 'wp-phpmyadmin-extension') );
+						usleep(500000);
 					}
-				}
-				// create extra directories & files
-				foreach($this->pma_create_files as $eachFile){
-					$this->file_put_contents($this->pma_abspath.'/'.$eachFile,""); 
-				}
-
-
-				// create config
-				if(is_admin()){
-					if( $this->is_localhost != $this->opts['is_localhost']){
-						$force =  true;
-						$this->opts['is_localhost']=$this->is_localhost;
-						$this->update_opts();
+					
+					// delete extra directories
+					foreach($this->pma_delete_dirs as $eachDir){
+						$fullPath = $this->pma_abspath.'/'.$eachDir.'/';
+						if( is_dir($fullPath) ){
+							$this->helpers->rmdir_recursive($fullPath);
+						}
 					}
-					// MY NOTE: config.inc.php should alwyas be in pma folder 
-					// include_once( dirname( dirname(dirname( dirname(__DIR__) ) ) ).'/wp_phpmyadmin_config.inc.php' );
-					if(!file_exists($this->path_to_pma_config) || $force){
-						$content = file_get_contents($this->path_to_def_config);
-						$content = str_replace( '___HOSTADR___', 			'\''.DB_HOST.'\'', 							$content);
-						$content = str_replace( '___ALLOWNOPASS___',		($this->is_localhost ? "true" : "false"),	$content);
-						$content = str_replace( '___BLOWFISHSECRET___',	'\''. addslashes($this->create_blowfish_secret()).'\'',	$content);
-						$content = str_replace( '___LANG___',				'\''.$this->static_settings['lang'].'\'',				$content);  
-						$content = str_replace( '___RESTRICTORCOOKIENAME___',	'\''.$this->opts['randomCookieName'].'\'',	$content);  
-						$content = str_replace( '___RESTRICTORCOOKIEVALUE___',	'\''.$this->opts['randomCookieValue'].'\'',	$content);  
-						$content = str_replace( '___DBARRAY___',			'array(\''.DB_NAME.'\')',	$content);  
-						$content = str_replace( '___PmaAbsoluteUri___',		"'".str_replace( $this->domain,'', $this->OneSlash($this->plugin_URL . $this->pma_relpath))."/'",	$content);
-						//$content = str_replace( '___RELATIVEPATHTOFOLDER___',	'\'/plugins/wp-phpmyadmin/'.$this->pma_dirname.'\'',	$content);  
-						file_put_contents($this->path_to_pma_config, $content);
+					// create extra directories & files
+					foreach($this->pma_create_files as $eachFile){
+						$this->helpers->file_put_contents($this->pma_abspath.'/'.$eachFile,""); 
 					}
+
+
+					// create config
+					if(is_admin())
+					{
+						$force =  false;
+						if( $this->helpers->is_localhost != $this->opts['is_localhost']){
+							$force =  true;
+							$this->opts['is_localhost']=$this->helpers->is_localhost;
+							$this->update_opts();
+						}
+						// MY NOTE: config.inc.php should alwyas be in pma folder 
+						// include_once( dirname( dirname(dirname( dirname(__DIR__) ) ) ).'/wp_phpmyadmin_config.inc.php' );
+						if(!file_exists($this->path_to_pma_config) || $force)
+						{
+							$content = file_get_contents($this->path_to_def_config);
+							$content = str_replace('___ALLOWNOPASS___',			($this->helpers->is_localhost ? "true" : "false"),				$content);
+							$content = str_replace('___BLOWFISHSECRET___',		'\''. addslashes($this->create_blowfish_secret()).'\'',	$content);
+							$content = str_replace('___LANG___',				'\''.$this->static_settings['lang'].'\'',				$content);
+							$content = str_replace('___DBARRAY___',				'[file_get_contents(__DIR__."/_session_temp_db_name_".$_SERVER["HTTP_HOST"].".php")]',	$content);   //DB_NAME //$_COOKIE["pma_DB_NAME"]
+							$content = str_replace('___PmaAbsoluteUri___',		'\''.str_replace( $this->helpers->domain,'', $this->helpers->OneSlash($this->helpers->pluginURL . $this->pma_relpath))."/'",	$content);
+							//$content = str_replace( '___RELATIVEPATHTOFOLDER___',	'\'/plugins/wp-phpmyadmin/'.$this->pma_dirname.'\'',	$content);  
+							//
+							//$content = str_replace('___RESTRICTORCOOKIENAME___','\''.$this->opts['randomCookieName'].'\'',		$content);  
+							//$content = str_replace('___RESTRICTORCOOKIEVALUE___','\''.$this->opts['randomCookieValue'].'\'',	$content);  
+							
+							//solution for socket connections too , like : 'localhost:/run/mysqld/mysqld10.sock'
+							$dbhost	= DB_HOST;
+							$connectionType	='tcp';
+							$socket			='';
+							if( stripos($dbhost, ':')!==false && ( stripos($dbhost, '.sock')!==false ||  stripos($dbhost, '/mysql')!==false ) )
+							{
+								preg_match('/(.*?):(.*)/', $dbhost, $n);
+								if (!empty($n[2]))
+								{
+									$dbhost = $n[1];
+									$connectionType = 'socket';
+									$socket			=$n[2];
+								}
+							}
+							$content = str_replace('___HOSTADR___', 			'\''.$dbhost.'\'', 										$content);
+							$content = str_replace('___CONNECTIONTYPE___', 		'\''.$connectionType.'\'', 								$content);
+							$content = str_replace('___SOCKET___', 				'\''.$socket.'\'', 										$content);
+							file_put_contents($this->path_to_pma_config, $content);
+						}
+					}
+					
+					//add content into common.inc
+					$cont = file_get_contents($this->path_to_pma_common);
+					$flag= "//_WPE__REPLACED_\r\n";
+					if ( stripos($cont,$flag) === false )
+					{
+						$addition= $flag . file_get_contents($this->path_to_def_common);
+						if (!$this->is_new_php) {
+							$common_inc_content_new  = $this->helpers->str_replace_first( '<?php', '<?php '.$addition, $cont );
+						}
+						else{
+							$common_inc_content_new  = $this->helpers->str_replace_first( 'require_once ROOT_PATH', $addition."\r\n".'require_once ROOT_PATH', $cont );
+						}
+						// other fixes to make global scope correctly in order to authorize
+						$common_inc_content_new = preg_replace( '/\$GLOBALS\[\'PMA_Config\']\-\>enableBc\(\)\;/',  '$0'.("\r\n\r\n". 'if(defined("ABSPATH")) {'. "\r\n".'    if(empty($cfg) && !empty($GLOBALS[\'cfg\'])) $cfg = $GLOBALS[\'cfg\'];'. "\r\n". '	if(empty($default_server) && !empty($GLOBALS[\'default_server\'])) $default_server = $GLOBALS[\'default_server\']; '. "\r\n}"),   $common_inc_content_new );
+						$common_inc_content_new = preg_replace('/\$auth_plugin\-\>authSetUser\(\)\;/', 'if(defined("ABSPATH")) $GLOBALS["cfg"]=$cfg; ' ."\r\n\r\n".'$0', $common_inc_content_new );
+						// in url:showLoginForm:_-->   <input name="token"== $_SESSION[' PMA_token '];
+						$common_inc_content_new = preg_replace('/\$token_mismatch \= true\;/', '$temp_approve_file = dirname(__DIR__)."/_session_temp_allow.php";'."\r\n".'if(file_exists($temp_approve_file)){ unlink($temp_approve_file);	$_POST["set_session"] = session_id(); $_POST["token"] = $_SESSION[" PMA_token "];  }' ."\r\n\r\n".'$0', $common_inc_content_new );
+						file_put_contents( $this->path_to_pma_common, $common_inc_content_new);
+					}
+
+					// rename conflicting function named __(    //old method: pastebin_com/raw/v652Ef1A
+					$file = $this->pma_abspath .'/vendor/phpmyadmin/motranslator/src/functions.php';
+					file_put_contents( $file,   str_replace('function __(', 'function __RENAMED(', file_get_contents($file) ) );
+					
+					//$this->createHtaccessDirDisableBrowsing( $this->lib_absPath );
 				}
-				
-				//add content into common.inc
-				$common_inc_content_new  = $this->str_replace_first( '<?php', '<?php'.file_get_contents($this->path_to_pma_common_2) , file_get_contents($this->path_to_pma_common) );
-				// other fixes to make global scope correctly
-				$common_inc_content_new = preg_replace( '/\$GLOBALS\[\'PMA_Config\']\-\>enableBc\(\)\;/',  '$0'.("\r\n\r\n". 'if(defined("ABSPATH")) {'. "\r\n".'    if(empty($cfg) && !empty($GLOBALS[\'cfg\'])) $cfg = $GLOBALS[\'cfg\'];'. "\r\n". '	if(empty($default_server) && !empty($GLOBALS[\'default_server\'])) $default_server = $GLOBALS[\'default_server\']; '. "\r\n}"),   $common_inc_content_new );
-				$common_inc_content_new = preg_replace('/\$auth_plugin\-\>authSetUser\(\)\;/', 'if(defined("ABSPATH")) $GLOBALS["cfg"]=$cfg; ' ."\r\n\r\n".'$0', $common_inc_content_new );
-							// in url:showLoginForm:_-->   <input name="token"== $_SESSION[' PMA_token '];
-				$common_inc_content_new = preg_replace('/\$token_mismatch \= true\;/', '$temp_approve_file = dirname(__DIR__)."/_session_temp_allow.php";'."\r\n".'if(file_exists($temp_approve_file)){ unlink($temp_approve_file);	$_POST["set_session"] = session_id(); $_POST["token"] = $_SESSION[" PMA_token "];  }' ."\r\n\r\n".'$0', $common_inc_content_new );
-				file_put_contents( $this->path_to_pma_common, $common_inc_content_new);
-				
-				// rename conflicting function named __(    //old method: https://pastebin.com/raw/v652Ef1A
-				$file = $this->pma_abspath .'/vendor/phpmyadmin/motranslator/src/functions.php';
-				file_put_contents( $file,   str_replace('function __(', 'function __RENAMED(', file_get_contents($file) ) );
-				
-
-				// create htaccess to hide it
-				$create_redirect = 
-					function(){
-						file_put_contents( $this->lib_absPath .'/.htaccess',
-							'<IfModule mod_rewrite.c>'."\r\n".
-							'Options -Indexes'."\r\n".
-							'</IfModule>'
-							//'RewriteEngine on'."\r\n".
-							//'RewriteRule !^'.$this->pma_name_randomed.'($|/) http://example.com/good_bye [L,R=301]'."\r\n".
-						);
-						file_put_contents( $this->lib_absPath .'/index.html', " ");
-					};
-				$create_redirect();
-
 				flock($this->locker,LOCK_UN);
 			} //end locker
+			fclose($this->locker);
+			if (file_exists($this->lockFile)) @unlink($this->lockFile);
 		}
 	}
 	
@@ -211,7 +250,7 @@ namespace WpPhpMyAdminExtension
 
 	// ======
 	public function create_session_var($force=false){ 
-		$new_content = '<?php $sess_vars = array("time"=>'.time().', "name"=>"wp_pma_'.$this->randomString(14).'",  "value"=>"wp_pma_'.$this->randomString(23).'",  "require_ip"=>'.($this->opts['require_ip']? 'true':'false').', "ip"=>"'.$this->ip.'", "strip_slashes"=>'. ($this->opts['strip_slashes']? 'true':'false') .');'; 
+		$new_content = '<?php $sess_vars = ["time"=>'.time().', "name"=>"wp_pma_'.$this->helpers->randomString(14).'",  "value"=>"wp_pma_'.$this->helpers->randomString(23).'",  "require_ip"=>'.($this->opts['require_ip']? 'true':'false').', "ip"=>"'.$this->helpers->ip.'", "strip_slashes"=>'. ($this->opts['strip_slashes']? 'true':'false') .'];'; 
 
 		//
 		if($force || !file_exists($this->pma_sessionfile)){
@@ -226,6 +265,7 @@ namespace WpPhpMyAdminExtension
 		} 
 	} 
 	
+	// https://docs.phpmyadmin.net/en/latest/setup.html#signon-authentication-mode 
 	public function if_redirect_to_pma()
 	{ 
 		if( isset($_GET['goto_wp_phpmyadmin']) ){ 
@@ -234,21 +274,24 @@ namespace WpPhpMyAdminExtension
 				if(isset($_GET['hosting_pma'])){
 					$m_url	= $this->opts['manual_pma_login_url'];
 					if( stripos( $m_url , '/index.php') === false){
-						$m_url .=  ! $this->endsWith($m_url, '/')  ?   '/index.php' : 'index.php';
+						$m_url .=  ! $this->helpers->endsWith($m_url, '/')  ?   '/index.php' : 'index.php';
 					}
 					$chosen_server_url = $m_url;
 				}
 				else{
-					$this->disable_cache(true);
+					$this->helpers->disable_cache(true);
 					// when chosen installed pma-url, then use protection (which we cant use with hosting-url)
 					// p.s. SESSIONS DOESNT WORK for some reasons, probably WP resets then in 'shutdown' and start... SO WE USE COOKIES... 
 					$this->create_session_var();
 					include($this->pma_sessionfile);
-					file_put_contents($this->pma_sessionAllowfile, $this->ip);
+					file_put_contents($this->pma_sessionAllowfile, $this->helpers->ip);
+					file_put_contents($this->pma_sessionDbfile, DB_NAME);
 
 					if(empty($_COOKIE[$sess_vars["name"]]) || $_COOKIE[$sess_vars["name"]] != $sess_vars["value"] ){
-						$this->set_cookie( $sess_vars["name"], $sess_vars["value"], 3*60*60);
-						$this->php_redirect();
+						$hours = 3*60*60;
+						$this->helpers->set_cookie( $sess_vars["name"], $sess_vars["value"], $hours);
+						$this->helpers->set_cookie( "pma_DB_NAME", DB_NAME, $hours);
+						$this->helpers->php_redirect();
 					}
 					$chosen_server_url = $this->pma_mainpage_url;
 				}
@@ -273,7 +316,7 @@ namespace WpPhpMyAdminExtension
 					<?php
 				}
 				else {
-					$this->php_redirect($chosen_server_url);
+					$this->helpers->php_redirect($chosen_server_url);
 				}
 				?>
 				<?php
@@ -304,11 +347,13 @@ namespace WpPhpMyAdminExtension
 		.warning_ssl_img img{ filter: sepia(0.6) contrast(1.1); }
 		.installed_logins .manual_login {display:none;}
 		.red_warning {color:orange;}
+		.referrals { background: #efefef; margin: 10px; }
+		.referrals .line a > * {margin: 2px 5px; font-size: 1.6em; }
+		.error_ {color:red;}
 		</style>
 
 		<?php
-		//moved here, because no longer ajax
-		if (!$this->pma_installed_using_ajax) $this->download_install_pma();
+		$this->initialize_unpacked_pma();
 		?>
 
 		<?php if ($this->active_tab=="Options") 
@@ -325,12 +370,12 @@ namespace WpPhpMyAdminExtension
 				$this->update_opts(); 
 				
 				//reflect changes immediately
-				$this->replace_in_file($this->path_to_pma_config, '/\$cfg\[\WSendErrorReports\W\]\s+=\s+\W(.*?)\W/', '$cfg["SendErrorReports"] = \''. ($this->opts['hide_phma_errors'] ? 'never':'ask') .'\'');
+				$this->helpers->replace_in_file($this->path_to_pma_config, '/\$cfg\[\WSendErrorReports\W\]\s+=\s+\W(.*?)\W/', '$cfg["SendErrorReports"] = \''. ($this->opts['hide_phma_errors'] ? 'never':'ask') .'\'');
 				$this->create_session_var(true);
 			}
 
 
-			$this->ssl_notice_msg = __("This is one-time message! <br/><br/> Seems that your site doesn\\'t use HTTPS. Automatic login (at this moment) works only for HTTPS. To use this feature, then you should bypass the SSL warning on the next page, like shown on this screenshot: ", "wp-phpmyadmin-extension") ."<br/><div class=\\'warning_ssl_img\\'><img src=\\'".$this->plugin_URL."/assets/media/example_warning.png\\' /></div>".__("If the next page doesn\\'t work at all, then uncheck the HTTPS checkbox on this page.", "wp-phpmyadmin-extension");
+			$this->ssl_notice_msg = __("This is one-time message! <br/><br/> Seems that your site doesn\\'t use HTTPS. Automatic login (at this moment) works only for HTTPS. To use this feature, then you should bypass the SSL warning on the next page, like shown on this screenshot: ", "wp-phpmyadmin-extension") ."<br/><div class=\\'warning_ssl_img\\'><img src=\\'".$this->helpers->pluginURL."/assets/media/example_warning.png\\' /></div>".__("If the next page doesn\\'t work at all, then uncheck the HTTPS checkbox on this page.", "wp-phpmyadmin-extension");
 
 			$url_to_open =  trailingslashit(admin_url()).'?rand='.rand(1,99999999).'&goto_wp_phpmyadmin=1';
 			?> 
@@ -341,26 +386,44 @@ namespace WpPhpMyAdminExtension
 				<tr class="installed_logins">
 					<td><h3><?php _e("phpMyAdmin in your wp", 'wp-phpmyadmin-extension');?></h3></td>
 					<td>
-					<?php _e('', 'wp-phpmyadmin-extension');?>
-					<?php if ($this->pma_installed_using_ajax) { ?> <button id="install_pma" <?php if (is_dir($this->pma_abspath)) echo "disabled";?>><?php echo ( !is_dir($this->pma_abspath) ? __("install",'wp-phpmyadmin-extension') :  __("installed",'wp-phpmyadmin-extension') );?></button> <?php } ?>
+					<?php  
+					
+					$error=false;
+					foreach ( array_filter($this->is_new_php ? ['hash','ctype'] : [] ) as $extension)
+					{
+						if(!extension_loaded($extension)) { 
+							$error=true;
+							_e('<div class="error_">extension <code>'.$extension.'</code> not enabled on your server. PhpMyAdmin can not work, unless you(or your hoster) enables it</div>', 'wp-phpmyadmin-extension');
+						}
+					}
+					
+					if (!$this->is_new_php)
+					{
+						_e('<div class="error_">Your server\'s PHP version is lower than required '.$this->required_version.'. The latest PhpMyAdmin can\'t work, so we <b>strongly</b> recommend to contact your hosting administrator to update your obsolete PHP version.</div>', 'wp-phpmyadmin-extension');
+						if (!file_exists($this->pma_zipPath)) 
+						{
+							$error=true;
+							_e('<div class="error_2">If neither your hosting provider can help you, then as a temporary solution, you can click here to if you agree to <button id="install_pma">download & install PhpMyAdmin 4.9</button> from official website.</div>', 'wp-phpmyadmin-extension');
+						}
+					}
+					?>
 					</td>
-					<td>
-
+					<td> 
 <!--
 					<p class="submit manual_login"><a class="<?php if (!is_dir($this->pma_abspath)) echo "sample_disabled";?> button button-primary type_auto enterb enter_manual" target="_blank"  href="<?php echo $url_to_open;?>&manual_login"><?php _e("Login Manually", 'wp-phpmyadmin-extension');?></a></p>
 
 					<p class="submit automatic_login"><a class="<?php if (!is_dir($this->pma_abspath)) echo "sample_disabled";?> button button-primary type_auto enterb enter_automatic" target="_blank" href="<?php echo $url_to_open;?>&automatic_login"  id="installed_automatic" ><?php _e("Login Automatically", 'wp-phpmyadmin-extension');?></a></p>
 -->
-					<p class="submit automatic_login"><a class="<?php if (!is_dir($this->pma_abspath)) echo "sample_disabled";?> button button-primary type_auto enterb enter_automatic" target="_blank" href="<?php echo $url_to_open;?>&automatic_login" id="installed_automatic" onclick="show_ssl_wanring1(event, this);"><?php _e("Enter phpMyAdmin", 'wp-phpmyadmin-extension');?></a></p>
-
+					 
+					<p class="submit automatic_login"><a class="<?php if (!is_dir($this->pma_abspath) || $error) echo "sample_disabled";?> button button-primary type_auto enterb enter_automatic" target="_blank" href="<?php echo $url_to_open;?>&automatic_login" id="installed_automatic" onclick="show_ssl_wanring1(event, this);"><?php _e("Enter phpMyAdmin", 'wp-phpmyadmin-extension');?></a></p> 
 					</td>
 				</tr> 
 
 				<tr class="hostinged_logins">
-					<?php $pma_url = $this->domain.'/phpmyadmin/'; ?>
+					<?php $pma_url = $this->helpers->domain.'/phpmyadmin/'; ?>
 					<td><h3><?php _e("phpMyAdmin on hosting:", 'wp-phpmyadmin-extension');?></h3></td>
 					<td>
-					<?php _e('If above method doesn\'t work for you, at first report us. In the meanwhile, you can use an alternative - some hostings might already have phpMyAdmin setup for customers. If so, just paste the phpMyAdmin login page url here:', 'wp-phpmyadmin-extension');?>
+					<?php _e('If above method doesn\'t work for you, you can use an alternative - some hostings might already have phpMyAdmin setup for customers. If so, just paste the phpMyAdmin login page url here:', 'wp-phpmyadmin-extension');?>
 					<input type="text" class="regular-text" id="manual_pma_login_url" data-onchange-save="true"  data-onchange-hide=".type_manual" name="<?php echo $this->plugin_slug;?>[manual_pma_login_url]" value="<?php echo $this->opts['manual_pma_login_url'];?>" placeholder="" />  
 					<br/><?php _e('( That url might be <code><a href="'.$pma_url.'" target="_blank">'.$pma_url.'</a></code> or <code>https://xyz123.yourhosting.com/phpmyadmin/</code>. You can find out that url in your hosting\'s Control-Panel &gt; <b>phpMyAdmin</b> and you will be redirected to "login" url. Then paste that base url here.)', 'wp-phpmyadmin-extension');?>
 					</td>
@@ -387,7 +450,7 @@ namespace WpPhpMyAdminExtension
 				</tr>
 				<?php } ?>
 				<tr>
-					<td><?php _e("Restrict access only to current IP (<code>$this->ip</code>) to login into PMA <br/>(in rare cases, if you have continiously changing dynamic IP address, then you will need to uncheck IP restriction)", 'wp-phpmyadmin-extension');?></td> 
+					<td><?php $ip=$this->helpers->ip; _e("Restrict access only to current IP (<code>$ip</code>) to login into PMA <br/>(in rare cases, if you have continiously changing dynamic IP address, then you will need to uncheck IP restriction)", 'wp-phpmyadmin-extension');?></td> 
 					<td><input type="checkbox" name="<?php echo $this->plugin_slug;?>[require_ip]" <?php checked($this->opts['require_ip']);?>/> </td>
 					<td></td>
 				</tr>
@@ -403,9 +466,16 @@ namespace WpPhpMyAdminExtension
 				</tr>
 			</table>
 			
-			<?php submit_button(  false, 'button-primary save', '', true,  $attrib= array( 'id' => 'save_button') ); ?> 
+			<?php submit_button(  false, 'button-primary save', '', true,  $attrib= [ 'id' => 'save_button'] ); ?> 
 			<?php wp_nonce_field( "nonce_".$this->plugin_slug);  ?>
 			</form>
+
+			<div class="referrals">
+				<div class="line">
+					<a href="https://bit.do/wp-migrate-db" target="_blank" style="display: flex; align-items: center;"><img style="height: 100px;" src="https://ps.w.org/wp-migrate-db/assets/icon-128x128.jpg" /> <span><?php _e("Do you need a professional WP Migration Plugin?", 'wp-phpmyadmin-extension');?></span> 
+					</a>
+				</div>
+			</div>
 
 			<script> 
 			// warning tooltips
@@ -432,7 +502,6 @@ namespace WpPhpMyAdminExtension
 				
 				jQuery(".myplugin").tooltip({ show: { effect: "blind", duration: 800 } }); 
 				
-				/*
 				jQuery("#install_pma").on("click", function(e){
 					var targetEl= this;
 					e.preventDefault();
@@ -446,18 +515,14 @@ namespace WpPhpMyAdminExtension
 							ttLibrary.message(response);
 						}
 					);
-					window.setTimeout( function(){ ttLibrary.message("<?php _e('Please don\'t refresh the page untill it refreshes automatically  (might need up to 30 seconds). After that, you can open it.', 'wp-phpmyadmin-extension');?>"); }, 2000);
-					window.setTimeout( function(){ jQuery('.ttDialog').dialog('close'); }, 7000);
+					window.setTimeout( function(){ ttLibrary.message("<?php _e('Please don\'t refresh the page untill it refreshes automatically (might need up to 45 seconds).', 'wp-phpmyadmin-extension');?>"); }, 2000);
+					//window.setTimeout( function(){ jQuery('.ttDialog').dialog('close'); }, 7000);
 				});
-				*/
 
 			});
 			
 			//submitFirstLogin(document.getElementById("wp_phpmyadmin_frame"));
-			function submitFirstLogin(iframeElement){ 
-				iframeElement.onload = function() { 			
-				};	
-			}
+			//function submitFirstLogin(iframeElement){   iframeElement.onload = function() { 		 };	     }
 			</script>
 
 		<?php 
@@ -467,49 +532,34 @@ namespace WpPhpMyAdminExtension
 	} 
 	
 
-	/*
-	
+ 
 	public function backend_call($act)
-	{
-		if ($this->pma_installed_using_ajax)
+    {
+		if($act=="install_pma")
 		{
-			if($act=="install_pma")
-			{
-				$this->download_install_pma();
-				exit(__('Installation complete.<script>location=location;</script>','wp-phpmyadmin-extension') );
+			// remove if previous unpack was partial.
+			$dir = $this->getPMA_FolderName();  
+			if( !empty($dir) && is_dir($dir) ) {
+				if( !$this->rmdir_recursive($dir) )
+					exit(__("Failure: can't remove the old $dir folder, click OK to re-try (If you will see this message again, do it manually from FTP).", 'wp-phpmyadmin-extension'));
 			}
+	 
+			// download latest pma
+			//if ($this->pma_installed_using_download) if(!file_exists($this->pma_zipPath)) $this->getPmaZip();       // getPmaZip -----> removed: pastebin(dot)com/raw/r8jLN1P7
+			// unzip
+			wp_remote_get( $url=$this->old_pma_zip, ['timeout'=>300,  'stream'=>true,  'filename'=>$this->pma_zipPath ] );
+			$this->unzip($this->pma_zipPath, $this->lib_absPath);
+			usleep(500000);
+			//unlink($this->pma_zipPath);
+			rename( $this->lib_absPath .'/'.str_replace('.zip', '',basename($this->old_pma_zip)), $this->pma_abspath_real );
+			exit(__('Installation complete.<script>location.href=location.href;</script>','wp-phpmyadmin-extension') ); 
 		}
-	}
-
-	REMOVED:
-	//======================== Download & install ========================
-	if($this->pma_installed_using_ajax)
-	{
-		// download latest pma
-		if ($this->pma_installed_using_download) if(!file_exists($this->pma_zipPath)) $this->getPmaZip(); 		// getPmaZip -----> removed: https://pastebin.com/raw/r8jLN1P7
-			
-		// remove if previous unpack was partial.
-		$dir =  $this->getPMA_FolderName();  
-		if( !empty($dir) && is_dir($dir) ) { 
-			if( !$this->rmdir_recursive($dir) )
-				exit(__("Failure: can't remove the old $dir folder, click OK to re-try (If you will see this message again, do it manually from FTP).", 'wp-phpmyadmin-extension'));
-		}
-
-		// unzip
-		$this->unzip($this->pma_zipPath, $this->lib_absPath);
-		usleep(500000);
-	}
-	//remove file
-	if ($this->pma_installed_using_download) unlink($this->pma_zipPath);
-	// =================================================
-	*/
-
-
+    }
 
 	
-
-
-
+	
+	
+	
   } // End Of Class
 
   $GLOBALS[__NAMESPACE__] = new PluginClass();
