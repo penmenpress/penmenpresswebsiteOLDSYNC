@@ -432,6 +432,9 @@ a.owf_about_link:hover {
     padding-top:0.2em;
     text-align:center;
 }
+.ow-tools #settingstuff {
+   width: 80%;
+}
 
 #new-workflow-submit-div{
     display:none;

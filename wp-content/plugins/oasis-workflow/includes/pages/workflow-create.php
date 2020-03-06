@@ -282,34 +282,41 @@ echo "<script type='text/javascript'>
             </div>
             <br class="clear">
         </div>
-        <div class="save-action-div">
+         <div class="save-action-div">
             <?php wp_nonce_field( 'owf_workflow_create_nonce', 'owf_workflow_create_nonce' ); ?>
-
-            <?php if( !$wf_editable && current_user_can( 'ow_create_workflow' ) ) : ?>
-
-               <input type="button" value="<?php echo __( 'Save as new version', 'oasisworkflow' ) ?>"
-                      class="button-primary workflow-save-new-version-button" >
-
-            <?php endif; ?>
-
-            <?php if( current_user_can( 'ow_edit_workflow' ) ) : ?>
-
-               <input type="button" value="<?php echo __( 'Save', 'oasisworkflow' ) ?>"
-                      class="button-primary workflow-save-button" >
-
-            <?php endif; ?>
-
-            <?php apply_filters( 'owf_workflow_additional_actions', $wf_id ); ?>
-
-            <?php if( $wf_editable && current_user_can( 'ow_edit_workflow' ) ) : ?>
-
+            <?php 
+            if ( $wf_editable ) { 
+               if ( current_user_can( 'ow_edit_workflow' ) ) { ?>                  
+                  <input type="button" value="<?php echo __( "Save", "oasisworkflow" ) ?>" class="button-primary workflow-save-button" data-bname="save">            
+                  <?php
+               }
+               if ( current_user_can( 'ow_create_workflow' ) ) { ?>
+                  <input type="button" value="<?php echo __( "Copy" ) ?>" class="button-primary workflow-copy-button" >
+               <?php
+               }
+               ?>
                <span class="save_loading">&nbsp;</span>
-               <a href="#" id="delete-form"><?php _e( 'Clear Workflow', 'oasisworkflow' ) ?></a>
-
-            <?php endif; ?>
-
-
-        </div>
+               <a href="#" id="delete-form"><?php echo __( "Clear Workflow", "oasisworkflow" ) ?></a>
+            <?php             
+            } else {
+               if ( current_user_can( 'ow_create_workflow' ) ) { ?>
+                  <input type="button" value="<?php echo __( "Save as new version", "oasisworkflow" ) ?>"
+                        class="button-primary workflow-save-new-version-button" >
+               <?php
+               }
+               if ( current_user_can( 'ow_edit_workflow' ) ) { ?>
+                  <input type="button" value="<?php echo __( "Save", "oasisworkflow" ) ?>"
+                         class="button-primary workflow-save-button" data-bname="save" >            
+               <?php
+               }
+               if ( current_user_can( 'ow_create_workflow' ) ) { ?>
+                  <input type="button" value="<?php echo __( "Copy" ) ?>" class="button-primary workflow-copy-button" >
+               <?php
+               }
+               ?>
+               <span class="save_loading">&nbsp;</span>
+            <?php } ?>
+         </div>
         <br class="clear" />
         <input type="hidden" id="wf_graphic_data_hi" name="wf_graphic_data_hi" />
         <input type="hidden" id="wf_id" name="wf_id" value='<?php echo esc_attr( $wf_id ); ?>' />
@@ -347,16 +354,41 @@ echo "<script type='text/javascript'>
 <?php endif; ?>
 <span class="paste_loading">&nbsp;&nbsp;&nbsp;</span>
 
+<?php
+	// include the file for the workflow create popup
+	include( OASISWF_PATH . 'includes/pages/subpages/workflow-create-popup.php' );
+?>
+
+<?php
+	// include the file for the workflow copy popup
+	include( OASISWF_PATH . 'includes/pages/subpages/workflow-copy-popup.php' );
+?>
+
 <div id="step-info-update" class="owf-hidden"></div>
 <?php do_action( 'owf_after_workflow_create_page', $wf_id ); ?>
 
 <script type="text/javascript">
-
+	jQuery(document).ready(function() {
+		// loading workflow create modal
+		if(!jQuery("#wf_id").val()){
+			if(navigator.appName == "Netscape"){
+				show_workflow_create_modal() ;
+			}else{
+				setTimeout("show_workflow_create_modal()", 500);
+			}
+		}
+	});
+   
    // FIXED: To prevent step menu appear away from steps ie. review, publish and etc...
-   jQuery( '#wpbody' ).css( { 'position': 'inherit' } );
+	jQuery("#wpbody").css({"position":"inherit"});
 
-   function call_modal( param ) {
-      jQuery( '.contextMenu' ).hide();
-      jQuery( '#' + param ).owfmodal();
-   }
+	function call_modal(param){
+		jQuery('.contextMenu').hide();
+		jQuery('#'+param).owfmodal();
+	}
+
+	function show_workflow_create_modal(){
+		jQuery('#new-workflow-create-popup').owfmodal();
+		jQuery(".modalCloseImg").hide() ;
+	}
 </script>

@@ -3,6 +3,47 @@ var jQueryCgmp = jQuery.noConflict();
    jQuery( document ).ready( function () {
       var changed_step_chk = false; // set it to false as default, once the user changes any thing related to workflow, we will set the value to true
       var deleted_step = new Array(); // IDs of Deleted step
+      
+      /*
+       * called when clicked "Save" on Create New Workflow" popup
+       * if everything works, goes to the workflow builder canvas
+       */
+      jQuery( "#new-wf-save" ).click( function () {
+         // validate workflow title cannot be blank
+         if ( !jQuery( "#new-workflow-title" ).val() ) {
+            jQuery( "#new-workflow-title" ).css( {"background-color": "#fbf3f3"} ).focus();
+            return;
+         }
+
+         jQuery( ".changed-data-set span" ).addClass( "loading" );
+         create_data = {
+            action: 'create_new_workflow',
+            name: jQuery( "#new-workflow-title" ).val(),
+            description: jQuery( "#new-workflow-description" ).val(),
+            security: jQuery( '#owf_workflow_create_nonce' ).val()
+         };
+
+         // Post the data to see if we can create the workflow
+         jQuery.post( ajaxurl, create_data, function ( response ) {
+            if ( response == -1 ) { // nonce cannot be verified
+               jQuery( ".changed-data-set span" ).removeClass( "loading" );
+               return false;
+            }
+            if ( ! response.success ) { // found existing workflow with the same name, so display error message.
+               alert( owf_workflow_create_vars.alreadyExistWorkflow );
+               jQuery( ".changed-data-set span" ).removeClass( "loading" );
+               return false;
+            }
+
+            // everything looks good, the workflow is created. hurray!!!!
+            jQuery( ".changed-data-set span" ).removeClass( "loading" );
+            jQuery( "#wf_id" ).val( response.data );
+            jQuery( "#define-workflow-title" ).val( jQuery( "#new-workflow-title" ).val() );
+            jQuery( "#define-workflow-description" ).val( jQuery( "#new-workflow-description" ).val() );
+            jQuery( "#page_top_lbl" ).html( jQuery( "#new-workflow-title" ).val() + " (1)" ); // it's version 1 of the workflow
+            jQuery.modal.close();
+         } );
+      } );
 
       /*
        * setup date picker for start date
@@ -112,6 +153,27 @@ var jQueryCgmp = jQuery.noConflict();
             jQuery( "#wf-form" ).submit();
          } );
       } );
+      
+      //------------copy workflow------------
+      jQuery( ".workflow-copy-button" ).click( function () {
+         var wf_id = jQuery( "#wf_id" ).val();
+         var wf_name = jQuery( '#define-workflow-title' ).val();
+         jQuery( '#copy-workflow-title' ).val( 'Copy-' + wf_name );
+         jQuery( '#hi_wf_id' ).val( wf_id );
+         jQuery( '#copy-workflow-popup' ).owfmodal();
+         jQuery( ".modalCloseImg" ).hide();
+      } );
+
+      jQuery( ".duplicate_workflow" ).click( function () {
+         var wf_id = jQuery( this ).attr( 'wf_id' );
+         // get the name of the workflow
+         var wf_name = jQuery( '#workflow-name-' + wf_id ).html();
+         // append Copy- to the workflow name
+         jQuery( '#copy-workflow-title' ).val( 'Copy-' + wf_name );
+         jQuery( '#hi_wf_id' ).val( wf_id );
+         jQuery( '#copy-workflow-popup' ).owfmodal();
+         jQuery( ".modalCloseImg" ).hide();
+      } );
 
       var chk_date_input = function () {
          if ( !jQuery( "#start-date" ).val() ) {
@@ -174,6 +236,37 @@ var jQueryCgmp = jQuery.noConflict();
       jQuery( "#save_as_link, .workflow-save-new-version-button" ).click( function () {
          jQuery( "#save_action" ).val( "workflow_save_as_new_version" );
          jQuery( "#wf-form" ).submit();
+      } );
+      
+      jQuery( "#copy-wf-submit" ).click( function () {
+         if ( !jQuery( "#copy-workflow-title" ).val() ) {
+            jQuery( "#copy-workflow-title" ).css( {"background-color": "#fbf3f3"} ).focus();
+            return;
+         }
+         jQuery( ".changed-data-set span" ).addClass( "loading" );
+         check_for_duplicate_workflow_name = {
+            action: 'validate_workflow_name',
+            name: jQuery( "#copy-workflow-title" ).val(),
+            security: jQuery( '#owf_workflow_create_nonce' ).val()
+         };
+
+         jQuery.post( ajaxurl, check_for_duplicate_workflow_name, function ( response ) {
+            jQuery( ".changed-data-set span" ).removeClass( "loading" );
+            if ( response == -1 ) { // nonce failed
+               jQuery( ".changed-data-set span" ).removeClass( "loading" );
+               return false;
+            }
+            if ( ! response.success ) { // found existing workflow with the same name, so display error message.
+               alert( owf_workflow_create_vars.alreadyExistWorkflow );
+               jQuery( ".changed-data-set span" ).removeClass( "loading" );
+               return false;
+            }
+
+            jQuery( "#save_action" ).val( "workflow_copy" );
+            jQuery( "#define-workflow-title" ).val( jQuery( "#copy-workflow-title" ).val() );
+            jQuery( "#define-workflow-description" ).val( jQuery( "#copy-workflow-description" ).val() );
+            jQuery( "#wf-form" ).submit();
+         } );
       } );
 
    } );

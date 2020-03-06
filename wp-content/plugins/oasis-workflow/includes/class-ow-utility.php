@@ -969,12 +969,13 @@ class OW_Utility {
                 '</div>
 	      			<div style="width:80%; float:left; align: center">' .
                 '<p>' .
-                'Looking for additional features like "Ability to create multiple workflows", ' .
+                'Looking for additional features like, ' .
                 '<a target="_blank" href="https://www.oasisworkflow.com/documentation/working-with-workflows/revise-published-content">"Revise published content and add workflow support to revised content"</a>, ' .
                 '<a target="_blank" href="https://www.oasisworkflow.com/documentation/working-with-workflows/auto-submit-to-workflow">"Auto Submit"</a>, ' .
                 '<a target="_blank" href="https://www.oasisworkflow.com/extensions/oasis-workflow-groups">"Groups"</a>, ' .
                 '<a target="_blank" href="https://www.oasisworkflow.com/extensions/oasis-workflow-editorial-comments">"Contextual Comments"</a>, ' .
                 '<a target="_blank" href="https://www.oasisworkflow.com/extensions/oasis-workflow-front-end-actions">"Front End shortcodes"</a>, ' .
+                '<a target="_blank" href="https://www.oasisworkflow.com/extensions/oasis-workflow-calendar">"Editorial Calendar"</a>, ' .
                 ' and much more...' .
                 '<p/><p>' .
                 '<strong><a target="_blank" href="https://www.oasisworkflow.com/request-a-demo-site">Request a demo site to try out the "Pro" features</a></strong>' .

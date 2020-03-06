@@ -3,7 +3,7 @@
   Plugin Name: Oasis Workflow
   Plugin URI: http://www.oasisworkflow.com
   Description: Automate your WordPress Editorial Workflow with Oasis Workflow.
-  Version: 4.4
+  Version: 4.6
   Author: Nugget Solutions Inc.
   Author URI: http://www.nuggetsolutions.com
   Text Domain: oasisworkflow
@@ -26,8 +26,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-define('OASISWF_VERSION', '4.4');
-define('OASISWF_DB_VERSION', '4.4');
+define('OASISWF_VERSION', '4.6');
+define('OASISWF_DB_VERSION', '4.6');
 define('OASISWF_PATH', plugin_dir_path(__FILE__)); //use for include files to other files
 define('OASISWF_ROOT', dirname(__FILE__));
 define('OASISWF_FILE_PATH', OASISWF_ROOT . '/' . basename(__FILE__));
@@ -249,13 +249,23 @@ class OW_Plugin_Init
       }
 
       // All Workflows - will display the workflow list
-      if (current_user_can('ow_edit_workflow')) {
+      if (current_user_can('ow_create_workflow') || current_user_can('ow_edit_workflow')) {
          add_submenu_page('oasiswf-inbox',
-            __('Edit Workflows', 'oasisworkflow'),
-            __('Edit Workflows', 'oasisworkflow'),
-            'edit_theme_options',
+            __('All Workflows', 'oasisworkflow'),
+            __('All Workflows', 'oasisworkflow'),
+            'ow_create_workflow',
             'oasiswf-admin',
             array($this, 'list_workflows_page_content'));
+      }
+      
+      // Add New Workflow
+      if (current_user_can('ow_create_workflow')) {
+         add_submenu_page('oasiswf-inbox',
+            __('Add New Workflow', 'oasisworkflow'),
+            __('Add New Workflow', 'oasisworkflow'),
+            'ow_create_workflow',
+            'oasiswf-add',
+            array($this, 'create_workflow_page_content'));
       }
 
       if (current_user_can('ow_edit_workflow')) {
@@ -265,6 +275,15 @@ class OW_Plugin_Init
             $current_role,
             'oasiswf-custom-statuses',
             array($this, 'custom_statuses_page_content'));
+      }
+      
+      if (current_user_can('ow_export_import_workflow')) {
+         add_submenu_page('oasiswf-inbox',
+            __('Tools', 'oasisworkflow'),
+            __('Tools', 'oasisworkflow'),
+            $current_role,
+            'oasiswf-tools',
+            array($this, 'display_workflow_tools'));
       }
 
       // Stay Informed page - hidden from the menu
@@ -284,6 +303,11 @@ class OW_Plugin_Init
    public function custom_statuses_page_content()
    {
       include(OASISWF_PATH . "includes/pages/ow-custom-statuses.php");
+   }
+   
+   public function display_workflow_tools()
+   {
+      include(OASISWF_PATH . "includes/pages/workflow-tools.php");
    }
 
    public function news_letter_page_content()
@@ -1327,13 +1351,23 @@ class OW_Plugin_Init
     */
    public function list_workflows_page_content()
    {
-
       $workflow_id = isset($_GET['wf_id']) ? intval(sanitize_text_field($_GET["wf_id"])) : "";
       if (!empty ($workflow_id)) {
          include(OASISWF_PATH . "includes/pages/workflow-create.php");
       } else {
          include(OASISWF_PATH . "includes/pages/workflow-list.php");
       }
+   }
+   
+   /**
+    * New Workflow create action.
+    * This method is called when the menu item "Add New Workflow" is clicked.
+    *
+    * @since 4.5
+    */
+   public function create_workflow_page_content()
+   {
+      include(OASISWF_PATH . "includes/pages/workflow-create.php");
    }
 
    /**
@@ -2162,11 +2196,17 @@ class OW_Plugin_Init
 
       if (is_admin() && preg_match_all('/page=oasiswf(.*)|post-new\.(.*)|post\.(.*)/', $_SERVER['REQUEST_URI'], $matches)) {
          wp_enqueue_script('owf-workflow-create', OASISWF_URL . 'js/pages/workflow-create.js', '', OASISWF_VERSION, true);
+         wp_enqueue_script('owf-workflow-delete', OASISWF_URL . 'js/pages/workflow-delete.js', '', OASISWF_VERSION, true);
 
          wp_localize_script('owf-workflow-create', 'owf_workflow_create_vars', array(
+            'alreadyExistWorkflow' => __('There is an existing workflow with the same name. Please choose another name.', 'oasisworkflow'),
             'unsavedChanges' => __('You have unsaved changes.', 'oasisworkflow'),
             'dateFormat' => OW_Utility::instance()->owf_date_format_to_jquery_ui_format(get_option('date_format')),
             'editDateFormat' => OW_Utility::instance()->owf_date_format_to_jquery_ui_format(OASISWF_EDIT_DATE_FORMAT)
+         ));
+         
+         wp_localize_script('owf-workflow-delete', 'owf_workflow_delete_vars', array(
+            'workflow_delete_nonce' => wp_create_nonce('workflow_delete_nonce')
          ));
 
          wp_enqueue_script('jquery-simplemodal', OASISWF_URL . 'js/lib/modal/jquery.simplemodal.js', '', '1.4.6', true);

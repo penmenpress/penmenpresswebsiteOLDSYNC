@@ -26,11 +26,77 @@ class OW_Workflow_Service
     */
    public function __construct()
    {
+      add_action( 'wp_ajax_create_new_workflow', array( $this, 'create_new_workflow' ) );
+      add_action( 'wp_ajax_validate_workflow_name', array( $this, 'validate_workflow_name' ) );
+      
       add_action('wp_ajax_save_workflow_step', array($this, 'save_workflow_step'));
       add_action('wp_ajax_load_step_info', array($this, 'load_step_info'));
       add_action('wp_ajax_copy_step', array($this, 'copy_step'));
       add_action('wp_ajax_get_first_step', array($this, 'get_first_step'));
+      
+      add_action( 'wp_ajax_delete_workflow_confirmation', array( $this, 'delete_workflow_confirmation' ) );  
+      add_action( 'wp_ajax_delete_workflow', array( $this, 'delete_workflow' ) ); 
    }
+   
+   /**
+	 * AJAX function - Creates new workflow
+	 * Checks for existing workflow with the same name before creating the workflow
+	 *
+	 * @since 4.5
+	 */
+	public function create_new_workflow() {
+		global $wpdb;
+         
+      // nonce check
+		check_ajax_referer( 'owf_workflow_create_nonce', 'security' );
+      
+      // capability check
+		if ( ! current_user_can( 'ow_create_workflow' ) ) {
+			wp_die( __( 'You are not allowed to create workflows.' ) );
+		}
+
+      /* sanitize incoming data */
+		$workflow_name = sanitize_text_field( $_POST["name"] );
+      
+      // check if a workflow with this name already exists?
+		$result = $wpdb->get_row( $wpdb->prepare( "SELECT count(*) count FROM " . OW_Utility::instance()->get_workflows_table_name() . " WHERE LOWER(name) = %s", $workflow_name ) );
+		if ( $result->count > 0 ) { // we found an identical named workflow
+			wp_send_json_error();
+		}
+
+		// continue saving the data to create a new workflow
+		$data = array(
+				'name' => stripcslashes( $_POST["name"] ),
+				'description' => stripcslashes( $_POST["description"] ),
+				'create_datetime' => current_time( 'mysql' ),
+				'update_datetime' => current_time( 'mysql' )
+		);
+		$workflow_table = OW_Utility::instance()->get_workflows_table_name( );
+		$new_id = OW_Utility::instance()->insert_to_table( $workflow_table, $data ) ;
+		wp_send_json_success( $new_id ) ;
+	}
+   
+   /**
+	 * AJAX function - Validate workflow name for duplicate
+	 * @since 4.5
+	 */
+
+	public function validate_workflow_name() {
+		global $wpdb;
+      // nonce check
+		check_ajax_referer( 'owf_workflow_create_nonce', 'security' );
+
+      /* sanitize incoming data */
+		$workflow_name = sanitize_text_field( $_POST["name"] );
+      
+      // check if a workflow with this name already exists?
+		$result = $wpdb->get_row( $wpdb->prepare( "SELECT count(*) count FROM " . OW_Utility::instance()->get_workflows_table_name() . " WHERE LOWER(name) = %s", $workflow_name ) );
+		if ( $result->count > 0 ) { // we found an identical named workflow
+         wp_send_json_error();
+		} else {
+			wp_send_json_success();
+		}
+	}
 
    /**
     * saves workflow step - ajax function
@@ -131,6 +197,66 @@ class OW_Workflow_Service
          wp_send_json_error();
       }
    }
+   
+   /**
+	 * AJAX function - To show the delete workflow confirmation popup
+	 *
+	 * @since 4.5
+	 */
+	public function delete_workflow_confirmation() {
+      // nonce check
+      check_ajax_referer( 'workflow_delete_nonce', 'security' );
+
+      // check capability 
+      if ( ! current_user_can( 'ow_delete_workflow' ) ) {
+         wp_die( __( 'You are not allowed to delete workflows.', 'oasisworkflow' ) );
+      }
+      
+		ob_start();
+      include_once OASISWF_PATH . 'includes/pages/subpages/delete-workflow.php';
+      $result = ob_get_contents();
+      ob_get_clean();
+      wp_send_json_success( htmlentities( $result ) );
+	}
+   
+   /**
+	 * AJAX function - Delete the selected workflow
+	 *
+	 * @since 4.5
+	 */
+	public function delete_workflow()
+	{
+		global $wpdb;
+
+		// nonce check
+      check_ajax_referer( 'workflow_delete_nonce', 'security' );
+
+      // check capability 
+      if ( ! current_user_can( 'ow_delete_workflow' ) ) {
+         wp_die( __( 'You are not allowed to delete workflows.', 'oasisworkflow' ) );
+      }
+
+		// sanitize the input
+		$wf_id = intval( sanitize_text_field( $_POST["workflow_id"] ) );
+
+      // delete the transient cached workflows, so that we get a refreshed set of workflows next time
+      delete_transient( 'ow-cache-active-workflows' );
+      
+      //delete the cache to get the updated values
+      $cache_key = md5( "ow_worklows_" . $wf_id );
+      wp_cache_delete( $cache_key, "ow-cache-workflows" );
+
+		// first delete all the steps
+		$this->delete_workflow_steps( $wf_id ) ;
+
+		// now delete the workflow
+		$result = $wpdb->get_results( $wpdb->prepare( "DELETE FROM " . OW_Utility::instance()->get_workflows_table_name() . " WHERE ID = %d", $wf_id ) );
+
+     // hook to do something after workflow is deleted
+      do_action( 'owf_workflow_delete', $wf_id );
+
+		wp_send_json_success();
+	}
 
    /**
     * for internal use only
@@ -991,6 +1117,30 @@ class OW_Workflow_Service
       $cols .= '</tr>';
       echo $cols;
    }
+   
+   /**
+    * Set workflow row actions
+    * @since 4.5
+    */
+   public function display_workflow_row_actions( $workflow_id, $postcount ) {
+      $space = "&nbsp;&nbsp;" ;
+      $workflow_row_action =  array();
+      
+      if ( current_user_can( 'ow_edit_workflow' ) ) {
+         $workflow_row_action["edit"] = "<a href='admin.php?page=oasiswf-admin&wf_id=" . $workflow_id . "'>" . __( "Edit", "oasisworkflow" ) . "</a>".$space;
+      }
+      
+      if ( !$postcount && current_user_can( 'ow_delete_workflow' ) ) {
+         $delete_nonce = wp_create_nonce( 'workflow-delete-nonce' );
+         $workflow_row_action["delete"] = "<a href='admin.php?page=oasiswf-admin&wf_id=" . $workflow_id . "&action=delete&_nonce=$delete_nonce' class='workflow-delete'>" . __( "Delete", "oasisworkflow" ) . "</a>".$space;
+      }
+      
+      if ( current_user_can( 'ow_create_workflow' ) ) {
+         $workflow_row_action["copy"] =  "<a href='javascript:void(0)' class='duplicate_workflow' wf_id='{$workflow_id}'>" . __( "Copy", "oasisworkflow" ) . "</a>.$space";
+      }
+      
+      return $workflow_row_action;
+   }
 
    /**
     * Get Workflow object from ID
@@ -1046,6 +1196,28 @@ class OW_Workflow_Service
 
       return $valid_workflows;
    }
+   
+   public function get_valid_workflows( $post_id ) {
+      
+      if ( ! current_user_can( 'ow_submit_to_workflow' ) && ! current_user_can( 'ow_sign_off_step' ) ) {
+         wp_die( __( 'You are not allowed to get workflows.', 'oasisworkflow' ) );
+      }
+
+      // sanitize incoming data
+      $post_id = intval( $post_id );
+
+      $workflows = $this->get_workflow_by_validity(1);
+      $valid_workflows = array();
+
+
+      foreach ($workflows as $workflow) {
+         if ($this->is_workflow_applicable($workflow->ID, $post_id)) {
+            array_push($valid_workflows, $workflow);
+         }
+      }
+
+      return $valid_workflows;
+   }
 
    /**
     * Function - API to fetch step process details
@@ -1074,6 +1246,36 @@ class OW_Workflow_Service
 
       return array('process' => $process);
    }
+   
+   /*
+	 * Delete all the workflow steps
+	 *
+	 * @param int $wf_id workflow id
+	 *
+	 * @since 4.5
+	 */
+	private function delete_workflow_steps( $wf_id ) {
+		global $wpdb;
+		$wf_id = intval( $wf_id );
+		$workflow = $this->get_workflow_by_id( $wf_id ) ;
+		if ( $workflow ){
+			$wf_info = $workflow->wf_info ;
+			if ( $wf_info ) {
+				$wf_info = json_decode( $wf_info ) ;
+				foreach ( $wf_info->steps as $k => $v ) {
+					if ( $v->fc_dbid == "nodefine" ) {
+						continue;
+					}
+               //delete the cache to get the updated values
+               $cache_key = md5( "ow_worklow_steps_" . $v->fc_dbid );
+               wp_cache_delete( $cache_key, "ow-cache-workflows" );
+               
+					$result = $wpdb->get_results( $wpdb->prepare( "DELETE FROM " . OW_Utility::instance()->get_workflow_steps_table_name() .
+							" WHERE workflow_id = %d and ID = %d", $wf_id, $v->fc_dbid ) );
+				}
+			}
+		}
+	}
 
    /**
     * Function to convert DB result set to OW_Workflow object
@@ -1212,6 +1414,69 @@ class OW_Workflow_Service
 
       return false;
    }
+   
+   /**
+	 * creates a copy of the workflow
+	 * @since 4.5
+	 */
+	public function copy_workflow() {
+		global $wpdb;
+
+		if ( ! wp_verify_nonce( $_POST['owf_workflow_create_nonce'], 'owf_workflow_create_nonce' ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'ow_create_workflow' ) ) {
+			wp_die( __( 'You are not allowed to create/edit workflows.' ) );
+		}
+
+      // delete the cached workflows, so that we get a refreshed set of workflows next time
+      delete_transient( 'ow-cache-active-workflows' );
+
+      // sanitize the input
+		$workflow_id = intval( sanitize_text_field( $_POST["wf_id"] ) );
+		$workflow = $this->get_workflow_by_id( $workflow_id ) ;
+		if ( $workflow ) {
+			$data = array(
+				'name' => stripcslashes( trim( $_POST['define-workflow-title'] ) ),
+				'description' => stripcslashes( $_POST['define-workflow-description'] ),
+				'version' => 1, // since it's a new copy
+				'parent_id' => 0,
+				'start_date' => $workflow->start_date,
+				'end_date' => $workflow->end_date,
+				'create_datetime' => current_time('mysql'),
+				'update_datetime' => current_time('mysql'),
+				'wf_additional_info' =>  $workflow->wf_additional_info
+			);
+			$workflow_table = OW_Utility::instance()->get_workflows_table_name();
+			$new_wf_id = OW_Utility::instance()->insert_to_table( $workflow_table, $data );
+
+			// now create copy of the steps
+			$wf_info = json_decode( $workflow->wf_info );
+			foreach ($wf_info->steps as $k => $v)
+			{
+				if ( $v->fc_dbid == "nodefine" ) {
+               continue ;
+            }
+				$new_fc_dbid = $this->save_step_as_new( $new_wf_id, $v->fc_dbid ) ;
+				if ( $new_fc_dbid ) {
+					$wf_info->steps->$k->fc_dbid = $new_fc_dbid ;
+				}
+			}
+
+			// update the workflow record with step information
+			$wf_info = json_encode( $wf_info ) ;
+			$wpdb->update( $workflow_table,
+					array(
+						"wf_info" => $wf_info
+					),
+					array( "ID" => $new_wf_id ) ) ;
+
+			// redirect the page to the newly copied workflow
+			wp_redirect( admin_url( 'admin.php?page=oasiswf-admin&wf_id=' . $new_wf_id ) );
+			die();
+		}
+	}
 
 }
 
@@ -1228,6 +1493,11 @@ if (isset($_POST['save_action']) && $_POST["save_action"] == "workflow_save") {
 if (isset($_POST['save_action']) && $_POST["save_action"] == "workflow_save_as_new_version") {
    $workflow_service = new OW_Workflow_Service();
    $workflow_service->save_as_new_version();
+}
+
+if ( isset( $_POST['save_action'] ) && $_POST["save_action"] == "workflow_copy" ) {
+	$workflow_service = new OW_Workflow_Service();
+	$workflow_service->copy_workflow();
 }
 
 ?>

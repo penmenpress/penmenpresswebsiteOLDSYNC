@@ -27,6 +27,7 @@
            	<p><a href="https://www.oasisworkflow.com/extensions/oasis-workflow-front-end-actions" target="_blank">Front End shortcodes Add-On</a></p>
            	<p><a href="https://www.oasisworkflow.com/extensions/oasis-workflow-editorial-checklist" target="_blank">Editorial Checklist Add-On</a></p>
 				<p><a href="https://www.oasisworkflow.com/extensions/oasis-workflow-acf-compare" target="_blank">ACF Compare Add-On</a></p>
+	         <p><a href="https://www.oasisworkflow.com/extensions/oasis-workflow-calendar" target="_blank">Editorial Calendar Add-On</a></p>
            	<p><a href="https://www.oasisworkflow.com/add-ons" target="_blank">Pricing and Purchase</a></p>
          </div>
    	</div>

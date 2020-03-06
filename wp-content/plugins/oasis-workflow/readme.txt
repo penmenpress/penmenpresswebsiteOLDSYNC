@@ -3,7 +3,7 @@ Contributors: nuggetsol
 Tags: workflow, work flow, review, assignment, publish, inbox, workflow history, audit, versioning, edit flow, newsroom, custom post status, journalism, auto submit, approval workflow, editorial workflow, notifications, oasis workflow, editorial, revisions, document revision, version control, collaboration, document management, revision scheduling, duplication, clone, revise, revise article
 Requires at least: 4.4
 Tested up to: 5.3.2
-Stable tag: 4.4
+Stable tag: 4.6
 
 Automate your WordPress Editorial Workflow with Oasis Workflow. Simple, intuitive drag and drop workflow builder to streamline your editorial process.
 
@@ -76,7 +76,7 @@ Oasis Workflow adds a few custom capabilities to manage your workflows. Check ou
 
 = Videos to help you get started with Oasis Workflow =
 
-Creating and Editing a workflow (applicable to "Pro" version, however the same editing process can be used for "free" version)
+Creating and Editing a workflow
 
 [youtube https://www.youtube.com/watch?v=JbJJQMMnf5U]
 
@@ -116,6 +116,15 @@ For [Frequently Asked Questions](https://www.oasisworkflow.com/faq) plus documen
 
 
 == Changelog ==
+
+= Version 4.6 =
+* Fixed potential issue with update_option not sanitizing certain input values.
+* Fixed deleting of created workflows.
+
+= Version 4.5 =
+* Added ability to create multiple workflows.
+* Added Export and Import of workflow and various workflow settings.
+* Fixed issue with Jetpack Publicize not getting invoked when task is signed off from the post edit page.
 
 = Version 4.4 =
 * Fixed front end gutenberg dependency error.

@@ -4,25 +4,41 @@ jQuery( document ).ready( function () {
    function load_setting() {
       var allowed_post_types = jQuery.parseJSON( owf_submit_workflow_vars.allowedPostTypes );
       var current_post_type = jQuery( '#post_type' ).val();
+      
+      // check if role is applicable to submit to workflow
+      if ( current_post_type !== undefined ) {
+         var check_is_role_applicable = {
+               action: 'check_applicable_roles',
+               post_id: jQuery('#post_ID').val(),
+               post_type: current_post_type,
+               security: jQuery('#owf_signoff_ajax_nonce').val()
+         };
+         jQuery.post(ajaxurl, check_is_role_applicable, function (response) {
+            if ( ! response.success ) {
+              jQuery('#workflow_submit').hide();
+            }
+            if ( response.success ) {
+               // If not allowed post/page type then do not show
+               if ( jQuery.inArray( current_post_type, allowed_post_types ) != -1 )
+               {
+                  jQuery( "#publishing-action" ).append(
+                          "<input type='button' id='workflow_submit' class='button button-primary button-large'" + " value='" + owf_submit_workflow_vars.submitToWorkflowButton + "' style='float:left;clear:both;' />"
+                          ).css( { "width": "100%" } );
 
-      // If not allowed post/page type then do not show
-      if ( jQuery.inArray( current_post_type, allowed_post_types ) != -1 )
-      {
-         jQuery( "#publishing-action" ).append(
-                 "<input type='button' id='workflow_submit' class='button button-primary button-large'" + " value='" + owf_submit_workflow_vars.submitToWorkflowButton + "' style='float:left;clear:both;' />"
-                 ).css( { "width": "100%" } );
-
-         jQuery( "#post" ).append(
-                 "<input type='hidden' id='hi_workflow_id' name='hi_workflow_id' />" +
-                 "<input type='hidden' id='hi_step_id' name='hi_step_id' />" +
-                 "<input type='hidden' id='hi_priority_select' name='hi_priority_select' />" +
-                 "<input type='hidden' id='hi_actor_ids' name='hi_actor_ids' />" +
-                 "<input type='hidden' id='hi_due_date' name='hi_due_date' />" +
-                 "<input type='hidden' id='hi_publish_datetime' name='hi_publish_datetime' />" +
-                 "<input type='hidden' id='hi_comment' name='hi_comment' />" +
-                 "<input type='hidden' id='save_action' name='save_action' />"
-                 );
-         jQuery( "#publishing-action" ).css( { "margin-top": "10px" } );
+                  jQuery( "#post" ).append(
+                          "<input type='hidden' id='hi_workflow_id' name='hi_workflow_id' />" +
+                          "<input type='hidden' id='hi_step_id' name='hi_step_id' />" +
+                          "<input type='hidden' id='hi_priority_select' name='hi_priority_select' />" +
+                          "<input type='hidden' id='hi_actor_ids' name='hi_actor_ids' />" +
+                          "<input type='hidden' id='hi_due_date' name='hi_due_date' />" +
+                          "<input type='hidden' id='hi_publish_datetime' name='hi_publish_datetime' />" +
+                          "<input type='hidden' id='hi_comment' name='hi_comment' />" +
+                          "<input type='hidden' id='save_action' name='save_action' />"
+                          );
+                  jQuery( "#publishing-action" ).css( { "margin-top": "10px" } );
+               }
+            }
+         });
       }
 
 //		jQuery('.inline-edit-status').hide() ;

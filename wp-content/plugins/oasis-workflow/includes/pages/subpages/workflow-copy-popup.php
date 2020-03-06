@@ -17,12 +17,12 @@
                 <textarea id="copy-workflow-description" name="copy-workflow-description" cols="20" rows="10" class="field-width-medium field-height-medium"></textarea>
             </div>
         </div>
-
-        <div class="full-width changed-data-set">
-            <input type="button" id="copy-wf-submit" name="copy_workflow" class="button-primary" value=<?php _e( 'Copy', 'oasisworkflow' ); ?> />
-            <span>&nbsp;</span>
-            <a href="javascript:jQuery.modal.close();" id="copy-wf-cancel"><?php _e( 'Cancel', 'oasisworkflow' ); ?></a>
-        </div>
+        
+	    <div class="full-width changed-data-set">
+	        <input type="button" id="copy-wf-submit" name="copy_workflow" class="button-primary" value=<?php _e( 'Copy', 'oasisworkflow' ); ?> />
+	        <span>&nbsp;</span>
+	        <a href="javascript:jQuery.modal.close();" id="copy-wf-cancel"><?php _e( 'Cancel', 'oasisworkflow' ); ?></a>
+	    </div>        
     </div>
-    <br class="clear" />
+    <br class="clear" />                       
 </div>

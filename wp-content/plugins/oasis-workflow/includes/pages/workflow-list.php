@@ -56,13 +56,22 @@ OW_Utility::instance()->owf_pro_features();
     <input type="hidden" id="define-workflow-description" name="define-workflow-description" />
     <?php wp_nonce_field( 'owf_workflow_create_nonce', 'owf_workflow_create_nonce' ); ?>
 </form>
-
+<?php
+	// include the file for the workflow copy popup
+	include( OASISWF_PATH . 'includes/pages/subpages/workflow-copy-popup.php' );
+?>
 <div class="wrap">
     <div id="icon-edit" class="icon32 icon32-posts-post"><br></div>
-    <h1>
+    <h2>
         <?php echo __( "Edit Workflows", "oasisworkflow" ) ?>
-        <?php do_action( 'owf_workflow_page_title_actions' ); ?>
-    </h1>
+        <?php
+         if ( current_user_can( 'ow_create_workflow' ) ) {
+         ?>
+           <a href="admin.php?page=oasiswf-add" class="add-new-h2"><?php echo __( "Add New", "oasisworkflow" ); ?></a>
+         <?php
+         }
+         ?>
+    </h2>
     <div id="view-workflow">
         <div class="tablenav">
             <ul class="subsubsub">
@@ -136,27 +145,22 @@ OW_Utility::instance()->owf_pro_features();
                              <tr class="alternate author-self status-publish format-default iedit">
                                  <th scope="row" class="check-column"><input type="checkbox" name="workflows[]" value="<?php echo $workflow_id; ?>"></th>
                                  <td>
-                                     <a href="<?php echo esc_url( $edit_link ); ?>" class="<?php echo esc_attr( $class ); ?>">
-                                         <div class="bold-label" id="workflow-name-<?php echo $workflow_id; ?>"><?php echo $wf->name; ?></div>
-                                         <span class="<?php echo esc_attr( $content ); ?>"><?php echo wp_unslash( $workflow_desc ); ?></span>
-                                     </a>
-                                     <div class="row-actions">
-                                         <?php
-                                         $row_actions = array(
-                                             'Edit' => $edit_link,
-                                         );
-
-                                         $workflow_row_actions = array();
-                                         foreach ( $row_actions as $act_name => $act_url ) {
-                                            if( current_user_can( sanitize_key( "ow_{$act_name}_workflow" ) ) ) {
-                                               $workflow_row_actions[] = '<span><a href="' . $act_url . '">' . __( $act_name, 'oasisworkflow' ) . '</a></span>';
-                                            }
-                                         }
-                                         // additional actions like workflow delete, copy etc
-                                         $workflow_row_actions = apply_filters( 'owf_workflow_row_actions', $workflow_row_actions, $wf );
-                                         echo implode( ' | ', $workflow_row_actions );
-                                         ?>
-                                     </div>
+                                    <a href="<?php echo esc_url( $edit_link ); ?>" class="<?php echo esc_attr( $class ); ?>">
+                                       <div class="bold-label" id="workflow-name-<?php echo $workflow_id; ?>"><?php echo $wf->name; ?></div>
+                                       <span class="<?php echo esc_attr( $content ); ?>"><?php echo wp_unslash( $workflow_desc ); ?></span>
+                                    </a>
+                                    <div class="row-actions">
+                                       <?php     
+                                       $workflow_row_actions = $workflow_service->display_workflow_row_actions( $wf->ID, $wf->post_count );
+                                       $action_count = count( $workflow_row_actions );
+                                       $i            = 0;
+                                       foreach ( $workflow_row_actions as $action ) {
+                                          ++$i;
+                                          ( $i == $action_count ) ? $sep = '' : $sep = ' | ';
+                                          echo "<span>$action$sep</span>";
+                                       }                                          
+                                       ?>
+                                    </div>
                                  </td>
                                  <td><?php echo $wf->version; ?></td>
                                  <td><?php echo OW_Utility::instance()->format_date_for_display( $wf->start_date ); ?></td>

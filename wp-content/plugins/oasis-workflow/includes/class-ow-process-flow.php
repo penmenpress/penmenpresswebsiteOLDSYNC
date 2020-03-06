@@ -56,6 +56,8 @@ class OW_Process_Flow {
 
       add_action( 'redirect_post_location', array( $this, 'redirect_after_signoff' ) );
       
+      add_action( 'wp_ajax_check_applicable_roles', array( $this, 'check_is_role_applicable' ), 10, 1 );
+      
 // commented out redirect and moved the code directly under submit to workflow.
 // this was causing issues with gutenberg integration
 //      add_action( 'owf_submit_to_workflow', array( $this, 'redirect_after_workflow_submit' ), 10, 2 );
@@ -2223,12 +2225,10 @@ class OW_Process_Flow {
 
          wp_transition_post_status( $step_status, $previous_status, $post );
 
-         if ( $current_page == "inbox" ) {
-
-            /** This action is documented in wp-includes/post.php */
-            // Calling this action, since quite a few plugins depend on this, like Jetpack etc.
-            do_action( 'wp_insert_post', $post->ID, $post, true );
-         }
+         /** This action is documented in wp-includes/post.php */
+         // Calling this action, since quite a few plugins depend on this, like Jetpack etc.
+         //Removed if condition to run hook from both inbox and post edit page
+         do_action( 'wp_insert_post', $post->ID, $post, true );
 
       } else { // simply update the post status
          /**
@@ -2924,6 +2924,98 @@ class OW_Process_Flow {
       $post_id = intval( sanitize_text_field( $post_id ) );
       update_post_meta( $post_id, "_oasis_is_in_workflow", 0 ); // set the post meta to 0, specifying that the post is out of a workflow.
    }
+   
+   /**
+     * Ajax - Check if given post type and user role has any applicable workflows.
+     *
+     * @param $post_type
+     * @param $user_role
+     * @return bool
+     *
+     * @since 4.5
+     *
+     */
+   public function check_is_role_applicable( $post_id ) {
+      $is_ajax = "no";
+      if ( wp_doing_ajax() ) { 
+         // nonce check
+         check_ajax_referer( 'owf_signoff_ajax_nonce', 'security' );
+
+         $post_id = sanitize_text_field( $_POST['post_id'] );
+
+         $is_ajax = "yes";
+      }
+
+      $post_type = get_post_type( $post_id );
+      
+      // Get all user roles (single or multiple)
+      $user_roles = OW_Utility::instance()->get_current_user_roles();
+
+      // get active workflow list
+      $ow_workflow_service = new OW_Workflow_Service();
+      $workflows = $ow_workflow_service->get_valid_workflows( $post_id );
+
+      if ( $workflows ) {
+         foreach ( $workflows as $workflow ) {
+            $additional_info = @unserialize( $workflow->wf_additional_info );
+            $applicable_roles = $additional_info['wf_for_roles'];
+            $applicable_post_types = $additional_info['wf_for_post_types'];
+
+            // if applicable roles and applicable post types are empty,
+            // then the given workflow is applicable in all scenarios, so return true
+            if ( empty( $applicable_roles ) && empty( $applicable_post_types ) ) :
+               if( $is_ajax == "yes" ):
+                  wp_send_json_success();
+               else :                   
+                  return true;
+               endif;
+            endif;
+
+            // if applicable roles is not empty then check if current user role is applicable
+            if ( empty( $applicable_post_types ) && ( ! empty( $applicable_roles ) ) ) :
+               foreach( $user_roles as $role ) {
+                  if ( in_array( $role, $applicable_roles ) ) :
+                     if( $is_ajax == "yes" ):
+                        wp_send_json_success();
+                     else :                   
+                        return true;
+                     endif;
+                  endif;
+               }
+            endif;
+
+            // if applicable post types is not empty then check if current post type is applicable
+            if ( ! empty( $applicable_post_types ) && ( empty( $applicable_roles ) ) ) :               
+               if ( in_array( $post_type, $applicable_post_types ) ) :
+                  if( $is_ajax == "yes" ):
+                     wp_send_json_success();
+                  else :                   
+                     return true;
+                  endif;
+               endif;
+            endif;
+
+            /**
+             * both post type and Applicable roles is not empty
+             * than check if current user role is applicable for the post type of the post
+             */
+            if ( ! empty( $applicable_post_types ) && ( ! empty( $applicable_roles ) ) ) :
+               if ( in_array( $post_type, $applicable_post_types ) ) :
+                  foreach( $user_roles as $role ) {
+                     if( ! empty( $applicable_roles ) && in_array( $role, $applicable_roles ) ) {
+                        if( $is_ajax == "yes" ):
+                           wp_send_json_success();
+                        else :                   
+                           return true;
+                        endif;
+                     }
+                  }
+               endif;
+            endif;
+         }
+      }
+      return false;
+   }
 
    /**
     *
@@ -2931,7 +3023,7 @@ class OW_Process_Flow {
     * @param $criteria
     *
     * @return array $response
-    * @since 6.0
+    * @since 4.0
     */
    public function api_check_is_role_applicable( $criteria ) {
       if ( ! wp_verify_nonce( $criteria->get_header('x_wp_nonce'), 'wp_rest' ) ) {
@@ -2962,8 +3054,15 @@ class OW_Process_Flow {
          $is_workflow_enabled = true;
       }
 
-      if ( $is_activated_workflow === "active" && $is_workflow_enabled ) {
+      $oasis_is_in_workflow = get_post_meta( $post_id, '_oasis_is_in_workflow', true );
+      if( $oasis_is_in_workflow == 1 ) {
          $response["is_role_applicable"] = true;
+      } else {
+         $is_role_applicable = $this->check_is_role_applicable( $post_id );
+
+         if ( $is_activated_workflow === "active" && $is_workflow_enabled && $is_role_applicable ) {
+            $response["is_role_applicable"] = true;
+         }
       }
 
       return $response;
@@ -4068,6 +4167,10 @@ class OW_Process_Flow {
             $post_status = get_post_status( $post_id );
             $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . OW_Utility::instance()->get_action_history_table_name() . " WHERE post_id = %d AND action_status = 'assignment'", $post_id ) );
          }
+         
+         $post_id = get_the_ID();
+         // Get all applicable roles
+         $is_role_applicable = $this->check_is_role_applicable( $post_id );
 
          $hide_ootb_publish_section = array(
              "skip_workflow_roles" => true,
@@ -4080,8 +4183,14 @@ class OW_Process_Flow {
             $hide_ootb_publish_section[ "skip_workflow_roles" ] = true;
          }
          
-         if ( is_array( $show_workflow_for_post_types ) && in_array( $post_type, $show_workflow_for_post_types ) ) { // do not show ootb publish section for oasiswf_show_wfsettings_on_post_types
--            $hide_ootb_publish_section[ 'show_workflow_for_post_types' ] = true;
+         // do not show ootb publish section for oasiswf_show_wfsettings_on_post_types
+         if ( is_array( $show_workflow_for_post_types ) && in_array( $post_type, $show_workflow_for_post_types ) ) { 
+            // Display ootb publish section based on applicable roles and post type
+            if( $is_role_applicable == true ) {
+               $hide_ootb_publish_section['show_workflow_for_post_types'] = true;
+            } else {
+               $hide_ootb_publish_section['show_workflow_for_post_types'] = false;
+            }
          } else {
             $hide_ootb_publish_section[ 'show_workflow_for_post_types' ] = false;
          }
