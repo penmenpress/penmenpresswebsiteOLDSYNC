@@ -40,6 +40,7 @@ if ( $settings->uninstall_data == 'remove' ) {
 
 	$sql = "DROP TABLE IF EXISTS $tableName1, $tableName2;";
 	$wpdb->query( $sql );
+
 	\WP_Defender\Behavior\Utils::instance()->removeDir( \WP_Defender\Behavior\Utils::instance()->getDefUploadDir() );
 }
 
@@ -50,7 +51,7 @@ if ( $settings->uninstall_settings == 'reset' ) {
 		$rule->getService()->revert();
 	}
 
-	\WP_Defender\Module\Scan\Component\Scan_Api::flushCache();
+	( new \WP_Defender\Module\Scan\Component\Scanning() )->flushCache();
 
 	$cache = \Hammer\Helper\WP_Helper::getCache();
 	$cache->delete( 'isActivated' );

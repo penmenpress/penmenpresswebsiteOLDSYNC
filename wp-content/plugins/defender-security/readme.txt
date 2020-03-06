@@ -1,13 +1,13 @@
 === Defender WordPress Security, Malware Detection, and Firewall ===
 Plugin Name: Defender WordPress Security, Malware Detection, and Firewall
-Version: 2.2.5
+Version: 2.2.6
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
 Contributors: WPMUDEV
 Tags: wordpress security plugin, security, firewall, vulnerability, brute force attacks, sql injections, XSS, malware, malware scanner, two-factor authentication, scheduled malware scans, audit logs
 Requires at least: 5.0
 Tested up to: 5.3
-Stable tag: 2.2.5
+Stable tag: 2.2.6
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 WordPress security plugin with malware scans, IP blocking, audit logs, firewall, login security & more.
@@ -158,10 +158,22 @@ WPMU DEV's expert support will restore and clean up your site after it’s been 
 
 == Changelog ==
 
-= 2.2.5=
+= 2.2.6 =
+- Improvement: Frequency of Security Tweak notifications reduced to 7 days
+- Fix: GeoIP now compatible with new MaxMind policy
+- Fix: Mask login URL now allow URL with an extension
+- Fix: Lockout notification email now displays correct time unit
+- Fix: Get started screen appears only where required
+- Fix: Manage your email preferences & unsubscribe email link now works
+- Fix: Strict Transport Security Header now shows subdomain option on the root domain
+- Fix: On login lockout, Defender doesn't block IP permanently
+- Fix: Mask login won't block admin links from email
+- Other minor enhancements and fixes
+
+= 2.2.5 =
 - Fix: Displaying Defender pages after activating the plugin.
 
-= 2.2.4=
+= 2.2.4 =
 - Fix: Security tweaks self ping cause performance issues.
 
 = 2.2.3 =

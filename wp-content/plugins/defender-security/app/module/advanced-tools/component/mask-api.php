@@ -19,7 +19,7 @@ class Mask_Api extends Component {
 	 *
 	 * @return mixed|string
 	 */
-
+	
 	public static function getRequestPath( $requestUri = null ) {
 		if ( empty( $requestUri ) ) {
 			$requestUri = $_SERVER['REQUEST_URI'];
@@ -53,10 +53,10 @@ class Mask_Api extends Component {
 		if ( substr( $requestPath, 0, 1 ) != '/' ) {
 			$requestPath = '/' . $requestPath;
 		}
-
+		
 		return $requestPath;
 	}
-
+	
 	/**
 	 * A clone of network_site_url but remove the filter
 	 *
@@ -73,16 +73,16 @@ class Mask_Api extends Component {
 			$url = get_option( 'siteurl' );
 			restore_current_blog();
 		}
-
+		
 		$url = set_url_scheme( $url, $scheme );
-
+		
 		if ( $path && is_string( $path ) ) {
 			$url .= '/' . ltrim( $path, '/' );
 		}
-
+		
 		return $url;
 	}
-
+	
 	/**
 	 * Generate a random unique onetime pass and store in user meta
 	 * Laterly we can use it to by pass the mask admin
@@ -98,10 +98,10 @@ class Mask_Api extends Component {
 			'used'    => 0
 		];
 		$settings->save();
-
+		
 		return $otp;
 	}
-
+	
 	/**
 	 * @param $ticket
 	 *
@@ -113,33 +113,33 @@ class Mask_Api extends Component {
 		if ( $detail === false ) {
 			return false;
 		}
-
+		
 		/**
 		 * ticket expired
 		 */
 		if ( $detail['expiry'] < time() ) {
 			unset( $settings->otps[ $ticket ] );
 			$settings->save();
-
+			
 			return false;
 		}
-
+		
 		$userIP = Utils::instance()->getUserIp();
 		if ( $detail['bind_to'] !== null && $detail['bind_to'] != $userIP ) {
 			//this is binded to an IP but current IP not the same, not allow
 			return false;
 		}
-
+		
 		if ( $detail['bind_to'] === null ) {
 			$detail['bind_to'] = $userIP;
 		}
 		$detail['used']            += 1;
 		$settings->otps[ $ticket ] = $detail;
 		$settings->save();
-
+		
 		return true;
 	}
-
+	
 	/**
 	 * @param $url
 	 * @param $user_id
@@ -149,7 +149,7 @@ class Mask_Api extends Component {
 	public static function maybeAppendTicketToUrl( $url ) {
 		return add_query_arg( 'ticket', self::generateTicket(), $url );
 	}
-
+	
 	/**
 	 * A clone of network_site_url but remove the filter
 	 *
@@ -160,20 +160,20 @@ class Mask_Api extends Component {
 	 */
 	private static function networkSiteUrl( $path = '', $scheme = null ) {
 		$current_network = get_network();
-
+		
 		if ( 'relative' == $scheme ) {
 			$url = $current_network->path;
 		} else {
 			$url = set_url_scheme( 'http://' . $current_network->domain . $current_network->path, $scheme );
 		}
-
+		
 		if ( $path && is_string( $path ) ) {
 			$url .= ltrim( $path, '/' );
 		}
-
+		
 		return $url;
 	}
-
+	
 	/**
 	 * clone from get_home_url function without the filter
 	 *
@@ -185,9 +185,9 @@ class Mask_Api extends Component {
 	 */
 	private static function getHomeUrl( $blog_id = null, $path = '', $scheme = null ) {
 		global $pagenow;
-
+		
 		$orig_scheme = $scheme;
-
+		
 		if ( empty( $blog_id ) || ! is_multisite() ) {
 			$url = get_option( 'home' );
 		} else {
@@ -195,7 +195,7 @@ class Mask_Api extends Component {
 			$url = get_option( 'home' );
 			restore_current_blog();
 		}
-
+		
 		if ( ! in_array( $scheme, array( 'http', 'https', 'relative' ) ) ) {
 			if ( is_ssl() && ! is_admin() && 'wp-login.php' !== $pagenow ) {
 				$scheme = 'https';
@@ -203,25 +203,25 @@ class Mask_Api extends Component {
 				$scheme = parse_url( $url, PHP_URL_SCHEME );
 			}
 		}
-
+		
 		$url = set_url_scheme( $url, $scheme );
-
+		
 		if ( $path && is_string( $path ) ) {
 			$url .= '/' . ltrim( $path, '/' );
 		}
-
+		
 		return $url;
 	}
-
+	
 	/**
 	 * @return string
 	 */
 	public static function getRedirectUrl() {
 		$settings = Mask_Settings::instance();
-
+		
 		return untrailingslashit( get_home_url( get_current_blog_id() ) ) . '/' . ltrim( $settings->redirect_traffic_url, '/' );
 	}
-
+	
 	/**
 	 * @return string
 	 */
@@ -230,10 +230,19 @@ class Mask_Api extends Component {
 		if ( $domain == null ) {
 			$domain = site_url();
 		}
-
+		
 		return untrailingslashit( $domain . '/' . ltrim( $settings->mask_url, '/' ) );
 	}
-
+	
+	/**
+	 * @return bool
+	 */
+	public static function isEnabled() {
+		$model = Mask_Settings::instance();
+		
+		return $model->isEnabled();
+	}
+	
 	/**
 	 * @param null $slug
 	 *
@@ -243,7 +252,7 @@ class Mask_Api extends Component {
 		if ( empty( $slug ) ) {
 			return true;
 		}
-
+		
 		if ( $context == 'redirect' && $slug == '/' ) {
 			//redirect to home
 			return true;
@@ -257,7 +266,7 @@ class Mask_Api extends Component {
 			if ( in_array( $slug, array( 'admin', 'backend', 'wp-login', 'wp-login.php', 'login' ) ) ) {
 				return new \WP_Error( Error_Code::VALIDATE, __( "A page already exists at this URL, please pick a unique page for your new login area.", "defender-security" ) );
 			}
-
+			
 			//check if any URL appear
 			$post = get_posts( array(
 				'name'        => $slug,
@@ -269,10 +278,10 @@ class Mask_Api extends Component {
 				return new \WP_Error( Error_Code::VALIDATE, __( "A page already exists at this URL, please pick a unique page for your new login area.", "defender-security" ) );
 			}
 		}
-
+		
 		return true;
 	}
-
+	
 	/**
 	 * @return null|string
 	 */
@@ -280,15 +289,15 @@ class Mask_Api extends Component {
 		if ( ! is_user_logged_in() ) {
 			return null;
 		}
-
+		
 		$secret = Auth_API::getUserSecret();
 		$otp    = uniqid();
 		$key    = md5( $otp . $secret );
 		set_site_transient( $key, $otp, 300 );
-
+		
 		return $otp;
 	}
-
+	
 	/**
 	 * @param $otp
 	 *
@@ -301,10 +310,10 @@ class Mask_Api extends Component {
 		$check  = get_site_transient( $key );
 		if ( $check == $otp ) {
 			delete_site_transient( $key );
-
+			
 			return true;
 		}
-
+		
 		return false;
 	}
 }

@@ -13,7 +13,7 @@ namespace Hammer\Caching;
  * @package Hammer\Caching
  */
 class DB_Cache extends Cache {
-
+	
 	/**
 	 * @param $key
 	 * @param $value
@@ -28,29 +28,30 @@ class DB_Cache extends Cache {
 		}
 		$expire_key = $this->buildKey( $key . '_expire' );
 		if ( $this->isActivatedSingle() ) {
-			update_option( $key, $value, false );
-			update_option( $expire_key, strtotime( '+' . $duration . ' seconds' ), false );
+			$ret1 = update_option( $key, $value, false );
+			$ret2 = update_option( $expire_key, strtotime( '+' . $duration . ' seconds' ), false );
 		} else {
-			update_site_option( $key, $value );
-			update_site_option( $expire_key, strtotime( '+' . $duration . ' seconds' ) );
+			$ret1 = update_site_option( $key, $value );
+			$ret2 = update_site_option( $expire_key, strtotime( '+' . $duration . ' seconds' ) );
 		}
-
-		return true;
+		
+		return $ret1 && $ret2;
 	}
-
+	
 	/**
 	 * @param $key
 	 * @param $value
+	 *
+	 * @return bool
 	 */
 	protected function updateValue( $key, $value ) {
 		if ( $this->isActivatedSingle() ) {
-			update_option( $key, $value, false );
+			return update_option( $key, $value, false );
 		} else {
-			update_site_option( $key, $value );
+			return update_site_option( $key, $value );
 		}
-
 	}
-
+	
 	/**
 	 * @param $key
 	 * @param $offset
@@ -62,7 +63,7 @@ class DB_Cache extends Cache {
 			$this->updateValue( $key, $value );
 		}
 	}
-
+	
 	/**
 	 * @param $key
 	 * @param $offset
@@ -74,7 +75,7 @@ class DB_Cache extends Cache {
 			$this->updateValue( $key, $value );
 		}
 	}
-
+	
 	/**
 	 * @param $key
 	 *
@@ -89,10 +90,10 @@ class DB_Cache extends Cache {
 			delete_site_option( $key );
 			delete_site_option( $expire_key );
 		}
-
+		
 		return true;
 	}
-
+	
 	/**
 	 * @param $key
 	 *
@@ -105,23 +106,23 @@ class DB_Cache extends Cache {
 			if ( $expiry == false || $expiry < time() ) {
 				//delete this
 				$this->deleteValue( $key );
-
+				
 				return false;
 			}
-
+			
 			return get_option( $key );
 		} else {
 			$expiry = get_site_option( $expire_key, false );
 			if ( $expiry == false || $expiry < time() ) {
 				$this->deleteValue( $key );
-
+				
 				return false;
 			}
-
+			
 			return get_site_option( $key );
 		}
 	}
-
+	
 	/**
 	 * Since this not much different
 	 *
@@ -134,7 +135,7 @@ class DB_Cache extends Cache {
 	protected function setValue( $key, $value, $duration ) {
 		return $this->addValue( $key, $value, $duration );
 	}
-
+	
 	/**
 	 * @param $key
 	 *
@@ -144,7 +145,7 @@ class DB_Cache extends Cache {
 		if ( $this->getValue( $key ) === false ) {
 			return false;
 		}
-
+		
 		return true;
 	}
 }

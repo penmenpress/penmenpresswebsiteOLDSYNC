@@ -9,6 +9,7 @@ use Hammer\Base\Behavior;
 use Hammer\Helper\Log_Helper;
 use Hammer\Helper\WP_Helper;
 use WP_Defender\Component\Error_Code;
+use WP_Defender\Component\Jed;
 use WP_Defender\Module\Advanced_Tools\Model\Auth_Settings;
 use WP_Defender\Module\Hardener\Model\Settings;
 use WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api;
@@ -689,8 +690,10 @@ class Utils extends Behavior {
 		$mo_path   = wp_defender()->getPluginPath() . 'languages/' . $mo_file;
 		$json_path = wp_defender()->getPluginPath() . 'languages/' . "wpdef-{$locale}-{$handle}.json";
 		if ( file_exists( $json_path ) ) {
-			//already there
-			//return;
+			$data = json_decode( $json_path, true );
+			if ( isset( $data['version'] ) ) {
+				return;
+			}
 		}
 		if ( ! file_exists( $mo_path ) ) {
 			//no translation found
@@ -702,7 +705,7 @@ class Utils extends Behavior {
 		$translations->setDomain( 'messages' );
 		$translations->setLanguage( get_locale() );
 		//export to json
-		\Gettext\Generators\Jed::toFile( $translations, $json_path );
+		Jed::toFile( $translations, $json_path );
 	}
 
 	/**
@@ -1095,11 +1098,6 @@ class Utils extends Behavior {
 		return $country_array;
 	}
 	
-	/**
-	 * @param $dir
-	 *
-	 * @return bool|void|\WP_Error
-	 */
 	public function removeDir( $dir ) {
 		if ( ! is_dir( $dir ) ) {
 			return;
@@ -1187,36 +1185,36 @@ class Utils extends Behavior {
 		return $list[0];
 	}
 	
-	public function log( $log, $group = null ) {
+	public function log( $log ) {
 		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
 			return;
 		}
 		$log_path = self::getDefUploadDir();
-		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
+		$log_name = hash( 'sha256', network_home_url() . SECURE_AUTH_SALT );
 		$log_path = $log_path . '/' . $log_name;
 		
 		$log = sprintf( '%s - %s' . PHP_EOL, date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ), $log );
 		file_put_contents( $log_path, $log, FILE_APPEND );
 	}
 	
-	public function read_log( $group = null ) {
+	public function read_log() {
 		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
 			return;
 		}
 		$log_path = self::getDefUploadDir();
-		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
+		$log_name = hash( 'sha256', network_home_url() . SECURE_AUTH_SALT );
 		$log_path = $log_path . '/' . $log_name;
 		$text     = file( $log_path );
 		
 		return implode( array_reverse( $text ), PHP_EOL );
 	}
 	
-	public function clear_log( $group = null ) {
+	public function clear_log() {
 		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
 			return;
 		}
 		$log_path = self::getDefUploadDir();
-		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
+		$log_name = hash( 'sha256', network_home_url() . SECURE_AUTH_SALT );
 		$log_path = $log_path . '/' . $log_name;
 		@unlink( $log_path );
 	}

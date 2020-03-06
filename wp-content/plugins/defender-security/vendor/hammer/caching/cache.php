@@ -9,13 +9,13 @@ use Hammer\Base\Component;
 use Hammer\Helper\WP_Helper;
 
 abstract class Cache extends Component {
-
+	
 	public function behaviors() {
 		return array(
 			'serialize' => '\Hammer\Caching\Behavior\Serialize_Behavior'
 		);
 	}
-
+	
 	/**
 	 * Default duration to store cache, in seconds. Default is 1 week. 0 is forever
 	 *
@@ -27,7 +27,7 @@ abstract class Cache extends Component {
 	 * @var string
 	 */
 	public $prefix = null;
-
+	
 	/**
 	 * @param $key
 	 *
@@ -40,7 +40,7 @@ abstract class Cache extends Component {
 			return ( $this->prefix . json_encode( $key ) );
 		}
 	}
-
+	
 	/**
 	 * @param $key
 	 * @param $value
@@ -50,18 +50,18 @@ abstract class Cache extends Component {
 	 */
 	public function add( $key, $value, $duration = null ) {
 		$key = $this->buildKey( $key );
-
+		
 		if ( $this->exists( $key ) ) {
 			return false;
 		}
-
+		
 		$duration = $duration === null ? $this->duration : $duration;
 		//serialize func should use from behavior
 		$value = $this->serialize( $value );
-
+		
 		return $this->addValue( $key, $value, $duration );
 	}
-
+	
 	/**
 	 * @param $key
 	 */
@@ -69,7 +69,7 @@ abstract class Cache extends Component {
 		$key = $this->buildKey( $key );
 		$this->deleteValue( $key );
 	}
-
+	
 	/**
 	 * @param $key
 	 * @param int $offset
@@ -77,7 +77,7 @@ abstract class Cache extends Component {
 	public function increase( $key, $offset = 1 ) {
 		$this->increaseValue( $key, $offset );
 	}
-
+	
 	/**
 	 * @param $key
 	 * @param int $offset
@@ -85,7 +85,7 @@ abstract class Cache extends Component {
 	public function decrease( $key, $offset = 1 ) {
 		$this->decreaseValue( $key, $offset );
 	}
-
+	
 	/**
 	 * @param $key
 	 * @param null $default
@@ -99,26 +99,28 @@ abstract class Cache extends Component {
 			$value = $default;
 		}
 		$value = maybe_unserialize( $value );
-
+		
 		return $value;
 	}
-
+	
 	/**
 	 * @param $key
 	 * @param $value
 	 * @param null $duration
+	 *
+	 * @return bool
 	 */
 	public function set( $key, $value, $duration = null ) {
 		$key      = $this->buildKey( $key );
 		$duration = $duration === null ? $this->duration : $duration;
 		$value    = $this->serialize( $value );
 		if ( ! $this->exists( $key ) ) {
-			$this->addValue( $key, $value, $duration );
+			return $this->addValue( $key, $value, $duration );
 		} else {
-			$this->setValue( $key, $value, $duration );
+			return $this->setValue( $key, $value, $duration );
 		}
 	}
-
+	
 	/**
 	 * @param $key
 	 *
@@ -126,10 +128,10 @@ abstract class Cache extends Component {
 	 */
 	public function exists( $key ) {
 		$key = $this->buildKey( $key );
-
+		
 		return $this->valueExist( $key );
 	}
-
+	
 	/**
 	 * A helper for child class
 	 */
@@ -138,7 +140,7 @@ abstract class Cache extends Component {
 			return false;
 		}
 	}
-
+	
 	/**
 	 * Add a cache, if cache already exist, then do nothing
 	 *
@@ -149,7 +151,7 @@ abstract class Cache extends Component {
 	 * @return bool
 	 */
 	protected abstract function addValue( $key, $value, $duration );
-
+	
 	/**
 	 * Delete a cache key
 	 *
@@ -158,7 +160,7 @@ abstract class Cache extends Component {
 	 * @return bool
 	 */
 	protected abstract function deleteValue( $key );
-
+	
 	/**
 	 * Get the cache value
 	 *
@@ -167,7 +169,7 @@ abstract class Cache extends Component {
 	 * @return mixed|false
 	 */
 	protected abstract function getValue( $key );
-
+	
 	/**
 	 * Update a value to exising key, if key doesnt exist then it will create one
 	 *
@@ -178,7 +180,7 @@ abstract class Cache extends Component {
 	 * @return bool
 	 */
 	protected abstract function setValue( $key, $value, $duration );
-
+	
 	/**
 	 * Check if a value is existing
 	 *
@@ -187,7 +189,7 @@ abstract class Cache extends Component {
 	 * @return bool
 	 */
 	protected abstract function valueExist( $key );
-
+	
 	/**
 	 * @param $key
 	 * @param $offset
@@ -195,7 +197,7 @@ abstract class Cache extends Component {
 	 * @return mixed
 	 */
 	protected abstract function increaseValue( $key, $offset );
-
+	
 	/**
 	 * @param $key
 	 * @param $offset
@@ -203,5 +205,5 @@ abstract class Cache extends Component {
 	 * @return mixed
 	 */
 	protected abstract function decreaseValue( $key, $offset );
-
+	
 }

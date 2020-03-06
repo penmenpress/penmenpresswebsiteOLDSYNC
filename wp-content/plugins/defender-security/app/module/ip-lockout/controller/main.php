@@ -6,6 +6,7 @@
 namespace WP_Defender\Module\IP_Lockout\Controller;
 
 use Hammer\Helper\HTTP_Helper;
+use Hammer\Helper\WP_Helper;
 use WP_Defender\Behavior\Utils;
 use WP_Defender\Controller;
 use WP_Defender\Module\IP_Lockout\Component\IP_API;
@@ -172,12 +173,24 @@ class Main extends Controller {
 			die;
 		}
 		
-		$ip  = $this->getUserIp();
-		$arr = $this->defaultWhiteListIps();
+		$ip             = $this->getUserIp();
+		$arr            = $this->defaultWhiteListIps();
+		$cache          = WP_Helper::getCache();
+		$temp_whitelist = $cache->get( 'staff_ips', [] );
+		if ( $this->listenToStaffAccess() ) {
+			//tmp whitelist this ip till the access end
+			$temp_whitelist[] = $ip;
+			$temp_whitelist   = array_unique( $temp_whitelist );
+			$temp_whitelist   = array_filter( $temp_whitelist );
+			$cache->set( 'staff_ips', $temp_whitelist, DAY_IN_SECONDS );
+			Utils::instance()->log( sprintf( 'Temporary whitelist ip %s', $ip ), 'lockout' );
+		}
+		$arr = array_merge( $arr, $temp_whitelist );
 		
 		if ( in_array( $ip, $arr ) ) {
 			return;
 		}
+		
 		if ( $settings->isWhitelist( $ip ) ) {
 			return;
 		} elseif ( $settings->isBlacklist( $ip ) ) {
@@ -223,6 +236,20 @@ class Main extends Controller {
 		}
 	}
 	
+	public function listenToStaffAccess() {
+		if ( defined( 'WPMUDEV_DISABLE_REMOTE_ACCESS' ) && constant( 'WPMUDEV_DISABLE_REMOTE_ACCESS' ) == true ) {
+			return false;
+		}
+		if ( class_exists( 'WPMUDEV_Dashboard' ) && Utils::instance()->getAPIKey() && isset( $_REQUEST['wdpunkey'] ) ) {
+			$access = \WPMUDEV_Dashboard::$site->get_option( 'remote_access' );
+			Utils::instance()->log( var_export( $access, true ), 'settings' );
+			
+			return hash_equals( $_REQUEST['wdpunkey'], $access['key'] );
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * cron for delete old log
 	 */
@@ -242,6 +269,7 @@ class Main extends Controller {
 	 * @param Log_Model $log
 	 */
 	public function updateIpStats( Log_Model $log ) {
+		
 		if ( $log->type == Log_Model::AUTH_FAIL ) {
 			Login_Protection_Api::maybeLock( $log );
 		} elseif ( $log->type == Log_Model::ERROR_404 ) {

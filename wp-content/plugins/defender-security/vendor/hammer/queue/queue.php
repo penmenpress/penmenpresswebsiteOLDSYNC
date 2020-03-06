@@ -7,6 +7,7 @@ namespace Hammer\Queue;
 
 use Hammer\Base\Component;
 use Hammer\Base\Container;
+use WP_Defender\Behavior\Utils;
 
 class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 	const EVENT_ITEM_PROCESSED = 'itemProcessed', EVENT_ITEM_FAIlED = 'itemFailed';
@@ -16,7 +17,7 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 	 * @var string
 	 */
 	public $slug = '';
-
+	
 	/**
 	 * Args if you want to pass to process function
 	 * @var array
@@ -26,22 +27,22 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 	 * @var int
 	 */
 	private $position = 0;
-
+	
 	/**
 	 * @var
 	 */
 	public $continueable = false;
-
+	
 	/**
 	 * @var array
 	 */
 	private $data = array();
-
+	
 	/**
 	 * @var
 	 */
 	private $status;
-
+	
 	/**
 	 * Queue constructor.
 	 *
@@ -64,7 +65,7 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 			$this->position = 0;
 		}
 	}
-
+	
 	/**
 	 * @return mixed|null
 	 */
@@ -72,17 +73,17 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 		if ( isset( $this->data[ $this->position ] ) ) {
 			return $this->data[ $this->position ];
 		}
-
+		
 		return null;
 	}
-
+	
 	/**
 	 * move to next pos
 	 */
 	public function next() {
 		$this->position ++;
 	}
-
+	
 	/**
 	 * return current index
 	 * @return int
@@ -90,21 +91,21 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 	public function key() {
 		return $this->position;
 	}
-
+	
 	/**
 	 * @return bool
 	 */
 	public function valid() {
 		return ( isset( $this->data[ $this->position ] ) );
 	}
-
+	
 	/**
 	 * reset pos
 	 */
 	public function rewind() {
 		$this->position = 0;
 	}
-
+	
 	/**
 	 * @param mixed $offset
 	 *
@@ -113,7 +114,7 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 	public function offsetExists( $offset ) {
 		return isset( $this->data[ $offset ] );
 	}
-
+	
 	/**
 	 * @param mixed $offset
 	 *
@@ -123,10 +124,10 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 		if ( $this->offsetExists( $offset ) ) {
 			return $this->data[ $offset ];
 		}
-
+		
 		return null;
 	}
-
+	
 	/**
 	 * @param mixed $offset
 	 * @param mixed $value
@@ -138,42 +139,42 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 			$this->data[ $offset ] = $value;
 		}
 	}
-
+	
 	/**
 	 * @param mixed $offset
 	 */
 	public function offsetUnset( $offset ) {
 		unset( $this->data[ $offset ] );
 	}
-
+	
 	/**
 	 * @return int
 	 */
 	public function count() {
 		return count( $this->data );
 	}
-
+	
 	/**
 	 * @return mixed
 	 */
 	public function shift() {
 		return array_shift( $this->data );
 	}
-
+	
 	/**
 	 * @param $value
 	 */
 	public function unshift( $value ) {
 		array_unshift( $this->data, $value );
 	}
-
+	
 	/**
 	 * @return bool
 	 */
 	public function isEnd() {
 		return $this->position > ( count( $this->data ) - 1 );
 	}
-
+	
 	/**
 	 * We will use this for pass the parameter to the behavior attached. Using this way instead of inherit, it easier to change the code
 	 * later without modify other
@@ -185,7 +186,7 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 					//process ok, just moving to next, if not we still keep the current pos
 					$this->next();
 					$this->trigger( self::EVENT_ITEM_PROCESSED );
-
+					
 					return true;
 				} else {
 					return false;
@@ -200,17 +201,18 @@ class Queue extends Component implements \Iterator, \ArrayAccess, \Countable {
 			}
 		}
 	}
-
+	
 	/**
 	 * saving current process status
 	 */
 	public function saveProcess() {
 		if ( $this->continueable == true ) {
 			$cache = Container::instance()->get( 'cache' );
-			$cache->set( 'queue_' . $this->slug, $this->position, 0 );
+			$ret   = $cache->set( 'queue_' . $this->slug, $this->position, 0 );
+			Utils::instance()->log( sprintf( 'Cached %s at %s. Status: %s', $this->slug, $this->position, var_export( $ret, true ) ) );
 		}
 	}
-
+	
 	/**
 	 * clearing the queue status
 	 */

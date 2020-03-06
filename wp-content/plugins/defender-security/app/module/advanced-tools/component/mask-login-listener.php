@@ -13,7 +13,7 @@ class Mask_Login_Listener extends Component {
 	public function __construct() {
 		$settings        = Mask_Settings::instance();
 		$emergencySwitch = apply_filters( 'wpd_masklogin_disabled', 0 );
-
+		
 		if ( $settings->isEnabled() == true && $emergencySwitch == 0 ) {
 			$isJetpackSSO = Auth_API::isJetPackSSO();
 			$isTML        = Auth_API::isTML();
@@ -22,8 +22,9 @@ class Mask_Login_Listener extends Component {
 				$this->addFilter( 'wp_redirect', 'filterWPRedirect', 10, 2 );
 				$this->addFilter( 'site_url', 'filterSiteUrl', 9999, 4 );
 				$this->addFilter( 'network_site_url', 'filterNetworkSiteUrl', 9999, 3 );
-//				$this->add_filter( 'network_admin_url', 'filterAdminUrl', 9999, 2 );
-//				$this->add_filter( 'adminUrl', 'filterAdminUrl', 9999, 2 );
+				$this->addFilter( 'wp_mail', 'filterEmailBody', 999 );
+				//$this->addFilter( 'network_admin_url', 'filterAdminUrl', 9999, 2 );
+				//$this->add_filter( 'adminUrl', 'filterAdminUrl', 9999, 2 );
 				remove_action( 'template_redirect', 'wp_redirect_admin_locations' );
 				//if prosite is activate and useremail is not defined, we need to update the
 				//email to match the new login URL
@@ -39,7 +40,32 @@ class Mask_Login_Listener extends Component {
 			}
 		}
 	}
-
+	
+	public function filterEmailBody( $args ) {
+		$patterns = [
+			//approve comment
+			'/(' . preg_quote( site_url(), '/' ) . '\/wp-admin\/comment\.php\?.+)/',
+			//all comments
+			'/(' . preg_quote( site_url(), '/' ) . '\/wp-admin\/edit-comments\.php\?.+$)/'
+		];
+		
+		$message = $args['message'];
+		foreach ( $patterns as $pattern ) {
+			if ( preg_match_all( $pattern, $message, $matches ) ) {
+				foreach ( $matches[0] as $url ) {
+					parse_str( parse_url( $url, PHP_URL_QUERY ), $parts );
+					if ( ! isset( $parts['ticket'] ) ) {
+						$new_url = add_query_arg( 'ticket', Mask_Api::generateTicket(), $url );
+						$message = str_replace( $url, $new_url, $message );
+					}
+				}
+			}
+		}
+		$args['message'] = $message;
+		
+		return $args;
+	}
+	
 	/**
 	 * @param $logs_url
 	 * @param $email
@@ -53,10 +79,10 @@ class Mask_Login_Listener extends Component {
 		} else {
 			$logs_url = add_query_arg( 'redirect_to', $logs_url, Mask_Api::getNewLoginUrl() );
 		}
-
+		
 		return $logs_url;
 	}
-
+	
 	public function handleLoginRequest() {
 		//need to check if the current request is for signup, login, if those is not the slug, then we redirect
 		//to the 404 redirect, or 403 wp die
@@ -78,7 +104,7 @@ class Mask_Login_Listener extends Component {
 			$this->_handleRequestToLoginPage();
 		}
 	}
-
+	
 	/**
 	 * @param $welcome_email
 	 * @param $blog_id
@@ -92,10 +118,10 @@ class Mask_Login_Listener extends Component {
 	public function updateWelcomeEmailPrositeCase( $welcome_email, $blog_id, $user_id, $password, $title, $meta ) {
 		$url           = get_blogaddress_by_id( $blog_id );
 		$welcome_email = str_replace( $url . 'wp-login.php', Mask_Api::getNewLoginUrl( rtrim( $url, '/' ) ), $welcome_email );
-
+		
 		return $welcome_email;
 	}
-
+	
 	/**
 	 * @param $url
 	 * @param $path
@@ -106,7 +132,7 @@ class Mask_Login_Listener extends Component {
 	public function filterNetworkSiteUrl( $url, $path, $scheme ) {
 		return $this->alterLoginUrl( $url, $scheme );
 	}
-
+	
 	/**
 	 * @param $url
 	 * @param $path
@@ -118,7 +144,7 @@ class Mask_Login_Listener extends Component {
 	public function filterSiteUrl( $url, $path, $scheme, $blog_id ) {
 		return $this->alterLoginUrl( $url, $scheme );
 	}
-
+	
 	/**
 	 * @param $location
 	 * @param $status
@@ -128,7 +154,7 @@ class Mask_Login_Listener extends Component {
 	public function filterWPRedirect( $location, $status ) {
 		return $this->alterLoginUrl( $location );
 	}
-
+	
 	/**
 	 * @param $currentUrl
 	 * @param null $scheme
@@ -141,7 +167,7 @@ class Mask_Login_Listener extends Component {
 			$parts = parse_url( $currentUrl );
 			if ( isset( $parts['query'] ) ) {
 				parse_str( $parts['query'], $strings );
-
+				
 				return add_query_arg( $strings, Mask_Api::getNewLoginUrl() );
 			} else {
 				return Mask_Api::getNewLoginUrl();
@@ -169,16 +195,16 @@ class Mask_Login_Listener extends Component {
 				//case inside my sites page, sometime the login session does not share between sites and we get block
 				//we will add an OTP key for redirect to wp-admin without get block
 				$otp = Mask_Api::createOTPKey();
-
+				
 				return add_query_arg( array(
 					'otp' => $otp
 				), $currentUrl );
 			}
 		}
-
+		
 		return $currentUrl;
 	}
-
+	
 	/**
 	 * Filter admin URL when sync with HUB
 	 *
@@ -188,10 +214,15 @@ class Mask_Login_Listener extends Component {
 	 * @return mixed
 	 */
 	public function filterAdminUrl( $currentUrl, $scheme = null ) {
-
+		//we just need to add a otp if not any
+		parse_str( parse_url( $currentUrl, PHP_URL_QUERY ), $parts );
+		if ( ! isset( $parts['ticket'] ) ) {
+		
+		}
+		
 		return $currentUrl;
 	}
-
+	
 	/**
 	 * Catch any request to wp-admin/*, block or redirect it base on settings.
 	 * This wont apply for logged in user
@@ -205,25 +236,27 @@ class Mask_Login_Listener extends Component {
 		if ( is_user_logged_in() ) {
 			return;
 		}
-
+		
 		if ( ( $key = HTTP_Helper::retrieveGet( 'otp', false ) ) !== false
 		     && Mask_Api::verifyOTP( $key ) ) {
 			return;
 		}
-
+		
 		$this->_maybeLock();
 	}
-
+	
 	private function _handleRequestToLoginPage() {
-		$this->_maybeLock();
+		if ( ! is_user_logged_in() ) {
+			$this->_maybeLock();
+		}
 	}
-
+	
 	private function _showLoginPage() {
 		global $error, $interim_login, $action, $user_login, $user, $redirect_to;
 		require_once ABSPATH . 'wp-login.php';
 		die;
 	}
-
+	
 	private function _maybeLock() {
 		$settings = Mask_Settings::instance();
 		if ( $settings->isRedirect() == true ) {
