@@ -130,7 +130,7 @@ class BWGModelSite {
     $where .= ($gallery_id ? ' AND image.gallery_id = "' . $gallery_id . '" ' : '') . ($tag ? ' AND tag.tag_id = "' . $tag . '" ' : '');
     $join = $tag ? 'LEFT JOIN ' . $wpdb->prefix . 'bwg_image_tag as tag ON image.id=tag.image_id' : '';
 
-    if ( !empty(WDWLibrary::get($tag_input_name)) ) {
+    if ( WDWLibrary::get($tag_input_name) ) {
       if ( !BWG()->options->tags_filter_and_or ) {
         // To find images which have at least one from tags filtered by.
         $compare_sign = "|";

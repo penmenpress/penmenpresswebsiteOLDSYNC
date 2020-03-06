@@ -1,9 +1,9 @@
 === Photo Gallery by 10Web - Mobile-Friendly Image Gallery ===
 Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
-Requires at least: 3.4
+Requires at least: 4.6
 Tested up to: 5.3
-Stable tag: 1.5.46
+Stable tag: 1.5.48
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -281,6 +281,12 @@ Choose whether to display random or the first/last specific number of images.
 **Theme.** Choose the theme, which will be applied to the gallery/album.
 
 == Changelog ==
+
+= 1.5.48 =
+* Fixed: Minor issue.
+
+= 1.5.47 =
+* Fixed: Inserting gallery with PHP code.
 
 = 1.5.46 =
 * Fixed: Security issue. (This vulnerability was discovered by Vishnupriya Ilango of Fortinet's FortiGuard Labs.)

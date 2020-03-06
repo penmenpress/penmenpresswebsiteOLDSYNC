@@ -1028,7 +1028,7 @@ class BWGViewGalleryBox {
 						onclick="comment_check_privacy_policy()"
 						ontouchend="comment_check_privacy_policy()"
 						type="checkbox"
-						value="1" <?php echo (!empty(WDWLibrary::get('bwg_comment_privacy_policy')) ? 'checked' : ''); ?> />
+						value="1" <?php echo (WDWLibrary::get('bwg_comment_privacy_policy') ? 'checked' : ''); ?> />
 				  <?php
 					$privacy_policy_text = __('I consent collecting this data and processing it according to %s of this website.', BWG()->prefix);
 					$privacy_policy_link = ' <a href="' . WDWLibrary::get_privacy_policy_url() . '" target="_blank">' . __('Privacy Policy', BWG()->prefix) . '</a>';

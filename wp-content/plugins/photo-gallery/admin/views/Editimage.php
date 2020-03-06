@@ -462,7 +462,7 @@ class EditimageView_bwg {
     $contrast_val = WDWLibrary::get('contrast_val', 0, 'intval');
     $image_data = new stdClass();
     $modified_date = time();
-    if ( !empty(WDWLibrary::get('image_url')) ) {
+    if ( WDWLibrary::get('image_url') ) {
       $image_data->image_url = WDWLibrary::get('image_url', '', 'esc_url_raw');
       $image_data->thumb_url = WDWLibrary::get('thumb_url', '', 'esc_url_raw');
       $filename = htmlspecialchars_decode(BWG()->upload_dir . $image_data->image_url, ENT_COMPAT | ENT_QUOTES);
