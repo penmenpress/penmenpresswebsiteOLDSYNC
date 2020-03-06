@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 6.4.8
+  Version: 6.5.3
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -28,9 +28,12 @@
 
  */
 
-define('NEWSLETTER_VERSION', '6.4.8');
+define('NEWSLETTER_VERSION', '6.5.3');
 
 global $newsletter, $wpdb;
+
+if (!defined('NEWSLETTER_BETA'))
+    define('NEWSLETTER_BETA', false);
 
 if (!defined('NEWSLETTER_EXTENSION_UPDATE'))
     define('NEWSLETTER_EXTENSION_UPDATE', true);
@@ -71,14 +74,7 @@ if (!defined('NEWSLETTER_CRON_INTERVAL'))
 if (!defined('NEWSLETTER_HEADER'))
     define('NEWSLETTER_HEADER', true);
 
-// Force the whole system log level to this value
-//define('NEWSLETTER_LOG_LEVEL', 4);
-
-require_once NEWSLETTER_INCLUDES_DIR . '/logger.php';
-require_once NEWSLETTER_INCLUDES_DIR . '/store.php';
 require_once NEWSLETTER_INCLUDES_DIR . '/module.php';
-require_once NEWSLETTER_INCLUDES_DIR . '/mailers.php';
-require_once NEWSLETTER_INCLUDES_DIR . '/themes.php';
 require_once NEWSLETTER_INCLUDES_DIR . '/TNP.php';
 
 class Newsletter extends NewsletterModule {
@@ -699,6 +695,7 @@ class Newsletter extends NewsletterModule {
                 $r = $mailer->send($message);
 
                 if (!empty($message->error)) {
+                    $this->logger->error($message);
                     $this->save_sent_message($message);
                 }
 

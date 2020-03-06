@@ -1,6 +1,223 @@
 <?php
 
 /**
+ * 
+ */
+class NewsletterMailer {
+
+    const ERROR_GENERIC = '1';
+    const ERROR_FATAL = '2';
+
+    /* @var NewsletterLogger */
+
+    var $logger;
+    var $name;
+    var $options;
+    private $delta;
+    protected $batch_size = 1;
+
+    public function __construct($name, $options = array()) {
+        $this->name = $name;
+        $this->options = $options;
+    }
+
+    public function get_name() {
+        return $this->name;
+    }
+
+    public function get_description() {
+        return $this->name;
+    }
+
+    public function get_batch_size() {
+        return $this->batch_size;
+    }
+
+    function send_with_stats($message) {
+        $this->delta = microtime(true);
+        $r = $this->send($message);
+        $this->delta = microtime(true) - $this->delta;
+        return $r;
+    }
+
+    /**
+     * 
+     * @param TNP_Mailer_Message $message
+     * @return bool|WP_Error
+     */
+    public function send($message) {
+        $message->error = 'No mailing system available';
+        return new WP_Error(self::ERROR_FATAL, 'No mailing system available');
+    }
+
+    public function send_batch_with_stats($messages) {
+        $this->delta = microtime(true);
+        $r = $this->send_batch($messages);
+        $this->delta = microtime(true) - $this->delta;
+        return $r;
+    }
+
+    function get_capability() {
+        return (int) (3600 * $this->batch_size / $this->delta);
+    }
+
+    /**
+     * 
+     * @param TNP_Mailer_Message[] $messages
+     * @return bool|WP_Error
+     */
+    public function send_batch($messages) {
+
+        // We should not get there is the batch size is one, the caller should use "send()". We can get
+        // there if the array of messages counts to one, since could be the last of a series of chunks.
+        if ($this->batch_size == 1 || count($messages) == 1) {
+            $last_result = true;
+            foreach ($messages as $message) {
+                $r = $this->send($message);
+                if (is_wp_error($r)) {
+                    $last_result = $r;
+                }
+            }
+            return $last_result;
+        }
+
+        // We should always get there
+        if (count($messages) <= $this->batch_size) {
+            return $this->send_chunk($messages);
+        }
+
+        // We should not get here, since it is not optimized
+        $chunks = array_chunk($message, $this->batch_size);
+        $last_result = true;
+        foreach ($chunks as $chunk) {
+            $r = $this->send_chunk($chunk);
+            if (is_wp_error($r)) {
+                $last_result = $r;
+            }
+        }
+        return $last_result;
+    }
+
+    protected function send_chunk($messages) {
+        $last_result = true;
+        foreach ($messages as $message) {
+            $r = $this->send($message);
+            if (is_wp_error($r)) {
+                $last_result = $r;
+            }
+        }
+        return $last_result;
+    }
+
+    /**
+     * 
+     * @return NewsletterLogger
+     */
+    function get_logger() {
+        if ($this->logger) {
+            return $this->logger;
+        }
+        $this->logger = new NewsletterLogger('mailer-' . $this->name);
+        return $this->logger;
+    }
+
+    /**
+     * 
+     * @param TNP_Mailer_Message $message
+     * @return bool|WP_Error
+     */
+    public function enqueue(TNP_Mailer_Message $message) {
+        // Optimization when there is no queue
+        if ($this->queue_max == 0) {
+            $r = $this->send($message);
+            return $r;
+        }
+
+        $this->queue[] = $message;
+        if (count($this->queue) >= $this->queue_max) {
+            return $this->flush();
+        }
+        return true;
+    }
+
+    public function flush() {
+        $undelivered = array();
+        foreach ($this->queue as $message) {
+            $r = $this->deliver($message);
+            if (is_wp_error($r)) {
+                $message->error = $r;
+                $undelivered[] = $message;
+            }
+        }
+
+        $this->queue = array();
+
+        if ($undelivered) {
+            return new WP_Error(self::ERROR_GENERAL, 'Error while flushing messages', $undelivered);
+        }
+
+        return true;
+    }
+
+    /**
+     * Original mail function simulation for compatibility.
+     * @deprecated
+     * 
+     * @param string $to
+     * @param string $subject
+     * @param array $message
+     * @param array $headers
+     * @param bool $enqueue
+     * @param type $from Actually ignored
+     * @return type
+     */
+    public function mail($to, $subject, $message, $headers = null, $enqueue = false, $from = false) {
+        $mailer_message = new TNP_Mailer_Message();
+        $mailer_message->to = $to;
+        $mailer_message->subject = $subject;
+        $mailer_message->headers = $headers;
+        $mailer_message->body = $message['html'];
+        $mailer_message->body_text = $message['text'];
+
+        if ($enqueue) {
+            return !is_wp_error($this->enqueue($mailer_message));
+        }
+        return !is_wp_error($this->send($mailer_message));
+    }
+
+    function save_last_run($time) {
+        update_option($this->prefix . '_last_run', $time);
+    }
+
+    function get_last_run() {
+        return (int) get_option($this->prefix . '_last_run', 0);
+    }
+
+}
+
+/**
+ * @property string $to 
+ * @property string $subject 
+ * @property string $body
+ * @property array $headers 
+ * @property string $from
+ * @property string $from_name 
+ */
+class TNP_Mailer_Message {
+
+    var $to_name = '';
+    var $headers = array();
+    var $user_id = 0;
+    var $email_id = 0;
+    var $error = '';
+    var $subject = '';
+    var $body = '';
+    var $body_text = '';
+
+}
+
+
+/**
  * Wrapper mailer for old addons registering the "mail" method (ultra deprecated).
  */
 class NewsletterMailMethodWrapper extends NewsletterMailer {
@@ -319,3 +536,5 @@ class NewsletterDefaultSMTPMailer extends NewsletterMailer {
     }
 
 }
+
+

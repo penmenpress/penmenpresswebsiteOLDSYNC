@@ -124,10 +124,17 @@ if ($controls->is_action('test') || $controls->is_action('save') || $controls->i
     } else {
         $email['send_on'] = $controls->data['send_on'];
     }
-
+    
     // Reset and refill the options
-    $email['options'] = array();
-
+    // Try without the reset and let's see where the problems are
+    //$email['options'] = array();
+    
+    // Reset only specific keys
+    unset($email['options']['lists']);
+    unset($email['options']['lists_operator']);
+    unset($email['options']['lists_exclude']);
+    unset($email['options']['sex']);
+    
     foreach ($controls->data as $name => $value) {
         if (strpos($name, 'options_') === 0) {
             $email['options'][substr($name, 8)] = $value;

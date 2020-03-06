@@ -728,6 +728,18 @@ p.description {
 
 .tnp-theme-preview img {
     border-radius: 10px;
+    height: 190px;
+    width: auto;
+}
+
+.tnp-theme-preview .tnp-theme-composer {
+    height: 250px;
+    width: auto;
+}
+
+.tnp-theme-preview .tnp-theme-html {
+    height: 250px;
+    width: auto;
 }
 
 

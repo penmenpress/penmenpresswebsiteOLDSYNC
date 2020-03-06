@@ -251,6 +251,10 @@ class TNP {
         } else {
             $user['status'] = 'C';
         }
+        
+        if (!empty($params['language'])) {
+            $user['language'] = $params['language'];
+        }
 
         $user['token'] = $newsletter->get_token();
         $user['updated'] = time();

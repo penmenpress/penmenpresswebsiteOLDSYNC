@@ -18,13 +18,31 @@
 
 <?php $fields->font('title_font', __('Title font', 'newsletter')) ?>
 
+<?php $fields->number( 'excerpt_length', __( 'Excerpt words', 'newsletter' ), array( 'min' => 0 ) ); ?>
+
 <?php $fields->font('font', __('Excerpt font', 'newsletter')) ?>
 
-<?php $fields->checkbox('show_image', __('Show image', 'newsletter')) ?>
+<div class="tnp-field">
+<label class="tnp-label"><?php _e('Dates and images', 'newsletter')?></div>
+<div class="tnp-field-row">
+    <div class="tnp-field-col-2">
+        <?php $fields->checkbox('show_image', __('Show image', 'newsletter')) ?>
+    </div>
+    <div class="tnp-field-col-2">
+        <?php $fields->checkbox('show_date', __('Show date', 'newsletter')) ?>
+    </div>
+    <div style="clear: both"></div>
+</div>
+</div>
 
-<?php $fields->checkbox('show_date', __('Show date', 'newsletter')) ?>
-
-<?php $fields->select_number('max', __('Max posts', 'newsletter'), 1, 40); ?>
+<div class="tnp-field-row">
+    <div class="tnp-field-col-2">
+        <?php $fields->select_number('max', __('Max posts', 'newsletter'), 1, 40); ?>
+    </div>
+        <div class="tnp-field-col-2">
+        <?php $fields->select_number( 'post_offset', __( 'Posts offset', 'newsletter' ), 0, 20); ?>
+    </div>
+</div>
 
 <?php $fields->language(); ?>
 
@@ -32,7 +50,7 @@
 
 <?php $fields->section(__('Filters', 'newsletter')) ?>
 <?php $fields->categories(); ?>
-<?php $fields->text('tags', __('Tags', 'newsletter')); ?>
+<?php $fields->text('tags', __('Tags', 'newsletter'), ['description'=>__('Comma separated')]); ?>
 
 <?php $fields->block_commons() ?>
 

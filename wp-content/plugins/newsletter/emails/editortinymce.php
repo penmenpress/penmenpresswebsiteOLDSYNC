@@ -8,7 +8,7 @@ $module = NewsletterEmails::instance();
 
 $email_id = (int) $_GET['id'];
 
-if ($controls->is_action('save') || $controls->is_action('next')) {
+if ($controls->is_action('save') || $controls->is_action('next') || $controls->is_action('test')) {
 
     $email['id'] = $email_id;
     $email['message'] = $controls->data['message'];

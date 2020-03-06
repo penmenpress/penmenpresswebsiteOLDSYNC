@@ -119,24 +119,36 @@ jQuery(function () {
     document.getElementById("defaultOpen").click();
 
     // preload content from a body named input
-    var preloadedContent = jQuery('input[name="body"]').val();
+    var preloadedContent = jQuery('input[name="message"]').val();
     if (!preloadedContent) {
-        preloadedContent = jQuery('input[name="options[body]"]').val();
+        preloadedContent = jQuery('input[name="options[message]"]').val();
     }
     // console.log(preloadedContent);
     if (!preloadedContent) {
         tnpc_show_presets();
     } else {
-        // Extract the body part
-        //var x = preloadedContent.indexOf("<body");
-        //var y = preloadedContent.indexOf("</body>");
-        //preloadedContent = preloadedContent.substring(x, y);
         jQuery('#newsletter-builder-area-center-frame-content').html(preloadedContent);
         start_composer();
     }
 
     // subject management
     jQuery('#options-title').val(jQuery('#tnpc-form input[name="options[subject]"]').val());
+
+    // Add event to update composer wrapper background color
+    jQuery('#options-options_composer_background').on('change', function (e) {
+        jQuery('#newsletter-builder-area-center-frame-content').css('background-color', e.target.value);
+    });
+
+    jQuery('#newsletter-builder-area-center-frame-content').css('background-color', jQuery('#options-options_composer_background').val());
+
+    // Init global styles values
+    /*
+    let globalStyles = JSON.parse(jQuery('#tnpc-form input[name="options[global-styles]"]').val());
+    if ('global-styles-bgcolor' in globalStyles) {
+        jQuery('#options-global-styles-bgcolor').val(globalStyles['global-styles-bgcolor']);
+        jQuery('#newsletter-builder-area-center-frame-content').css('background-color', globalStyles['global-styles-bgcolor']);
+    }
+    */
 
 });
 
@@ -257,7 +269,7 @@ function start_composer() {
         }).fail(function () {
             alert("Block rendering failed");
         });
-            
+
     
 
     });
@@ -294,20 +306,27 @@ function tnpc_save(form) {
     jQuery("#newsletter-preloaded-export .tnpc-row-clone").remove();
     jQuery("#newsletter-preloaded-export .tnpc-row").removeClass("ui-draggable");
 
-    let preload_export_html = jQuery("#newsletter-preloaded-export").html();
-    preload_export_html = jQuery.trim(preload_export_html);
+    form.elements["options[message]"].value = jQuery("#newsletter-preloaded-export").html();
+    if (document.getElementById("options-title")) {
+        form.elements["options[subject]"].value = jQuery('#options-title').val();
+    } else {
+        form.elements["options[subject]"].value = "";
+    }
+    form.elements["options[global-styles]"].value = JSON.stringify(jQuery('#tnpc-global-styles-form').serializeArray());
 
-    let css = jQuery.trim(form.elements["options[css]"].value);
+    var global_form = document.getElementById("tnpc-global-styles-form");
+    tnpc_copy_form(global_form, form);
 
-    let export_content = '<!DOCTYPE html>\n<html>\n<head>\n<title>{email_subject}</title>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<meta http-equiv="X-UA-Compatible" content="IE=edge">\n';
-    export_content += '<style type="text/css">' + css + '</style>';
-    export_content += '</head>\n<body style="margin: 0; padding: 0;">\n';
-    export_content += preload_export_html;
-    export_content += '\n</body>\n</html>';
-    form.elements["options[body]"].value = export_content;
-    form.elements["options[subject]"].value = jQuery('#options-title').val();
     jQuery("#newsletter-preloaded-export").html(' ');
+}
 
+function tnpc_copy_form(source, dest) {
+    for (var i = 0; i < source.elements.length; i++) {
+        var e = source.elements[i];
+        if (dest.elements[e.name]) {
+            dest.elements[e.name].value = e.value;
+        }
+    }
 }
 
 function tnpc_test() {
@@ -371,14 +390,163 @@ function tnpc_scratch() {
 function tnpc_reload_options(e) {
     e.preventDefault();
     let options = jQuery("#tnpc-block-options-form").serializeArray();
-    for (let i=0; i<options.length; i++) {
+    for (let i = 0; i < options.length; i++) {
         if (options[i].name == 'action') {
             options[i].value = 'tnpc_options';
         }
     }
-    //console.log(options);
-    //debugger;
     options["action"] = "tnpc_options";
     options["id"] = container.data("id");
     jQuery("#tnpc-block-options-form").load(ajaxurl, options);
 }
+
+jQuery(document).ready(function () {
+
+    var TNPInlineEditor = (function () {
+
+            var className = 'tnpc-inline-editable';
+            var newInputName = 'new_name';
+            var activeInlineElements = [];
+
+            function init() {
+                // find all inline editable elements
+                jQuery('#newsletter-builder-area-center-frame-content').on('click', '.' + className, function (e) {
+                    removeAllActiveElements();
+
+                    var originalEl = jQuery(this).hide();
+                    var newEl = jQuery(getEditableComponent(this.innerText.trim(), this.dataset.id, this.dataset.type)).insertAfter(this);
+
+                    activeInlineElements.push({'originalEl': originalEl, 'newEl': newEl});
+
+                    //Add submit event listener for newly created block
+                    jQuery('.tnpc-inline-editable-form-' + this.dataset.type + this.dataset.id).on('submit', function (e) {
+                        submit(e, newEl, jQuery(originalEl));
+                    });
+
+                    //Add close event listener for newly created block
+                    jQuery('.tnpc-inline-editable-form-actions .tnpc-dismiss-' + this.dataset.type + this.dataset.id).on('click', function (e) {
+                        removeAllActiveElements();
+                    });
+
+                });
+
+                // Close all created elements if clicked outside
+                jQuery('#newsletter-builder-area-center-frame-content').on('click', function (e) {
+                    if (activeInlineElements.length > 0
+                        && !jQuery(e.target).hasClass(className)
+                        && jQuery(e.target).closest('.tnpc-inline-editable-container').length === 0) {
+                        removeAllActiveElements();
+                    }
+                });
+
+            }
+
+            function removeAllActiveElements() {
+                activeInlineElements.forEach(function (obj) {
+                    obj.originalEl.show();
+
+                    obj.newEl.off();
+                    obj.newEl.remove();
+                });
+
+                activeInlineElements = []
+            }
+
+            function getEditableComponent(value, id, type) {
+
+                var element = '';
+
+                switch (type) {
+                    case 'text': {
+                        element = "<textarea name='" + newInputName + "' class='" + className + "-textarea' rows='5'>" + value + "</textarea>";
+                        break;
+                    }
+                    case 'title': {
+                        element = "<input name='" + newInputName + "' class='" + className + "-textinput' value='" + value + "' type='text'>";
+                        break;
+                    }
+                }
+
+                var component = "<td>";
+                component += "<form class='tnpc-inline-editable-form tnpc-inline-editable-form-" + type + id + "'>";
+                component += "<input type='hidden' name='id' value='" + id + "'>";
+                component += "<input type='hidden' name='type' value='" + type + "'>";
+                component += "<input type='hidden' name='old_value' value='" + value + "'>";
+                component += "<div class='tnpc-inline-editable-container'>";
+                component += element;
+                component += "<div class='tnpc-inline-editable-form-actions'>";
+                component += "<button type='submit'><span class='dashicons dashicons-yes-alt' title='save'></span></button>";
+                component += "<span class='dashicons dashicons-dismiss tnpc-dismiss-" + type + id + "' title='close'></span>";
+                component += "</div>";
+                component += "</div>";
+                component += "</form>";
+                component += "</td>";
+                return component;
+            }
+
+            function submit(e, elementToDeleteAfterSubmit, elementToShow) {
+                e.preventDefault();
+                
+                var id = elementToDeleteAfterSubmit.find('form input[name=id]').val();
+                var type = elementToDeleteAfterSubmit.find('form input[name=type]').val();
+                var newValue = elementToDeleteAfterSubmit.find('form [name="' + newInputName + '"]').val();
+
+                ajax_render_block(elementToShow, type, id, newValue);
+
+                elementToDeleteAfterSubmit.remove();
+                elementToShow.show();
+
+            }
+
+            function ajax_render_block(inlineElement, type, postId, newContent) {
+
+                var target = inlineElement.closest('.edit-block');
+                var container = target.closest('table');
+                var blockContent = target.children('.tnpc-block-content');
+
+                if (container.hasClass('tnpc-row-block')) {
+                    var data = {
+                        'action': 'tnpc_render',
+                        'b': container.data('id'),
+                        'full': 1,
+                        'options': {
+                            'inline_edits': [{
+                                'type': type,
+                                'post_id': postId,
+                                'content': newContent
+                            }]
+                        },
+                        'encoded_options': blockContent.data('json')
+                    };
+
+                    jQuery.post(ajaxurl, data, function (response) {
+                        new_row = jQuery(response);
+
+                        target.before(new_row);
+                        target.remove();
+
+                        new_row.add_delete();
+                        new_row.add_block_edit();
+                        new_row.add_block_clone();
+
+                        if (new_row.hasClass('tnpc-row-block')) {
+                            new_row.find(".tnpc-row-edit-block").click();
+                        }
+                        tnpc_mobile_preview();
+
+                    }).fail(function () {
+                        alert("Block rendering failed.");
+                    });
+
+                }
+
+            }
+
+            return {init: init};
+        }
+
+    )();
+
+    TNPInlineEditor.init();
+
+});

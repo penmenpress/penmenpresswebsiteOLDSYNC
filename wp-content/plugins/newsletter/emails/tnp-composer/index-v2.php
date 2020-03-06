@@ -11,9 +11,8 @@ $list = NewsletterEmails::instance()->get_blocks();
 
 $blocks = array();
 foreach ($list as $key => $data) {
-    if (!isset($blocks[$data['section']])) {
+    if (!isset($blocks[$data['section']]))
         $blocks[$data['section']] = array();
-    }
     $blocks[$data['section']][$key]['name'] = $data['name'];
     $blocks[$data['section']][$key]['filename'] = $key;
     $blocks[$data['section']][$key]['icon'] = $data['icon'];
@@ -25,6 +24,7 @@ $blocks = array_merge(array_flip(array('header', 'content', 'footer')), $blocks)
 // prepare the options for the default blocks
 $block_options = get_option('newsletter_main');
 
+$fields = new NewsletterFields($controls);
 ?>
 <style>
     .placeholder {
@@ -65,12 +65,13 @@ $block_options = get_option('newsletter_main');
     <div id="newsletter-builder-sidebar" class="tnp-builder-column">
 
         <div class="tnpc-tabs">
-        <button class="tablinks" onclick="openTab(event, 'tnpc-blocks')" id="defaultOpen"><?php _e('Blocks', 'newsletter') ?></button>
-        <button class="tablinks" onclick="openTab(event, 'tnpc-mobile-tab')"><i class="fa fa-mobile"></i> <?php _e('Mobile Preview', 'newsletter') ?></button>
-        <?php if ($show_test) { ?>
-        <button class="tablinks" onclick="openTab(event, 'tnpc-test-tab')"><i class="fa fa-paper-plane"></i> <?php _e('Test', 'newsletter') ?></button>
-        <?php } ?>
-        
+            <button class="tablinks" onclick="openTab(event, 'tnpc-blocks')" id="defaultOpen"><?php _e('Blocks', 'newsletter') ?></button>
+            <button class="tablinks" onclick="openTab(event, 'tnpc-global-styles')"><?php _e('Global Styles', 'newsletter') ?></button>
+            <button class="tablinks" onclick="openTab(event, 'tnpc-mobile-tab')"><i class="fa fa-mobile"></i> <?php _e('Mobile Preview', 'newsletter') ?></button>
+            <?php if ($show_test) { ?>
+                <button class="tablinks" onclick="openTab(event, 'tnpc-test-tab')"><i class="fa fa-paper-plane"></i> <?php _e('Test', 'newsletter') ?></button>
+            <?php } ?>
+
         </div>
 
         <div id="tnpc-blocks" class="tabcontent">
@@ -85,6 +86,16 @@ $block_options = get_option('newsletter_main');
                 </div>
             <?php } ?>
         </div>
+
+        <div id="tnpc-global-styles" class="tabcontent">
+
+            <form id="tnpc-global-styles-form">
+
+                <?php $fields->color('options_composer_background', __('Background color', 'newsletter'), ['default'=>'#f4f4f4']) ?>
+            </form>
+
+        </div>
+
 
         <div id="tnpc-mobile-tab" class="tabcontent">
 
@@ -125,6 +136,7 @@ $block_options = get_option('newsletter_main');
 
 <div style="display: none">
     <div id="newsletter-preloaded-export"></div>
+    <!-- Block placeholder used by jQuery UI -->
     <div id="draggable-helper" style="width: 500px; border: 3px dashed #ddd; opacity: .7; background-color: #fff; text-align: center; text-transform: uppercase; font-size: 14px; color: #aaa; padding: 20px;"></div>
     <div id="sortable-helper" style="width: 700px; height: 75px;border: 3px dashed #ddd; opacity: .7; background-color: #fff; text-align: center; text-transform: uppercase; font-size: 14px; color: #aaa; padding: 20px;"></div>
 </div>
@@ -134,7 +146,7 @@ $block_options = get_option('newsletter_main');
     TNP_HOME_URL = "<?php echo home_url('/', is_ssl() ? 'https' : 'http') ?>";
     tnp_context_type = "<?php echo $context_type ?>";
 </script>
-<script type="text/javascript" src="<?php echo plugins_url('newsletter'); ?>/emails/tnp-composer/_scripts/newsletter-builder.js?ver=<?php echo time() ?>"></script>
+<script type="text/javascript" src="<?php echo plugins_url('newsletter'); ?>/emails/tnp-composer/_scripts/newsletter-builder-v2.js?ver=<?php echo time() ?>"></script>
 
 <?php include NEWSLETTER_DIR . '/emails/subjects.php'; ?>
 

@@ -30,7 +30,7 @@ $options = array_merge($default_options, $options);
 </style>
 <table width="100%" border="0" cellpadding="0" align="center" cellspacing="0">
     <tr>
-        <td width="100%" valign="top" align="center" class="html-td">
+        <td width="100%" valign="top" align="center" inline-class="html-td" class="html-td-global">
             <?php echo $options['html'] ?>
         </td>
     </tr>

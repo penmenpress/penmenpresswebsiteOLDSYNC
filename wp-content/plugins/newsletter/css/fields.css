@@ -56,25 +56,12 @@
     
 }
 
-/* Labels */
-
-.tnp-label {
-    /* margin: 5px; */
-    /* text-align: center; */
-    color: #868686;
-    /* margin-bottom: 20px; */
-    font-family: Circular Std, sans-serif;
-    font-weight: 300;
-    border-bottom: 1px solid #fff;
-    padding-bottom: 10px;
-}
-
 .tnp-field.tnp-separator {
     border-top: 1px solid #ddd;
     line-height: 0;
 }
 
-/* Single field/row container */
+/* Single field container */
 .tnp-field {
     display: block;
     width: 100%;
@@ -84,11 +71,13 @@
 .tnp-field label.tnp-label {
     display: block;
     font-size: 12px;
-    color: #868686;
-    font-family: "Circular Std", sans-serif;
     font-weight: 300;
     border-bottom: 1px solid #fff;
-    margin: 30px 0px 10px 0px;
+    margin: 25px 0px 10px 0px;
+    font-family: Circular Std, sans-serif;
+    font-weight: 300;
+    padding-bottom: 5px;
+    color: #868686;
 }
 
 .tnp-field.tnp-checkbox label {
@@ -149,4 +138,11 @@ tnp-field.tnp-font {
 /* The label for each category checkbox (should override the generic label appearance) */
 .tnp-field.tnp-categories label {
     
+}
+
+.tnp-description {
+    margin-top: 7px;
+    font-style: italic;
+    font-weight: normal;
+    color: #999999;
 }

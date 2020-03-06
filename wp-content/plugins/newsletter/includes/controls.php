@@ -259,7 +259,6 @@ class NewsletterControls {
         'ZM' => 'Zambia',
         'ZW' => 'Zimbabwe',
         'XX' => 'Undefined',
-        
         'CW' => 'Curaçao',
         'SS' => 'South Sudan',
         'EU' => 'Europe (generic)',
@@ -741,7 +740,7 @@ class NewsletterControls {
             echo $minutes . ' minutes ';
         }
     }
-    
+
     function password($name, $size = 20, $placeholder = '') {
         $value = $this->get_value($name);
         echo '<input id="options-', esc_attr($name), '" placeholder="' . esc_attr($placeholder) . '" name="options[' . $name . ']" type="password" autocomplete="off" ';
@@ -749,7 +748,7 @@ class NewsletterControls {
             echo 'size="' . $size . '" ';
         }
         echo 'value="', esc_attr($value), '">';
-    }    
+    }
 
     function text($name, $size = 20, $placeholder = '') {
         $value = $this->get_value($name);
@@ -804,14 +803,14 @@ class NewsletterControls {
         echo esc_html(__('Reset', 'newsletter'));
         echo '</button>';
     }
-    
+
     function button_link($url, $label) {
         echo '<a href="', esc_attr($url), '" class="button-primary">', $label, '</a>';
     }
-    
+
     function button_configure($url) {
         echo '<a href="', esc_attr($url), '" class="button-primary"><i class="fa fa-cog"></i>', _e('Configure', 'newsletter'), '</a>';
-    }    
+    }
 
     function button_back($url) {
         echo '<a href="';
@@ -1004,10 +1003,12 @@ class NewsletterControls {
         echo '<div style="clear: both"></div>';
         echo '</div>';
     }
-
-    function color($name) {
+    
+    function color($name, $default = '') {
 
         $value = $this->get_value($name);
+        if (empty($value) && $default) $value = $default;
+        
         //echo '<input id="options-', esc_attr($name), '" class="tnp-controls-color" name="options[' . $name . ']" type="text" value="';
         echo '<input id="options-', esc_attr($name), '" name="options[' . $name . ']" type="color" value="';
         echo esc_attr($value);
@@ -1405,7 +1406,7 @@ class NewsletterControls {
         echo '<select id="options-' . esc_attr($name) . '" name="options[' . esc_attr($name) . ']">';
         foreach ($fonts as $key => $font) {
             echo '<option value="', esc_attr($key), '"';
-            if ($value == $font) {
+            if ($value == $key) {
                 echo ' selected';
             }
             echo '>', esc_html($font), '</option>';
@@ -1492,9 +1493,9 @@ class NewsletterControls {
             $media = array('', '', '');
             $media_full = array('', '', '');
             $media_id = 0;
-            echo '<img style="max-width: 200px; max-height: 200px; width: 100px;" id="' . esc_attr($name) . '_img" src="' . plugins_url('newsletter') . '/images/nomedia.png" onclick="newsletter_media(\'' . esc_attr($name) . '\')">';
+            echo '<img style="max-width: 200px; max-height: 150px; width: 100px;" id="' . esc_attr($name) . '_img" src="' . plugins_url('newsletter') . '/images/nomedia.png" onclick="newsletter_media(\'' . esc_attr($name) . '\')">';
         } else {
-            echo '<img style="max-width: 200px; max-height: 200px;" id="' . esc_attr($name) . '_img" src="' . esc_attr($media[0]) . '" onclick="newsletter_media(\'' . esc_attr($name) . '\')">';
+            echo '<img style="max-width: 200px; max-height: 150px;" id="' . esc_attr($name) . '_img" src="' . esc_attr($media[0]) . '" onclick="newsletter_media(\'' . esc_attr($name) . '\')">';
         }
 
         echo '</div>';
@@ -1651,6 +1652,11 @@ class NewsletterControls {
         echo '</div>';
     }
 
+    /**
+     * Adds the fields used by the composer (version 1) in the page form.
+     * 
+     * @param type $name
+     */
     function composer_fields($name = 'body') {
 
         // body
@@ -1695,6 +1701,40 @@ class NewsletterControls {
         wp_enqueue_style('tnpc-style', plugins_url('newsletter') . '/emails/tnp-composer/_css/newsletter-builder.css', array(), time());
 
         include NEWSLETTER_DIR . '/emails/tnp-composer/index.php';
+    }
+
+    /**
+     * Adds the fields used by the composer (version 2) in the page form.
+     */
+    function composer_fields_v2($name = 'message') {
+        //TODO [Gioacchino] check su dove è richiamata questa funzione
+
+        /*foreach ($this->data as $key=>$value) {
+            if (strpos($key, 'options_composer_') === 0) {
+                $this->hidden($key);
+            }
+        }*/
+        $this->hidden('options_composer_background');
+        //$this->hidden('options_composer_background_image');
+        $this->hidden('subject');
+        $this->hidden('message');
+
+        // Global style background color
+        $value = $this->get_value('options');
+        //var_dump($value);
+        //die();
+        $value = isset($value['global-styles']) ? $value['global-styles'] : ['global-styles-bgcolor' => '#ECF0F1'];
+        echo '<input type="hidden" name="options[global-styles]" id="options-global-styles" value="', esc_attr(json_encode($value)), '">';
+    }
+
+    function composer_load_v2($show_subject = false, $show_test = true, $context_type = '') {
+
+        global $tnpc_show_subject;
+        $tnpc_show_subject = $show_subject;
+
+        wp_enqueue_style('tnpc-style', plugins_url('newsletter') . '/emails/tnp-composer/_css/newsletter-builder-v2.css', array(), time());
+        $controls = $this;
+        include NEWSLETTER_DIR . '/emails/tnp-composer/index-v2.php';
     }
 
 }

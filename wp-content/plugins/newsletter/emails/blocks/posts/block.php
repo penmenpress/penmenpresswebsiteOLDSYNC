@@ -17,7 +17,7 @@ $defaults = array(
     'font_color' => '#333333',
     'title_font_family' => 'Helvetica, Arial, sans-serif',
     'title_font_size' => '25',
-    'title_font_color' => ' #333333',
+    'title_font_color' => '#333333',
     'max' => 4,
     'button_label' => __('Read more...', 'newsletter'),
     'categories' => '',
@@ -32,21 +32,27 @@ $defaults = array(
     'block_padding_left' => 15,
     'block_padding_right' => 15,
     'block_padding_top' => 15,
-    'block_padding_bottom' => 15
+    'block_padding_bottom' => 15,
+    'excerpt_length' => 30,
+    'post_offset' => 0,
+    'automated_include' => 'new',
+    'inline_edits' => []
 );
 
 $options = array_merge($defaults, $options);
 
 $font_family = $options['font_family'];
 $font_size = $options['font_size'];
+$excerpt_length = $options['excerpt_length'];
 
 $title_font_family = $options['title_font_family'];
 $title_font_size = $options['title_font_size'];
 
 $show_image = !empty($options['show_image']);
 
-$filters = array();
+$filters                   = array();
 $filters['posts_per_page'] = (int) $options['max'];
+$filters['offset']         = max( (int) $options['post_offset'], 0 );
 
 if (!empty($options['categories'])) {
     $filters['category__in'] = $options['categories'];
@@ -66,7 +72,7 @@ if (!empty($context['last_run'])) {
 
 $posts = Newsletter::instance()->get_posts($filters, $options['language']);
 
-if ($context['type'] == 'automated') {
+if ( isset( $context['type'] ) && $context['type'] == 'automated' ) {
     // No new posts
     if (empty($posts)) {
         if (isset($options['automated_required'])) {
@@ -75,6 +81,7 @@ if ($context['type'] == 'automated') {
         return;
     } 
     
+    // We have something new but we need to reload the posts without filtering by date
     if ($options['automated_include'] == 'max') {
         unset($filters['date_query']);
         $posts = Newsletter::instance()->get_posts($filters, $options['language']);
@@ -89,8 +96,8 @@ $button_font_family = $options['button_font_family'];
 $button_font_size = $options['button_font_size'];
 $button_color = $options['button_font_color'];
 
-$alternative = plugins_url('newsletter') . '/emails/blocks/posts/images/blank.png';
-$alternative_2 = plugins_url('newsletter') . '/emails/blocks/posts/images/blank-240x160.png';
+$alternative   = plugins_url( 'newsletter' ) . '/emails/blocks/posts/images/blank.png';
+$alternative_2 = plugins_url( 'newsletter' ) . '/emails/blocks/posts/images/blank-240x160.png';
 
 remove_all_filters('excerpt_more');
 ?>
@@ -160,13 +167,23 @@ remove_all_filters('excerpt_more');
         ?>
 
             <tr>
-                <?php if ($show_image) { ?>
-                    <td valign="top" style="padding: 30px 0 0 0; width: 105px!important" class="mobile-hide">
-                        <a href="<?php echo tnp_post_permalink($post) ?>" target="_blank">
-                            <img src="<?php echo tnp_post_thumbnail_src($post, array(105, 105, true), $alternative) ?>" width="105" height="105" alt="Image" border="0" style="display: block; font-family: Arial; color: #666666; font-size: 14px; min-width: 105px!important; width: 105px!important;">
+	            <?php if ( $show_image ) { ?>
+		            <?php
+		            $size  = array( 'width' => 105, 'height' => 105 );
+		            $media = tnp_composer_block_posts_get_media( $post, $size, $alternative );
+		            ?>
+                    <td valign="top" style="padding: 30px 0 0 0; width: <?php echo $size['width'] ?>px!important"
+                        class="mobile-hide">
+                        <a href="<?php echo tnp_post_permalink( $post ) ?>" target="_blank">
+                            <img src="<?php echo $media->url ?>"
+                                 width="<?php echo $media->width ?>"
+                                 height="<?php echo $media->height ?>"
+                                 alt="Image"
+                                 border="0"
+                                 style="display: block; font-family: Arial;color: #666666; font-size: 14px;min-width: <?php echo $size['width'] ?>px!important;width: <?php echo $size['width'] ?>px!important;">
                         </a>
                     </td>
-                <?php } ?>
+	            <?php } ?>
                 <td style="padding: 30px 0 0 0;" class="no-padding">
                     <!-- ARTICLE -->
                     <table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -178,13 +195,23 @@ remove_all_filters('excerpt_more');
                             </tr>
                         <?php } ?>
                         <tr>
-                            <td align="left" inline-class="posts-post-title" class="padding-copy tnpc-row-edit" data-type="title">
-                                <?php echo tnp_post_title($post) ?>
+                            <td align="left" 
+                                inline-class="posts-post-title" 
+                                class="padding-copy tnpc-row-edit tnpc-inline-editable" 
+                                data-type="title" data-id="<?php echo $post->ID ?>">
+	                            <?php echo TNP_Composer::is_post_field_edited_inline( $options['inline_edits'], 'title', $post->ID ) ?
+		                            TNP_Composer::get_edited_inline_post_field( $options['inline_edits'], 'title', $post->ID ) :
+		                            tnp_post_title($post) ?>
                             </td>  
                         </tr>
                         <tr>
-                            <td align="left" inline-class="posts-post-excerpt" class="padding-copy tnpc-row-edit" data-type="text">
-                                <?php echo tnp_post_excerpt($post) ?>
+                            <td align="left"
+                                inline-class="posts-post-excerpt"
+                                class="padding-copy tnpc-row-edit tnpc-inline-editable"
+                                data-type="text" data-id="<?php echo $post->ID ?>">
+		                        <?php echo TNP_Composer::is_post_field_edited_inline( $options['inline_edits'], 'text', $post->ID ) ?
+			                        TNP_Composer::get_edited_inline_post_field( $options['inline_edits'], 'text', $post->ID ) :
+			                        tnp_post_excerpt( $post, $excerpt_length ) ?>
                             </td>
                         </tr>
                         <tr>
@@ -265,24 +292,40 @@ remove_all_filters('excerpt_more');
     <table cellspacing="0" cellpadding="0" border="0" width="100%">
         <?php foreach (array_chunk($posts, 2) AS $row) { ?>        
             <tr>
-                <td valign="top" style="padding: 10px;" class="mobile-wrapper">
+                <td valign="top" style="padding: 10px;" class="mobile-wrapper two-columns">
 
                     <!-- LEFT COLUMN -->
                     <table cellpadding="0" cellspacing="0" border="0" width="47%" align="left" class="responsive-table">
                         <tr>
                             <td style="padding: 20px 0 40px 0;">
                                 <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                                    <?php if ($show_image) { ?>
+	                                <?php if ( $show_image ) { ?>
+		                                <?php
+		                                $size  = array( 'width' => 240, 'height' => 160, "crop" => true );
+		                                $media = tnp_composer_block_posts_get_media( $row[0], $size, $alternative_2 );
+		                                ?>
                                         <tr>
                                             <td align="center" valign="middle" class="tnpc-row-edit" data-type="image">
-                                                <a href="<?php echo tnp_post_permalink($row[0]) ?>" target="_blank">
-                                                    <img src="<?php echo tnp_post_thumbnail_src($row[0], array(240, 160, true), $alternative_2) ?>" alt="Image" width="240" height="160" border="0" class="img-max">
+                                                <a href="<?php echo tnp_post_permalink( $row[0] ) ?>" target="_blank">
+                                                    <img src="<?php echo $media->url ?>"
+                                                         width="<?php echo $media->width ?>"
+                                                         height="<?php echo $media->height ?>"
+                                                         alt="Image"
+                                                         border="0"
+                                                         class="img-max">
                                                 </a>
                                             </td>
                                         </tr>
-                                    <?php } ?>
+	                                <?php } ?>
                                     <tr>
-                                        <td align="center" inline-class="posts-post-title" class="tnpc-row-edit" data-type="title"><?php echo tnp_post_title($row[0]) ?></td>
+                                        <td align="center"
+                                            inline-class="posts-post-title"
+                                            class="tnpc-row-edit tnpc-inline-editable"
+                                            data-type="title" data-id="<?php echo $row[0]->ID ?>">
+		                                    <?php echo TNP_Composer::is_post_field_edited_inline( $options['inline_edits'], 'title', $row[0]->ID ) ?
+			                                    TNP_Composer::get_edited_inline_post_field( $options['inline_edits'], 'title', $row[0]->ID ) :
+			                                    tnp_post_title( $row[0] ) ?>
+                                        </td>
                                     </tr>
                                     <?php if (!empty($options['show_date'])) { ?>
                                     <tr>
@@ -292,7 +335,14 @@ remove_all_filters('excerpt_more');
                                     </tr>
                                     <?php } ?>
                                     <tr>
-                                        <td align="center" inline-class="posts-post-excerpt" class="tnpc-row-edit" data-type="text"><?php echo tnp_post_excerpt($row[0]) ?></td>
+                                        <td align="center"
+                                            inline-class="posts-post-excerpt"
+                                            class="tnpc-row-edit tnpc-inline-editable"
+                                            data-type="text" data-id="<?php echo $row[0]->ID ?>">
+	                                        <?php echo TNP_Composer::is_post_field_edited_inline( $options['inline_edits'], 'text', $row[0]->ID ) ?
+		                                        TNP_Composer::get_edited_inline_post_field( $options['inline_edits'], 'text', $row[0]->ID ) :
+		                                        tnp_post_excerpt( $row[0], $excerpt_length ) ?>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td align="center">
@@ -318,16 +368,30 @@ remove_all_filters('excerpt_more');
                                 <td style="padding: 20px 0 40px 0;">
                                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                         <?php if ($show_image) { ?>
+	                                        <?php
+	                                        $size  = array( 'width' => 240, 'height' => 160, "crop" => true );
+	                                        $media = tnp_composer_block_posts_get_media( $row[1], $size, $alternative_2 );
+	                                        ?>
                                             <tr>
                                                 <td align="center" valign="middle" class="tnpc-row-edit" data-type="image">
                                                     <a href="<?php echo tnp_post_permalink($row[1]) ?>" target="_blank">
-                                                        <img src="<?php echo tnp_post_thumbnail_src($row[1], array(240, 160, true), $alternative_2) ?>" alt="Image" width="240" height="160" border="0" class="img-max">
+                                                        <img src="<?php echo $media->url ?>"
+                                                             width="<?php echo $media->width ?>" 
+                                                             height="<?php echo $media->height ?>"
+                                                             alt="Image" border="0" class="img-max">
                                                     </a>
                                                 </td>
                                             </tr>
                                         <?php } ?>
                                         <tr>
-                                            <td align="center" inline-class="posts-post-title" class="tnpc-row-edit" data-type="title"><?php echo tnp_post_title($row[1]) ?></td>
+                                            <td align="center"
+                                                inline-class="posts-post-title"
+                                                class="tnpc-row-edit tnpc-inline-editable"
+                                                data-type="title" data-id="<?php echo $row[1]->ID ?>">
+		                                        <?php echo TNP_Composer::is_post_field_edited_inline( $options['inline_edits'], 'title', $row[1]->ID ) ?
+			                                        TNP_Composer::get_edited_inline_post_field( $options['inline_edits'], 'title', $row[1]->ID ) :
+			                                        tnp_post_title( $row[1] ) ?>
+                                            </td>
                                         </tr>
                                         <?php if (!empty($options['show_date'])) { ?>
                                         <tr>
@@ -337,7 +401,14 @@ remove_all_filters('excerpt_more');
                                         </tr>
                                         <?php } ?>
                                         <tr>
-                                            <td align="center" inline-class="posts-post-excerpt" class="tnpc-row-edit" data-type="text"><?php echo tnp_post_excerpt($row[1]) ?></td>
+                                            <td align="center"
+                                                inline-class="posts-post-excerpt"
+                                                class="tnpc-row-edit tnpc-inline-editable"
+                                                data-type="text" data-id="<?php echo $row[1]->ID ?>">
+		                                        <?php echo TNP_Composer::is_post_field_edited_inline( $options['inline_edits'], 'text', $row[1]->ID ) ?
+			                                        TNP_Composer::get_edited_inline_post_field( $options['inline_edits'], 'text', $row[1]->ID ) :
+			                                        tnp_post_excerpt( $row[1], $excerpt_length ) ?>
+                                            </td>
                                         </tr>
                                         <tr>
                                         <td align="center">
