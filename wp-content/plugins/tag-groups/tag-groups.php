@@ -7,7 +7,7 @@
 * Description: Organize your tags in groups and display them in highly customizable tag clouds (tabs, accordion and more).
 * Author: Chatty Mango
 * Author URI: https://chattymango.com/
-* Version: 1.25.1
+* Version: 1.25.2
 * License: GNU GENERAL PUBLIC LICENSE, Version 3
 * Text Domain: tag-groups
 * Domain Path: /languages

@@ -639,33 +639,7 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
             }
             
             
-            if ( $is_premium && $tag_groups_premium_fs_sdk->is_plan_or_trial( 'premium' ) ) {
-                $steps = array(
-                    1 => array(
-                    'id'    => 'start',
-                    'title' => 'Start',
-                ),
-                    2 => array(
-                    'id'    => 'taxonomies',
-                    'title' => 'Taxonomies',
-                ),
-                    3 => array(
-                    'id'    => 'meta_box',
-                    'title' => 'Meta Box',
-                ),
-                    4 => array(
-                    'id'    => 'post_tags',
-                    'title' => 'Post Tags',
-                ),
-                    5 => array(
-                    'id'    => 'sample_content',
-                    'title' => 'Sample Content',
-                ),
-                    6 => array(
-                    'id'    => 'finished',
-                    'title' => null,
-                ),
-                );
+            if ( $is_premium && $tag_groups_premium_fs_sdk->is_plan_or_trial( 'premium' ) && class_exists( 'TagGroups_Premium_View' ) ) {
             } else {
                 $steps = array(
                     1 => array(
@@ -734,66 +708,8 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     ) );
                     break;
                 case 'post_tags':
-                    // $groups = $tag_group_groups->get_all_with_position_as_key();
-                    $tag_group_display_groups_under_posts = get_option( 'tag_group_display_groups_under_posts', $tag_group_groups->get_group_ids() );
-                    $tag_group_display_groups_under_posts_title = get_option( 'tag_group_display_groups_under_posts_title', __( 'Tags', 'tag-groups' ) );
-                    $tag_group_display_groups_under_posts_separator = get_option( 'tag_group_display_groups_under_posts_separator', '&nbsp;|&nbsp;' );
-                    $tag_group_display_groups_under_posts_single = get_option( 'tag_group_display_groups_under_posts_single', false );
-                    $tag_group_display_groups_under_posts_home = get_option( 'tag_group_display_groups_under_posts_home', false );
-                    $tag_group_display_groups_under_posts_archive = get_option( 'tag_group_display_groups_under_posts_archive', false );
-                    $tag_group_display_groups_under_posts_feed = get_option( 'tag_group_display_groups_under_posts_feed', false );
-                    $tag_group_display_groups_under_posts_priority = get_option( 'tag_group_display_groups_under_posts_priority', 10 );
-                    $tag_group_remove_the_post_terms = get_option( 'tag_group_remove_the_post_terms', false );
-                    $view = new TagGroups_Premium_View( 'admin/setup_wizard_post_tags' );
-                    $view->set( array(
-                        'title'                                          => $title,
-                        'tag_group_display_groups_under_posts'           => $tag_group_display_groups_under_posts,
-                        'tag_group_display_groups_under_posts_title'     => $tag_group_display_groups_under_posts_title,
-                        'tag_group_display_groups_under_posts_separator' => $tag_group_display_groups_under_posts_separator,
-                        'tag_group_display_groups_under_posts_single'    => $tag_group_display_groups_under_posts_single,
-                        'tag_group_display_groups_under_posts_home'      => $tag_group_display_groups_under_posts_home,
-                        'tag_group_display_groups_under_posts_archive'   => $tag_group_display_groups_under_posts_archive,
-                        'tag_group_display_groups_under_posts_feed'      => $tag_group_display_groups_under_posts_feed,
-                        'tag_group_display_groups_under_posts_priority'  => $tag_group_display_groups_under_posts_priority,
-                        'tag_group_remove_the_post_terms'                => $tag_group_remove_the_post_terms,
-                        'setup_wizard_next_link'                         => $setup_wizard_next_link,
-                    ) );
                     break;
                 case 'meta_box':
-                    $tag_group_meta_box_change_group = get_option( 'tag_group_meta_box_change_group', 1 );
-                    $tag_group_meta_box_add_term = get_option( 'tag_group_meta_box_add_term', 1 );
-                    $tag_group_meta_box_open_all = get_option( 'tag_group_meta_box_open_all', 1 );
-                    $tag_group_hide_tagsdiv = get_option( 'tag_group_hide_tagsdiv', 1 );
-                    $tag_group_open_all_with_terms = get_option( 'tag_group_open_all_with_terms', 1 );
-                    $tag_group_meta_box_taxonomy = get_option( 'tag_group_meta_box_taxonomy', array() );
-                    $all_taxonomies = get_taxonomies( array(
-                        'public' => true,
-                    ), 'objects' );
-                    $non_hierarchical_taxonomies_names = array();
-                    foreach ( $all_taxonomies as $taxonomy ) {
-                        /**
-                         * We offer only non-hierarchical taxonomies
-                         */
-                        if ( !empty($taxonomy) && is_object( $taxonomy ) && !$taxonomy->hierarchical ) {
-                            $non_hierarchical_taxonomies_names[] = $taxonomy->name;
-                        }
-                    }
-                    $taxonomies = array_intersect( get_option( 'tag_group_taxonomy', array() ), $non_hierarchical_taxonomies_names );
-                    // No groups yet defined
-                    $tag_group_meta_box_include = get_option( 'tag_group_meta_box_include', $tag_group_groups->get_group_ids() );
-                    $view = new TagGroups_Premium_View( 'admin/setup_wizard_meta_box' );
-                    $view->set( array(
-                        'title'                           => $title,
-                        'taxonomies'                      => $taxonomies,
-                        'tag_group_meta_box_include'      => $tag_group_meta_box_include,
-                        'tag_group_meta_box_change_group' => $tag_group_meta_box_change_group,
-                        'tag_group_meta_box_add_term'     => $tag_group_meta_box_add_term,
-                        'tag_group_meta_box_open_all'     => $tag_group_meta_box_open_all,
-                        'tag_group_hide_tagsdiv'          => $tag_group_hide_tagsdiv,
-                        'tag_group_open_all_with_terms'   => $tag_group_open_all_with_terms,
-                        'tag_group_meta_box_taxonomy'     => $tag_group_meta_box_taxonomy,
-                        'setup_wizard_next_link'          => $setup_wizard_next_link,
-                    ) );
                     break;
                 case 'taxonomies':
                     $view = new TagGroups_View( 'admin/setup_wizard_taxonomies' );
@@ -1091,13 +1007,6 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     
                     if ( isset( $_POST['tag-groups-create-sample-page'] ) && $_POST['tag-groups-create-sample-page'] ) {
                         $view = new TagGroups_View( 'admin/sample_page' );
-                        
-                        if ( defined( 'TAG_GROUPS_PLUGIN_IS_FREE' ) && TAG_GROUPS_PLUGIN_IS_FREE ) {
-                            $view->set( 'premium_shortcodes', false );
-                        } else {
-                            $view->set( 'premium_shortcodes', true );
-                        }
-                        
                         $current_user = wp_get_current_user();
                         $view->set( array(
                             'enabled_taxonomies'        => $enabled_taxonomies,

@@ -107,7 +107,7 @@ if ( !class_exists( 'TagGroups_Terms' ) ) {
         }
         
         /**
-         * Check if we need to run the migration
+         * Check if we need to run the migration of terms
          *
          * @since 1.24.0
          * @param void

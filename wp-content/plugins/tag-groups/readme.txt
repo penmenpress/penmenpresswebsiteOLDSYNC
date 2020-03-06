@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: alphabet, tags, tag cloud, tabs, accordion, taxonomy, tag, woocommerce, first letter
 Requires at least: 4.9
 Tested up to: 5.3.2
-Stable tag: 1.25.1
+Stable tag: 1.25.2
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -183,6 +183,12 @@ This plugin does not collect or process any personal user data unless you expres
 
 == Changelog ==
 
+
+= 1.25.2 =
+
+OTHER
+
+* Illustrated shortcodes in settings with images.
 
 = 1.25.1 =
 

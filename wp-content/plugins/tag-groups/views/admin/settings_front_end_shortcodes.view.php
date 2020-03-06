@@ -21,11 +21,12 @@
   </form>
 
   <p>&nbsp;</p>
-  <p><?php _e('Click for more information.', 'tag-groups') ?></p>
+  <p><?php _e('Click on the features for more information.', 'tag-groups') ?></p>
   <h3><?php _e('Shortcodes', 'tag-groups') ?></h3>
   <div class="tg_admin_accordion" >
     <h4><?php _e( 'Tabbed Tag Cloud', 'tag-groups' ) ?></h4>
     <div>
+      <img src="<?php echo TAG_GROUPS_PLUGIN_URL ?>/assets/images/features/tabbed-tag-cloud.png" style="float:right">
       <h4>[tag_groups_cloud]</h4>
       <p><?php _e( 'Display the tags in a tabbed tag cloud.', 'tag-groups' ) ?></p>
       <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
@@ -36,6 +37,7 @@
 
     <h4><?php _e( 'Accordion', 'tag-groups' ) ?></h4>
     <div>
+      <img src="<?php echo TAG_GROUPS_PLUGIN_URL ?>/assets/images/features/accordion-tag-cloud.png" style="float:right">
       <h4>[tag_groups_accordion]</h4>
       <p><?php _e( 'Display the tags in an accordion.', 'tag-groups' ) ?></p>
       <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
@@ -46,6 +48,7 @@
 
     <h4><?php _e( 'Tag List', 'tag-groups' ) ?></h4>
     <div>
+      <img src="<?php echo TAG_GROUPS_PLUGIN_URL ?>/assets/images/features/tag-list.png" style="float:right">
       <h4>[tag_groups_tag_list]</h4>
       <p><?php _e( 'Display the tags in lists under tag groups.', 'tag-groups' ) ?></p>
       <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
@@ -54,8 +57,9 @@
       <p><?php printf( __( 'Please find the parameters in the <a %s>documentation</a>.', 'tag-groups' ), 'href="https://documentation.chattymango.com/documentation/tag-groups-premium/tag-list/tag-list-parameters/?pk_campaign=tg&pk_kwd=documentation" target="_blank"' ) ?></p>
     </div>
 
-    <h4><?php _e( 'Alphabetical tabs', 'tag-groups' ) ?></h4>
+    <h4><?php _e( 'Alphabetical Tag Cloud', 'tag-groups' ) ?></h4>
     <div>
+      <img src="<?php echo TAG_GROUPS_PLUGIN_URL ?>/assets/images/features/alphabetical-tag-cloud.png" style="float:right">
       <h4>[tag_groups_alphabet_tabs]</h4>
       <p><?php _e( 'Display the tags in tabbed tag cloud with first letters as tabs.', 'tag-groups' ) ?> <?php _e( '(Not tested with right-to-left languages.)', 'tag-groups' ) ?></p>
       <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
@@ -66,6 +70,7 @@
 
     <h4><?php _e( 'Alphabetical Tag Index', 'tag-groups' ) ?></h4>
     <div>
+      <img src="<?php echo TAG_GROUPS_PLUGIN_URL ?>/assets/images/features/alphabetical-tag-index.png" style="float:right">
       <h4>[tag_groups_alphabetical_index]</h4>
       <p><?php _e( 'Display the tags in a list with first letters as heading.', 'tag-groups' ) ?> <?php _e( '(Not tested with right-to-left languages.)', 'tag-groups' ) ?></p>
       <h4><?php _e( 'Example', 'tag-groups' ) ?></h4>
