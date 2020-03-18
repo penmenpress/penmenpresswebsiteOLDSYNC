@@ -71,7 +71,7 @@ class CapsmanHandler
 
 			if ( $newname = $this->createNewName($post['capability-name']) ) {
 				$role->add_cap($newname['name']);
-				
+
 				// for bbPress < 2.2, need to log customization of roles following bbPress activation
 				$plugins = ( function_exists( 'bbp_get_version' ) && version_compare( bbp_get_version(), '2.2', '<' ) ) ? array( 'bbpress.php' ) : array();	// back compat
 				
@@ -90,7 +90,7 @@ class CapsmanHandler
 			} else {
 				ak_admin_notify(__('Incorrect capability name.'));
 			}
-		
+			
 		} elseif ( ! empty($post['update_filtered_types']) || ! empty($post['update_filtered_taxonomies']) || ! empty($post['update_detailed_taxonomies']) ) {
 			//if ( /*  settings saved successfully on plugins_loaded action  */ ) {
 				ak_admin_notify(__('Type / Taxonomy settings saved.', 'capsman-enhanced'));
@@ -99,7 +99,7 @@ class CapsmanHandler
 			//}
 		} else {
 			if (!apply_filters('publishpress-caps_submission_ok', false)) {
-		    	ak_admin_error(__('Bad form received.', 'capsman-enhanced'));
+				ak_admin_error(__('Bad form received.', 'capsman-enhanced'));
 			}
 		}
 
@@ -185,7 +185,7 @@ class CapsmanHandler
 	private function saveRoleCapabilities( $role_name, $caps, $level ) {
 		$this->cm->generateNames();
 		$role = get_role($role_name);
-		
+
 		// workaround to ensure db storage of customizations to bbp dynamic roles
 		$role->name = $role_name;
 		
@@ -304,6 +304,8 @@ class CapsmanHandler
 				( method_exists( $wp_roles, 'for_site' ) ) ? $wp_roles->for_site() : $wp_roles->reinit();
 			}
 		} // endif multisite installation with super admin editing a main site role
+
+		pp_capabilities_autobackup();
 	}
 	
 

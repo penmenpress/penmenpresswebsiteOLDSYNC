@@ -4,7 +4,7 @@ Tags: role, capabilities, post types, taxonomies, editor, network, woocommerce
 Requires at least: 4.9.7
 Tested up to: 5.3.2
 Requires PHP: 5.6.20
-Stable tag: 1.9
+Stable tag: 1.9.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -71,12 +71,27 @@ Yes. Users with the 'manage_capabilities' capability can edit roles. This Capabi
 
 == Changelog ==
 
+= 1.9.3 - 17 Mar 2020 =
+  * Fixed : Capabilities screen was not accessible to non-Administrators who have "manage_capabilities" capability
+  * Fixed : Some functions were not accessible to network Super Administrators without a role on the site
+  * Change : Clarify some messages for plugin access denial
+
+= 1.9.2 - 16 Mar 2020 =
+  * Feature : Auto-backup role and capabilities on each update (and on update to this version)
+  * Fixed : First-time installation: Capabilities menu item not displayed until after Plugins or Users menu clicked 
+  * Change : Third Party Plugin Capabilities - always display checkboxes even if capabilities not present in Administrator role
+  * Fixed : Plugin capability sections - pp_set_notification_channel and pp_manage_roles were included in both PublishPress and PublishPress Permissions sections
+  * Fixed : Capability Negation (Denial) bulk unselect link was ambiguous due to missing strikethrough
+
+= 1.9.1 - 16 Jan 2020 =
+  * Fixed : Create Role, Copy Role, and Add Capability sidebar functions did not work with ENTER keypress (caused screen reload without applying operation)
+
 = 1.9 - 9 Jan 2020 =
   * Change : Renamed to PublishPress Capabilities
   * Feature : Capabilities link on PublishPress > Roles row opens Role Capabilities screen
   * Feature : Role Capabilities screen links to PublishPress > Roles for member management
   * Fixed : Browser reload caused Role Capabilities screen to display default role 
-  * Fixed : Add Capability sidebar added custom capability to role immediately, but capability checkbox did not display as checked until reload   
+  * Fixed : Add Capability sidebar added custom capability to role immediately, but capability checkbox did not display as checked until reload
   * Fixed : Category Assign or Delete capabilities were not effective due to WordPress core forcing default capability requirement
   * Fixed : Term Assign or Delete capabilities were not effective due to WordPress core forcing default capability requirement
   * Fixed : Multisite - On sub-sites, Role Capabilities screen did not display PublishPress Capabilities section to Super Administrators who don't have a role on the site
