@@ -70,7 +70,7 @@ class BNFW_Notification {
 			'show_ui'           => true,
 			'show_in_menu'      => true,
 			'menu_icon'         => 'dashicons-email-alt',
-			'menu_position'     => 100,
+			'menu_position'     => 101,
 			'rewrite'           => false,
 			'map_meta_cap'      => false,
 			'capabilities'      => array(
@@ -201,6 +201,8 @@ class BNFW_Notification {
 							<option
 								value="admin-role" <?php selected( 'admin-role', $setting['notification'] ); ?>><?php esc_html_e( 'User Role Changed - For Admin', 'bnfw' ); ?></option>
 							<option
+								value="admin-user-login" <?php selected( 'admin-user-login', $setting['notification'] ); ?>><?php esc_html_e( 'User Logged In - For Admin', 'bnfw' ); ?></option>
+							<option
 								value="core-updated" <?php selected( 'core-updated', $setting['notification'] ); ?>><?php esc_html_e( 'WordPress Core Automatic Background Updates', 'bnfw' ); ?></option>
 
 							<?php if ( version_compare( $wp_version, '4.9.6' ) >= 0 ) : ?>
@@ -233,6 +235,8 @@ class BNFW_Notification {
 								value="email-changed" <?php selected( 'email-changed', $setting['notification'] ); ?>><?php esc_html_e( 'User Email Changed - For User', 'bnfw' ); ?></option>
 							<option
 								value="user-role" <?php selected( 'user-role', $setting['notification'] ); ?>><?php esc_html_e( 'User Role Changed - For User', 'bnfw' ); ?></option>
+							<option
+								value="user-login" <?php selected( 'user-login', $setting['notification'] ); ?>><?php esc_html_e( 'User Logged In - For User', 'bnfw' ); ?></option>
 							<option
 								value="reply-comment" <?php selected( 'reply-comment', $setting['notification'] ); ?>><?php esc_html_e( 'Comment Reply', 'bnfw' ); ?></option>
 
@@ -269,14 +273,16 @@ class BNFW_Notification {
 								value="private-post" <?php selected( 'private-post', $setting['notification'] ); ?>><?php esc_html_e( 'New Private Post', 'bnfw' ); ?></option>
 							<option
 								value="future-post" <?php selected( 'future-post', $setting['notification'] ); ?>><?php esc_html_e( 'Post Scheduled', 'bnfw' ); ?></option>
+								<option
+								value="trash-post" <?php selected( 'trash-post', $setting['notification'] ); ?>><?php esc_html_e( 'Published Post Moved to Trash', 'bnfw' ); ?></option>
 							<option value="new-comment" <?php selected( 'new-comment', $setting['notification'] ); ?>>
 								<?php esc_html_e( 'New Comment', 'bnfw' ); ?>
 							</option>
 							<option value="moderate-post-comment" <?php selected( 'moderate-post-comment', $setting['notification'] ); ?>>
 								<?php esc_html_e( 'New Comment Awaiting Moderation', 'bnfw' ); ?>
 							</option>
-							<option value="approve-comment" <?php selected( 'approve-comment', $setting['notification'] ); ?>>
-								<?php esc_html_e( 'Comment Approved', 'bnfw' ); ?>
+							<option value="approve-post-comment" <?php selected( 'approve-post-comment', $setting['notification'] ); ?>>
+								<?php esc_html_e( 'Post - Comment Approved', 'bnfw' ); ?>
 							</option>
 							<option
 								value="newterm-category" <?php selected( 'newterm-category', $setting['notification'] ); ?>><?php esc_html_e( 'New Category', 'bnfw' ); ?></option>
@@ -306,11 +312,33 @@ class BNFW_Notification {
 							<option value="moderate-page-comment" <?php selected( 'moderate-page-comment', $setting['notification'] ); ?>>
 								<?php esc_html_e( 'Page - New Comment Awaiting Moderation', 'bnfw' ); ?>
 							</option>
+                                                        <option value="approve-page-comment" <?php selected( 'approve-page-comment', $setting['notification'] ); ?>>
+								<?php esc_html_e( 'Page - Comment Approved', 'bnfw' ); ?>
+							</option>
 							<option
 								value="commentreply-page" <?php selected( 'commentreply-page', $setting['notification'] ); ?>><?php esc_html_e( 'Page - Comment Reply', 'bnfw' ); ?></option>
 							<?php do_action( 'bnfw_after_notification_options', 'page', 'Page', $setting ); ?>
 						</optgroup>
 						<?php do_action( 'bnfw_after_notification_options_optgroup', 'page', 'Page', $setting ); ?>
+
+						<optgroup label="Media">
+							<option
+								value="new-media" <?php selected( 'new-media', $setting['notification'] ); ?>><?php esc_html_e( 'New Media Published', 'bnfw' ); ?></option>
+							<option
+								value="update-media" <?php selected( 'update-media', $setting['notification'] ); ?>><?php esc_html_e( 'Media Updated', 'bnfw' ); ?></option>
+							<option
+								value="comment-attachment" <?php selected( 'comment-attachment', $setting['notification'] ); ?>><?php esc_html_e( 'Media - New Comment', 'bnfw' ); ?></option>
+                                                        <option value="approve-attachment-comment" <?php selected( 'approve-attachment-comment', $setting['notification'] ); ?>>
+								<?php esc_html_e( 'Media - Comment Approved', 'bnfw' ); ?>
+							</option>
+                                                        <option value="moderate-attachment-comment" <?php selected( 'moderate-attachment-comment', $setting['notification'] ); ?>>
+								<?php esc_html_e( 'Media - New Comment Awaiting Moderation', 'bnfw' ); ?></option>
+                                                        <option
+								value="commentreply-attachment" <?php selected( 'commentreply-attachment', $setting['notification'] ); ?>><?php esc_html_e( 'Media - Comment Reply', 'bnfw' ); ?></option>
+							<?php do_action( 'bnfw_after_notification_options', 'media', 'Media', $setting ); ?>
+						</optgroup>
+						<?php do_action( 'bnfw_after_notification_options_optgroup', 'media', 'Media', $setting ); ?>
+
 						<?php
 						$types = apply_filters( 'bnfw_notification_dropdown_posttypes', get_post_types( array(
 							'public'   => true,
@@ -339,6 +367,9 @@ class BNFW_Notification {
 										value="comment-<?php echo esc_attr( $type ); ?>" <?php selected( 'comment-' . $type, $setting['notification'] ); ?>><?php echo "'$label' ", esc_html__( 'New Comment', 'bnfw' ); ?></option>
 									<option value="moderate-<?php echo esc_attr( $type ); ?>-comment" <?php selected( 'moderate-' . $type . '-comment', $setting['notification'] ); ?>>
 										<?php echo "'$label' - ", esc_html__( 'New Comment Awaiting Moderation', 'bnfw' ); ?>
+									</option>
+                                                                        <option value="approve-<?php echo esc_attr( $type ); ?>-comment" <?php selected( 'approve-' . $type . '-comment', $setting['notification'] ); ?>>
+										<?php echo "'$label' - ", esc_html__( 'Comment Approved', 'bnfw' ); ?>
 									</option>
 									<option
 										value="commentreply-<?php echo esc_attr( $type ); ?>" <?php selected( 'commentreply-' . $type, $setting['notification'] ); ?>><?php echo "'$label' ", esc_html__( 'Comment Reply', 'bnfw' ); ?></option>
@@ -485,7 +516,7 @@ foreach ( $taxs as $tax ) {
 			<tr valign="top" id="post-author">
 				<th>
 					<?php esc_html_e( 'Send to Author', 'bnfw' ); ?>
-					<div class="bnfw-help-tip"><p><?php esc_html_e( 'E.g. If you want a new comment notification to go to the author of the post that was commented on, tick this box.', 'bnfw' ); ?></p></div>
+					<div class="bnfw-help-tip"><p><?php esc_html_e( 'E.g. If you want a new post published notification to go to the post author, tick this box.', 'bnfw' ); ?></p></div>
 				</th>
 
 				<td>
@@ -719,10 +750,16 @@ foreach ( $taxs as $tax ) {
 		if ( ! current_user_can( 'bnfw' ) ) {
 			return;
 		}
+               
+                if ( isset( $_POST['digest-interval'] ) && 'no' != $_POST['digest-interval']) {
+                   $subject = $_POST['subject'];
+                }else{
+                   $subject = sanitize_text_field( $_POST['subject'] );
+                }
 
 		$setting = array(
 			'notification'         => sanitize_text_field( $_POST['notification'] ),
-			'subject'              => sanitize_text_field( $_POST['subject'] ),
+			'subject'              => $subject,
 			'message'              => $_POST['notification_message'],
 			'disabled'             => isset( $_POST['disabled'] ) ? sanitize_text_field( $_POST['disabled'] ) : 'false',
 			'email-formatting'     => isset( $_POST['email-formatting'] ) ? sanitize_text_field( $_POST['email-formatting'] ) : 'html',
@@ -1121,7 +1158,15 @@ foreach ( $taxs as $tax ) {
 				break;
 			case 'users':
 				$users = $this->get_names_from_users( $setting['users'] );
-				echo implode( ', ', $users );
+				if (!empty($users)) {
+					echo implode( ', ', $users );
+				}
+				else {
+                                    if(isset($setting['new-user-role'])){
+					$users = $this->get_names_from_users( $setting['new-user-role'] );
+					echo implode( ', ', $users );
+				}
+				}
 
 				if ( 'true' === $setting['only-post-author'] ) {
 					echo esc_html__( ', Post Author', 'bnfw' );
@@ -1157,15 +1202,25 @@ foreach ( $taxs as $tax ) {
 		$emails = array();
 		$names_from_user_ids = array();
 
-		foreach ( $users as $user ) {
-			if ( $this->starts_with( $user, 'role-' ) ) {
-				$user_roles[] = ucfirst( str_replace( 'role-', '', $user ) );
-			} elseif ( strpos( $user, '@' ) !== false ) {
-				$emails[] = $user;
-			} elseif ( absint( $user ) > 0 ) {
-				$user_ids[] = absint( $user );
-			} else {
-				$emails[] = $user;
+		if ( is_array( $users ) ) {
+			foreach ( $users as $user ) {
+				if ( $this->starts_with( $user, 'role-' ) ) {
+					$user_roles[] = ucfirst( str_replace( 'role-', '', $user ) );
+				} elseif ( strpos( $user, '@' ) !== false ) {
+					$emails[] = $user;
+				} elseif ( absint( $user ) > 0 ) {
+					$user_ids[] = absint( $user );
+				} else {
+					$emails[] = $user;
+				}
+			}
+		}
+		else {
+			// User Roles not associated with a To/CC/BCC field
+			$role = get_role( $users );
+
+			if ( !empty( $role ) ) {
+				$user_roles = array( $role->name );
 			}
 		}
 
@@ -1192,8 +1247,8 @@ foreach ( $taxs as $tax ) {
 			case 'new-comment':
 				$name = esc_html__( 'New Comment', 'bnfw' );
 				break;
-			case 'approve-comment':
-				$name = esc_html__( 'Comment Approved', 'bnfw' );
+			case 'approve-post-comment':
+				$name = esc_html__( 'Post - Comment Approved', 'bnfw' );
 				break;
 			case 'moderate-comment':
 				$name = esc_html__( 'New Comment Awaiting Moderation', 'bnfw' );
@@ -1234,6 +1289,12 @@ foreach ( $taxs as $tax ) {
 			case 'new-user':
 				$name = esc_html__( 'New User Registration - For User', 'bnfw' );
 				break;
+            case 'user-login':
+				$name = esc_html__( 'User Logged In - For User', 'bnfw' );
+				break;
+            case 'admin-user-login':
+				$name = esc_html__( 'User Logged In - For Admin', 'bnfw' );
+				break;
 			case 'welcome-email':
 				$name = esc_html__( 'New User - Post-registration Email', 'bnfw' );
 				break;
@@ -1260,6 +1321,9 @@ foreach ( $taxs as $tax ) {
 				break;
 			case 'future-post':
 				$name = esc_html__( 'Post Scheduled', 'bnfw' );
+				break;
+            case 'trash-post':
+				$name = esc_html__( 'Published Post Moved to Trash', 'bnfw' );
 				break;
 			case 'new-page':
 				$name = esc_html__( 'New Page Published', 'bnfw' );
@@ -1288,6 +1352,29 @@ foreach ( $taxs as $tax ) {
 			case 'data-erased':
 				$name = esc_html__( 'Privacy - Data Erased - For User', 'bnfw' );
 				break;
+			case 'new-media':
+				$name = esc_html__( 'New Media Published', 'bnfw' );
+				break;
+			case 'update-media':
+			 	$name = esc_html__( 'Media Updated', 'bnfw' );
+			 	break;
+			case 'comment-attachment':
+			 	$name = esc_html__( 'Media - New Comment', 'bnfw' );
+			 	break;
+                        case 'approve-page-comment':
+				$name = esc_html__( 'Page - Comment Approved', 'bnfw' );
+				break;
+                        case 'approve-attachment-comment':
+				$name = esc_html__( 'Media - Comment Approved', 'bnfw' );
+				break;
+                        case 'moderate-attachment-comment':
+				$name = esc_html__( 'Media - New Comment Awaiting Moderation', 'bnfw' );
+				break;
+                        case 'commentreply-attachment':
+				$name = esc_html__( 'Media - Comment Reply', 'bnfw' );
+				break;
+			
+
 			default:
 				$splited  = explode( '-', $slug );
 				$label    = $splited[1];
@@ -1321,6 +1408,9 @@ foreach ( $taxs as $tax ) {
 						break;
 					case 'commentreply':
 						$name = $label . esc_html__( ' Comment Reply', 'bnfw' );
+						break;
+                                        case 'approve':
+						$name = $label . esc_html__( ' Comment Approved', 'bnfw' );
 						break;
 					case 'newterm':
 						$tax = get_taxonomy( $splited[1] );
