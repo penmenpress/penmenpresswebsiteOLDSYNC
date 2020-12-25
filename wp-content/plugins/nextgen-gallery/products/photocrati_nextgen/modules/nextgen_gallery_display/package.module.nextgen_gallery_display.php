@@ -575,26 +575,19 @@ class Mixin_Display_Type_Controller extends Mixin
             $fs = C_Fs::get_instance();
             /* Fetch array of template directories */
             $dirs = M_Gallery_Display::get_display_type_view_dirs($display_type_name);
-            // If the view starts with a slash, we assume that a filename has been given
-            if (strpos($display_type_view, DIRECTORY_SEPARATOR) === 0) {
-                if (@file_exists($display_type_view)) {
-                    $template = $display_type_view;
-                }
-            } else {
-                // Add the missing "default" category name prefix to the template to make it
-                // more consistent to evaluate
-                if (strpos($display_type_view, DIRECTORY_SEPARATOR) === FALSE) {
-                    $display_type_view = join(DIRECTORY_SEPARATOR, array('default', $display_type_view));
-                }
-                foreach ($dirs as $category => $dir) {
-                    $category = preg_quote($category . DIRECTORY_SEPARATOR);
-                    if (preg_match("#^{$category}(.*)\$#", $display_type_view, $match)) {
-                        $display_type_view = $match[1];
-                        $template_abspath = $fs->join_paths($dir, $display_type_view);
-                        if (@file_exists($template_abspath)) {
-                            $template = $template_abspath;
-                            break;
-                        }
+            // Add the missing "default" category name prefix to the template to make it
+            // more consistent to evaluate
+            if (strpos($display_type_view, DIRECTORY_SEPARATOR) === FALSE) {
+                $display_type_view = join(DIRECTORY_SEPARATOR, array('default', $display_type_view));
+            }
+            foreach ($dirs as $category => $dir) {
+                $category = preg_quote($category . DIRECTORY_SEPARATOR);
+                if (preg_match("#^{$category}(.*)\$#", $display_type_view, $match)) {
+                    $display_type_view = $match[1];
+                    $template_abspath = $fs->join_paths($dir, $display_type_view);
+                    if (@file_exists($template_abspath)) {
+                        $template = $template_abspath;
+                        break;
                     }
                 }
             }
@@ -992,7 +985,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
         // Adjust the query more based on what source was selected
         if (in_array($this->object->source, array('recent', 'recent_images'))) {
             $sort_direction = 'DESC';
-            $sort_by = 'imagedate';
+            $sort_by = apply_filters('ngg_recent_images_sort_by_column', 'imagedate');
         } elseif ($this->object->source == 'random_images' && empty($this->object->entity_ids)) {
             // A gallery with source=random and a non-empty entity_ids is treated as being source=images & image_ids=(entity_ids)
             // In this case however source is random but no image ID are pre-filled.
@@ -1405,10 +1398,14 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
      * Sorts the results of an album query
      * @param stdClass $a
      * @param stdClass $b
+     * @return int
      */
     function _sort_album_result($a, $b)
     {
         $key = $this->object->order_by;
+        if (!isset($a->{$key}) || !isset($b->{$key})) {
+            return 0;
+        }
         return strcmp($a->{$key}, $b->{$key});
     }
 }
@@ -2140,10 +2137,10 @@ class C_Displayed_Gallery_Source_Manager
                 $retval[] = $source_obj;
             }
         }
-        usort($retval, array(&$this, '__sort_by_name'));
+        usort($retval, array($this, '_sort_by_name'));
         return $retval;
     }
-    function __sort_by_name($a, $b)
+    function _sort_by_name($a, $b)
     {
         return strcmp($a->name, $b->name);
     }
@@ -2531,7 +2528,11 @@ class Mixin_Display_Type_Form extends Mixin
      */
     function save_action($attributes = array())
     {
-        return $this->object->get_model()->save(array('settings' => $attributes));
+        $model = $this->object->get_model();
+        if ($model) {
+            return $model->save(['settings' => $attributes]);
+        }
+        return FALSE;
     }
     /**
      * Renders the AJAX pagination settings field

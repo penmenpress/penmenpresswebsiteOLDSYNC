@@ -64,7 +64,7 @@ class A_NextGen_Album_Breadcrumbs extends Mixin
             }
             // Prevent galleries with the same ID as the parent album being displayed as the root
             // breadcrumb when viewing the album page
-            if (count($ids) == 1 && strpos($ids[0], 'a') !== 0) {
+            if (is_array($ids) && count($ids) == 1 && strpos($ids[0], 'a') !== 0) {
                 $ids = array();
             }
             if (!empty($ds['original_album_entities'])) {
@@ -437,16 +437,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin_NextGen_Basic_Pagination
                 return '';
             }
             $GLOBALS['nggShowGallery'] = TRUE;
-            // Try finding the gallery by slug first. If nothing is found, we assume that
-            // the user passed in a gallery id instead
-            $mapper = C_Gallery_Mapper::get_instance();
-            $tmp = $mapper->select()->where(array('slug = %s', $gallery))->limit(1)->run_query();
-            // NextGen turns "This & That" into "this-&amp;-that" when assigning gallery slugs
-            if (empty($tmp) && strpos($gallery, '&') !== FALSE) {
-                $tmp = $mapper->select()->where(array('slug = %s', str_replace('&', '&amp;', $gallery)))->limit(1)->run_query();
-            }
-            $result = reset($tmp);
-            unset($tmp);
+            $result = C_Gallery_Mapper::get_instance()->get_by_slug($gallery);
             if ($result) {
                 $gallery = $result->{$result->id_field};
             }
@@ -464,9 +455,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin_NextGen_Basic_Pagination
         } else {
             if ($album = $this->param('album')) {
                 // Are we to display a sub-album?
-                $mapper = C_Album_Mapper::get_instance();
-                $result = $mapper->select()->where(array('slug = %s', $album))->limit(1)->run_query();
-                $result = array_pop($result);
+                $result = C_Album_Mapper::get_instance()->get_by_slug($album);
                 $album_sub = $result ? $result->{$result->id_field} : null;
                 if ($album_sub != null) {
                     $album = $album_sub;
@@ -695,9 +684,9 @@ class A_NextGen_Basic_Album_Controller extends Mixin_NextGen_Basic_Pagination
     function enqueue_frontend_resources($displayed_gallery)
     {
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
-        wp_enqueue_style('nextgen_basic_album_style', $this->object->get_static_url('photocrati-nextgen_basic_album#nextgen_basic_album.css'), array(), NGG_SCRIPT_VERSION);
-        wp_enqueue_style('nextgen_pagination_style', $this->get_static_url('photocrati-nextgen_pagination#style.css'), array(), NGG_SCRIPT_VERSION);
-        wp_enqueue_script('jquery.dotdotdot', $this->object->get_static_url('photocrati-nextgen_basic_album#jquery.dotdotdot-1.5.7-packed.js'), array('jquery'), NGG_SCRIPT_VERSION);
+        wp_enqueue_style('nextgen_basic_album_style', $this->object->get_static_url('photocrati-nextgen_basic_album#nextgen_basic_album.css'), [], NGG_SCRIPT_VERSION);
+        wp_enqueue_style('nextgen_pagination_style', $this->get_static_url('photocrati-nextgen_pagination#style.css'), [], NGG_SCRIPT_VERSION);
+        wp_enqueue_script('shave.js');
         $ds = $displayed_gallery->display_settings;
         if (!empty($ds['enable_breadcrumbs']) && $ds['enable_breadcrumbs'] || !empty($ds['original_settings']['enable_breadcrumbs']) && $ds['original_settings']['enable_breadcrumbs']) {
             wp_enqueue_style('nextgen_basic_album_breadcrumbs_style', $this->object->get_static_url('photocrati-nextgen_basic_album#breadcrumbs.css'), array(), NGG_SCRIPT_VERSION);

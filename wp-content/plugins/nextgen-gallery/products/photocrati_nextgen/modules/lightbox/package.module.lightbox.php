@@ -56,7 +56,7 @@ class C_Lightbox_Library_Manager
         $simplelightbox = new C_NGG_Lightbox('simplelightbox');
         $simplelightbox->title = __('Simplelightbox', 'nggallery');
         $simplelightbox->code = 'class="ngg-simplelightbox" rel="%GALLERY_NAME%"';
-        $simplelightbox->styles = array('photocrati-lightbox#simplelightbox/simplelightbox.css');
+        $simplelightbox->styles = array('photocrati-lightbox#simplelightbox/simple-lightbox.css');
         $simplelightbox->scripts = array('photocrati-lightbox#simplelightbox/simple-lightbox.js', 'photocrati-lightbox#simplelightbox/nextgen_simple_lightbox_init.js');
         $this->register('simplelightbox', $simplelightbox);
         // Add Fancybox
@@ -64,7 +64,7 @@ class C_Lightbox_Library_Manager
         $fancybox->title = __('Fancybox', 'nggallery');
         $fancybox->code = 'class="ngg-fancybox" rel="%GALLERY_NAME%"';
         $fancybox->styles = array('photocrati-lightbox#fancybox/jquery.fancybox-1.3.4.css');
-        $fancybox->scripts = array('photocrati-lightbox#fancybox/jquery.easing-1.3.pack.js', 'photocrati-lightbox#fancybox/jquery.fancybox-1.3.4.pack.js', 'photocrati-lightbox#fancybox/nextgen_fancybox_init.js');
+        $fancybox->scripts = array('https://cdnjs.cloudflare.com/ajax/libs/jquery-browser/0.1.0/jquery.browser.min.js', 'photocrati-lightbox#fancybox/jquery.easing-1.3.pack.js', 'photocrati-lightbox#fancybox/jquery.fancybox-1.3.4.pack.js', 'photocrati-lightbox#fancybox/nextgen_fancybox_init.js');
         $this->register('fancybox', $fancybox);
         // Add Shutter
         $shutter = new C_NGG_Lightbox('shutter');

@@ -213,6 +213,14 @@ class Mixin_Album_Mapper extends Mixin
         return $retval;
     }
     /**
+     * @param string $slug
+     * @return null|stdClass|C_Album
+     */
+    public function get_by_slug($slug)
+    {
+        return array_pop($this->object->select()->where(['slug = %s', sanitize_title($slug)])->limit(1)->run_query());
+    }
+    /**
      * Sets the defaults for an album
      * @param C_DataMapper_Model|C_Album|stdClass $entity
      */
@@ -593,63 +601,212 @@ class C_Dynamic_Thumbnails_Manager extends C_Component
         return self::$_instances[$context];
     }
 }
-class C_Exif_Writer_Wrapper
+require_once 'pel-0.9.9/autoload.php';
+use lsolesen\pel\PelDataWindow;
+use lsolesen\pel\PelJpeg;
+use lsolesen\pel\PelTiff;
+use lsolesen\pel\PelExif;
+use lsolesen\pel\PelIfd;
+use lsolesen\pel\PelTag;
+use lsolesen\pel\PelEntryShort;
+use lsolesen\pel\PelInvalidArgumentException;
+use lsolesen\pel\PelIfdException;
+use lsolesen\pel\PelInvalidDataException;
+use lsolesen\pel\PelJpegInvalidMarkerException;
+class C_Exif_Writer
 {
-    // Because our C_Exif_Writer class relies on PEL (a library which uses namespaces) we wrap
-    // its use through these methods which performs a PHP version check before loading the class file
-    /**
-     * @param $old_file
-     * @param $new_file
-     * @return bool|int
-     */
-    public static function copy_metadata($old_file, $new_file)
-    {
-        if (!M_NextGen_Data::check_pel_min_php_requirement()) {
-            return FALSE;
-        }
-        self::load_pel();
-        return @C_Exif_Writer::copy_metadata($old_file, $new_file);
-    }
     /**
      * @param $filename
      * @return array|null
      */
     public static function read_metadata($filename)
     {
-        if (!M_NextGen_Data::check_pel_min_php_requirement()) {
-            return array();
+        if (!self::is_jpeg_file($filename)) {
+            return NULL;
         }
-        self::load_pel();
-        return @C_Exif_Writer::read_metadata($filename);
+        try {
+            $data = new PelDataWindow(@file_get_contents($filename));
+            $exif = new PelExif();
+            if (PelJpeg::isValid($data)) {
+                $jpeg = $file = new PelJpeg();
+                $jpeg->load($data);
+                $exif = $jpeg->getExif();
+                if ($exif === NULL) {
+                    $exif = new PelExif();
+                    $jpeg->setExif($exif);
+                    $tiff = new PelTiff();
+                    $exif->setTiff($tiff);
+                } else {
+                    $tiff = $exif->getTiff();
+                }
+            } elseif (PelTiff::isValid($data)) {
+                $tiff = $file = new PellTiff();
+                $tiff->load($data);
+            } else {
+                return NULL;
+            }
+            $ifd0 = $tiff->getIfd();
+            if ($ifd0 === NULL) {
+                $ifd0 = new PelIfd(PelIfd::IFD0);
+                $tiff->setIfd($ifd0);
+            }
+            $tiff->setIfd($ifd0);
+            $exif->setTiff($tiff);
+            $retval = array('exif' => $exif, 'iptc' => NULL);
+            @getimagesize($filename, $iptc);
+            if (!empty($iptc['APP13'])) {
+                $retval['iptc'] = $iptc['APP13'];
+            }
+        } catch (PelIfdException $exception) {
+            return NULL;
+        } catch (PelInvalidArgumentException $exception) {
+            return NULL;
+        } catch (PelInvalidDataException $exception) {
+            return NULL;
+        } catch (PelJpegInvalidMarkerException $exception) {
+            return NULL;
+        } catch (Exception $exception) {
+            return NULL;
+        }
+        return $retval;
     }
     /**
+     * @param $origin_file
+     * @param $destination_file
+     * @return bool|int FALSE on failure or (int) number of bytes written
+     */
+    public static function copy_metadata($origin_file, $destination_file)
+    {
+        if (!self::is_jpeg_file($origin_file)) {
+            return FALSE;
+        }
+        // Read existing data from the source file
+        $metadata = self::read_metadata($origin_file);
+        if (!empty($metadata) && is_array($metadata)) {
+            return self::write_metadata($destination_file, $metadata);
+        } else {
+            return FALSE;
+        }
+    }
+    /**
+     * @param $filename
+     * @param $metadata
+     * @return bool|int FALSE on failure or (int) number of bytes written
+     */
+    public static function write_metadata($filename, $metadata)
+    {
+        if (!self::is_jpeg_file($filename) || !is_array($metadata)) {
+            return FALSE;
+        }
+        try {
+            // Copy EXIF data to the new image and write it
+            $new_image = new PelJpeg($filename);
+            $new_image->setExif($metadata['exif']);
+            $new_image->saveFile($filename);
+            // Copy IPTC / APP13 to the new image and write it
+            if ($metadata['iptc']) {
+                return self::write_IPTC($filename, $metadata['iptc']);
+            }
+        } catch (PelInvalidArgumentException $exception) {
+            return FALSE;
+        } catch (PelJpegInvalidMarkerException $exception) {
+            return FALSE;
+        }
+    }
+    /**
+     * @param string $filename
+     * @param array $data
+     * @return bool|int FALSE on failure or (int) number of bytes written
+     */
+    public static function write_IPTC($filename, $data)
+    {
+        if (!self::is_jpeg_file($filename)) {
+            return FALSE;
+        }
+        $length = strlen($data) + 2;
+        // Avoid invalid APP13 regions
+        if ($length > 0xffff) {
+            return FALSE;
+        }
+        // Wrap existing data in segment container we can embed new content in
+        $data = chr(0xff) . chr(0xed) . chr($length >> 8 & 0xff) . chr($length & 0xff) . $data;
+        $new_file_contents = @file_get_contents($filename);
+        if (!$new_file_contents || strlen($new_file_contents) <= 0) {
+            return FALSE;
+        }
+        $new_file_contents = substr($new_file_contents, 2);
+        // Create new image container wrapper
+        $new_iptc = chr(0xff) . chr(0xd8);
+        // Track whether content was modified
+        $new_fields_added = !$data;
+        // This can cause errors if incorrectly pointed at a non-JPEG file
+        try {
+            // Loop through each JPEG segment in search of region 13
+            while ((hexdec(substr($new_file_contents, 0, 2)) & 0xfff0) === 0xffe0) {
+                $segment_length = hexdec(substr($new_file_contents, 2, 2)) & 0xffff;
+                $segment_number = hexdec(substr($new_file_contents, 1, 1)) & 0xf;
+                // Not a segment we're interested in
+                if ($segment_length <= 2) {
+                    return FALSE;
+                }
+                $current_segment = substr($new_file_contents, 0, $segment_length + 2);
+                if (13 <= $segment_number && !$new_fields_added) {
+                    $new_iptc .= $data;
+                    $new_fields_added = TRUE;
+                    if (13 === $segment_number) {
+                        $current_segment = '';
+                    }
+                }
+                $new_iptc .= $current_segment;
+                $new_file_contents = substr($new_file_contents, $segment_length + 2);
+            }
+        } catch (Exception $exception) {
+            return FALSE;
+        }
+        if (!$new_fields_added) {
+            $new_iptc .= $data;
+        }
+        if ($file = @fopen($filename, 'wb')) {
+            return @fwrite($file, $new_iptc . $new_file_contents);
+        } else {
+            return FALSE;
+        }
+    }
+    /**
+     * Determines if the file extension is .jpg or .jpeg
+     *
+     * @param $filename
+     * @return bool
+     */
+    public static function is_jpeg_file($filename)
+    {
+        $extension = M_I18n::mb_pathinfo($filename, PATHINFO_EXTENSION);
+        return in_array(strtolower($extension), array('jpeg', 'jpg', 'jpeg_backup', 'jpg_backup')) ? TRUE : FALSE;
+    }
+    /**
+     * Sets the EXIF' Orientation field to 1 aka Default or "TopLeft"
+     *
+     * This method is necessary to prevent images rotated by NextGen to appear even further rotated.
      * @param array $exif
      * @return array
      */
     public static function reset_orientation($exif = array())
     {
-        if (!M_NextGen_Data::check_pel_min_php_requirement()) {
-            return array();
+        $tiff = $exif->getTiff();
+        if (empty($tiff)) {
+            return $exif;
         }
-        self::load_pel();
-        return @C_Exif_Writer::reset_orientation($exif);
-    }
-    /**
-     * @param $filename
-     * @param $metadata
-     * @return bool|int
-     */
-    public static function write_metadata($filename, $metadata)
-    {
-        if (!M_NextGen_Data::check_pel_min_php_requirement()) {
-            return FALSE;
+        $ifd0 = $tiff->getIfd();
+        if (empty($ifd0)) {
+            return $exif;
         }
-        self::load_pel();
-        return @C_Exif_Writer::write_metadata($filename, $metadata);
-    }
-    public static function load_pel()
-    {
-        require_once __DIR__ . DIRECTORY_SEPARATOR . 'pel-0.9.6' . DIRECTORY_SEPARATOR . 'class.exif_writer.php';
+        $orientation = $ifd0->getEntry(PelTag::ORIENTATION);
+        if (empty($orientation)) {
+            return $exif;
+        }
+        $orientation = new PelEntryShort(PelTag::ORIENTATION, 1);
+        $ifd0->addEntry($orientation);
+        return $exif;
     }
 }
 class Mixin_NextGen_Gallery_Validation
@@ -714,7 +871,7 @@ class Mixin_NextGen_Gallery_Validation
         }
         $ABSPATH = wp_normalize_path(ABSPATH);
         // Disallow galleries from being under these directories at all
-        $not_ever_in = array('plugins' => wp_normalize_path(WP_PLUGIN_DIR), 'must use plugins' => wp_normalize_path(WPMU_PLUGIN_DIR), 'wp-admin' => $fs->join_paths($ABSPATH, 'wp-admin'), 'wp-includes' => $fs->join_paths($ABSPATH, 'wp-admin'), 'themes' => get_theme_root());
+        $not_ever_in = array('plugins' => wp_normalize_path(WP_PLUGIN_DIR), 'must use plugins' => wp_normalize_path(WPMU_PLUGIN_DIR), 'wp-admin' => $fs->join_paths($ABSPATH, 'wp-admin'), 'wp-includes' => $fs->join_paths($ABSPATH, 'wp-includes'), 'themes' => get_theme_root());
         foreach ($not_ever_in as $label => $dir) {
             if (strpos($abspath, $dir) === 0) {
                 $this->object->add_error(sprintf(__("Gallery path cannot be under %s directory", 'nggallery'), $label), 'gallerypath');
@@ -839,6 +996,21 @@ class Mixin_Gallery_Mapper extends Mixin
     function get_post_title($entity)
     {
         return $entity->title;
+    }
+    /**
+     * @param string $slug
+     * @return C_Gallery|stdClass|null
+     */
+    public function get_by_slug($slug)
+    {
+        $sanitized_slug = sanitize_title($slug);
+        // Try finding the gallery by slug first; if nothing is found assume that the user passed a gallery id
+        $retval = $this->object->select()->where(array('slug = %s', $sanitized_slug))->limit(1)->run_query();
+        // NextGen used to turn "This & That" into "this-&amp;-that" when assigning gallery slugs
+        if (empty($retval) && strpos($slug, '&') !== FALSE) {
+            return $this->get_by_slug(str_replace('&', '&amp;', $slug));
+        }
+        return reset($retval);
     }
     function _save_entity($entity)
     {
@@ -3446,11 +3618,15 @@ class Mixin_GalleryStorage_Base extends Mixin
     }
     /**
      * Sets a NGG image as a post thumbnail for the given post
+     *
+     * @param int $postId
+     * @param int|C_Image|stdClass $image
+     * @param bool $only_create_attachment
+     * @return int
      */
     function set_post_thumbnail($postId, $image, $only_create_attachment = FALSE)
     {
         $retval = FALSE;
-        // attachment_id or FALSE
         // Get the post ID
         if (is_object($postId)) {
             $post = $postId;
@@ -3696,14 +3872,26 @@ class Mixin_GalleryStorage_Base_Dynamic extends Mixin
                     $thumbnail->format = strtoupper($format_list[$clone_format]);
                 }
                 $thumbnail = apply_filters('ngg_before_save_thumbnail', $thumbnail);
-                $exif_iptc = @C_Exif_Writer_Wrapper::read_metadata($image_path);
+                $backup_path = $image_path . '_backup';
+                try {
+                    $exif_abspath = @file_exists($backup_path) ? $backup_path : $image_path;
+                    $exif_iptc = @C_Exif_Writer::read_metadata($exif_abspath);
+                } catch (PelException $ex) {
+                    error_log("Could not read image metadata {$exif_abspath}");
+                    error_log(print_r($ex, TRUE));
+                }
                 $thumbnail->save($destpath, $quality);
                 // We've just rotated the image however the EXIF metadata contains an Orientation tag. To prevent
                 // certain browsers from rotating our already-rotated image we reset the Orientation tag to the default.
                 if ($remove_orientation_exif && !empty($exif_iptc['exif'])) {
-                    $exif_iptc['exif'] = @C_Exif_Writer_Wrapper::reset_orientation($exif_iptc['exif']);
+                    $exif_iptc['exif'] = @C_Exif_Writer::reset_orientation($exif_iptc['exif']);
                 }
-                @C_Exif_Writer_Wrapper::write_metadata($destpath, $exif_iptc);
+                try {
+                    @C_Exif_Writer::write_metadata($destpath, $exif_iptc);
+                } catch (PelException $ex) {
+                    error_log("Could not write data to {$destpath}");
+                    error_log(print_r($ex, TRUE));
+                }
             }
         }
         return $thumbnail;
@@ -4009,7 +4197,7 @@ class Mixin_GalleryStorage_Base_Dynamic extends Mixin
             $params = $this->object->get_image_size_params($image, $size, $params, $skip_defaults);
             $settings = C_NextGen_Settings::get_instance();
             // Get the image filename
-            $filename = $this->object->get_original_abspath($image, 'original');
+            $filename = $this->object->get_image_abspath($image, 'original');
             $thumbnail = null;
             if ($size == 'full' && $settings->imgBackup == 1) {
                 // XXX change this? 'full' should be the resized path and 'original' the _backup path
@@ -4256,7 +4444,7 @@ class Mixin_GalleryStorage_Base_Getters extends Mixin
     }
     function get_gallery_root()
     {
-        return wp_normalize_path(NGG_GALLERY_ROOT_TYPE == 'content' ? WP_CONTENT_DIR : ABSPATH);
+        return wp_normalize_path(C_Fs::get_instance()->get_document_root('galleries'));
     }
     function _get_computed_gallery_abspath($gallery)
     {
@@ -4313,6 +4501,11 @@ class Mixin_GalleryStorage_Base_Getters extends Mixin
     }
     function get_gallery_relpath($gallery)
     {
+        // Special hack for home.pl: their document root is just '/'
+        $root = $this->object->get_gallery_root();
+        if ($root === '/') {
+            return $this->get_gallery_abspath($gallery);
+        }
         return str_replace($this->object->get_gallery_root(), '', $this->get_gallery_abspath($gallery));
     }
     /**
@@ -4349,7 +4542,6 @@ class Mixin_GalleryStorage_Base_Getters extends Mixin
                         $size = 'thumbnail';
                         $folder = 'thumbs';
                         $prefix = 'thumbs';
-                        // deliberately no break here
                     // deliberately no break here
                     default:
                         // NGG 2.0 stores relative filenames in the meta data of
@@ -4839,6 +5031,7 @@ class Mixin_GalleryStorage_Base_Management extends Mixin
      * Backs up an image file
      *
      * @param int|object $image
+     * @param bool $save
      * @return bool
      */
     function backup_image($image, $save = TRUE)
@@ -4867,6 +5060,11 @@ class Mixin_GalleryStorage_Base_Management extends Mixin
         }
         return $retval;
     }
+    /**
+     * @param C_Image[]|int[] $images
+     * @param C_Gallery|int $dst_gallery
+     * @return int[]
+     */
     function copy_images($images, $dst_gallery)
     {
         $retval = array();
@@ -4894,13 +5092,13 @@ class Mixin_GalleryStorage_Base_Management extends Mixin
                     $tags = array_map('intval', $tags);
                     wp_set_object_terms($new_image_id, $tags, 'ngg_tag', true);
                     // Copy all of the generated versions (resized versions, watermarks, etc)
-                    foreach ($this->get_image_sizes($image) as $named_size) {
+                    foreach ($this->object->get_image_sizes($image) as $named_size) {
                         if (in_array($named_size, array('full', 'thumbnail'))) {
                             continue;
                         }
                         $old_abspath = $this->object->get_image_abspath($image, $named_size);
                         $new_abspath = $this->object->get_image_abspath($new_image, $named_size);
-                        if (is_array(stat($old_abspath))) {
+                        if (is_array(@stat($old_abspath))) {
                             $new_dir = dirname($new_abspath);
                             // Ensure the target directory exists
                             if (@stat($new_dir) === FALSE) {
@@ -4920,12 +5118,11 @@ class Mixin_GalleryStorage_Base_Management extends Mixin
      * Moves images from to another gallery
      * @param array $images
      * @param int|object $gallery
-     * @param boolean $db optionally only move the image files, not the db entries
-     * @return boolean
+     * @return int[]
      */
     function move_images($images, $gallery)
     {
-        $retval = $this->object->copy_images($images, $gallery, TRUE);
+        $retval = $this->object->copy_images($images, $gallery);
         if ($images) {
             foreach ($images as $image_id) {
                 $this->object->delete_image($image_id);
@@ -4933,6 +5130,10 @@ class Mixin_GalleryStorage_Base_Management extends Mixin
         }
         return $retval;
     }
+    /**
+     * @param string $abspath
+     * @return bool
+     */
     function delete_directory($abspath)
     {
         $retval = FALSE;
@@ -4983,7 +5184,7 @@ class Mixin_GalleryStorage_Base_Management extends Mixin
                     $this->object->_image_mapper->save($image);
                 }
             } else {
-                foreach ($this->get_image_sizes($image) as $named_size) {
+                foreach ($this->object->get_image_sizes($image) as $named_size) {
                     $image_abspath = $this->object->get_image_abspath($image, $named_size);
                     @unlink($image_abspath);
                 }
@@ -5041,14 +5242,16 @@ class Mixin_GalleryStorage_Base_Management extends Mixin
 }
 /**
  * This class contains methods C_Gallery_Storage needs to interact with (like say, importing from) the WP Media Library
+ *
  * * @property C_Gallery_Storage $object
  */
 class Mixin_GalleryStorage_Base_MediaLibrary extends Mixin
 {
     /**
      * Copies a NGG image to the media library and returns the attachment_id
-     * @param C_Image $image
-     * @retval FALSE|int attachment_id
+     *
+     * @param C_Image|int|stdClass $image
+     * @return FALSE|int attachment_id
      */
     function copy_to_media_library($image)
     {
@@ -5060,23 +5263,25 @@ class Mixin_GalleryStorage_Base_MediaLibrary extends Mixin
             $image = $mapper->find($imageId);
         }
         if ($image) {
+            $subdir = apply_filters('ngg_import_to_media_library_subdir', 'nggallery_import');
             $wordpress_upload_dir = wp_upload_dir();
-            // $wordpress_upload_dir['path'] is the full server path to wp-content/uploads/2017/05, for multisite works good as well
-            // $wordpress_upload_dir['url'] the absolute URL to the same folder, actually we do not need it, just to show the link to file
-            $i = 1;
-            // number of tries when the file with the same name is already exists
+            $path = $wordpress_upload_dir['path'] . DIRECTORY_SEPARATOR . $subdir;
+            if (!file_exists($path)) {
+                wp_mkdir_p($path);
+            }
             $image_abspath = C_Gallery_Storage::get_instance()->get_image_abspath($image, "full");
-            $new_file_path = $wordpress_upload_dir['path'] . '/' . $image->filename;
+            $new_file_path = $path . DIRECTORY_SEPARATOR . $image->filename;
             $image_data = getimagesize($image_abspath);
             $new_file_mime = $image_data['mime'];
+            $i = 1;
             while (file_exists($new_file_path)) {
                 $i++;
-                $new_file_path = $wordpress_upload_dir['path'] . '/' . $i . '_' . $image->filename;
+                $new_file_path = $path . DIRECTORY_SEPARATOR . $i . '_' . $image->filename;
             }
             if (@copy($image_abspath, $new_file_path)) {
-                $upload_id = wp_insert_attachment(array('guid' => $new_file_path, 'post_mime_type' => $new_file_mime, 'post_title' => preg_replace('/\\.[^.]+$/', '', $image->alttext), 'post_content' => '', 'post_status' => 'inherit'), $new_file_path);
+                $upload_id = wp_insert_attachment(['guid' => $new_file_path, 'post_mime_type' => $new_file_mime, 'post_title' => preg_replace('/\\.[^.]+$/', '', $image->alttext), 'post_content' => '', 'post_status' => 'inherit'], $new_file_path);
                 update_post_meta($upload_id, '_ngg_image_id', intval($image->pid));
-                // wp_generate_attachment_metadata() won't work if you do not include this file
+                // wp_generate_attachment_metadata() comes from this file
                 require_once ABSPATH . 'wp-admin/includes/image.php';
                 $image_meta = wp_generate_attachment_metadata($upload_id, $new_file_path);
                 // Generate and save the attachment metas into the database
@@ -5088,6 +5293,7 @@ class Mixin_GalleryStorage_Base_MediaLibrary extends Mixin
     }
     /**
      * Delete the given NGG image from the media library
+     *
      * @var int|stdClass $imageId
      */
     function delete_from_media_library($imageId)
@@ -5105,7 +5311,7 @@ class Mixin_GalleryStorage_Base_MediaLibrary extends Mixin
      * Determines if the given NGG image id has been uploaded to the media library
      *
      * @param integer $imageId
-     * @retval FALSE|int attachment_id
+     * @return FALSE|int attachment_id
      */
     function is_in_media_library($imageId)
     {
@@ -5200,10 +5406,23 @@ class Mixin_GalleryStorage_Base_Upload extends Mixin
         } else {
             $retval['gallery_id'] = $gallery_id;
         }
+        // Remove full sized image if backup is included
+        $files_to_import = [];
         foreach ($files as $file_abspath) {
-            $basename = pathinfo($file_abspath, PATHINFO_BASENAME);
-            if ($image_id = $this->import_image_file($gallery_id, $file_abspath, $basename, FALSE, FALSE, FALSE)) {
-                $retval['image_ids'][] = $image_id;
+            if (preg_match("#_backup\$#", $file_abspath)) {
+                $files_to_import[] = $file_abspath;
+                continue;
+            } elseif (in_array($file_abspath . "_backup", $files) || strpos("thumbs_", $file_abspath) !== FALSE) {
+                continue;
+            }
+            $files_to_import[] = $file_abspath;
+        }
+        foreach ($files_to_import as $file_abspath) {
+            $basename = preg_replace('#_backup$#', '', pathinfo($file_abspath, PATHINFO_BASENAME));
+            if ($this->is_image_file($file_abspath)) {
+                if ($image_id = $this->import_image_file($gallery_id, $file_abspath, $basename, FALSE, FALSE, FALSE)) {
+                    $retval['image_ids'][] = $image_id;
+                }
             }
         }
         // Add the gallery name to the result
@@ -5220,7 +5439,11 @@ class Mixin_GalleryStorage_Base_Upload extends Mixin
     public function is_allowed_image_extension($filename)
     {
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $extension = strtolower($extension);
         $allowed_extensions = apply_filters('ngg_allowed_file_types', array('jpeg', 'jpg', 'png', 'gif'));
+        foreach ($allowed_extensions as $extension) {
+            $allowed_extensions[] = $extension . '_backup';
+        }
         return in_array($extension, $allowed_extensions);
     }
     function is_current_user_over_quota()
@@ -5310,7 +5533,7 @@ class Mixin_GalleryStorage_Base_Upload extends Mixin
         $filename = $filename ? $filename : uniqid('nextgen-gallery');
         $filename = preg_replace("#^/#", "", $filename);
         $filename = sanitize_file_name($filename);
-        if (preg_match("/\\-(png|jpg|gif|jpeg)\$/i", $filename, $match)) {
+        if (preg_match("/\\-(png|jpg|gif|jpeg|jpg_backup)\$/i", $filename, $match)) {
             $filename = str_replace($match[0], '.' . $match[1], $filename);
         }
         return $filename;
@@ -5336,7 +5559,7 @@ class Mixin_GalleryStorage_Base_Upload extends Mixin
             // Sanitize the filename for storing in the DB
             $filename = $this->sanitize_filename_for_db($filename);
             // Ensure that the filename is valid
-            if (!preg_match("/(png|jpeg|jpg|gif)\$/i", $filename)) {
+            if (!preg_match("/(png|jpeg|jpg|gif|_backup)\$/i", $filename)) {
                 throw new E_UploadException(__('Invalid image file. Acceptable formats: JPG, GIF, and PNG.', 'nggallery'));
             }
             // Compute the destination folder
@@ -5409,6 +5632,11 @@ class Mixin_GalleryStorage_Base_Upload extends Mixin
             $this->object->generate_thumbnail($image);
             // Set gallery preview image if missing
             C_Gallery_Mapper::get_instance()->set_preview_image($dst_gallery, $image_id, TRUE);
+            // Automatically watermark the main image if requested
+            if ($settings->get('watermark_automatically_at_upload', 0)) {
+                $image_abspath = $this->object->get_image_abspath($image, 'full');
+                $this->object->generate_image_clone($image_abspath, $image_abspath, array('watermark' => TRUE));
+            }
             // Notify other plugins that an image has been added
             do_action('ngg_added_new_image', $image);
             // delete dirsize after adding new images

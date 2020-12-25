@@ -1,24 +1,31 @@
 jQuery(function($) {
 
     var selector = null;
-
+    var lightbox = null;
+    
     var nextgen_simplebox_options = {
         history: false,
         animationSlide: false,
-        animationSpeed: 100
+        animationSpeed: 100,
+        captionSelector: 'self'
     };
 
     var nextgen_simplelightbox_init = function() {
         selector = nextgen_lightbox_filter_selector($, $(".ngg-simplelightbox"));
-        selector.simpleLightbox(nextgen_simplebox_options);
+        if (selector.length > 0) {
+            lightbox = selector.simpleLightbox(nextgen_simplebox_options);
+        }
     };
 
     nextgen_simplelightbox_init();
 
-    $(window).bind('refreshed', function() {
+    $(window).on('refreshed', function() {
+        if (typeof lightbox !== 'undefined') {
+            lightbox.destroy();
+        }
         selector = nextgen_lightbox_filter_selector($, $(".ngg-simplelightbox"));
-        var gallery = selector.simpleLightbox(nextgen_simplebox_options);
-        gallery.refresh();
-
+        if (selector.length > 0) {
+            lightbox = selector.simpleLightbox(nextgen_simplebox_options);
+        }
     });
 });

@@ -24,13 +24,6 @@ class nggAdminPanel{
 		add_action('admin_print_scripts', array($this, 'load_scripts') );
 		add_action('admin_print_styles', array($this, 'load_styles') );
 
-		// Try to detect plugins that embed their own jQuery and jQuery UI
-		// libraries and load them in NGG's admin pages
-		add_action('admin_enqueue_scripts', array($this, 'buffer_scripts'), 0);
-		add_action('admin_print_scripts', array($this, 'output_scripts'), PHP_INT_MAX);
-
-        //TODO: remove after release of Wordpress 3.3
-		add_filter('contextual_help', array($this, 'show_help'), 10, 2);
         add_filter('current_screen', array($this, 'edit_current_screen'));
 
         add_action('ngg_admin_enqueue_scripts', array($this, 'enqueue_progress_bars'));
@@ -73,98 +66,12 @@ class nggAdminPanel{
 		ob_start();
 	}
 
-	/**
-	 * If a NGG page is being requested, we buffer any rendering of <script>
-	 * tags to detect conflicts and remove them if need be
-	 */
-	function buffer_scripts()
-	{
-		// Is this a NGG admin page?
-		if (isset($_REQUEST['page']) && strpos($_REQUEST['page'] ,'nggallery') !== FALSE) {
-			ob_start();
-		}
-	}
-
-	function output_scripts()
-	{
-		// Is this a NGG admin page?
-		if (isset($_REQUEST['page']) && strpos($_REQUEST['page'] ,'nggallery') !== FALSE) {
-			$plugin_folder		= NGGFOLDER;
-			$skipjs_count		= 0;
-			$html = ob_get_contents();
-			ob_end_clean();
-
-            if (!defined('NGG_JQUERY_CONFLICT_DETECTION')) {
-				define('NGG_JQUERY_CONFLICT_DETECTION', TRUE);
-			}
-
-			if (NGG_JQUERY_CONFLICT_DETECTION) {
-				// Detect custom jQuery script
-				if (preg_match_all("/<script.*wp-content.*jquery[-_\.](min\.)?js.*<\script>/", $html, $matches, PREG_SET_ORDER)) {
-					foreach ($matches as $match) {
-						$old_script = array_shift($match);
-						if (strpos($old_script, NGG_PLUGIN_DIR) === FALSE)
-							$html = str_replace($old_script, '', $html);
-					}
-				}
-
-				// Detect custom jQuery UI script and remove
-				if (preg_match_all("/<script.*wp-content.*jquery[-_\.]ui.*<\/script>/", $html, $matches, PREG_SET_ORDER)) {
-					$detected_jquery_ui = TRUE;
-					foreach ($matches as $match) {
-						$old_script = array_shift($match);
-						if (strpos($old_script, NGG_PLUGIN_DIR) === FALSE)
-							$html = str_replace($old_script, '', $html);
-					}
-				}
-
-				if (isset($_REQUEST['skipjs'])) {
-					foreach ($_REQUEST['skipjs'] as $js) {
-						$js = preg_quote($js);
-						if (preg_match_all("#<script.*{$js}.*</script>#", $html, $matches, PREG_SET_ORDER)) {
-							foreach ($matches as $match) {
-								$old_script = array_shift($match);
-								if (strpos($old_script, NGGFOLDER) === FALSE)
-									$html = str_replace($old_script, '', $html);
-							}
-						}
-					}
-					$skipjs_count = count($_REQUEST['skipjs']);
-				}
-
-
-				// Use WordPress built-in version of jQuery
-				$jquery_url = includes_url('js/jquery/jquery.js');
-				$html = implode('', array(
-					"<script type='text/javascript' src='{$jquery_url}'></script>\n",
-					"<script type='text/javascript'>
-					window.onerror = function(msg, url, line){
-						if (url.match(/\.js$|\.js\?/)) {
-							if (window.location.search.length > 0) {
-								if (window.location.search.indexOf(url) == -1)
-									window.location.search += '&skipjs[{$skipjs_count}]='+url;
-							}
-							else {
-								window.location.search = '?skipjs[{$skipjs_count}]='+url;
-							}
-						}
-						console.error(msg)
-						return true;
-					};</script>\n",
-					$html
-				));
-			}
-
-			echo $html;
-		}
-	}
-
 	// integrate the menu
 	function add_menu()  {
 
 		add_menu_page(
-		    __('Gallery', 'nggallery'),
-            _n('Gallery', 'Galleries', 1, 'nggallery'),
+		    __('NextGEN Gallery', 'nggallery'),
+            _n('NextGEN Gallery', 'NextGen Galleries', 1, 'nggallery'),
             'NextGEN Gallery overview',
             NGGFOLDER,
             array ($this, 'show_menu'),
@@ -374,58 +281,6 @@ class nggAdminPanel{
 		}
 	}
 
-	function show_help($help, $screen) {
-
-		// since WP3.0 it's an object
-		if ( is_object($screen) )
-			$screen = $screen->id;
-
-		$link = '';
-		// menu title is localized...
-		$i18n = strtolower  ( _n( 'Gallery', 'Galleries', 1, 'nggallery' ) );
-
-		switch ($screen) {
-			case 'toplevel_page_' . NGGFOLDER :
-				$link  = __('<a href="https://www.imagely.com/wordpress-gallery-plugin/nextgen-gallery/" target="_blank">Introduction</a>', 'nggallery');
-			break;
-			case "{$i18n}_page_nggallery-about" :
-				$link  = __('<a href="https://www.imagely.com/languages/" target="_blank">Languages</a>', 'nggallery');
-			break;
-		}
-
-		if ( !empty($link) ) {
-			$help  = '<h5>' . __('Get help with NextGEN Gallery', 'nggallery') . '</h5>';
-			$help .= '<div class="metabox-prefs">';
-			$help .= $link;
-			$help .= "</div>\n";
-			$help .= '<h5>' . __('More Help & Info', 'nggallery') . '</h5>';
-			$help .= '<div class="metabox-prefs">';
-			$help .= __('<a href="http://wordpress.org/tags/nextgen-gallery?forum_id=10" target="_blank">Support Forums</a>', 'nggallery');
-			$help .= ' | <a href="https://www.imagely.com/docs/nextgen-gallery/?utm_source=ngg&utm_medium=ngguser&utm_campaign=help" target="_blank">' . __('FAQ', 'nggallery') . '</a>';
-			$help .= ' | <a href="https://bitbucket.org/photocrati/nextgen-gallery/issues" target="_blank">' . __('Feature request', 'nggallery') . '</a>';
-			$help .= ' | <a href="https://www.imagely.com/languages/?utm_source=ngg&utm_medium=ngguser&utm_campaign=help" target="_blank">' . __('Get your language pack', 'nggallery') . '</a>';
-			$help .= ' | <a href="https://bitbucket.org/photocrati/nextgen-gallery" target="_blank">' . __('Contribute development', 'nggallery') . '</a>';
-			$help .= ' | <a href="http://wordpress.org/extend/plugins/nextgen-gallery" target="_blank">' . __('Download latest version', 'nggallery') . '</a>';
-			$help .= "</div>\n";
-		}
-
-		return $help;
-	}
-
-    /**
-     * New wrapper for WordPress 3.3, so contextual help will be added to the admin bar
-     * Rework this see http://wpdevel.wordpress.com/2011/12/06/help-and-screen-api-changes-in-3-3/
-     *
-     * @since 1.9.0
-     * @param object $screen
-     * @return void
-     */
-    function add_contextual_help($screen) {
-
-        $help = $this->show_help('', $screen);
-        //add_contextual_help( $screen, $help );
-    }
-
 	/**
 	 * We need to manipulate the current_screen name so that we can show the correct column screen options
 	 *
@@ -455,12 +310,9 @@ class nggAdminPanel{
 			break;
 		}
 
-        if ( defined('IS_WP_3_3') )
-            $this->add_contextual_help($screen);
-
-		if ( 	strpos($screen->id, 'ngg') !== FALSE || 
+		if ( 	strpos($screen->id, 'ngg') !== FALSE ||
 				strpos($screen->id, 'nextgen') !== FALSE ||
-				strpos($screen->id, 'ngg') === 0 ) 
+				strpos($screen->id, 'ngg') === 0 )
 				{ $screen->ngg = TRUE; }	
 
 		return $screen;
