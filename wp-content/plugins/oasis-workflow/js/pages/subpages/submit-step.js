@@ -1,105 +1,105 @@
-jQuery( document ).ready( function () {
+jQuery(document).ready(function () {
    var wfpath = "";
    var stepProcess = ""; // process of selected step
 
    // When page is called from post edit page
    function load_setting() {
-      if ( jQuery( "#hi_editable" ).val() ) {
-         jQuery( ".loading" ).show();
+      if (jQuery("#hi_editable").val()) {
+         jQuery(".loading").show();
          var check_claim = {
             action: 'check_for_claim_ajax',
-            history_id: jQuery( "#hi_oasiswf_id" ).val(),
-            security: jQuery( '#owf_check_claim_nonce' ).val()
+            history_id: jQuery("#hi_oasiswf_id").val(),
+            security: jQuery('#owf_check_claim_nonce').val()
          };
-         jQuery.post( ajaxurl, check_claim, function ( response ) {
+         jQuery.post(ajaxurl, check_claim, function (response) {
             if (response == -1) {
                return false; // Invalid nonce
             }
-            jQuery( ".loading" ).hide();
-            if ( ! response.success ) {
-               jQuery( "#publishing-action" ).append(
-                       "<input type='button' id='step_submit' class='button button-primary button-large'" +
-                       " value='" + owf_submit_step_vars.signOffButton + "' style='float:left;margin-top:10px;clear:both' />" +
-                       "<input type='hidden' name='hi_process_info' id='hi_process_info' />" +
-                       "<input type='hidden' name='hi_oasiswf_redirect' id='hi_oasiswf_redirect' value=''/>" ).css( { "width": "100%" } );
+            jQuery(".loading").hide();
+            if (!response.success) {
+               jQuery("#publishing-action").append(
+                  "<input type='button' id='step_submit' class='button button-primary button-large'" +
+                  " value='" + owf_submit_step_vars.signOffButton + "' style='float:left;margin-top:10px;clear:both' />" +
+                  "<input type='hidden' name='hi_process_info' id='hi_process_info' />" +
+                  "<input type='hidden' name='hi_oasiswf_redirect' id='hi_oasiswf_redirect' value=''/>").css({"width": "100%"});
             } else {
-               jQuery( "#publishing-action" ).append(
-                       "<input type='button' id='claimButton' class='button button-primary button-large'" +
-                       " value='" + owf_submit_step_vars.claimButton + "' style='float:left;margin-top:10px;clear:both' />" +
-                       "<input type='hidden' name='hi_process_info' id='hi_process_info' />" +
-                       "<input type='hidden' name='hi_oasiswf_redirect' id='hi_oasiswf_redirect' value=''/>" ).css( { "width": "100%" } );
+               jQuery("#publishing-action").append(
+                  "<input type='button' id='claimButton' class='button button-primary button-large'" +
+                  " value='" + owf_submit_step_vars.claimButton + "' style='float:left;margin-top:10px;clear:both' />" +
+                  "<input type='hidden' name='hi_process_info' id='hi_process_info' />" +
+                  "<input type='hidden' name='hi_oasiswf_redirect' id='hi_oasiswf_redirect' value=''/>").css({"width": "100%"});
             }
-         } );
+         });
       } else {
-         jQuery( "#publish" ).hide();
-         jQuery( ".loading" ).show();
+         jQuery("#publish").hide();
+         jQuery(".loading").show();
 
          var check_claim = {
             action: 'check_for_claim_ajax',
-            history_id: jQuery( "#hi_oasiswf_id" ).val(),
-            security: jQuery( '#owf_check_claim_nonce' ).val()
+            history_id: jQuery("#hi_oasiswf_id").val(),
+            security: jQuery('#owf_check_claim_nonce').val()
          };
 
-         jQuery.post( ajaxurl, check_claim, function ( response ) {
+         jQuery.post(ajaxurl, check_claim, function (response) {
             if (response == -1) {
                return false; // Invalid nonce
             }
-            jQuery( ".loading" ).hide();
-            if ( ! response.success ) {
-               jQuery( "#publishing-action" ).append( "<input type='button' id='step_submit' class='button button-primary button-large' " +
-                       "style='float:left;margin-top:10px;' value='" + owf_submit_step_vars.signOffButton + "' />" );
+            jQuery(".loading").hide();
+            if (!response.success) {
+               jQuery("#publishing-action").append("<input type='button' id='step_submit' class='button button-primary button-large' " +
+                  "style='float:left;margin-top:10px;' value='" + owf_submit_step_vars.signOffButton + "' />");
             } else {
-               jQuery( "#publishing-action" ).append( "<input type='button' id='claimButton' class='button button-primary button-large' " +
-                       "style='float:left;margin-top:10px;' value='" + owf_submit_step_vars.claimButton + "' />" );
+               jQuery("#publishing-action").append("<input type='button' id='claimButton' class='button button-primary button-large' " +
+                  "style='float:left;margin-top:10px;' value='" + owf_submit_step_vars.claimButton + "' />");
             }
-         } );
+         });
       }
-      jQuery( "#publishing-action" ).append( "<a style='float:right;margin-top:10px;' href='admin.php?page=oasiswf-inbox'>" +
-              owf_submit_step_vars.inboxButton + "</a>" );
+      jQuery("#publishing-action").append("<a style='float:right;margin-top:10px;' href='admin.php?page=oasiswf-inbox'>" +
+         owf_submit_step_vars.inboxButton + "</a>");
 
-      jQuery( '.inline-edit-status' ).hide();
+      jQuery('.inline-edit-status').hide();
    }
-   
+
    // When page is loaded, this function is processed
-   if ( jQuery( "#hi_parrent_page" ).val() == "post_edit" ) {
+   if (jQuery("#hi_parrent_page").val() == "post_edit") {
       load_setting();
    }
-   
-    jQuery( document ).on( "click", "#step_submit", function () {
+
+   jQuery(document).on("click", "#step_submit", function () {
 
       // hook for custom validation before submitting to the workflow
-      if ( typeof owSignOffPre === 'function' ) {
+      if (typeof owSignOffPre === 'function') {
          var sign_off_pre_result = owSignOffPre();
-         if ( sign_off_pre_result == false ) {
+         if (sign_off_pre_result == false) {
             return false;
          }
       }
 
       // hook for running ACF or other third party plugin validation if needed prior to signing off on the workflow
-      owThirdPartyValidation.run( signOffSubmit );
+      owThirdPartyValidation.run(signOffSubmit);
 
       return false;
 
-   } );
+   });
 
-    // to clear the dates
-   jQuery( document ).on( "click", ".date-clear", function () {
-      jQuery( this ).parent().children( ".date_input" ).val( "" );
-   } );
+   // to clear the dates
+   jQuery(document).on("click", ".date-clear", function () {
+      jQuery(this).parent().children(".date_input").val("");
+   });
 
    // close the step sign off popup
-   jQuery( document ).on( "click", "#submitCancel, .modalCloseImg", function () {
+   jQuery(document).on("click", "#submitCancel, .modalCloseImg", function () {
       modal_close();
-   } );
+   });
 
    // called on decision select change on the sign off popup.
    jQuery(document).on("change", "#decision-select", function () {
       var get_action = "";
       var decision = "";
-      if ( "complete" == jQuery(this).val() ) {
+      if ("complete" == jQuery(this).val()) {
          decision = "success";
       }
-      if ( "unable" == jQuery(this).val() ) {
+      if ("unable" == jQuery(this).val()) {
          decision = "failure";
       }
       jQuery("#submitSave").prop('disabled', true);
@@ -116,7 +116,7 @@ jQuery( document ).ready( function () {
       jQuery("#sum_step_info").css("opacity", 1);
       jQuery("#step-loading-span").addClass("loading");
 
-      jQuery.post(ajaxurl, execute_sign_off_decision_data, function ( response ) {
+      jQuery.post(ajaxurl, execute_sign_off_decision_data, function (response) {
          if (response == -1) {
             return false; // Invalid nonce
          }
@@ -124,7 +124,7 @@ jQuery( document ).ready( function () {
          jQuery("#step-loading-span").removeClass("loading");
 
          // if there are next steps
-         if ( response.data.steps != "" ) {
+         if (response.data.steps != "") {
             var next_steps = response.data.steps;
             jQuery("#step-select").removeAttr("disabled");
             jQuery("#step-select").find('option').remove();
@@ -137,11 +137,11 @@ jQuery( document ).ready( function () {
                jQuery("#submitSave").prop('disabled', false);
             }
          } else { // looks like we are on the last step of the workflow
-            if ( "failure" == decision ) {
+            if ("failure" == decision) {
                showLastStepFailureMessage();
-            } else if ( "success" == decision ) {
+            } else if ("success" == decision) {
                var is_original_post = response.data.is_original_post;
-               showLastStepSuccessMessage( is_original_post );
+               showLastStepSuccessMessage(is_original_post);
 
                jQuery("#completeSave").show();
                jQuery("#sum_step_info").hide();
@@ -152,7 +152,7 @@ jQuery( document ).ready( function () {
          }
       });
    });
-   
+
    // called on change of Workflow Step during Sign off
    jQuery(document).on("change", "#step-select", function () {
 
@@ -161,7 +161,7 @@ jQuery( document ).ready( function () {
       // reset the error messages
       jQuery('#ow-step-messages').html("");
       jQuery('#ow-step-messages').addClass('owf-hidden');
-      
+
       jQuery("#submitSave").prop('disabled', true);
 
       var get_sign_off_step_details_data = {
@@ -180,14 +180,14 @@ jQuery( document ).ready( function () {
          jQuery(".assign-loading-span").removeClass("loading");
 
          // if response is false then there are no users for given role..!
-         if ( ! response.success ) {
-            displayWorkflowSignOffErrorMessages( response.data.errorMessage );
+         if (!response.success) {
+            displayWorkflowSignOffErrorMessages(response.data.errorMessage);
             return false;
          }
 
          // update the stepProcess var
          // TODO : see if we can get rid of the stepProcess var
-         if ( response.data.process != "" ) {
+         if (response.data.process != "") {
             stepProcess = response.data.process;
          }
 
@@ -195,11 +195,11 @@ jQuery( document ).ready( function () {
 
          // get assign to all value from the step
          var is_assign_to_all = "";
-         if ( response.data.assign_to_all != "" ) {
+         if (response.data.assign_to_all != "") {
             is_assign_to_all = parseInt(response.data.assign_to_all);
          }
 
-         if ( jQuery("#assign_to_all").length ) { //if the field exists, update it
+         if (jQuery("#assign_to_all").length) { //if the field exists, update it
             jQuery("#assign_to_all").val(is_assign_to_all);
          } else { // add the field to the page
             jQuery('<input>').attr({
@@ -223,7 +223,7 @@ jQuery( document ).ready( function () {
             jQuery("#actors-list-select").removeAttr("disabled");
             jQuery("#actors-set-select").removeAttr("disabled");
 
-            if ( response.data.users != "" ) {
+            if (response.data.users != "") {
                if (typeof response.data.users[0] == 'object') {
                   users = response.data.users;
                }
@@ -233,60 +233,60 @@ jQuery( document ).ready( function () {
          jQuery("#submitSave").prop('disabled', false);
       });
    });
-   
-   // assign users to the step
-   jQuery( document ).on( "click", "#assignee-set-point", function () {
 
-      jQuery( '#actors-list-select option:selected' ).each( function () {
-         var v = jQuery( this ).val();
-         var t = jQuery( this ).text();
-         insert_remove_options( 'actors-list-select', 'actors-set-select', v, t );
-      } );
+   // assign users to the step
+   jQuery(document).on("click", "#assignee-set-point", function () {
+
+      jQuery('#actors-list-select option:selected').each(function () {
+         var v = jQuery(this).val();
+         var t = jQuery(this).text();
+         insert_remove_options('actors-list-select', 'actors-set-select', v, t);
+      });
       return false;
-   } );
+   });
 
    //unassign users from the step
-   jQuery( document ).on( "click", "#assignee-unset-point", function () {
-      jQuery( '#actors-set-select option:selected' ).each( function () {
-         var v = jQuery( this ).val();
-         var t = jQuery( this ).text();
-         insert_remove_options( 'actors-set-select', 'actors-list-select', v, t );
-      } );
-   } );
-   
-   
+   jQuery(document).on("click", "#assignee-unset-point", function () {
+      jQuery('#actors-set-select option:selected').each(function () {
+         var v = jQuery(this).val();
+         var t = jQuery(this).text();
+         insert_remove_options('actors-set-select', 'actors-list-select', v, t);
+      });
+   });
+
+
    // called when sign off a task - Sign off button click on the popup
-   jQuery( document ).on( "click", "#submitSave", function () {
+   jQuery(document).on("click", "#submitSave", function () {
       var obj = this;
       // validate if all the required fields have data
-      if ( !validateRequiredFormFields() ) {
+      if (!validateRequiredFormFields()) {
          return false;
       }
 
-      jQuery( ".changed-data-set span" ).addClass( "loading" );
-      jQuery( "#submitSave" ).hide();
-      
+      jQuery(".changed-data-set span").addClass("loading");
+      jQuery("#submitSave").hide();
+
       // validate and get selected actors
       var actors = validateAndGetSelectedActors();
 
       // if no actors found, return
-      if (! actors)
+      if (!actors)
          return;
-      
+
       var submit_post_to_step_data = {
-         action:              'submit_post_to_step',
-         post_id:             jQuery("#hi_post_id").val(),
-         step_id:             jQuery("#step-select").val(),
-         actors:              actors,
-         due_date:            jQuery("#due-date").val(),
-         sign_off_comments:   jQuery("#workflowComments").val(),
-         task_user:           jQuery("#hi_task_user").val(),
-         history_id:          jQuery("#hi_oasiswf_id").val(),
-         custom_condition:    jQuery("#hi_custom_condition").val(),
-         step_decision:       jQuery("#decision-select").val(),
-         priority:            jQuery("#priority-select").val(),
-         form:                jQuery("form#post").serialize(),
-         security:            jQuery("#owf_signoff_ajax_nonce").val()
+         action: 'submit_post_to_step',
+         post_id: jQuery("#hi_post_id").val(),
+         step_id: jQuery("#step-select").val(),
+         actors: actors,
+         due_date: jQuery("#due-date").val(),
+         sign_off_comments: jQuery("#workflowComments").val(),
+         task_user: jQuery("#hi_task_user").val(),
+         history_id: jQuery("#hi_oasiswf_id").val(),
+         custom_condition: jQuery("#hi_custom_condition").val(),
+         step_decision: jQuery("#decision-select").val(),
+         priority: jQuery("#priority-select").val(),
+         form: jQuery("form#post").serialize(),
+         security: jQuery("#owf_signoff_ajax_nonce").val()
       };
 
       jQuery.post(ajaxurl, submit_post_to_step_data, function (response) {
@@ -295,8 +295,8 @@ jQuery( document ).ready( function () {
          }
 
          // if response is false then there are no users for given role..!
-         if ( ! response.success ) {
-            displayWorkflowSignOffErrorMessages( response.data.errorMessage );
+         if (!response.success) {
+            displayWorkflowSignOffErrorMessages(response.data.errorMessage);
 
             // display the "submit" button again
             jQuery("#submitSave").show();
@@ -304,90 +304,90 @@ jQuery( document ).ready( function () {
             return false;
          }
 
-         jQuery( ".changed-data-set span" ).removeClass( "loading" );
-         if ( jQuery( "#hi_parrent_page" ).val() == "inbox" ) {
+         jQuery(".changed-data-set span").removeClass("loading");
+         if (jQuery("#hi_parrent_page").val() == "inbox") {
             location.reload(); // simply reload the inbox page
          } else { // update the post status and save the post
             modal_close();
-            jQuery( "#post_status" ).val( response.data.new_post_status );
-            if ( jQuery("#hidden_post_status").length ) {
+            jQuery("#post_status").val(response.data.new_post_status);
+            if (jQuery("#hidden_post_status").length) {
                jQuery("#hidden_post_status").val(response.data.new_post_status);
             }
-            jQuery( "#save-post" ).click();
+            jQuery("#save-post").click();
          }
       });
-   });  
+   });
 
-  // show/hide the publish date selection depending on "publish immediately" checkbox value
-   jQuery( document ).on( "click", "#immediately-chk", function () {
-      if ( jQuery( this ).attr( "checked" ) == "checked" ) {
-         jQuery( "#immediately-span" ).hide();
+   // show/hide the publish date selection depending on "publish immediately" checkbox value
+   jQuery(document).on("click", "#immediately-chk", function () {
+      if (jQuery(this).is(":checked")) {
+         jQuery("#immediately-span").hide();
       } else {
-         jQuery( "#immediately-span" ).show();
+         jQuery("#immediately-span").show();
       }
-   } );
-   
+   });
+
    // called when signing off from the last step of the workflow
-   jQuery( document ).on( "click", "#completeSave", function () {
+   jQuery(document).on("click", "#completeSave", function () {
 
       // show loading and hide the button
-      jQuery( ".changed-data-set span" ).addClass( "loading" );
-      jQuery( this ).hide();
+      jQuery(".changed-data-set span").addClass("loading");
+      jQuery(this).hide();
 
       // get the user assigned publish date, if any
       var im_date = getImmediatelyDate();
 
       var workflow_complete_data = {
-         action:           'workflow_complete',
-         history_id:       jQuery( "#hi_oasiswf_id" ).val(),
-         post_id:          jQuery( "#hi_post_id" ).val(),
-         task_user:        jQuery( "#hi_task_user") .val(),
-         parent_page:      jQuery( "#hi_parrent_page" ).val(),
-         immediately:      im_date,
-         form:             jQuery("form#post").serialize(),
-         security:         jQuery( '#owf_signoff_ajax_nonce' ).val()
+         action: 'workflow_complete',
+         history_id: jQuery("#hi_oasiswf_id").val(),
+         post_id: jQuery("#hi_post_id").val(),
+         task_user: jQuery("#hi_task_user").val(),
+         parent_page: jQuery("#hi_parrent_page").val(),
+         immediately: im_date,
+         form: jQuery("form#post").serialize(),
+         security: jQuery('#owf_signoff_ajax_nonce').val()
       };
 
-      jQuery.post( ajaxurl, workflow_complete_data, function ( response ) {
-         if ( response == -1 ) { // incorrect nonce
+      jQuery.post(ajaxurl, workflow_complete_data, function (response) {
+         if (response == -1) { // incorrect nonce
             return false;
          }
 
          // if response is false - looks like we have validation errors!
-         if ( ! response.success ) {
-            displayWorkflowSignOffErrorMessages( response.data.errorMessage );
+         if (!response.success) {
+            displayWorkflowSignOffErrorMessages(response.data.errorMessage);
 
             // display the "submit" button again
-            jQuery( ".changed-data-set span" ).removeClass( "loading" );
-            jQuery( "#completeSave" ).show();
+            jQuery(".changed-data-set span").removeClass("loading");
+            jQuery("#completeSave").show();
 
             return false;
          }
 
-         jQuery( document ).find( "#step_submit" ).remove();
+         jQuery(document).find("#step_submit").remove();
 
-         if ( jQuery( "#hi_parrent_page" ).val() == "inbox" ) {
-            jQuery( ".changed-data-set span" ).removeClass( "loading" );
+         if (jQuery("#hi_parrent_page").val() == "inbox") {
+            jQuery(".changed-data-set span").removeClass("loading");
             // reload the inbox page
             location.reload();
          } else {
-            jQuery( ".changed-data-set span" ).removeClass( "loading" );
+            jQuery(".changed-data-set span").removeClass("loading");
             modal_close();
-            jQuery( "#save_action" ).val("workflow_complete");
-            jQuery( "#post_status" ).val(response.data.new_post_status);
-            if ( jQuery("#hidden_post_status").length ) {
+            jQuery("#save_action").val("workflow_complete");
+            jQuery("#post_status").val(response.data.new_post_status);
+            if (jQuery("#hidden_post_status").length) {
                jQuery("#hidden_post_status").val(response.data.new_post_status);
             }
-            jQuery( "#save-post" ).click();
+            jQuery("#save-post").click();
          }
-      } );
-   } );
+      });
+   });
 
-   jQuery( ".immediately" ).keydown( function () {
+   jQuery(".immediately").keydown(function () {
 
-      jQuery( this ).css( "background-color", "#ffffff" );
-   } );
-   
+      jQuery(this).css("background-color", "#ffffff");
+   });
+
    // called when cancelling the workflow
    jQuery(document).on("click", "#cancelSave", function () {
       var obj = this;
@@ -406,17 +406,17 @@ jQuery( document ).ready( function () {
       };
 
       jQuery.post(ajaxurl, workflow_cancel_data, function (response) {
-         if ( response == -1 ) { // incorrect nonce
+         if (response == -1) { // incorrect nonce
             return false;
          }
 
          // if response is false - looks like we have validation errors!
-         if ( ! response.success ) {
-            displayWorkflowSignOffErrorMessages( response.data.errorMessage );
+         if (!response.success) {
+            displayWorkflowSignOffErrorMessages(response.data.errorMessage);
 
             // display the "submit" button again
-            jQuery( ".changed-data-set span" ).removeClass( "loading" );
-            jQuery( "#cancelSave" ).show();
+            jQuery(".changed-data-set span").removeClass("loading");
+            jQuery("#cancelSave").show();
 
             return false;
          }
@@ -446,59 +446,58 @@ jQuery( document ).ready( function () {
 
       jQuery(this).parent().children(".loading").show();
       jQuery.post(ajaxurl, data, function (response) {
-         if ( response === -1 ) {
+         if (response === -1) {
             claim.parent().children(".loading").hide();
             return false;
          }
-         if ( response.success ) {
+         if (response.success) {
             var ow_admin_url = response.data.url;
             var new_history_id = response.data.new_history_id;
-            window.location.href = ow_admin_url + 'post.php?post=' + post_id +'&action=edit&oasiswf=' + new_history_id;
+            window.location.href = ow_admin_url + 'post.php?post=' + post_id + '&action=edit&oasiswf=' + new_history_id;
          }
       });
    });
-   
+
    function signOffSubmit() {
-      jQuery( '#hi_oasiswf_redirect' ).val( "step" );
-      jQuery( "#new-step-submit-div" ).owfmodal( {
-         onShow: function ( dlg ) {
+      jQuery('#hi_oasiswf_redirect').val("step");
+      jQuery("#new-step-submit-div").owfmodal({
+         onShow: function (dlg) {
             jQuery("#simplemodal-container").css({
                "max-height": "90%",
-               "top":"60px"
+               "top": "60px"
             });
-            jQuery( dlg.wrap ).css( 'overflow', 'auto' ); // or try ;
+            jQuery(dlg.wrap).css('overflow', 'auto'); // or try ;
             // commented out, so that the above CSS can take effect
             //jQuery.modal.update();
-            jQuery( "#multi-actors-div" ).show();
+            jQuery("#multi-actors-div").show();
          }
-      } );
+      });
       wfpath = "";
       stepProcess = "";
       calendar_action();
    }
-   
+
    function calendar_action() {
-      jQuery( "#due-date" ).datepicker( {
+      jQuery("#due-date").datepicker({
          autoSize: true,
          changeMonth: true,
          changeYear: true,
          yearRange: '1950:2050',
          dateFormat: owf_submit_step_vars.editDateFormat
-      } );
-      if ( jQuery('body > #ui-datepicker-div').length > 0 )
-      {
+      });
+      if (jQuery('body > #ui-datepicker-div').length > 0) {
          jQuery('#ui-datepicker-div').wrap('<div class="ui-oasis" />');
       }
    }
-   
+
    modal_close = function () {
       wfpath = "";
       stepProcess = "";
       jQuery.modal.close();
-      if ( jQuery( "#hi_parrent_page" ).val() == "inbox" )
-         jQuery( document ).find( "#step_submit_content" ).html( "" );
+      if (jQuery("#hi_parrent_page").val() == "inbox")
+         jQuery(document).find("#step_submit_content").html("");
    }
-   
+
    function showLastStepFailureMessage() {
       var msg = owf_submit_step_vars.lastStepFailureMessage;
       jQuery("#message_div").html(msg).css({"background-color": "#fbd7f0", "border": "1px solid #f989d8"}).show();
@@ -509,8 +508,8 @@ jQuery( document ).ready( function () {
 
       jQuery("#sum_step_info").hide();
    }
-   
-    function showLastStepSuccessMessage( is_original_post ) {
+
+   function showLastStepSuccessMessage(is_original_post) {
       var msg = owf_submit_step_vars.lastStepSuccessMessage;
       jQuery("#message_div").html(msg).css({"background-color": "#dcddfa", "border": "1px solid #b0b4fa"}).show();
 
@@ -522,31 +521,29 @@ jQuery( document ).ready( function () {
       jQuery("#update_publish_msg").hide();
 
       // If future date is set then uncheck the checkbox by default & show immediate span
-      if (jQuery('#immediately-chk').attr("checked") == "checked")
-      {
+      if (jQuery('#immediately-chk').is(":checked")) {
          jQuery("#immediately-span").hide();
-      } else
-      {
+      } else {
          jQuery("#immediately-span").show();
       }
 
       // show the update message for revisions
-      if ( !is_original_post ) {
+      if (!is_original_post) {
          jQuery("#update_publish_msg").show();
       }
    }
 
-   var insert_remove_options = function ( removeSelector, appendSelector, val, text ) {
-      if ( typeof val !== 'undefined' ) {
-         jQuery( "#" + removeSelector + " option[value='" + val + "']" ).remove();
-         jQuery( '#' + appendSelector ).append( '<option value=' + val + '>' + text + '</option>' );
+   var insert_remove_options = function (removeSelector, appendSelector, val, text) {
+      if (typeof val !== 'undefined') {
+         jQuery("#" + removeSelector + " option[value='" + val + "']").remove();
+         jQuery('#' + appendSelector).append('<option value=' + val + '>' + text + '</option>');
       }
    };
-   
-   
+
+
    function getImmediatelyDate() {
       var im_date = "";
-      if ( jQuery( "#immediately-span" ).length > 0 && jQuery( "#immediately-span" ).is( ':visible' ) ) {
+      if (jQuery("#immediately-span").length > 0 && jQuery("#immediately-span").is(':visible')) {
          if (isNaN(jQuery("#im-year").val())) {
             jQuery("#im-year").css("background-color", "#fadede");
             return im_date;
@@ -573,9 +570,9 @@ jQuery( document ).ready( function () {
 
       return im_date;
    }
-   
+
    setPosition = function () {
-      jQuery( "#simplemodal-container" ).css( "max-height", "80%" );
+      jQuery("#simplemodal-container").css("max-height", "80%");
 
       // call modal.setPosition, so that the window height can adjust automatically depending on the displayed fields.
       jQuery.modal.setPosition();
@@ -607,13 +604,13 @@ jQuery( document ).ready( function () {
 
       setPosition();
    }
-   
-    function validateAndGetSelectedActors() {
+
+   function validateAndGetSelectedActors() {
 
       // Case 1: Assign to all is checked
       // nothing to validates, simply return true
       var is_assigned_to_all = "";
-      if ( jQuery('#assign_to_all').val() != "" ) {
+      if (jQuery('#assign_to_all').val() != "") {
          is_assigned_to_all = parseInt(jQuery('#assign_to_all').val());
          if (is_assigned_to_all === 1) {
             return true;
@@ -626,14 +623,14 @@ jQuery( document ).ready( function () {
       // if yes, return the selected actor(s)
 
       var selectedOptionCount = jQuery("#actors-set-select option").length;
-      if (! selectedOptionCount ) {
+      if (!selectedOptionCount) {
          alert(owf_submit_step_vars.noAssignedActors);
-         jQuery( ".changed-data-set span" ).removeClass("loading");
-         jQuery( "#submitSave" ).show();
+         jQuery(".changed-data-set span").removeClass("loading");
+         jQuery("#submitSave").show();
          return false;
       }
       var multi_actors = "", i = 1;
-      jQuery( "#actors-set-select option" ).each(function () {
+      jQuery("#actors-set-select option").each(function () {
          if (i == selectedOptionCount)
             multi_actors += jQuery(this).val();
          else
@@ -645,32 +642,31 @@ jQuery( document ).ready( function () {
       else
          return false;
    }
-   
+
    function validateRequiredFormFields() {
-      if ( !jQuery( "#decision-select" ).val() ) {
-         alert( owf_submit_step_vars.decisionSelectMessage );
+      if (!jQuery("#decision-select").val()) {
+         alert(owf_submit_step_vars.decisionSelectMessage);
          return false;
       }
 
-      if ( !jQuery( "#step-select" ).val() ) {
-         alert( owf_submit_step_vars.selectStep );
+      if (!jQuery("#step-select").val()) {
+         alert(owf_submit_step_vars.selectStep);
          return false;
       }
       /* This is for checking that reminder email checkbox is selected in workflow settings.
        If YES then Due Date is Required Else Not */
-      if ( owf_submit_step_vars.drdb != "" || owf_submit_step_vars.drda != "" || owf_submit_step_vars.defaultDueDays != "" )
-      {
-         if ( jQuery( "#due-date" ).val() == '' ) {
-            alert( owf_submit_step_vars.dueDateRequired );
+      if (owf_submit_step_vars.drdb != "" || owf_submit_step_vars.drda != "" || owf_submit_step_vars.defaultDueDays != "") {
+         if (jQuery("#due-date").val() == '') {
+            alert(owf_submit_step_vars.dueDateRequired);
             return false;
          }
       }
 
       return true;
    }
-  
-   function displayWorkflowSignOffErrorMessages( errorMessages ) {
-      jQuery( '.error' ).hide();
+
+   function displayWorkflowSignOffErrorMessages(errorMessages) {
+      jQuery('.error').hide();
       jQuery('#ow-step-messages').html(errorMessages);
       jQuery('#ow-step-messages').removeClass('owf-hidden');
 
@@ -684,4 +680,4 @@ jQuery( document ).ready( function () {
       setPosition();
    }
 
-} );
+});

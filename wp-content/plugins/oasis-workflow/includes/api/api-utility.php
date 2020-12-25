@@ -6,7 +6,8 @@ add_action('rest_api_init', function () {
    // Register Route to fetch priorities
    register_rest_route('oasis-workflow/v1', '/priorities/', array(
       'methods' => 'GET',
-      'callback' => array($ow_utility, 'api_get_priorities')
+      'callback' => array($ow_utility, 'api_get_priorities'),
+      'permission_callback' => '__return_true'
    ));
 
 });

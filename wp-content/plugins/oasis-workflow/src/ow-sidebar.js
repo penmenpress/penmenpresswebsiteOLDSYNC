@@ -64,25 +64,25 @@ export class OasisWorkflowProComponent extends Component {
 	componentDidMount() {
 		let postId = this.props.postId;
 
-		if( this.props.isCurrentPostPublished ) {
-			let hidePluginMessage = <WorkflowRevisionFeatureMessage/>
+		if (this.props.isCurrentPostPublished) {
+			let hidePluginMessage = <WorkflowRevisionFeatureMessage />
 			this.setState({
 				hidePlugin: true,
 				hidePluginMessage
 			});
 			return;
 		}
-      
-		if( this.props.postMeta == undefined ) {
-				let hidePluginMessage = <CustomPostTypeSupportMessage/>
-				this.setState({
-					hidePlugin: true,
-					hidePluginMessage
-				});
-				return;
-			}
-		
-		this.props.setIsPostInWorkflow({"isPostInWorkflow": this.props.postMeta._oasis_is_in_workflow});
+
+		if (this.props.postMeta == undefined) {
+			let hidePluginMessage = <CustomPostTypeSupportMessage />
+			this.setState({
+				hidePlugin: true,
+				hidePluginMessage
+			});
+			return;
+		}
+
+		this.props.setIsPostInWorkflow({ "isPostInWorkflow": this.props.postMeta._oasis_is_in_workflow });
 
 		// reset the errors and sucess
 		this.setState({
@@ -108,7 +108,7 @@ export class OasisWorkflowProComponent extends Component {
 		wp.apiFetch({ path: '/oasis-workflow/v1/workflows/submit/checkRoleCapability/postId=' + this.props.postId + '/postType=' + this.props.postType, method: 'GET' }).then(
 			(response) => {
 				// Display workflow sidebar as per global settings and applicable role capability
-				if ( response.is_role_applicable && response.can_submit_to_workflow  ) {
+				if (response.is_role_applicable && response.can_submit_to_workflow) {
 					/**
 					 * TODO: As of now, we are using setInterval to load the settings, 
 					 * Let's find a better way to handle this and get rid of the setInterval
@@ -119,12 +119,12 @@ export class OasisWorkflowProComponent extends Component {
 							clearInterval(id);
 							that.setState({
 								hidePlugin: false,
-								hidePluginMessage : ''
-							});				
+								hidePluginMessage: ''
+							});
 						}
-					}, 500);	
+					}, 500);
 
-					if ( !response.can_skip_workflow || this.props.postMeta._oasis_original ) { // the post is a revision post, then hide Publish
+					if (!response.can_skip_workflow || this.props.postMeta._oasis_original) { // the post is a revision post, then hide Publish
 						// hide the Publish button when loading the Workflow section
 						[].forEach.bind(document.getElementsByClassName("editor-post-publish-panel__toggle"), function (itm) {
 							itm.style.display = "none";
@@ -133,18 +133,18 @@ export class OasisWorkflowProComponent extends Component {
 						// hide the Update button which allows to update a published post
 						[].forEach.bind(document.getElementsByClassName("editor-post-publish-button"), function (itm) {
 							itm.style.display = "none";
-						})();						
+						})();
 					}
 
 					// if the URL has action history ID, then make the Oasis Workflow Sidebar as default sidebar to open.
-					if ( this.state.actionHistoryId ) {
+					if (this.state.actionHistoryId) {
 						// console.log("activeGeneralSidebarName:" + this.props.activeGeneralSidebarName);
 						this.props.onOpenSideBar('oasis-workflow-plugin/ow-workflow-sidebar');
 					}
 
 					// displays "Submit to Workflow" button on the header section
-					if ( !this.state.actionHistoryId && !this.props.postMeta._oasis_is_in_workflow && response.can_submit_to_workflow ) {
-						this.submitButtonText = __( "Submit to Workflow", 'oasisworkflow' ) +  "...";
+					if (!this.state.actionHistoryId && !this.props.postMeta._oasis_is_in_workflow && response.can_submit_to_workflow) {
+						this.submitButtonText = __("Submit to Workflow", 'oasisworkflow') + "...";
 
 						var workflowButtonDiv = document.createElement('div');
 						workflowButtonDiv.className = 'owf-submit-button-div';
@@ -167,9 +167,9 @@ export class OasisWorkflowProComponent extends Component {
 						}
 					}
 				} else {
-					let hidePluginMessage = __( "Workflow actions are not available for this post type.", 'oasisworkflow' );
-					if ( !response.can_submit_to_workflow ) {
-						hidePluginMessage = __( "You are not allowed to submit to workflow.", 'oasisworkflow' );
+					let hidePluginMessage = __("Workflow actions are not available for this post type.", 'oasisworkflow');
+					if (!response.can_submit_to_workflow) {
+						hidePluginMessage = __("You are not allowed to submit to workflow.", 'oasisworkflow');
 					}
 
 					this.setState({
@@ -202,8 +202,8 @@ export class OasisWorkflowProComponent extends Component {
 			submitToWorkflowResponse: '',
 			signOffResponse: ''
 		});
-      
-      this.props.setIsPostInWorkflow({"isPostInWorkflow": false});
+
+		this.props.setIsPostInWorkflow({ "isPostInWorkflow": false });
 	}
 
 	/**
@@ -216,8 +216,8 @@ export class OasisWorkflowProComponent extends Component {
 		});
 		var submitToWorkflowButton = document.getElementsByClassName('owf-submit-button')[0];
 		submitToWorkflowButton.classList.add('owf-guten-hidden');
-      
-      this.props.setIsPostInWorkflow({"isPostInWorkflow": response.post_is_in_workflow});
+
+		this.props.setIsPostInWorkflow({ "isPostInWorkflow": response.post_is_in_workflow });
 	}
 
 	/**
@@ -229,8 +229,8 @@ export class OasisWorkflowProComponent extends Component {
 			signOffResponse: response.success_response,
 			hideSignoff: true
 		});
-      
-      this.props.setIsPostInWorkflow({"isPostInWorkflow": response.post_is_in_workflow});
+
+		this.props.setIsPostInWorkflow({ "isPostInWorkflow": response.post_is_in_workflow });
 	}
 
 	render() {
@@ -246,7 +246,7 @@ export class OasisWorkflowProComponent extends Component {
 					name="ow-workflow-sidebar"
 					title={__('Oasis Workflow', 'oasisworkflow')}
 				>
-					{ hidePlugin ?
+					{hidePlugin ?
 						(
 							<PanelBody>
 								<div id="owf-warning-message" className="notice notice-error">
@@ -257,7 +257,7 @@ export class OasisWorkflowProComponent extends Component {
 						<div>
 							<SignoffResponse response={signOffResponse} />
 							<div>
-								{( ! hideSignoff && actionHistoryId !== null && hideClaimButton ) ?
+								{(!hideSignoff && actionHistoryId !== null && hideClaimButton) ?
 									<Signoff handleResponse={this.handleSignoffResponse.bind(this)} />
 									: ""
 								}
@@ -302,7 +302,7 @@ const HOC = compose([
 	withDispatch((dispatch) => ({
 		onSave: dispatch('core/editor').savePost,
 		onOpenSideBar: dispatch('core/edit-post').openGeneralSidebar,
-      setIsPostInWorkflow: dispatch('plugin/oasis-workflow').setIsPostInWorkflow
+		setIsPostInWorkflow: dispatch('plugin/oasis-workflow').setIsPostInWorkflow
 	}))
 ])(OasisWorkflowProComponent);
 

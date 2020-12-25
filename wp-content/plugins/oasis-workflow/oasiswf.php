@@ -3,12 +3,12 @@
   Plugin Name: Oasis Workflow
   Plugin URI: http://www.oasisworkflow.com
   Description: Automate your WordPress Editorial Workflow with Oasis Workflow.
-  Version: 4.6
+  Version: 5.6
   Author: Nugget Solutions Inc.
   Author URI: http://www.nuggetsolutions.com
   Text Domain: oasisworkflow
   ----------------------------------------------------------------------
-  Copyright 2011-2020 Nugget Solutions Inc.
+  Copyright 2011-2021 Nugget Solutions Inc.
 
 
 This program is free software; you can redistribute it and/or modify
@@ -26,19 +26,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-define('OASISWF_VERSION', '4.6');
-define('OASISWF_DB_VERSION', '4.6');
-define('OASISWF_PATH', plugin_dir_path(__FILE__)); //use for include files to other files
-define('OASISWF_ROOT', dirname(__FILE__));
-define('OASISWF_FILE_PATH', OASISWF_ROOT . '/' . basename(__FILE__));
-define('OASISWF_BASE_NAME', plugin_basename(__FILE__));
-define('OASISWF_URL', plugins_url('/', __FILE__));
-define('OASISWF_STORE_URL', 'https://www.oasisworkflow.com');
-define('OASISWF_SETTINGS_PAGE', esc_url(add_query_arg('page', 'ef-settings', get_admin_url(null, 'admin.php'))));
-define('OASISWF_EDIT_DATE_FORMAT', 'm-M d, Y');
-define('OASISWF_DATE_TIME_FORMAT', 'm-M d, Y @ H:i');
-define('OASIS_PER_PAGE', '50');
-define('IS_OASISWF_ACTIVATED', true);
+define( 'OASISWF_VERSION', '5.6' );
+define( 'OASISWF_DB_VERSION', '5.6' );
+define( 'OASISWF_PATH', plugin_dir_path( __FILE__ ) ); //use for include files to other files
+define( 'OASISWF_ROOT', dirname( __FILE__ ) );
+define( 'OASISWF_FILE_PATH', OASISWF_ROOT . '/' . basename( __FILE__ ) );
+define( 'OASISWF_BASE_NAME', plugin_basename( __FILE__ ) );
+define( 'OASISWF_URL', plugins_url( '/', __FILE__ ) );
+define( 'OASISWF_STORE_URL', 'https://www.oasisworkflow.com' );
+define( 'OASISWF_SETTINGS_PAGE', esc_url( add_query_arg( 'page', 'ef-settings', get_admin_url( null, 'admin.php' ) ) ) );
+define( 'OASISWF_EDIT_DATE_FORMAT', 'm-M d, Y' );
+define( 'OASISWF_DATE_TIME_FORMAT', 'm-M d, Y @ H:i' );
+define( 'OASIS_PER_PAGE', '50' );
+define( 'IS_OASISWF_ACTIVATED', true );
 load_plugin_textdomain('oasisworkflow', false, basename(dirname(__FILE__)) . '/languages');
 
 
@@ -108,10 +108,12 @@ class OW_Plugin_Init
 
       // Hook scripts function into block editor hook
       add_action('enqueue_block_assets', array($this, 'ow_gutenberg_scripts'));
+      
+      //add_filter( 'register_post_type_args', array( $this, 'update_custom_post_type_args' ), 10, 2 );
 
    }
 
-   /**
+    /**
     * Activate the plugin
     *
     * @since 2.0
@@ -1216,8 +1218,8 @@ class OW_Plugin_Init
       $img_html = "<img src='" . OASISWF_URL . "img/small-arrow.gif" . "' style='border:0px;' />";
       $welcome_message_1 = __("To get started with Oasis Workflow follow the steps listed below.", "oasisworkflow");
       $welcome_message_1_multisite = __("To get started with Oasis Workflow go to the individual site and follow the steps listed below.", "oasisworkflow");
-      $welcome_message_2 = sprintf(__("1. Go to Workflows %s Edit Workflows.", "oasisworkflow"), $img_html);
-      $welcome_message_3 = __("2. Modify the \"Sample Workflow\" to suit your needs.", "oasisworkflow");
+      $welcome_message_2 = sprintf(__("1. Go to Workflows %s All Workflows.", "oasisworkflow"), $img_html);
+      $welcome_message_3 = __("2. Create a new workflow OR modify/use the sample workflows that come with the plugin.", "oasisworkflow");
       $welcome_message_4 = sprintf(__("3. Activate the workflow process from Workflows %s Settings, Workflow tab.", "oasisworkflow"), $img_html);
       if (function_exists('is_multisite') && is_multisite()) {
          $default_pointers = array(
@@ -1445,6 +1447,11 @@ class OW_Plugin_Init
       if (!class_exists('OW_Custom_Capabilities')) {
          include(OASISWF_PATH . 'includes/class-ow-custom-capabilities.php');
       }
+      
+      // Include feedback class
+      if (!class_exists('OW_Feedback')) {
+         include(OASISWF_PATH . 'includes/class-ow-deactivate-feedback.php');
+      }
 
       /**
        * Include API classes
@@ -1464,13 +1471,19 @@ class OW_Plugin_Init
       register_meta("post", "_oasis_is_in_workflow", array(
          "show_in_rest" => true,
          "single" => true,
-         "type" => "integer"
+         "type" => "integer",
+         "auth_callback" => function() {
+            return current_user_can( 'edit_posts' );
+         }
       ));
 
       register_meta("post", "_oasis_original", array(
          "show_in_rest" => true,
          "single" => true,
-         "type" => "integer"
+         "type" => "integer",
+         "auth_callback" => function() {
+            return current_user_can( 'edit_posts' );
+         }
       ));
 
    }
@@ -1924,7 +1937,7 @@ class OW_Plugin_Init
          dbDelta($sql);
       }
 
-      $this->install_admin_data();
+      $this->populate_default_workflows();
    }
 
    /**
@@ -2002,9 +2015,9 @@ class OW_Plugin_Init
    }
 
    /**
-    * Add default data - Create a default workflow
+    * Add default data - Create a Multi Level Review Workflow
     */
-   private function install_admin_data()
+   private function populate_default_workflows()
    {
       global $wpdb;
 
@@ -2014,11 +2027,11 @@ class OW_Plugin_Init
       if (is_numeric($row->maxid)) { //data already exists, do not insert another row.
          return;
       }
-      $workflow_info = stripcslashes('{"steps":{"step0":{"fc_addid":"step0","fc_label":"assignment","fc_dbid":"2","fc_process":"assignment","fc_position":["326px","568px"]},"step1":{"fc_addid":"step1","fc_label":"review","fc_dbid":"1","fc_process":"review","fc_position":["250px","358px"]},"step2":{"fc_addid":"step2","fc_label":"publish","fc_dbid":"3","fc_process":"publish","fc_position":["119px","622px"]}},"conns":{"0":{"sourceId":"step2","targetId":"step0","post_status":"draft","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"1":{"sourceId":"step1","targetId":"step0","post_status":"draft","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"2":{"sourceId":"step0","targetId":"step1","post_status":"pending","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"blue"}}},"3":{"sourceId":"step2","targetId":"step1","post_status":"pending","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"4":{"sourceId":"step1","targetId":"step2","post_status":"ready-to-publish","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"blue"}}}},"first_step":[{"step":"step1","post_status":"draft"}]}');
+      $workflow_info = stripcslashes('{"steps":{"step0":{"fc_addid":"step0","fc_label":"Author Assignment","fc_dbid":"2","fc_process":"assignment","fc_position":["326px","568px"]},"step1":{"fc_addid":"step1","fc_label":"First Level Review","fc_dbid":"1","fc_process":"review","fc_position":["250px","358px"]},"step2":{"fc_addid":"step2","fc_label":"Second Level Review and Publish","fc_dbid":"3","fc_process":"publish","fc_position":["119px","622px"]}},"conns":{"0":{"sourceId":"step2","targetId":"step0","post_status":"draft","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"1":{"sourceId":"step1","targetId":"step0","post_status":"draft","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"2":{"sourceId":"step0","targetId":"step1","post_status":"pending","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"blue"}}},"3":{"sourceId":"step2","targetId":"step1","post_status":"pending","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"4":{"sourceId":"step1","targetId":"step2","post_status":"ready-to-publish","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"blue"}}}},"first_step":[{"step":"step1","post_status":"draft"}]}');
       $additional_info = stripcslashes('a:4:{s:16:"wf_for_new_posts";i:1;s:20:"wf_for_revised_posts";i:1;s:12:"wf_for_roles";a:0:{}s:17:"wf_for_post_types";a:0:{}}');
       $data = array(
-         'name' => 'Sample Workflow',
-         'description' => 'sample workflow',
+         'name' => 'Multi Level Review Workflow',
+         'description' => 'Multi Level Review Workflow',
          'wf_info' => $workflow_info,
          'start_date' => date("Y-m-d", current_time('timestamp')),
          'end_date' => date("Y-m-d", current_time('timestamp') + YEAR_IN_SECONDS),
@@ -2042,7 +2055,7 @@ class OW_Plugin_Init
       $workflow_step_table = OW_Utility::instance()->get_workflow_steps_table_name();
 
       // step 1 - review
-      $review_step_info = '{"process":"review","step_name":"review","assign_to_all":0,"task_assignee":{"roles":["editor"],"users":[],"groups":[]},"assignee":{},"status":"","review_approval":"everyone"}';
+      $review_step_info = '{"process":"review","step_name":"First Level Review","assign_to_all":0,"task_assignee":{"roles":["editor"],"users":[],"groups":[]},"assignee":{},"status":"","review_approval":"everyone"}';
       $review_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
       $wpdb->insert(
          $workflow_step_table, array(
@@ -2055,7 +2068,7 @@ class OW_Plugin_Init
       );
 
       // step 2 - assignment
-      $assignment_step_info = '{"process":"assignment","step_name":"assignment","assign_to_all":0,"task_assignee":{"roles":["author"],"users":[],"groups":[]},"assignee":{},"status":""}';
+      $assignment_step_info = '{"process":"assignment","step_name":"Author Assignment","assign_to_all":0,"task_assignee":{"roles":["author"],"users":[],"groups":[]},"assignee":{},"status":""}';
       $assignment_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
       $wpdb->insert(
          $workflow_step_table, array(
@@ -2068,12 +2081,82 @@ class OW_Plugin_Init
       );
 
       // step 3 - publish
-      $publish_step_info = '{"process":"publish","step_name":"publish","assign_to_all":0,"task_assignee":{"roles":["administrator"],"users":[],"groups":[]},"assignee":{},"status":""}';
+      $publish_step_info = '{"process":"publish","step_name":"Second Level Review and Publish","assign_to_all":0,"task_assignee":{"roles":["administrator"],"users":[],"groups":[]},"assignee":{},"status":""}';
       $publish_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
       $wpdb->insert(
          $workflow_step_table, array(
             'step_info' => stripcslashes($publish_step_info),
             'process_info' => stripcslashes($publish_process_info),
+            'create_datetime' => current_time('mysql'),
+            'update_datetime' => current_time('mysql'),
+            'workflow_id' => $workflow_id
+         )
+      );
+
+	   $this->install_single_level_review_workflow();
+   }
+   
+   /**
+    * Add default Single Level Review Workflow
+    * @since 4.9
+    */
+   private function install_single_level_review_workflow() {
+      global $wpdb;
+      
+      // insert into workflow table
+      $table_name = OW_Utility::instance()->get_workflows_table_name();
+      $row = $wpdb->get_row("SELECT max(ID) as maxid FROM $table_name");
+      if (is_numeric($row->maxid) && ( $row->maxid >= 2 ) ) { //data already exists, do not insert another row.
+         return;
+      }
+      $workflow_info = stripcslashes('{"steps":{"step0":{"fc_addid":"step0","fc_label":"Review and Publish","fc_dbid":"4","fc_process":"publish","fc_position":["169px","135px"]},"step1":{"fc_addid":"step1","fc_label":"Author Assignment","fc_dbid":"5","fc_process":"assignment","fc_position":["168px","506px"]}},"conns":{"0":{"sourceId":"step0","targetId":"step1","post_status":"with-author","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"1":{"sourceId":"step1","targetId":"step0","post_status":"ready-to-publish","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"blue"}}}},"first_step":[{"step":"step0","post_status":"pending"}]}');
+      $additional_info = stripcslashes('a:4:{s:16:"wf_for_new_posts";i:1;s:20:"wf_for_revised_posts";i:1;s:12:"wf_for_roles";a:0:{}s:17:"wf_for_post_types";a:0:{}}');
+      $data = array(
+         'name' => 'Single Level Review Workflow',
+         'description' => 'Single Level Review Workflow',
+         'wf_info' => $workflow_info,
+         'start_date' => date("Y-m-d", current_time('timestamp')),
+         'end_date' => date("Y-m-d", current_time('timestamp') + YEAR_IN_SECONDS),
+         'is_valid' => 1,
+         'create_datetime' => current_time('mysql'),
+         'update_datetime' => current_time('mysql'),
+         'wf_additional_info' => $additional_info
+      );
+      $result = $wpdb->insert($table_name, $data);
+      if ($result) {
+         $row = $wpdb->get_row("SELECT max(ID) as maxid FROM $table_name");
+         if ($row)
+            $workflow_id = $row->maxid;
+         else
+            return false;
+      } else {
+         return false;
+      }
+
+      // insert steps
+      $workflow_step_table = OW_Utility::instance()->get_workflow_steps_table_name();
+      
+      // step 1 - review and publish      
+      $publish_step_info = '{"process":"publish","step_name":"Review and Publish","assign_to_all":0,"task_assignee":{"roles":["administrator"],"users":[],"groups":[]},"assignee":{},"status":""}';
+      $publish_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
+      
+      $wpdb->insert(
+         $workflow_step_table, array(
+            'step_info' => stripcslashes($publish_step_info),
+            'process_info' => stripcslashes($publish_process_info),
+            'create_datetime' => current_time('mysql'),
+            'update_datetime' => current_time('mysql'),
+            'workflow_id' => $workflow_id
+         )
+      );      
+
+      // step 2 - assignment      
+      $assignment_step_info = '{"process":"assignment","step_name":"Author Assignment","assign_to_all":0,"task_assignee":{"roles":["owfpostsubmitter"],"users":[],"groups":[]},"assignee":{},"status":""}';
+      $assignment_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';      
+      $wpdb->insert(
+         $workflow_step_table, array(
+            'step_info' => stripcslashes($assignment_step_info),
+            'process_info' => stripcslashes($assignment_process_info),
             'create_datetime' => current_time('mysql'),
             'update_datetime' => current_time('mysql'),
             'workflow_id' => $workflow_id
@@ -2302,11 +2385,19 @@ class OW_Plugin_Init
    {
       // We shouldn't encourage editing our plugin directly.
       unset($links['edit']);
-
-      // Add our custom links to the returned array value.
-      return array_merge(array(
-         '<a href="' . admin_url('admin.php?page=oasiswf-stay-informed') . '">' . __('Stay Informed', 'oasisworkflow') . '</a>'
-      ), $links);
+      
+      // adding class to deactivate to open feedback modal on click
+      if (array_key_exists('deactivate', $links)) {
+         $links['deactivate'] = str_replace('<a', '<a class="owf-deactivate-link"', $links['deactivate']);
+      }
+      
+      $stay_informed = '<a href="' . admin_url('admin.php?page=oasiswf-stay-informed') . '">' . __('Stay Informed', 'oasisworkflow') . '</a>';
+      
+      array_unshift($links, $stay_informed );
+      
+      $links['owf_go_pro'] = '<a href="https://www.oasisworkflow.com/pricing-purchase" class="owf-go-pro" target="_blank">' . __('Go Pro', 'oasisworkflow') . '</a>';
+     
+      return $links;
    }
 
    /**
@@ -2338,6 +2429,29 @@ class OW_Plugin_Init
          $value = wp_set_script_translations( 'ow-gutenberg-sidebar-js', 'oasisworkflow', OASISWF_PATH . 'languages');
       }
    }
+   
+   /**
+    * Add REST API support to an already registered post type.
+    * @param array $args
+    * @param string $post_type
+    * @return array
+    */
+	public function update_custom_post_type_args( $args, $post_type ) {
+      
+		// Get post type selected from workflow settings
+		$workflow_post_types = get_option( "oasiswf_show_wfsettings_on_post_types" );
+		if ( in_array( $post_type, $workflow_post_types ) ) {
+			$args['show_in_rest'] = 1;
+			//If support attribute is set then only set custom-fields and revision attributes else bypass it.
+			if ( isset( $args['supports'] ) && ( ! in_array( 'custom-fields', $args['supports'] ) ) ) {
+				array_push( $args['supports'], 'custom-fields' );
+			}
+			if ( isset( $args['supports'] ) && ( ! in_array( 'revisions', $args['supports'] ) ) ) {
+				array_push( $args['supports'], 'revisions' );
+			}
+		}
+		return $args;
+    }
 
 }
 

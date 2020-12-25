@@ -962,7 +962,7 @@ class OW_Utility {
       $str = "";
       $show_upgrade_notice = get_site_option( 'oasiswf_show_upgrade_notice' );
       if( $show_upgrade_notice != "no" ) {
-         $str = '<div style="width:90%; float:left;  margin: 0px 50px 5px 7px; padding: 10px 10px 10px 10px; border: 1px solid #ddd; background-color:#FFFFE0;">
+         $str = '<div style="width:100%; float:left;  margin: 0px 50px 15px 7px; padding: 10px 10px 10px 10px; border: 1px solid #ddd; background-color:#FFFFE0;">
 					   <form id="hide_notice">
 						<div class="oasis_button_div">
 								<a class="oasis_button" target="_blank" href="https://www.oasisworkflow.com/pricing-purchase"> ' . __( 'Learn More', 'oasisworkflow' ) . '</a>' .

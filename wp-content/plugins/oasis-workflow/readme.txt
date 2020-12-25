@@ -2,8 +2,8 @@
 Contributors: nuggetsol
 Tags: workflow, work flow, review, assignment, publish, inbox, workflow history, audit, versioning, edit flow, newsroom, custom post status, journalism, auto submit, approval workflow, editorial workflow, notifications, oasis workflow, editorial, revisions, document revision, version control, collaboration, document management, revision scheduling, duplication, clone, revise, revise article
 Requires at least: 4.4
-Tested up to: 5.3.2
-Stable tag: 4.6
+Tested up to: 5.6
+Stable tag: 5.6
 
 Automate your WordPress Editorial Workflow with Oasis Workflow. Simple, intuitive drag and drop workflow builder to streamline your editorial process.
 
@@ -12,14 +12,14 @@ Automate your WordPress Editorial Workflow with Oasis Workflow. Simple, intuitiv
 Oasis Workflow is a powerful feature rich plugin designed to automate any editorial workflow process using a simple, intuitive drag and drop interface.
 
 = Typical users/audience for Oasis Workflow =
-* WordPress sites with multiple authors who are looking to manage their content review and publication process more efficiently.
-* Industries like healthcare, law firms, financial firms, universities, CPA firms, non-profits, news outlets and blogs, which publish articles regularly and need a formal review process.
+* WordPress sites with multiple authors that are looking to manage their content review and publication process more efficiently.
+* Industries like healthcare, law firms, financial firms, universities, CPA firms, non-profits, news outlets and blogs, that publish articles regularly and need a formal review process.
 * Industries with strict auditing requirements where they need to track who made the change, when was the change made and what was changed.
 
 = The plugin provides three simple process/task templates: =
 * Assignment - represents task related to content generation.
 * Review - represents task related to content review.
-* Publish - represents the actual "publish" task.
+* Publish - represents the actual "publish" or "review and publish" task.
 
 **Visual Work flow Designer**
  - Configure your workflow using our easy drag and drop designer interface. See screen shots for more detail.
@@ -42,15 +42,14 @@ Oasis Workflow is a powerful feature rich plugin designed to automate any editor
 **Due Date and Email reminders** help you to publish your articles on time.
 
 **Out of the box workflow**
-- To get you started, the plugin comes with an out of the box workflow. You can modify the workflow to suit your needs. 
+- To get you started, the plugin comes with two out of the box workflow - Single Level Review Workflow, and Multi Level Review Workflow. You can modify the workflow to suit your needs.
 
 **If you are looking for additional functionality, check out our "Pro" version - Oasis Workflow Pro: https://www.oasisworkflow.com/pricing-purchase**
 **It comes with additional features like,** 
 
-* Multiple Workflows - Allows you to create multiple workflows.
-* [Auto Submit](https://www.oasisworkflow.com/documentation/working-with-workflows/auto-submit-to-workflow) - Allows you to automatically submit to workflow(s) with certain conditions.
 * [Revise published content and add workflow support to revised content](https://www.oasisworkflow.com/documentation/working-with-workflows/revise-published-content) - Use workflow to edit your published content while keeping the published article online.
-* And add-ons, like "Editorial Contextual Comments", "Teams", "Front End shortcodes", "Groups"
+* [Auto Submit](https://www.oasisworkflow.com/documentation/working-with-workflows/auto-submit-to-workflow) - Allows you to automatically submit to workflow(s) with certain conditions.
+* And add-ons, like "Editorial Contextual Comments", "Editorial Checklist", "Teams", "Front End shortcodes", "Groups"
 * And much more.. 
 
 If you want to try out the "Pro" features, send us a message at [Request a Demo Site](https://www.oasisworkflow.com/request-a-demo-site) and we will setup a demo site for you to try out the "Pro" features. As a bonus, we will also add our add-ons to the demo site. 
@@ -80,11 +79,11 @@ Creating and Editing a workflow
 
 [youtube https://www.youtube.com/watch?v=JbJJQMMnf5U]
 
-How it works? Understand the process (applicable to both the "free" and "pro" version)
+How it works? See the workflow in action.
 
 [youtube https://www.youtube.com/watch?v=_R2uVWQicsM]
 
-Modify a workflow which has posts/pages currently in progress (applicable to both the "free" and "pro" version)
+Modify a workflow which has posts/pages currently in progress
 
 [youtube https://www.youtube.com/watch?v=mJ2hPsSBGcE]
 
@@ -101,7 +100,7 @@ How to manage published content via workflow - revise published content (applica
 
 == Frequently Asked Questions ==
 
-For [Frequently Asked Questions](https://www.oasisworkflow.com/faq) plus documentation, plugin help, go [here](https://www.oasisworkflow.com)
+For [Frequently Asked Questions](https://www.oasisworkflow.com/faq) plus documentation, plugin help, go [here](https://www.oasisworkflow.com/support)
 
 == Screenshots ==
 
@@ -116,6 +115,44 @@ For [Frequently Asked Questions](https://www.oasisworkflow.com/faq) plus documen
 
 
 == Changelog ==
+
+= Version 5.6 =
+* Made it compatible with WP 5.6.
+* Fixed CSS issues.
+
+= Version 5.5 =
+* Reverted a change related to custom post types to support Oasis Workflow and Gutenberg Editor.
+* Fixed warnings when saving workflow settings post types.
+
+= Version 5.4 =
+* Sanitized workflow comments to disallow certain tags.
+* Modified custom post types on the fly to support Oasis Workflow and Gutenberg Editor.
+
+= Version 5.3 =
+* Fixed bugs related to JQuery attribute and prop checks.
+
+= Version 5.2 =
+* Reverted a change related to hiding the Publish button until the "Submit to Workflow" shows up.
+
+= Version 5.1 =
+* Hide the Publish button, until the Submit to Workflow button is visible.
+* Made it compatible with WP 5.5
+
+= Version 5.0 =
+* Fixed CSS issue with the menu item.
+* Fixed issues with JED generated language files.
+
+= Version 4.9 =
+* Improved the feedback process during plugin deactivation.
+* Added single level review workflow as another workflow available out of the box for ease of use.
+
+
+= Version 4.8 =
+* Allow user to provide feedback during plugin deactivation.
+
+= Version 4.7 =
+* Added capability check to import/export functionality for additional security.
+* Allow meta fields to be edited for Gutenberg Editor.
 
 = Version 4.6 =
 * Fixed potential issue with update_option not sanitizing certain input values.

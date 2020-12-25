@@ -35,12 +35,22 @@ class OW_Tools_Service {
 
 			check_admin_referer ( 'owf_export_workflows', 'owf_export_workflows' );
          
+         // capability check
+         if ( ! current_user_can( 'ow_export_import_workflow' ) ) {
+            wp_die( __( 'You are not allowed to export workflows and the settings' ) );
+         }
+         
          $this->owf_exports();
       }
       
       if ( isset ( $_POST ['ow-import-workflow'] ) && sanitize_text_field ( $_POST ["ow-import-workflow"] ) ) {
 
 			check_admin_referer ( 'owf_import_workflows', 'owf_import_workflows' );
+         
+         // capability check
+         if ( ! current_user_can( 'ow_export_import_workflow' ) ) {
+            wp_die( __( 'You are not allowed to import workflows and the settings' ) );
+         }
          
          $validation = $this->owf_imports();   
          

@@ -58,6 +58,18 @@ class OW_Settings_Base {
               'edit_theme_options',
               'ow-settings',
               array( $this, 'add_base_settings_page' ) );
+      
+      // Go Pro
+      if (current_user_can('ow_edit_workflow')) {
+
+	      $menu_title = '<span class="owf-go-pro">' . __('Go Pro', 'oasisworkflow') . '</span>';
+
+         add_submenu_page('oasiswf-inbox',
+            '',
+	         $menu_title,
+            'manage_options',
+            'https://www.oasisworkflow.com/pricing-purchase' );
+      }
    }
 
    /**

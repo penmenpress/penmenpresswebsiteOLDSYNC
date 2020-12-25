@@ -71,7 +71,7 @@ class OW_Workflow_Settings {
       
       register_setting( $this->ow_workflow_group_name,
               $this->ow_show_wfsettings_on_post_types_option_name,
-              array( $this, 'validate_specified_action_by_roles' ) );
+              array( $this, 'validate_selected_post_types' ) );
       
       register_setting( $this->ow_workflow_group_name,
               $this->ow_priority_setting_option_name,
@@ -116,28 +116,28 @@ class OW_Workflow_Settings {
    }
 
    /**
-    * do validate and sanitize selected roles
-    * @param array $selected_roles
+    * do validate and sanitize selected post types
+    * @param array $selected_post_types
     * @return array
     */
-   public function validate_specified_action_by_roles( $selected_roles ) {
-      $roles = array();
-      if( count( $selected_roles ) > 0 ) {
+   public function validate_selected_post_types( $selected_post_types ) {
+      $post_type = array();
+      if( is_array( $selected_post_types ) && count( $selected_post_types ) > 0 ) {
 
          // Sanitize the value
-         $roles = array_map( 'esc_attr', $selected_roles );
+         $selected_post_types = array_map( 'esc_attr', $selected_post_types );
 
-         foreach ( $selected_roles as $selected_role ) {
-            array_push( $roles, $selected_role );
+         foreach ( $selected_post_types as $selected_post_type ) {
+            array_push( $post_type, $selected_post_type );
          }
       }
-      return $roles;
+      return $post_type;
    }
 
 
    /**
     * sanitize data
-    * @param string $review_priority_setting
+    * @param string $priority_setting
     * @return string
     */
    public function validate_priority_setting( $priority_setting ) {

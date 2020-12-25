@@ -4,7 +4,7 @@
 const { __ } = wp.i18n;
 
 const {
-	Component
+   Component
 } = wp.element;
 
 const {
@@ -17,7 +17,7 @@ const { withSelect } = wp.data;
 
 export class ClaimTask extends Component {
 
-	constructor() {
+   constructor() {
       super(...arguments);
 
       this.state = {
@@ -35,7 +35,7 @@ export class ClaimTask extends Component {
    /**
     * handle form submit for workflow abort
     */
-   handleClaim( event ) {
+   handleClaim(event) {
       this.setState({
          isBusy: true,
          submitSpinner: "show",
@@ -44,82 +44,81 @@ export class ClaimTask extends Component {
 
       let postId = this.props.postId
 
-		let form_data = {
-         post_id : postId,
-         history_id : this.props.actionHistoryId
+      let form_data = {
+         post_id: postId,
+         history_id: this.props.actionHistoryId
       };
 
       wp.apiFetch({ path: '/oasis-workflow/v1/workflows/claim/', method: 'POST', data: form_data }).then(
-			(claimResponse) => {
+         (claimResponse) => {
             let errors = [];
-            if( claimResponse.isError === "true" ) {
+            if (claimResponse.isError === "true") {
                errors.push(claimResponse.errorMessage);
                this.setState({
                   responseErrors: errors,
-                  hideClaim : true
-              });
-              return;
-            } 
-            
-            if( claimResponse.isError === "false" ) {
+                  hideClaim: true
+               });
+               return;
+            }
+
+            if (claimResponse.isError === "false") {
                let new_history_id = claimResponse.new_history_id;
                let ow_admin_url = claimResponse.url;
-               window.location.href = ow_admin_url + 'post.php?post=' + postId +'&action=edit&oasiswf=' + new_history_id;
-            }                       
-			},
-			(err) => {
-				console.log(err);			
-				return err;
+               window.location.href = ow_admin_url + 'post.php?post=' + postId + '&action=edit&oasiswf=' + new_history_id;
+            }
+         },
+         (err) => {
+            console.log(err);
+            return err;
          }
       );
    }
 
-	componentDidMount() {
-		// reset to default state
-		this.setState({
+   componentDidMount() {
+      // reset to default state
+      this.setState({
          isBusy: false
       });
-   }   
+   }
 
    render() {
       const { responseErrors, hideClaim, submitSpinner, submitButtonDisable } = this.state;
       return (
          <div>
-            { responseErrors.length !== 0 ?
-               (  <div id="owf-error-message" className="notice notice-error is-dismissible">
-                     {responseErrors.map(error =>
-                        <p key={error}>{error}</p>
-                     )}
-               </div> ) : ""
+            {responseErrors.length !== 0 ?
+               (<div id="owf-error-message" className="notice notice-error is-dismissible">
+                  {responseErrors.map(error =>
+                     <p key={error}>{error}</p>
+                  )}
+               </div>) : ""
             }
-            { !this.props.isHidden ? 
-               ( 
+            {!this.props.isHidden ?
+               (
                   <PanelBody>
                      <Button
-                        focus = "true"
+                        focus="true"
                         isPrimary
-                        isLarge
-                        disabled = {submitButtonDisable}
-                        onClick = { this.handleClaim }
+                        disabled={submitButtonDisable}
+                        onClick={this.handleClaim}
                      >
-                        { __('Claim', 'oasisworkflow' ) }         
+                        {__('Claim', 'oasisworkflow')}
                      </Button>
-                     { submitSpinner == "show" ?
+                     {submitSpinner == "show" ?
                         (
                            <Spinner />
                         ) : ""
                      }
-                  </PanelBody>   
+                  </PanelBody>
                ) : ""
             }
-         </div>        
+         </div>
       )
    }
 }
 
-export default withSelect( ( select ) => {
+export default withSelect((select) => {
    const { getCurrentPostId } = select('core/editor');
    return {
       postId: getCurrentPostId()
    };
-} )( ClaimTask );
+})(ClaimTask);

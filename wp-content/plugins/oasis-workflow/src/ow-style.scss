@@ -1,5 +1,5 @@
 /* That SaSS! */
-#owf-error-message, 
+#owf-error-message,
 #owf-warning-message,
 #owf-success-message {
     margin: 5px 5px 20px 0;
@@ -20,4 +20,8 @@
 
 .owf-guten-hidden {
     display: none;
+}
+
+.ow-multi-select select {
+    height: fit-content !important;
 }

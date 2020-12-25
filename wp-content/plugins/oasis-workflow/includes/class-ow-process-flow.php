@@ -376,7 +376,7 @@ class OW_Process_Flow {
       }
 
       // sanitize_text_field remove line-breaks so do not sanitize it.
-      $sign_off_comments = nl2br( $_POST[ "sign_off_comments" ] );
+      $sign_off_comments = $this->sanitize_comments( nl2br( $_POST["sign_off_comments"] ) );
 
       $due_date = "";
       if ( isset( $_POST[ "due_date" ] ) && ! empty( $_POST[ "due_date" ] ) ) {
@@ -2367,7 +2367,7 @@ class OW_Process_Flow {
       $due_date = sanitize_text_field( $_POST[ "hi_due_date" ] );
 
       // sanitize_text_field remove line-breaks so do not sanitize it.
-      $comments = nl2br( $_POST[ "hi_comment" ] );
+      $comments = $this->sanitize_comments( nl2br( $_POST["hi_comment"] ) );
 
       $publish_date = sanitize_text_field( $_POST[ "hi_publish_datetime" ] );
       $user_provided_publish_date = isset( $publish_date ) ? $publish_date : "";
@@ -3168,7 +3168,7 @@ class OW_Process_Flow {
       $user_provided_publish_date = isset( $publish_date ) ? date( OASISWF_DATE_TIME_FORMAT, strtotime( $publish_date ) ) : "";
       
       // sanitize_text_field remove line-breaks so do not sanitize it.
-      $comments = nl2br( $data['comments'] );
+      $comments = $this->sanitize_comments( nl2br( $data['comments'] ) );
 
       // update priority on the post
       update_post_meta( $post_id, "_oasis_task_priority", $priority );
@@ -3227,7 +3227,7 @@ class OW_Process_Flow {
       $post_id = intval($data['post_id']);
 
       // sanitize_text_field remove line-breaks so do not sanitize it.
-      $comments = nl2br( $data['comments'] );
+      $comments = $this->sanitize_comments( nl2br( $data['comments'] ) );
 
       $ow_history_service = new OW_History_Service();
       $histories = $ow_history_service->get_action_history_by_status( 'assignment', $post_id  );
@@ -3416,7 +3416,7 @@ class OW_Process_Flow {
       }
       
       // sanitize_text_field remove line-breaks so do not sanitize it.
-      $sign_off_comments = nl2br( $data["comments"] );
+      $sign_off_comments = $this->sanitize_comments( nl2br( $data["comments"] ) );
 
       $due_date = "";
       $due_date_settings = get_option( 'oasiswf_default_due_days' );
@@ -4279,6 +4279,20 @@ class OW_Process_Flow {
 //      wp_redirect( $link );
 //      exit();
 //   }
+
+   /**
+    * Sanitize workflow comments
+    *
+    * @param $comments
+    *
+    * @return string
+    */
+   public function sanitize_comments( $comments ) {
+      $clean_comments = wp_kses( $comments, 'post' );
+
+      return $clean_comments;
+   }
+
 }
 
 // construct an instance so that the actions get loaded

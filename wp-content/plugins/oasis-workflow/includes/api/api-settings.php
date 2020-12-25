@@ -7,7 +7,8 @@ add_action('rest_api_init', function () {
    // Register route to get all workflow settings
    register_rest_route( 'oasis-workflow/v1', '/settings/', array(
          'methods' => 'GET',
-         'callback' => array( $ow_tools_service, 'api_get_plugin_settings' )
+         'callback' => array( $ow_tools_service, 'api_get_plugin_settings' ),
+         'permission_callback' => '__return_true'
       )
    );
 
