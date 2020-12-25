@@ -5,7 +5,7 @@
 		/*
 		 * display reCaptcha for plugin`s block
 		 */
-		$( '.gglcptch_v1, .gglcptch_v2, .gglcptch_invisible' ).each( function() {
+		$( '.gglcptch_v2, .gglcptch_invisible' ).each( function() {
 
 			var container = $( this ).find( '.gglcptch_recaptcha' );
 
@@ -21,7 +21,7 @@
 		if ( 'v3' == gglcptch.options.version ) {
 			grecaptcha.ready( function() {
 				grecaptcha.execute( gglcptch.options.sitekey, {action: 'BWS_reCaptcha'}).then(function( token ) {
-					document.querySelectorAll( "#g-recaptcha-response" ).forEach( elem => ( elem.value = token ) );
+					document.querySelectorAll( "#g-recaptcha-response" ).forEach( function ( elem ) { elem.value = token } );
 				});
 			});
 		}
@@ -83,7 +83,7 @@
 						params['stoken'] = stoken;
 					}
 
-					gglcptch.display( container, false, params );
+					gglcptch.display( container, params );
 				}
 			} );
 
@@ -98,7 +98,7 @@
 		}
 	};
 
-	gglcptch.display = function( container, v1_add_to_last_element, params ) {
+	gglcptch.display = function( container, params ) {
 		if ( typeof( container ) == 'undefined' || container == '' || typeof( gglcptch.options ) == 'undefined' ) {
 			return;
 		}
@@ -166,7 +166,6 @@
 		}
 
 		var gglcptch_version = gglcptch.options.version;
-		v1_add_to_last_element = v1_add_to_last_element || false;
 		
 		if ( 'v2' == gglcptch_version ) {
 			if ( $( '#' + container ).parent().width() <= 300 && $( '#' + container ).parent().width() != 0 || $( window ).width() < 400 ) {

@@ -35,8 +35,8 @@ if ( ! function_exists( 'gglcptch_pro_block' ) ) {
 	}
 }
 
-if ( ! function_exists( 'gglcptch_whitelist_banner' ) ) {
-	function gglcptch_whitelist_banner() { ?>
+if ( ! function_exists( 'gglcptch_allowlist_banner' ) ) {
+	function gglcptch_allowlist_banner() { ?>
 		<div class="bws_info" style="line-height: 2;"><?php _e( "Allowed formats", 'google-captcha' ); ?>:&nbsp;<code>192.168.0.1, 192.168.0., 192.168., 192., 192.168.0.1/8, 123.126.12.243-185.239.34.54</code></div>
 		<div class="bws_info" style="line-height: 2;"><?php _e( "Allowed separators for IPs: a comma", 'google-captcha' ); ?> (<code>,</code>), <?php _e( 'semicolon', 'google-captcha' ); ?> (<code>;</code>), <?php _e( 'ordinary space, tab, new line or carriage return.', 'google-captcha' ); ?></div>
 		<?php _e( 'Reason', 'google-captcha' ); ?><br>
@@ -185,7 +185,7 @@ if ( ! function_exists( 'gglcptch_additional_settings_banner' ) ) {
 				<th scope="row"><?php _e( 'Multilanguage', 'google-captcha' ); ?></th>
 				<td>
 					<input disabled="disabled" type="checkbox" />
-					<span class="bws_info"><?php _e( 'Enable to switch language automatically on multilingual website using Multilanguage plugin.', 'google-captcha' ); ?></span>
+					<span class="bws_info"><?php _e( 'Enable to switch language automatically on multilingual website using the Multilanguage plugin.', 'google-captcha' ); ?></span>
 				</td>
 			</tr>
 		</table>

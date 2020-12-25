@@ -67,7 +67,7 @@ if ( ! function_exists( 'gglcptch_get_sections' ) ) {
 	}
 }
 
-/* Add reCAPTCHA forms to the Limit Attempts plugin */
+/* Add reCaptcha forms to the Limit Attempts plugin */
 if ( ! function_exists( 'gglcptch_add_lmtttmpts_forms' ) ) {
 	function gglcptch_add_lmtttmpts_forms( $forms = array() ) {
 		if ( ! is_array( $forms ) ) {
@@ -251,6 +251,9 @@ if ( ! function_exists( 'gglcptch_login_check' ) ) {
 			return $user;
 		if ( is_wp_error( $user ) && isset( $user->errors["empty_username"] ) && isset( $user->errors["empty_password"] ) )
 			return $user;
+		/* Skip check if connecting to XMLRPC */
+		if ( defined( 'XMLRPC_REQUEST' ) )
+			return $user;
 
 		$gglcptch_check = gglcptch_check( 'login_form' );
 
@@ -278,10 +281,15 @@ if ( ! function_exists( 'gglcptch_register_check' ) ) {
 	function gglcptch_register_check( $allow ) {
 		if ( gglcptch_is_woocommerce_page() )
 			return $allow;
+		/* Skip check if connecting to XMLRPC */
+		if ( defined( 'XMLRPC_REQUEST' ) )
+			return $allow;
+
 		$gglcptch_check = gglcptch_check( 'registration_form' );
 		if ( ! $gglcptch_check['response'] ) {
 			return $gglcptch_check['errors'];
 		}
+		$_POST['g-recaptcha-response-check'] = true;
 		return $allow;
 	}
 }
@@ -289,7 +297,7 @@ if ( ! function_exists( 'gglcptch_register_check' ) ) {
 /* Check google captcha in lostpassword form */
 if ( ! function_exists( 'gglcptch_lostpassword_check' ) ) {
 	function gglcptch_lostpassword_check( $allow ) {
-		if ( gglcptch_is_woocommerce_page() )
+		if ( gglcptch_is_woocommerce_page() || ( isset( $_POST['g-recaptcha-response-check'] ) && true === $_POST['g-recaptcha-response-check'] ) )
 			return $allow;
 		$gglcptch_check = gglcptch_check( 'reset_pwd_form' );
 		if ( ! $gglcptch_check['response'] ) {
