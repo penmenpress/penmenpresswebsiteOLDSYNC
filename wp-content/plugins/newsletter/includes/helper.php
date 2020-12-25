@@ -42,24 +42,26 @@ function tnp_post_thumbnail_src($post, $size = 'thumbnail', $alternative = '') {
     return $media[0];
 }
 
-function tnp_post_excerpt( $post, $length = 30 ) {
-	if ( empty( $post->post_excerpt ) ) {
-		$excerpt = tnp_delete_all_shordcodes_tags( wp_strip_all_tags( $post->post_content ) );
-		$excerpt = wp_trim_words( $excerpt, $length );
-	} else {
-		$excerpt = wp_trim_words( $post->post_excerpt, $length );
-	}
+/**
+ * @param WP_Post $post
+ * @param int $length
+ *
+ * @return string
+ */
+function tnp_post_excerpt($post, $length = 30) {
+    $excerpt = tnp_delete_all_shordcodes_tags(get_the_excerpt($post->ID));
+    $excerpt = wp_trim_words($excerpt, $length);
 
-	return $excerpt;
+    return $excerpt;
 }
 
-function tnp_delete_all_shordcodes_tags( $post_content = '' ) {
-	//Delete open tags
-	$post_content = preg_replace( "/\[[a-zA-Z0-9_-]*?(\s.*?)?\]/", '', $post_content );
-	//Delete close tags
-	$post_content = preg_replace( "/\[\/[a-zA-Z0-9_-]*?\]/", '', $post_content );
+function tnp_delete_all_shordcodes_tags($post_content = '') {
+    //Delete open tags
+    $post_content = preg_replace("/\[[a-zA-Z0-9_-]*?(\s.*?)?\]/", '', $post_content);
+    //Delete close tags
+    $post_content = preg_replace("/\[\/[a-zA-Z0-9_-]*?\]/", '', $post_content);
 
-	return $post_content;
+    return $post_content;
 }
 
 function tnp_post_permalink($post) {
@@ -82,22 +84,25 @@ function tnp_post_date($post, $format = null) {
 }
 
 /**
- * Tries to create a resized version of a media uploaded to the media library. 
+ * Tries to create a resized version of a media uploaded to the media library.
  * Returns an empty string if the media does not exists or generally if the attached file
  * cannot be found. If the resize fails for whatever reason, fall backs to the
- * standard image source returned by WP which is usually not exactly the 
+ * standard image source returned by WP which is usually not exactly the
  * requested size.
- * 
+ *
  * @param int $media_id
  * @param array $size
  * @return string
  */
 function tnp_media_resize($media_id, $size) {
-    if (empty($media_id))
+    if (empty($media_id)) {
         return '';
+    }
+
     $relative_file = get_post_meta($media_id, '_wp_attached_file', true);
-    if (empty($relative_file))
+    if (empty($relative_file)) {
         return '';
+    }
 
     $width = $size[0];
     $height = $size[1];
@@ -107,6 +112,14 @@ function tnp_media_resize($media_id, $size) {
     }
 
     $uploads = wp_upload_dir();
+
+    // Based on _wp_relative_upload_path() function for blog which store the
+    // full patch of media files
+    if (0 === strpos($relative_file, $uploads['basedir'])) {
+        $relative_file = str_replace($uploads['basedir'], '', $relative_file);
+        $relative_file = ltrim($relative_file, '/');
+    }
+
     $absolute_file = $uploads['basedir'] . '/' . $relative_file;
     // Relative and absolute name of the thumbnail.
     $pathinfo = pathinfo($relative_file);
@@ -156,7 +169,7 @@ function tnp_media_resize($media_id, $size) {
 
     return $uploads['baseurl'] . '/newsletter/thumbnails/' . $relative_thumb;
 }
-    
+
 function _tnp_get_default_media($media_id, $size) {
 
     $src = wp_get_attachment_image_src($media_id, $size);
@@ -172,7 +185,7 @@ function _tnp_get_default_media($media_id, $size) {
 
 /**
  * Create a resized version of the media stored in the WP media library.
- *  
+ *
  * @param int $media_id
  * @param array $size
  * @return TNP_Media
@@ -188,6 +201,15 @@ function tnp_resize($media_id, $size) {
         return null;
     }
 
+    $uploads = wp_upload_dir();
+
+    // Based on _wp_relative_upload_path() function for blog which store the
+    // full patch of media files
+    if (0 === strpos($relative_file, $uploads['basedir'])) {
+        $relative_file = str_replace($uploads['basedir'], '', $relative_file);
+        $relative_file = ltrim($relative_file, '/');
+    }
+
     $width = $size[0];
     $height = $size[1];
     $crop = false;
@@ -195,8 +217,21 @@ function tnp_resize($media_id, $size) {
         $crop = (boolean) $size[2];
     }
 
-    $uploads = wp_upload_dir();
     $absolute_file = $uploads['basedir'] . '/' . $relative_file;
+
+    if (substr($relative_file, -4) === '.gif') {
+        $editor = wp_get_image_editor($absolute_file);
+        $new_size = $editor->get_size();
+        $media = new TNP_Media();
+        $media->width = $new_size['width'];
+        $media->height = $new_size['height'];
+        if ($media->width > $width) {
+            $media->set_width($width);
+        }
+        $media->url = $uploads['baseurl'] . '/' . $relative_file;
+        return $media;
+    }
+
     // Relative and absolute name of the thumbnail.
     $pathinfo = pathinfo($relative_file);
     $relative_thumb = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '-' . $width . 'x' . $height . ($crop ? '-c' : '') . '.' . $pathinfo['extension'];
@@ -208,12 +243,13 @@ function tnp_resize($media_id, $size) {
 
         if (!$r) {
             Newsletter::instance()->logger->error('Unable to create dir ' . $uploads['basedir'] . '/newsletter/thumbnails/' . $pathinfo['dirname']);
-            return _tnp_get_default_media($media_id);
+            return _tnp_get_default_media($media_id, $size);
         }
 
         $editor = wp_get_image_editor($absolute_file);
         if (is_wp_error($editor)) {
             Newsletter::instance()->logger->error($editor);
+            Newsletter::instance()->logger->error('File: ' . $absolute_file);
             return _tnp_get_default_media($media_id, $size);
         }
 
@@ -228,6 +264,7 @@ function tnp_resize($media_id, $size) {
 
         if (is_wp_error($resized)) {
             Newsletter::instance()->logger->error($resized);
+            Newsletter::instance()->logger->error('File: ' . $absolute_file);
             return _tnp_get_default_media($media_id, $size);
         }
 
@@ -253,6 +290,17 @@ function tnp_resize($media_id, $size) {
     return $media;
 }
 
+function tnp_resize_2x($media_id, $size) {
+	$size[0] = $size[0] * 2;
+	$size[1] = $size[1] * 2;
+	$media = tnp_resize($media_id, $size);
+	$media->set_width( $size[0] / 2 );
+	return $media;
+}
+
+//TODO creare funzione che quando fa il resize fa anche il resize
+// al doppio della risoluzione e salva url del file in TNP_Media->url2x o urls ??
+
 /**
  * Get media for "posts" composer block
  *
@@ -262,25 +310,27 @@ function tnp_resize($media_id, $size) {
  *
  * @return TNP_Media
  */
-function tnp_composer_block_posts_get_media( $post, $size, $default_image_url ) {
-	$post_thumbnail_id = get_post_thumbnail_id( $post );
+function tnp_composer_block_posts_get_media($post, $size, $default_image_url = null) {
+    $post_thumbnail_id = TNP_Composer::get_post_thumbnail_id($post);
 
-	if ( ! empty( $post_thumbnail_id ) ) {
-		$media = tnp_resize( $post_thumbnail_id, array_values( $size ) );
-	} else {
-		$media         = new TNP_Media();
-		$media->url    = $default_image_url;
-		$media->width  = $size['width'];
-		$media->height = $size['height'];
-	}
+    $media = null;
 
-	return $media;
+    if (!empty($post_thumbnail_id)) {
+        $media = tnp_resize($post_thumbnail_id, array_values($size));
+    } else if ($default_image_url) {
+        Newsletter::instance()->logger->error('Thumbnail id not found');
+        $media = new TNP_Media();
+        $media->url = $default_image_url;
+        $media->width = $size['width'];
+        $media->height = $size['height'];
+    }
+    return $media;
 }
 
 function tnp_outlook_wrapper_open($width = 600) {
     return NewsletterEmails::get_outlook_wrapper_open($width);
 }
-    
+
 function tnp_outlook_wrapper_close() {
     return NewsletterEmails::get_outlook_wrapper_close();
 }

@@ -3,7 +3,7 @@
  * Name: Social links
  * Section: footer
  * Description: Link with icons to social profiles
- * 
+ *
  */
 
 /* @var $options array */
@@ -31,7 +31,7 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['facebook_url'] ?>"><img src="<?php echo $social_icon_url ?>/facebook.png" alt="Facebook"></a>
+                    <a href="<?php echo esc_url($block_options['facebook_url']) ?>"><img src="<?php echo $social_icon_url ?>/facebook.png" alt="Facebook"></a>
                 </span>
             <?php } ?>
             <?php
@@ -39,15 +39,7 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['twitter_url'] ?>"><img src="<?php echo $social_icon_url ?>/twitter.png" alt="Twitter"></a>
-                </span>
-            <?php } ?>
-            <?php
-            if (!empty($block_options['googleplus_url'])) {
-                $configured = true;
-                ?>
-                <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['googleplus_url'] ?>"><img src="<?php echo $social_icon_url ?>/googleplus.png" alt="Google+"></a>
+                    <a href="<?php echo esc_url($block_options['twitter_url']) ?>"><img src="<?php echo $social_icon_url ?>/twitter.png" alt="Twitter"></a>
                 </span>
             <?php } ?>
             <?php
@@ -55,7 +47,7 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['pinterest_url'] ?>"><img src="<?php echo $social_icon_url ?>/pinterest.png" alt="Pinterest"></a>
+                    <a href="<?php echo esc_url($block_options['pinterest_url']) ?>"><img src="<?php echo $social_icon_url ?>/pinterest.png" alt="Pinterest"></a>
                 </span>
             <?php } ?>
             <?php
@@ -63,7 +55,7 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['linkedin_url'] ?>"><img src="<?php echo $social_icon_url ?>/linkedin.png" alt="LinkedIn"></a>
+                    <a href="<?php echo esc_url($block_options['linkedin_url']) ?>"><img src="<?php echo $social_icon_url ?>/linkedin.png" alt="LinkedIn"></a>
                 </span>
             <?php } ?>
             <?php
@@ -71,7 +63,7 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['tumblr_url'] ?>"><img src="<?php echo $social_icon_url ?>/tumblr.png" alt="Tumblr"></a>
+                    <a href="<?php echo esc_url($block_options['tumblr_url']) ?>"><img src="<?php echo $social_icon_url ?>/tumblr.png" alt="Tumblr"></a>
                 </span>
             <?php } ?>
             <?php
@@ -79,7 +71,7 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['youtube_url'] ?>"><img src="<?php echo $social_icon_url ?>/youtube.png" alt="Youtube"></a>
+                    <a href="<?php echo esc_url($block_options['youtube_url']) ?>"><img src="<?php echo $social_icon_url ?>/youtube.png" alt="Youtube"></a>
                 </span>
             <?php } ?>
             <?php
@@ -87,7 +79,7 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['soundcloud_url'] ?>"><img src="<?php echo $social_icon_url ?>/soundcloud.png" alt="SoundCloud"></a>
+                    <a href="<?php echo esc_url($block_options['soundcloud_url']) ?>"><img src="<?php echo $social_icon_url ?>/soundcloud.png" alt="SoundCloud"></a>
                 </span>
             <?php } ?>
             <?php
@@ -95,7 +87,7 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['instagram_url'] ?>"><img src="<?php echo $social_icon_url ?>/instagram.png" alt="Instagram"></a>
+                    <a href="<?php echo esc_url($block_options['instagram_url']) ?>"><img src="<?php echo $social_icon_url ?>/instagram.png" alt="Instagram"></a>
                 </span>
             <?php } ?>
             <?php
@@ -103,9 +95,25 @@ $configured = false;
                 $configured = true;
                 ?>
                 <span class="tnpc-row-edit" data-type="image">
-                    <a href="<?php echo $block_options['vimeo_url'] ?>"><img src="<?php echo $social_icon_url ?>/vimeo.png" alt="Vimeo"></a>
+                    <a href="<?php echo esc_url($block_options['vimeo_url']) ?>"><img src="<?php echo $social_icon_url ?>/vimeo.png" alt="Vimeo"></a>
                 </span>
             <?php } ?>
+	        <?php
+	        if (!empty($block_options['telegram_url'])) {
+		        $configured = true;
+		        ?>
+                <span class="tnpc-row-edit" data-type="image">
+                    <a href="<?php echo esc_url($block_options['telegram_url']) ?>"><img src="<?php echo $social_icon_url ?>/telegram.png" alt="Telegram"></a>
+                </span>
+	        <?php } ?>
+	        <?php
+	        if (!empty($block_options['vk_url'])) {
+		        $configured = true;
+		        ?>
+                <span class="tnpc-row-edit" data-type="image">
+                    <a href="<?php echo esc_url($block_options['vk_url']) ?>"><img src="<?php echo $social_icon_url ?>/vk.png" alt="VK"></a>
+                </span>
+	        <?php } ?>
             <?php if (!$configured) { ?>
                 <p>Configure your social links in the <a href="?page=newsletter_main_info">Social configuration section</a>.<br/>
                     Then remove and add again this block.</p>

@@ -1,9 +1,9 @@
 <?php
+/* @var $this NewsletterUsers */
 defined('ABSPATH') || exit;
 
 require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
-$module = NewsletterUsers::instance();
 
 if ($controls->is_action('save')) {
 
@@ -15,12 +15,12 @@ if ($controls->is_action('save')) {
         $controls->data['status'] = 'C';
         $controls->data['sex'] = 'n';
 
-        $user = $module->save_user($controls->data);
+        $user = $this->save_user($controls->data);
         if ($user === false) {
             $controls->errors = __('This subscriber already exists.', 'newsletter');
         } else {
             echo '<script>';
-            echo 'location.href="' . $module->get_admin_page_url('edit') . '&id=' . $user->id . '"';
+            echo 'location.href="' . $this->get_admin_page_url('edit') . '&id=' . $user->id . '"';
             echo '</script>';
             return;
         }

@@ -53,7 +53,7 @@
 }
 
 .tnp-section {
-    
+
 }
 
 .tnp-field.tnp-separator {
@@ -68,16 +68,21 @@
     margin-bottom: 10px;
 }
 
-.tnp-field label.tnp-label {
+.tnp-field label.tnp-label, .tnp-field-row label.tnp-row-label {
     display: block;
     font-size: 12px;
     font-weight: 300;
     border-bottom: 1px solid #fff;
     margin: 25px 0px 10px 0px;
-    font-family: Circular Std, sans-serif;
+    font-family: soleil, sans-serif;
     font-weight: 300;
     padding-bottom: 5px;
     color: #868686;
+}
+
+/* Compesate the negative row margin */
+.tnp-field-row label.tnp-row-label {
+    margin-left: 10px;
 }
 
 .tnp-field.tnp-checkbox label {
@@ -86,11 +91,15 @@
 
 /* Set of inlined field for font, size, color... */
 tnp-field.tnp-font {
-    
+
 }
 
-.tnp-field input {
+.tnp-field:not(.tnp-colorpicker) input {
     width: 100%;
+}
+
+.tnp-field input[type=number] {
+    width: 100px;
 }
 
 .tnp-field.tnp-size input {
@@ -131,13 +140,25 @@ tnp-field.tnp-font {
     width: auto;
 }
 
+.tnp-field.tnp-button .tnpf-font-family {
+    font-size: 13px;
+}
+
+.tnp-field.tnp-button .tnpf-font-size {
+    font-size: 13px;
+}
+
+.tnp-field.tnp-button .tnpf-font-weight {
+    font-size: 13px;
+}
+
 .tnp-field.tnp-categories {
-    
+
 }
 
 /* The label for each category checkbox (should override the generic label appearance) */
 .tnp-field.tnp-categories label {
-    
+
 }
 
 .tnp-description {
@@ -145,4 +166,9 @@ tnp-field.tnp-font {
     font-style: italic;
     font-weight: normal;
     color: #999999;
+}
+
+.tnpf-color {
+    width: 40px;
+    font-size: 12px;
 }

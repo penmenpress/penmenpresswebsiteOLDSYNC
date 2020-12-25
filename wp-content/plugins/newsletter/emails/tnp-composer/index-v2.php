@@ -67,9 +67,9 @@ $fields = new NewsletterFields($controls);
         <div class="tnpc-tabs">
             <button class="tablinks" onclick="openTab(event, 'tnpc-blocks')" id="defaultOpen"><?php _e('Blocks', 'newsletter') ?></button>
             <button class="tablinks" onclick="openTab(event, 'tnpc-global-styles')"><?php _e('Global Styles', 'newsletter') ?></button>
-            <button class="tablinks" onclick="openTab(event, 'tnpc-mobile-tab')"><i class="fa fa-mobile"></i> <?php _e('Mobile Preview', 'newsletter') ?></button>
+            <button class="tablinks" onclick="openTab(event, 'tnpc-mobile-tab')"><i class="fas fa-mobile"></i> <?php _e('Mobile Preview', 'newsletter') ?></button>
             <?php if ($show_test) { ?>
-                <button class="tablinks" onclick="openTab(event, 'tnpc-test-tab')"><i class="fa fa-paper-plane"></i> <?php _e('Test', 'newsletter') ?></button>
+                <button class="tablinks" onclick="openTab(event, 'tnpc-test-tab')"><i class="fas fa-paper-plane"></i> <?php _e('Test', 'newsletter') ?></button>
             <?php } ?>
 
         </div>
@@ -91,7 +91,9 @@ $fields = new NewsletterFields($controls);
 
             <form id="tnpc-global-styles-form">
 
-                <?php $fields->color('options_composer_background', __('Background color', 'newsletter'), ['default'=>'#f4f4f4']) ?>
+		        <?php $fields->color( 'options_composer_background', __( 'Background color', 'newsletter' ), [ 'default' => '#FFFFFF' ] ) ?>
+		        <?php $fields->text( 'options_preheader', __( 'Snippet', 'newsletter' ), ['description'=>'Short content preview shown by Gmail']) ?>
+
             </form>
 
         </div>
@@ -142,9 +144,10 @@ $fields = new NewsletterFields($controls);
 </div>
 
 <script type="text/javascript">
-    TNP_PLUGIN_URL = "<?php echo NEWSLETTER_URL ?>";
-    TNP_HOME_URL = "<?php echo home_url('/', is_ssl() ? 'https' : 'http') ?>";
-    tnp_context_type = "<?php echo $context_type ?>";
+    TNP_PLUGIN_URL = "<?php echo esc_js(NEWSLETTER_URL) ?>";
+    TNP_HOME_URL = "<?php echo esc_js(home_url('/', is_ssl() ? 'https' : 'http')) ?>";
+    tnp_context_type = "<?php echo esc_js($context_type) ?>";
+    tnp_nonce = '<?php echo esc_js(wp_create_nonce('save'))?>';
 </script>
 <script type="text/javascript" src="<?php echo plugins_url('newsletter'); ?>/emails/tnp-composer/_scripts/newsletter-builder-v2.js?ver=<?php echo time() ?>"></script>
 

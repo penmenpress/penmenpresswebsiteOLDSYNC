@@ -2,7 +2,7 @@
 /* @var $this NewsletterSubscription */
 defined('ABSPATH') || exit;
 
-@include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
+include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
 
 if ($controls->is_action()) {
@@ -37,9 +37,9 @@ if ($controls->is_action()) {
             <?php $controls->init(); ?>
 
 
-            <div class="tnp-buttons">
+            <p>
                 <?php $controls->button_save() ?>
-            </div>
+            </p>
 
             <div id="tabs">
                 <ul>
@@ -63,7 +63,7 @@ if ($controls->is_action()) {
                         </tr>
 
                         <tr>
-                            <th>Akismet</th>
+                            <th><?php $controls->field_label('Akismet', '/documentation/subscription/antiflood#akismet')?></th>
                             <td>
                                 <?php
                                 $controls->select('akismet', array(
@@ -71,12 +71,11 @@ if ($controls->is_action()) {
                                     1 => __('Enabled', 'newsletter')
                                 ));
                                 ?>
-                                <?php $controls->help('https://www.thenewsletterplugin.com/documentation/subscription/antiflood') ?>
                             </td>
                         </tr>
 
                         <tr>
-                            <th><?php _e('Antiflood', 'newsletter') ?></th>
+                            <th><?php $controls->field_label(__('Antiflood', 'newsletter'), '/documentation/subscription/antiflood#antiflood') ?></th>
                             <td>
                                 <?php
                                 $controls->select('antiflood', array(
@@ -94,13 +93,14 @@ if ($controls->is_action()) {
                                     360 => '60 ' . __('minutes', 'newsletter')
                                 ));
                                 ?>
-                                <?php $controls->help('https://www.thenewsletterplugin.com/documentation/subscription/antiflood') ?>
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e('Captcha', 'newsletter') ?> </th>
+                            <th>
+                                <?php $controls->field_label(__('Captcha', 'newsletter'), '/documentation/subscription/antiflood/#captcha') ?> 
+                            </th>
                             <td>
-                                <?php $controls->enabled('captcha'); ?> <?php $controls->field_help('https://www.thenewsletterplugin.com/documentation/subscription/antiflood/#captcha') ?>
+                                <?php $controls->enabled('captcha'); ?>
                             </td>
                         </tr>
                         <?php /*
@@ -123,8 +123,7 @@ if ($controls->is_action()) {
                     <table class="form-table">
                         <tr>
                             <th>
-                                <?php _e('IP black list', 'newsletter') ?>
-                                <?php $controls->field_help('https://www.thenewsletterplugin.com/documentation/subscription/antiflood/#ip') ?>
+                                <?php $controls->field_label(__('IP black list', 'newsletter'), '/documentation/subscription/antiflood/#ip-blacklist') ?>
                             </th>
                             <td>
                                 <?php $controls->textarea('ip_blacklist'); ?>
@@ -133,8 +132,7 @@ if ($controls->is_action()) {
                         </tr>
                         <tr>
                             <th>
-                                <?php _e('Address black list', 'newsletter') ?>
-                                <?php $controls->field_help('https://www.thenewsletterplugin.com/documentation/subscription/antiflood/#domains') ?>
+                                <?php $controls->field_label(__('Address black list', 'newsletter'), '/documentation/subscription/antiflood/#email-blacklist') ?>
                             </th>
                             <td>
                                 <?php $controls->textarea('address_blacklist'); ?>

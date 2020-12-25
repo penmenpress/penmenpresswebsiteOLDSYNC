@@ -1,16 +1,17 @@
 <?php
+/* @var $this NewsletterUsers */
+
 defined('ABSPATH') || exit;
 
 require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
-$module = NewsletterUsers::instance();
 
 $id = (int) $_GET['id'];
-$user = $module->get_user($id);
+$user = $this->get_user($id);
 
 if ($controls->is_action('save')) {
 
-    $email = $module->normalize_email($controls->data['email']);
+    $email = $this->normalize_email($controls->data['email']);
     if (empty($email)) {
         $controls->errors = __('Wrong email address', 'newsletter');
     } else {
@@ -19,7 +20,7 @@ if ($controls->is_action('save')) {
 
 
     if (empty($controls->errors)) {
-        $u = $module->get_user($controls->data['email']);
+        $u = $this->get_user($controls->data['email']);
         if ($u && $u->id != $id) {
             $controls->errors = __('The email address is already in use', 'newsletter');
         }
@@ -34,12 +35,12 @@ if ($controls->is_action('save')) {
         }
 
         if (empty($controls->data['token'])) {
-            $controls->data['token'] = $module->get_token();
+            $controls->data['token'] = $this->get_token();
         }
 
         $controls->data['id'] = $id;
-        $user = $module->save_user($controls->data);
-        $module->add_user_log($user, 'edit');
+        $user = $this->save_user($controls->data);
+        $this->add_user_log($user, 'edit');
         if ($user === false) {
             $controls->errors = __('Error. Check the log files.', 'newsletter');
         } else {
@@ -50,8 +51,8 @@ if ($controls->is_action('save')) {
 }
 
 if ($controls->is_action('delete')) {
-    $module->delete_user($id);
-    $controls->js_redirect($module->get_admin_page_url('index'));
+    $this->delete_user($id);
+    $controls->js_redirect($this->get_admin_page_url('index'));
     return;
 }
 
@@ -139,19 +140,20 @@ function percentValue($value, $total) {
                         <tr>
                             <th><?php _e('Gender', 'newsletter'); ?></th>
                             <td>
-                                <?php $controls->select('sex', array('n' => 'Not specified', 'f' => 'female', 'm' => 'male')); ?>
+                                <?php $controls->select('sex', array('n' => __('Not specified', 'newsletter'), 'f' => __('Female', 'newsletter'), 'm' => __('Male', 'newsletter'))); ?>
                             </td>
                         </tr>
                         <tr>
                             <th><?php _e('Status', 'newsletter'); ?></th>
                             <td>
-                                <?php $controls->select('status', array('C' => 'Confirmed', 'S' => 'Not confirmed', 'U' => 'Unsubscribed', 'B' => 'Bounced')); ?>
+                                <?php $controls->select('status', array('C' => __('Confirmed', 'newsletter'), 'S' => __('Not confirmed', 'newsletter'),
+                                    'U' => __('Unsubscribed', 'newsletter'), 'B' => __('Bounced', 'newsletter'))); ?>
                             </td>
                         </tr>
                         <tr>
                             <th><?php _e('Language', 'newsletter'); ?></th>
                             <td>
-                                <?php $controls->language(); ?>
+                                <?php $controls->language('language', __('None', 'newsletter') ); ?>
                             </td>
                         </tr>
                         <tr>
@@ -225,6 +227,12 @@ function percentValue($value, $total) {
                             </td>
                         </tr>
                         <tr>
+                            <th><?php _e('Referrer', 'newsletter') ?></th>
+                            <td>
+                                <?php echo $controls->value('referrer'); ?>
+                            </td>
+                        </tr>
+                        <tr>
                             <th><?php _e('Last activity', 'newsletter') ?></th>
                             <td>
                                 <?php echo $controls->print_date($controls->data['last_activity']); ?>
@@ -282,6 +290,7 @@ function percentValue($value, $total) {
                         <table class="widefat" style="width: auto">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>Date</th>
                                     <th>Source</th>
                                     <th>IP</th>
@@ -296,6 +305,7 @@ function percentValue($value, $total) {
                                         $data = $data['new'];
                                     ?>
                                     <tr>
+                                        <td><?php echo $log->id ?></td>
                                         <td><?php echo $controls->print_date($log->created) ?></td>
                                         <td><?php echo esc_html($log->source) ?></td>
                                         <td><?php echo esc_html($log->ip) ?></td>

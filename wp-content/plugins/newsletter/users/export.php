@@ -1,10 +1,11 @@
 <?php
-@include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
+/* @var $this NewsletterUsers */
+include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 
 $options_profile = get_option('newsletter_profile');
 $controls = new NewsletterControls();
-$module = NewsletterUsers::instance();
 
+$controls->warnings[] = 'The export cannot be used for backup and restore. <a href="https://www.thenewsletterplugin.com/documentation/developers/backup-recovery/" target="_blank">Read more</a>.';
 ?>
 
 <div class="wrap" id="tnp-wrap">
@@ -14,10 +15,6 @@ $module = NewsletterUsers::instance();
     <div id="tnp-heading">
 
         <h2><?php _e('Export', 'newsletter') ?></h2>
-        <p>
-            <strong>The import and export functions ARE NOT for backup</strong>. 
-            If you want to backup you should consider to backup the <code><?php echo $wpdb->prefix ?>newsletter*</code> tables.
-        </p>
 
     </div>
     

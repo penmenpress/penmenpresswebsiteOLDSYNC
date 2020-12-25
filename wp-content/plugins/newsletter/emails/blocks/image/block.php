@@ -11,7 +11,7 @@
 $defaults = array(
     'image' => '',
     'url' => '',
-    'width'=>0,
+    'width' => 0,
     'block_background' => '#ffffff',
     'block_padding_left' => 0,
     'block_padding_right' => 0,
@@ -30,29 +30,35 @@ if (empty($options['image']['id'])) {
         $media->width = 600;
         $media->height = 250;
     } else {
-        $media->url = 'https://source.unsplash.com/600x250/daily';
+        $media->url = 'https://source.unsplash.com/1200x500/daily';
         $media->width = 600;
         $media->height = 250;
     }
 } else {
-    $media = tnp_resize($options['image']['id'], array(600, 0));
+    $media = tnp_resize_2x($options['image']['id'], array(600, 0));
+    // Should never happen but... it happens
+    if (!$media) {
+        echo 'The selected media file cannot be processed';
+        return;
+    }
     $media->alt = $options['image_alt'];
 }
 
-$url = $options['url'];
+if (!empty($options['width'])) {
+    $media->set_width($options['width']);
+}
+$media->link = $options['url'];
+$image_class_name = 'image';
 ?>
 <style>
-    .image {
-        max-width: 100%!important;
-        height: auto!important;
-        display: inline-block;
-        <?php if (!empty($options['width'])) { ?>
-        width: <?php echo $options['width']?>px;
-        <?php } ?>
+    .<?php echo $image_class_name ?> {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+        width: <?php echo $media->width ?>px;
+        line-height: 0;
+        margin: 0 auto;
     }
 </style>
-<?php if (!empty($url)) { ?>
-    <a href="<?php echo $url ?>" target="_blank"><img src="<?php echo $media->url ?>" width="<?php echo $media->width ?>" height="<?php echo $media->height ?>" border="0" alt="<?php echo esc_attr($media->alt) ?>" inline-class="image"></a>                
-<?php } else { ?>
-    <img src="<?php echo $media->url ?>" border="0" alt="<?php echo esc_attr($media->alt) ?>" width="<?php echo $media->width ?>" height="<?php echo $media->height ?>"  inline-class="image">              
-<?php } ?>
+
+<?php echo TNP_Composer::image( $media, [ 'class' => $image_class_name ] ); ?>

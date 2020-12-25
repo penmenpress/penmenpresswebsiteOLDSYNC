@@ -44,7 +44,10 @@ if (isset($theme_options['theme_posts'])) {
         $filters['post_type'] = $theme_options['theme_post_types'];
     }
 
+    if (!isset($theme_options['theme_language'])) $theme_options['theme_language'] = '';
     $posts = Newsletter::instance()->get_posts($filters, $theme_options['theme_language']);
+    
+    $this->switch_language($theme_options['theme_language']);
 }
 
 ?><!doctype html>
@@ -140,7 +143,7 @@ if (isset($theme_options['theme_posts'])) {
                         </div>
                         <?php if (!empty($theme_options['main_header_sub'])) { ?>
                             <div style="padding: 10px 0; color: #000; font-size: 16px; text-align: center;">
-                                <?php echo $theme_options['main_header_sub'] ?>
+                                <?php echo esc_html($theme_options['main_header_sub']) ?>
                             </div>
                         <?php } ?>    
                     <?php } ?>

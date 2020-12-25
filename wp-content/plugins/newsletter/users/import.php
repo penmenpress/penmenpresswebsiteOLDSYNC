@@ -234,7 +234,7 @@ if ($controls->is_action('import')) {
                         </div>
                     </th>
                     <td>
-                        <textarea name="options[csv]" wrap="off" style="width: 100%; height: 200px; font-size: 11px; font-family: monospace"><?php echo $controls->data['csv']; ?></textarea>
+                        <textarea name="options[csv]" wrap="off" style="width: 100%; height: 200px; font-size: 11px; font-family: monospace"><?php echo $controls->get_value('csv'); ?></textarea>
                     </td>
                 </tr>
                 <tr>

@@ -19,7 +19,8 @@ $default_options = array(
     'block_padding_top'=>15,
     'block_padding_bottom'=>15,
     'block_padding_left'=>0,
-    'block_padding_right'=>0
+    'block_padding_right'=>0,
+    'giphy_url' => ''
 );
 
 $options = array_merge($default_options, $options);

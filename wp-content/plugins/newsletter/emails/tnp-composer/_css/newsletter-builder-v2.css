@@ -156,14 +156,15 @@
 }
 
 iframe#tnpc-mobile-preview {
-    height: 500px;
+    height: 550px;
     box-sizing: border-box;
     width: 320px;
-    border-radius: 30px;
+    border-radius: 10px;
     margin-top: 20px;
     margin-left: 20px;
     background-color: #F6F8FD;
 }
+
 
 .tnpc-row {
     -webkit-transition: box-shadow 0.5s;

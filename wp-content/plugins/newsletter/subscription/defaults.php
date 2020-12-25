@@ -14,20 +14,11 @@ $options = array();
 
 $options['noconfirmation'] = 1;
 
-//$options['antiflood'] = 10;
-//$options['ip_blacklist'] = array();
-//$options['address_blacklist'] = array();
-//$options['domain_check'] = 0;
-//$options['akismet'] = 1;
-//$options['captcha'] = 1;
-
 $options['notify_email'] = get_option('admin_email');
 $options['multiple'] = 1;
 $options['notify'] = 0;
 
-$options['error_text'] = '<p>' . __('You cannot subscribe with the email address you entered, please contact the site administrator.', 'newsletter') . '</p>';
-
-//$options['already_confirmed_text'] = '<p>This email address is already subscribed, anyway a welcome email has been sent again. Thank you.</p>';
+$options['error_text'] = '<p>' . __('This email address is already subscribed, please contact the site administrator.', 'newsletter') . '</p>';
 
 // Subscription page introductory text (befor the subscription form)
 $options['subscription_text'] = "{subscription_form}";

@@ -106,16 +106,6 @@ $social_icon_url = plugins_url('newsletter') . '/emails/themes/cta-2015/images';
                         </tr>
                     </table>
 
-                    <!-- footer -->
-                    <table cellpadding="15" cellspacing="0" align="center" width="100%" bgcolor="#eeeeee" border="0">
-                        <tr>
-                            <td style="font-size: 12px">
-                                <p><a href="{profile_url}">Manage your subscription</a></p>
-                                <p><?php echo $theme_options['main_footer_contact'] ?></p>
-                                <p><?php echo $theme_options['main_footer_legal'] ?></p>
-                            </td>
-                        </tr>
-                    </table>
                 </td>
             </tr>
         </table>

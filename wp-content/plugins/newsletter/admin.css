@@ -1,10 +1,3 @@
-@import url('//fonts.googleapis.com/css?family=Open+Sans:400,600');
-@import url('//use.fontawesome.com/releases/v5.7.2/css/all.css');
-@import url('css/dropdown.css');
-@import url('vendor/jquery-ui/jquery-ui.min.css');
-@import url('css/fields.css');
-@import url('css/widgets.css');
-
 /* Bootstrap like */
 
 #tnp-wrap * {
@@ -12,8 +5,6 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-
-
 
 /* Color picker patch */
 #tnp-wrap .iris-picker, #tnp-wrap .iris-picker * {
@@ -103,26 +94,6 @@
 
 
 
-/* Global Fonts */
-
-@font-face {
-    font-family: "Circular Std";
-    src: url("vendor/fonts/CircularStd-Medium.woff") format("woff"),
-        url("vendor/fonts/CircularStd-Medium.woff2") format("woff2"),
-        url("vendor/fonts/CircularStd-Medium.eot") format("embedded-opentype"),
-        url("vendor/fonts/CircularStd-Medium.ttf") format("truetype");
-
-}
-
-@font-face {
-    font-family: "Circular Std";
-    font-weight: bold;
-    src: url("vendor/fonts/CircularStd-Bold.woff") format("woff"),
-        url("vendor/fonts/CircularStd-Bold.woff2") format("woff2"),
-        url("vendor/fonts/CircularStd-Bold.eot") format("embedded-opentype"),
-        url("vendor/fonts/CircularStd-Bold.ttf") format("truetype");
-}
-
 #tnp-wrap,
 #tnp-header,
 #tnp-body p,
@@ -131,7 +102,7 @@
 #tnp-body input,
 #tnp-body select,
 #tnp-body textarea {
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     -webkit-font-smoothing: antialiased; /* Chrome, Safari */
     -moz-osx-font-smoothing: grayscale; /* Firefox */
 }
@@ -140,11 +111,25 @@
 #tnp-body h2,
 #tnp-body h3,
 #tnp-body h4 {
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     -webkit-font-smoothing: antialiased; /* Chrome, Safari */
     -moz-osx-font-smoothing: grayscale; /* Firefox */
 }
 
+
+#tnp-promotion-bar {
+    background-color: #FF5F65;
+    color: ddd;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 16px;
+}
+
+#tnp-promotion-bar a {
+    color: #fff;
+    font-weight: normal;
+    text-decoration: none;
+}
 
 /*******************************************************************************
  * Header
@@ -154,7 +139,7 @@
     text-align: left;
     font-size: 12px;
     color: #fff;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 #tnp-header input {
@@ -163,7 +148,7 @@
 
 #tnp-header a {
     text-decoration: none;
-    /*font-family: "Circular Std",sans-serif;*/
+    /*font-family: soleil,sans-serif;*/
     color: white;
     letter-spacing: 0.1em;
 }
@@ -352,7 +337,7 @@
 
 #tnp-body .widefat thead {
     background-color: #3498DB;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     color: #fff !important;
 }
 
@@ -548,7 +533,7 @@ table.clicks {
     box-shadow: none;
     background-color: #27AE60;
     padding: 8px;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     font-size: 13px;
     color: #fff;
     cursor: pointer;
@@ -689,13 +674,13 @@ table.clicks {
     color: #FD5F65;
     text-transform: uppercase;
     letter-spacing: 0.2em;
-    /*font-family: "Circular Std";*/
+    /*font-family: soleil;*/
     font-size: 10px;
     border: 1px red solid;
 }
 
 .tip-content {
-    /*font-family: "Circular Std";*/
+    /*font-family: soleil;*/
     font-weight: 500;
     font-size: 11px;
     color: #999999;
@@ -716,7 +701,7 @@ p.description {
 }
 
 .tnp-theme-preview p {
-    font-family: "Circular Std";
+    font-family: soleil;
     font-size: 13px;
     letter-spacing: 0.2em;
     color: #fff;
@@ -814,7 +799,7 @@ p.description {
 
 #tnp-heading h2 {
     color: #fff;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     letter-spacing: 0.1rem;
     font-size: 1.1rem;
     line-height: 1.8rem;
@@ -823,11 +808,12 @@ p.description {
     font-weight: 700;
     padding: 0;
     margin: 0px;
+    margin-bottom: 15px;
 }
 
 #tnp-heading h3 {
     color: #27AE60;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     letter-spacing: 0.1rem;
     font-size: .8rem;
     line-height: 1.8rem;
@@ -856,7 +842,7 @@ p.description {
     padding: 6px 11px;
     text-decoration: none;
     text-transform: capitalize;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     margin-left: 10px;
     font-size: 0.75rem;
     font-weight: 300;
@@ -898,7 +884,7 @@ p.description {
 }
 
 #dashboard-widgets .postbox-container .postbox h3 {
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     letter-spacing: 0.05rem;
     background-color: #415b76;
     color: #fff;
@@ -955,7 +941,7 @@ p.description {
     text-decoration: none;
     color: #fff;
     display: block;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     padding: 5px 10px;
 }
 
@@ -966,7 +952,7 @@ p.description {
     margin-top: 10px;
     padding: 20px 10px 10px 40px;
     background-color: #28313C;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 #tnp-footer div {
@@ -1025,7 +1011,7 @@ p.description {
     border: none;
     box-shadow: none;
     color: #fff;
-    font-family: 'Circular Std',sans-serif;
+    font-family: soleil,sans-serif;
     margin: 0px 2px;
     width: auto;
 }
@@ -1034,7 +1020,7 @@ p.description {
     background-color: #3498db;
     box-shadow: none;
     color: #fff;
-    font-family: 'Circular Std',sans-serif;
+    font-family: soleil,sans-serif;
     margin: 0px 2px;
 }
 
@@ -1069,7 +1055,7 @@ span.wp-media-buttons-icon:before {
 
 .tnp-paginator {
     color: #fff;
-    font-family: "Circular Std",sans-serif;
+    font-family: soleil,sans-serif;
     margin: 10px 0px;
 }
 
@@ -1107,7 +1093,7 @@ span.wp-media-buttons-icon:before {
 
 .tnp-subscribers-search {
     color: #fff;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     background-color: #2C3E50;
     padding: 20px;
     border-radius: 5px;
@@ -1201,6 +1187,9 @@ span.wp-media-buttons-icon:before {
     background-color: #27AE60;
     padding: 2px 10px;
     border-radius: 10px;
+    display: inline-block;
+    width: 75px;
+    text-align: center;
 }
 
 #tnp-status-table .tnp-ko {
@@ -1210,6 +1199,9 @@ span.wp-media-buttons-icon:before {
     background-color: #E74C41;
     padding: 2px 10px;
     border-radius: 10px;
+    display: inline-block;
+    width: 75px;
+    text-align: center;
 }
 
 #tnp-status-table .tnp-maybe {
@@ -1219,6 +1211,9 @@ span.wp-media-buttons-icon:before {
     background-color: #F1C40F;
     padding: 2px 10px;
     border-radius: 10px;
+    display: inline-block;
+    width: 75px;
+    text-align: center;
 }
 
 .tnp-main-status .tnp-log-files li {
@@ -1256,7 +1251,7 @@ table.widefat {
  */
 
 #tnp-body .ui-widget {
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 #tnp-body #tabs {
@@ -1311,7 +1306,7 @@ table.widefat {
 #tnp-body .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
     background: #fff !important;
     font-weight: normal;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 
@@ -1322,7 +1317,7 @@ table.widefat {
 #tnp-body .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
     border: none;
     background: #ECF0F1;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 
@@ -1353,7 +1348,7 @@ table.widefat {
 }
 
 .tnp-extension-premium-box h3 {
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     padding: 5px 8px !important;
     border-radius: 3px;
     display: inline-block;
@@ -1367,7 +1362,7 @@ table.widefat {
 }
 
 .tnp-extension-free-box h3 {
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     padding: 5px 8px !important;
     border-radius: 3px;
     display: inline-block;
@@ -1381,7 +1376,7 @@ table.widefat {
 }
 
 .tnp-integration-box h3 {
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     padding: 5px 8px !important;
     border-radius: 3px;
     display: inline-block;
@@ -1399,7 +1394,7 @@ table.widefat {
     position: absolute;
     width: 100%;
     padding: 12px;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 .tnp-extension-free-action {
@@ -1407,7 +1402,7 @@ table.widefat {
     position: absolute;
     width: 100%;
     padding: 12px;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 .tnp-integration-action {
@@ -1415,7 +1410,7 @@ table.widefat {
     position: absolute;
     width: 100%;
     padding: 12px;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 
@@ -1570,7 +1565,7 @@ img.tnp-extensions-free-badge {
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
     border: none;
     background: #ECF0F1;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
 }
 
 
@@ -1951,7 +1946,7 @@ input:checked + .slider:before {
 }
 
 .tnp-suggest-button {
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     margin-left: 8px;
     border-radius: 3px;
     background-color: #2980B9;
@@ -2002,7 +1997,7 @@ input:checked + .slider:before {
     font-size: 16px;
     color: #fff;
     padding: 0px 70px 20px 20px;
-    font-family: "Circular Std", sans-serif;
+    font-family: soleil, sans-serif;
     border-bottom: 1px solid #282828;
 }
 
@@ -2022,7 +2017,7 @@ input:checked + .slider:before {
 .tnp-subject-category {
     color: #565656;
     margin: 25px 0px 10px 0px;
-    /* font-family: "Circular Std"; */
+    /* font-family: soleil; */
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -2255,6 +2250,7 @@ span.tnp-email-status-new {
     padding: 2px 10px;
     border-radius: 4px;
     color: #fff;
+    white-space: nowrap;
 }
 
 span.tnp-email-status-paused {
@@ -2262,6 +2258,7 @@ span.tnp-email-status-paused {
     padding: 2px 10px;
     border-radius: 4px;
     color: #fff;
+    white-space: nowrap;
 }
 
 span.tnp-email-status-sending {
@@ -2269,7 +2266,7 @@ span.tnp-email-status-sending {
     padding: 2px 10px;
     border-radius: 4px;
     color: #fff;
-
+    white-space: nowrap;
 }
 
 span.tnp-email-status-scheduled {
@@ -2277,6 +2274,7 @@ span.tnp-email-status-scheduled {
     padding: 2px 10px;
     border-radius: 4px;
     color: #fff;
+    white-space: nowrap;
 }
 
 span.tnp-email-status-sent {
@@ -2284,6 +2282,7 @@ span.tnp-email-status-sent {
     padding: 2px 10px;
     border-radius: 4px;
     color: #fff;
+    white-space: nowrap;
 }
 
 
@@ -2454,3 +2453,27 @@ span.tnp-email-status-sent {
     color: #3498DB;
 }
 
+.text-left {
+    text-align: left;
+}
+
+.tab-min-height {
+    min-height: 500px;
+}
+
+.tnp-control-all-languages-notice {
+    padding: 15px;
+    border: 1px dashed #999;
+}
+
+/* Spectru, color picker */
+
+/* Down arrow */
+.sp-dd {
+    display: none;
+}
+
+.sp-replacer {
+    width:  30px!important;
+    height: 30px!important;
+}

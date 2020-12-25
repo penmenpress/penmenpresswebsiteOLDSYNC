@@ -1,10 +1,10 @@
 <?php
+/* @var $this NewsletterUsers */
 defined('ABSPATH') || exit;
 
 require_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 
 $controls = new NewsletterControls();
-$module = NewsletterUsers::instance();
 
 $options = $controls->data;
 $options_profile = get_option('newsletter_profile');
@@ -17,27 +17,27 @@ if ($controls->is_action()) {
     } else {
         $controls->data['search_page'] = (int) $controls->data['search_page'] - 1;
     }
-    $module->save_options($controls->data, 'search');
+    $this->save_options($controls->data, 'search');
 } else {
-    $controls->data = $module->get_options('search');
+    $controls->data = $this->get_options('search');
     if (empty($controls->data['search_page']))
         $controls->data['search_page'] = 0;
 }
 
 if ($controls->is_action('resend')) {
-    $user = $module->get_user($controls->button_data);
+    $user = $this->get_user($controls->button_data);
     NewsletterSubscription::instance()->send_message('confirmation', $user, true);
     $controls->messages = __('Activation email sent.', 'newsletter');
 }
 
 if ($controls->is_action('resend_welcome')) {
-    $user = $module->get_user($controls->button_data);
+    $user = $this->get_user($controls->button_data);
     NewsletterSubscription::instance()->send_message('confirmed', $user, true);
     $controls->messages = __('Welcome email sent.', 'newsletter');
 }
 
 if ($controls->is_action('remove')) {
-    $module->delete_user($controls->button_data);
+    $this->delete_user($controls->button_data);
     unset($controls->data['subscriber_id']);
 }
 
@@ -121,6 +121,10 @@ $controls->data['search_page'] ++;
         <h2><?php _e('Subscribers', 'newsletter') ?>
             <a class="tnp-btn-h1" href="?page=newsletter_users_new"><?php _e('Add a subscriber', 'newsletter') ?></a>
         </h2>
+        
+        <p>
+            See the <a href="admin.php?page=newsletter_users_massive">maintenance panel</a> to move subscribers between list, massively delete and so on.
+        </p>
 
     </div>
 
@@ -165,7 +169,7 @@ $controls->data['search_page'] ++;
             <table class="widefat">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" onchange="jQuery('input.tnp-selector').prop('checked', this.checked)"</th>
+                        <th><input type="checkbox" onchange="jQuery('input.tnp-selector').prop('checked', this.checked)"></th>
                         <th>Id</th>
                         <th>Email</th>
                         <th><?php _e('Name', 'newsletter') ?></th>
@@ -196,7 +200,7 @@ $controls->data['search_page'] ++;
 
                         <td>
                             <small>
-                                <?php echo $module->get_user_status_label($s) ?>
+                                <?php echo $this->get_user_status_label($s) ?>
                             </small>
                         </td>
 
@@ -204,7 +208,7 @@ $controls->data['search_page'] ++;
                             <td>
                                 <small>
                                     <?php
-                                    $lists = $module->get_lists();
+                                    $lists = $this->get_lists();
                                     foreach ($lists as $item) {
                                         $l = 'list_' . $item->id;
                                         if ($s->$l == 1)
@@ -216,7 +220,7 @@ $controls->data['search_page'] ++;
                         <?php } ?>
 
                         <td>
-                            <a class="button-secondary" href="<?php echo $module->get_admin_page_url('edit'); ?>&amp;id=<?php echo $s->id; ?>"><?php _e('Edit', 'newsletter') ?></a>
+                            <a class="button-secondary" href="<?php echo $this->get_admin_page_url('edit'); ?>&amp;id=<?php echo $s->id; ?>"><?php _e('Edit', 'newsletter') ?></a>
                         </td>
                         <td>
                             <?php $controls->button_confirm('remove', __('Remove', 'newsletter'), '', $s->id); ?>

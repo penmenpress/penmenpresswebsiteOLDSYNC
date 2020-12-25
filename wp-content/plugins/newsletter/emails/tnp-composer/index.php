@@ -66,9 +66,9 @@ $block_options = get_option('newsletter_main');
 
         <div class="tnpc-tabs">
         <button class="tablinks" onclick="openTab(event, 'tnpc-blocks')" id="defaultOpen"><?php _e('Blocks', 'newsletter') ?></button>
-        <button class="tablinks" onclick="openTab(event, 'tnpc-mobile-tab')"><i class="fa fa-mobile"></i> <?php _e('Mobile Preview', 'newsletter') ?></button>
+        <button class="tablinks" onclick="openTab(event, 'tnpc-mobile-tab')"><i class="fas fa-mobile"></i> <?php _e('Mobile Preview', 'newsletter') ?></button>
         <?php if ($show_test) { ?>
-        <button class="tablinks" onclick="openTab(event, 'tnpc-test-tab')"><i class="fa fa-paper-plane"></i> <?php _e('Test', 'newsletter') ?></button>
+        <button class="tablinks" onclick="openTab(event, 'tnpc-test-tab')"><i class="fas fa-paper-plane"></i> <?php _e('Test', 'newsletter') ?></button>
         <?php } ?>
         
         </div>

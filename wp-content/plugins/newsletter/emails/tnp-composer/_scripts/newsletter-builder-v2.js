@@ -45,8 +45,6 @@ jQuery.fn.perform_block_edit = function () {
         jQuery("#tnpc-edit-block .bgcolor").val(target.css("background-color"));
         jQuery("#tnpc-edit-block .font").val(target.css("font-family"));
 
-        jQuery('.bgcolor').wpColorPicker().iris('color', target.css("background-color"));
-
         // The row container which is a global variable and used later after the options save
         container = jQuery(this).closest("table");
 
@@ -58,7 +56,7 @@ jQuery.fn.perform_block_edit = function () {
             if (!options) {
                 options = target.attr("data-options");
             }
-            //debugger;
+
             jQuery("#tnpc-block-options-form").load(ajaxurl, {
                 action: "tnpc_options",
                 id: container.data("id"),
@@ -66,6 +64,7 @@ jQuery.fn.perform_block_edit = function () {
                 options: options
             }, function () {
                 start_options = jQuery("#tnpc-block-options-form").serialize();
+                tnp_controls_init();
             });
 
         } else {
@@ -123,7 +122,7 @@ jQuery(function () {
     if (!preloadedContent) {
         preloadedContent = jQuery('input[name="options[message]"]').val();
     }
-    // console.log(preloadedContent);
+
     if (!preloadedContent) {
         tnpc_show_presets();
     } else {
@@ -134,21 +133,21 @@ jQuery(function () {
     // subject management
     jQuery('#options-title').val(jQuery('#tnpc-form input[name="options[subject]"]').val());
 
-    // Add event to update composer wrapper background color
+    // ======================== //
+    // ==  BACKGROUND COLOR  == //
+    // ======================== //
+    _setBuilderAreaBackgroundColor(document.getElementById('options-options_composer_background').value);
+
     jQuery('#options-options_composer_background').on('change', function (e) {
-        jQuery('#newsletter-builder-area-center-frame-content').css('background-color', e.target.value);
+        _setBuilderAreaBackgroundColor(e.target.value);
     });
 
-    jQuery('#newsletter-builder-area-center-frame-content').css('background-color', jQuery('#options-options_composer_background').val());
-
-    // Init global styles values
-    /*
-    let globalStyles = JSON.parse(jQuery('#tnpc-form input[name="options[global-styles]"]').val());
-    if ('global-styles-bgcolor' in globalStyles) {
-        jQuery('#options-global-styles-bgcolor').val(globalStyles['global-styles-bgcolor']);
-        jQuery('#newsletter-builder-area-center-frame-content').css('background-color', globalStyles['global-styles-bgcolor']);
+    function _setBuilderAreaBackgroundColor(color) {
+        jQuery('#newsletter-builder-area-center-frame-content').css('background-color', color);
     }
-    */
+    // ======================== //
+    // ==  BACKGROUND COLOR  == //
+    // ======================== //
 
 });
 
@@ -166,9 +165,6 @@ function start_composer() {
             return helper;
         },
         update: function (event, ui) {
-            //console.log(event);
-            //console.log(ui.item.data("id"));
-            // debugger;
             if (ui.item.attr("id") == "draggable-helper") {
                 loading_row = jQuery('<div style="text-align: center; padding: 20px; background-color: #d4d5d6; color: #52BE7F;"><i class="fa fa-cog fa-2x fa-spin" /></div>');
                 ui.item.before(loading_row);
@@ -176,9 +172,11 @@ function start_composer() {
                 var data = {
                     'action': 'tnpc_render',
                     'b': ui.item.data("id"),
-                    'full': 1
+                    'full': 1,
+                    '_wpnonce': tnp_nonce
                 };
                 jQuery.post(ajaxurl, data, function (response) {
+
                     new_row = jQuery(response);
 //                    ui.item.before(new_row);
 //                    ui.item.remove();
@@ -270,7 +268,6 @@ function start_composer() {
             alert("Block rendering failed");
         });
 
-    
 
     });
 
@@ -290,7 +287,9 @@ function tnpc_mobile_preview() {
 
     d.write("<!DOCTYPE html>\n<html>\n<head>\n");
     d.write("<link rel='stylesheet' href='" + TNP_HOME_URL + "?na=emails-composer-css&ver=" + Math.random() + "' type='text/css'>");
-    d.write("<style type='text/css'>.tnpc-row-delete, .tnpc-row-edit-block, .tnpc-row-clone { display: none; }</style>");
+    d.write("<style>.tnpc-row-delete, .tnpc-row-edit-block, .tnpc-row-clone { display: none; }</style>");
+    d.write("<style>body::-webkit-scrollbar {width: 0px;background: transparent;}</style>");
+    d.write("<style>body{scrollbar-width: none; -ms-overflow-style: none;}</style>");
     d.write("</head>\n<body style='margin: 0; padding: 0;'><div style='width: 320px!important'>");
     d.write(jQuery("#newsletter-builder-area-center-frame-content").html());
     d.write("</div>\n</body>\n</html>");
@@ -305,6 +304,7 @@ function tnpc_save(form) {
     jQuery("#newsletter-preloaded-export .tnpc-row-edit-block").remove();
     jQuery("#newsletter-preloaded-export .tnpc-row-clone").remove();
     jQuery("#newsletter-preloaded-export .tnpc-row").removeClass("ui-draggable");
+    jQuery('#newsletter-preloaded-export #sortable-helper').remove();
 
     form.elements["options[message]"].value = jQuery("#newsletter-preloaded-export").html();
     if (document.getElementById("options-title")) {
@@ -312,9 +312,9 @@ function tnpc_save(form) {
     } else {
         form.elements["options[subject]"].value = "";
     }
-    form.elements["options[global-styles]"].value = JSON.stringify(jQuery('#tnpc-global-styles-form').serializeArray());
 
     var global_form = document.getElementById("tnpc-global-styles-form");
+    //Copy "Global styles" form inputs into main form
     tnpc_copy_form(global_form, form);
 
     jQuery("#newsletter-preloaded-export").html(' ');
@@ -322,10 +322,9 @@ function tnpc_save(form) {
 
 function tnpc_copy_form(source, dest) {
     for (var i = 0; i < source.elements.length; i++) {
-        var e = source.elements[i];
-        if (dest.elements[e.name]) {
-            dest.elements[e.name].value = e.value;
-        }
+        var clonedEl = source.elements[i].cloneNode();
+        clonedEl.style.display = 'none';
+        dest.appendChild(clonedEl);
     }
 }
 
@@ -391,12 +390,11 @@ function tnpc_reload_options(e) {
     e.preventDefault();
     let options = jQuery("#tnpc-block-options-form").serializeArray();
     for (let i = 0; i < options.length; i++) {
-        if (options[i].name == 'action') {
+        if (options[i].name === 'action') {
             options[i].value = 'tnpc_options';
         }
     }
-    options["action"] = "tnpc_options";
-    options["id"] = container.data("id");
+
     jQuery("#tnpc-block-options-form").load(ajaxurl, options);
 }
 
@@ -462,7 +460,7 @@ jQuery(document).ready(function () {
                         break;
                     }
                     case 'title': {
-                        element = "<input name='" + newInputName + "' class='" + className + "-textinput' value='" + value + "' type='text'>";
+                        element = "<textarea name='" + newInputName + "' class='" + className + "-textarea' rows='2'>" + value + "</textarea>";
                         break;
                     }
                 }
@@ -486,7 +484,7 @@ jQuery(document).ready(function () {
 
             function submit(e, elementToDeleteAfterSubmit, elementToShow) {
                 e.preventDefault();
-                
+
                 var id = elementToDeleteAfterSubmit.find('form input[name=id]').val();
                 var type = elementToDeleteAfterSubmit.find('form input[name=type]').val();
                 var newValue = elementToDeleteAfterSubmit.find('form [name="' + newInputName + '"]').val();
@@ -509,6 +507,7 @@ jQuery(document).ready(function () {
                         'action': 'tnpc_render',
                         'b': container.data('id'),
                         'full': 1,
+                        '_wpnonce': tnp_nonce,
                         'options': {
                             'inline_edits': [{
                                 'type': type,

@@ -7,7 +7,7 @@ CUSTOM CSS RULES.
 */
 
 .tnp-subscription {
-    font-size: 13px;
+    /*font-size: 13px;*/
     display: block;
     margin: 15px auto;
     max-width: 500px;
@@ -24,7 +24,7 @@ CUSTOM CSS RULES.
 .tnp-subscription label {
     display: block;
     color: inherit;
-    font-size: 14px;
+    /*font-size: 14px;*/
     font-weight: 700;
     line-height: normal;
     padding: 5px;
@@ -80,10 +80,6 @@ CUSTOM CSS RULES.
 
 /* Profile form */
 
-.tnp-profile {
-    font-size: 13px;
-}
-
 .tnp-profile form .tnp-field {
     margin-bottom: 10px;
     border: 0;
@@ -93,7 +89,6 @@ CUSTOM CSS RULES.
 .tnp-profile form .tnp-field label {
     display: block;
     color: #333;
-    font-size: 14px;
 }
 
 .tnp-profile form .tnp-field input[type=text], 
@@ -246,7 +241,6 @@ CUSTOM CSS RULES.
     font-size: 14px;
     line-height: normal;
     border-radius: 0px;
-    box-sizing: border-box;
     height: auto;
     margin: 0;
 }
@@ -295,7 +289,6 @@ CUSTOM CSS RULES.
     color: #fff;
     font-size: 14px;
     line-height: 20px;
-    box-sizing: border-box;
     border-radius: 0px;
     margin: 0;
 }
@@ -327,4 +320,8 @@ CUSTOM CSS RULES.
     padding: 15px;
     background-color: #fff;
     border: 1px solid #ddd;
+}
+
+.tnp-nl-checkout {
+    margin-bottom: 1em;
 }

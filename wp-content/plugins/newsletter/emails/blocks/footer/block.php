@@ -30,9 +30,9 @@ $options = array_merge($default_options, $options);
     }
 </style>
 
-<a inline-class="footer-text" href="{profile_url}"><?php echo $options['profile'] ?></a>
+<a inline-class="footer-text" href="{profile_url}" target="_blank"><?php echo esc_html($options['profile']) ?></a>
 
 <span inline-class="footer-text">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
 
-<a inline-class="footer-text" href="{email_url}"><?php echo $options['view'] ?></a>
+<a inline-class="footer-text" href="{email_url}" target="_blank"><?php echo esc_html($options['view']) ?></a>
 

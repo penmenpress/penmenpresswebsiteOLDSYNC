@@ -10,7 +10,7 @@ $fields->controls->data['schema'] = '';
 
 <div class="tnp-field-row">
 <div class="tnp-field-col-2">
-<?php $fields->select('layout', __('Layout', 'newsletter'), array('full' => 'Full', 'left' => 'Left'))?>
+<?php $fields->select('layout', __('Layout', 'newsletter'), array('full' => 'Full', 'left' => 'Image left', 'right' => 'Image right'))?>
 </div>
     <div class="tnp-field-col-2">
         <?php $fields->select('schema', __('Schema', 'newsletter'), array('' => 'Custom', 'bright' => 'Bright', 'dark' => 'Dark'), ['after-rendering'=>'reload'])?>

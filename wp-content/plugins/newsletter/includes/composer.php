@@ -8,7 +8,7 @@ function tnp_register_block($dir) {
 /**
  * Generates and HTML button for email using the values found on $options and
  * prefixed by $prefix, with the standard syntax of NewsletterFields::button().
- * 
+ *
  * @param array $options
  * @param string $prefix
  * @return string
@@ -83,28 +83,45 @@ class TNP_Composer {
 
     static function get_html_open($email) {
         $open = "<!DOCTYPE html>\n";
-        $open .= "<html>\n<head>\n<title>" . esc_html($email->subject) . "</title>\n";
+        $open .= "<html>\n<head>\n<title>{email_subject}</title>\n";
         $open .= "<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
         $open .= "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n";
         $open .= "<style type=\"text/css\">\n";
         $open .= NewsletterEmails::instance()->get_composer_css();
         $open .= "\n</style>\n";
-        $open .= "</head>\n<body style=\"margin: 0; padding: 0;\">\n";
+        $open .= "</head>\n";
+        $open .= '<body style="margin: 0; padding: 0;" dir="' . (is_rtl() ? 'rtl' : 'ltr') . '">';
+	    $open .= "\n";
+	    $open .= self::get_html_preheader( $email );
+
         return $open;
     }
+
+	static private function get_html_preheader( $email ) {
+
+		if ( empty ( $email->options['preheader'] ) ) {
+			return "";
+		}
+
+		$preheader_text = $email->options['preheader'];
+		$html           = "<div style=\"display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;\">$preheader_text</div>";
+		$html           .= "\n";
+
+		return $html;
+	}
 
     static function get_html_close($email) {
         return "</body>\n</html>";
     }
 
     /**
-     * 
+     *
      * @param TNP_Email $email
      * @return string
      */
     static function get_main_wrapper_open($email) {
-        if (!isset($email->options['composer_background'])) {
-            $bgcolor = '#ffffff';
+        if (!isset($email->options['composer_background']) || $email->options['composer_background'] == 'inherit') {
+            $bgcolor = '';
         } else {
             $bgcolor = $email->options['composer_background'];
         }
@@ -115,7 +132,7 @@ class TNP_Composer {
     }
 
     /**
-     * 
+     *
      * @param TNP_Email $email
      * @return string
      */
@@ -128,7 +145,7 @@ class TNP_Composer {
 
     /**
      * Remove <doctype>, <body> and unnecessary envelopes for editing with composer
-     * 
+     *
      * @param string $html_email
      *
      * @return string
@@ -172,7 +189,7 @@ class TNP_Composer {
      * Using the data collected inside $controls (and submitted by a form containing the
      * composer fields), updates the email. The message body is completed with doctype,
      * head, style and the main wrapper.
-     * 
+     *
      * @param TNP_Email $email
      * @param NewsletterControls $controls
      */
@@ -197,15 +214,15 @@ class TNP_Composer {
     /**
      * Prepares a controls object injecting the relevant fields from an email
      * which cannot be directly used by controls.
-     * 
+     *
      * @param Newsletter $controls
      * @param TNP_Email $email
      */
     static function prepare_controls($controls, $email) {
         foreach ($email->options as $name => $value) {
-            if (strpos($name, 'composer_') === 0) {
-                $controls->data['options_' . $name] = $value;
-            }
+            //if (strpos($name, 'composer_') === 0) {
+            $controls->data['options_' . $name] = $value;
+            //}
         }
 
         $controls->data['message'] = TNP_Composer::unwrap_email($email->message);
@@ -242,6 +259,8 @@ class TNP_Composer {
      * @return bool
      */
     static function is_post_field_edited_inline($inline_edit_list, $field_type, $post_id) {
+        if (empty($inline_edit_list))
+            return false;
         foreach ($inline_edit_list as $edit) {
             if ($edit['type'] == $field_type && $edit['post_id'] == $post_id) {
                 return true;
@@ -251,7 +270,36 @@ class TNP_Composer {
         return false;
     }
 
+    /**
+     * Creates the HTML for a button extrating from the options, with the provided prefix, the button attributes:
+     *
+     * - [prefix]_url The button URL
+     * - [prefix]_font_family
+     * - [prefix]_font_size
+     * - [prefix]_font_weight
+     * - [prefix]_label
+     * - [prefix]_font_color The label color
+     * - [prefix]_background The button color
+     *
+     * TODO: Add radius and possiblt the alignment
+     *
+     * @param array $options
+     * @param string $prefix
+     * @return string
+     */
     static function button($options, $prefix = 'button') {
+        $defaults = [
+            $prefix . '_url' => '#',
+            $prefix . '_font_family' => 'Helvetica, Arial, sans-serif',
+            $prefix . '_label' => 'Click Here',
+            $prefix . '_font_color' => '#ffffff',
+            $prefix . '_font_weight' => 'bold',
+            $prefix . '_font_size' => 20,
+            $prefix . '_background' => '#256F9C',
+        ];
+
+        $options = array_merge($defaults, $options);
+
         $b = '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;">';
         $b .= '<tr>';
         $b .= '<td align="center" bgcolor="' . $options[$prefix . '_background'] . '" role="presentation" style="border:none;border-radius:3px;cursor:auto;mso-padding-alt:10px 25px;background:' . $options[$prefix . '_background'] . '" valign="middle">';
@@ -262,6 +310,298 @@ class TNP_Composer {
         $b .= '</a>';
         $b .= '</td></tr></table>';
         return $b;
+    }
+
+    /**
+     * Generates an IMG tag, linked if the media has an URL.
+     *
+     * @param TNP_Media $media
+     * @param string $style
+     * @return string
+     */
+    static function image($media, $attr = []) {
+
+	    $default_attrs = [
+		    'style'      => 'max-width: 100%; height: auto;',
+		    'class'      => null,
+		    'link-style' => 'text-decoration: none;',
+		    'link-class' => null,
+	    ];
+
+    	$attr = array_merge($default_attrs, $attr);
+
+    	//Class and style attribute are mutually exclusive.
+	    //Class take priority to style because classes will transform to inline style inside block rendering operation
+	    if ( ! empty( $attr['class'] ) ) {
+		    $styling = ' inline-class="' . $attr['class'] . '" ';
+	    } else {
+		    $styling = ' style="' . $attr['style'] . '" ';
+	    }
+
+	    //Class and style attribute are mutually exclusive.
+	    //Class take priority to style because classes will transform to inline style inside block rendering operation
+	    if ( ! empty( $attr['link-class'] ) ) {
+		    $link_styling = ' inline-class="' . $attr['link-class'] . '" ';
+	    } else {
+		    $link_styling = ' style="' . $attr['link-style'] . '" ';
+	    }
+
+        $b = '';
+	    if ( $media->link ) {
+		    $b .= '<a href="' . $media->link . '" target="_blank" rel="noopener nofollow" ' . $link_styling . '>';
+	    }
+
+	    if ( $media ) {
+		    $b .= '<img src="' . $media->url . '" width="' . $media->width . '"'
+		          . ' height="' . $media->height . '"'
+		          . ' alt="' . esc_attr( $media->alt ) . '"'
+		          . ' border="0" ' . $styling . '>';
+	    }
+
+        if ($media->link) {
+            $b .= '</a>';
+        }
+
+        return $b;
+    }
+
+    /**
+     * Returns a WP media ID for the specified post (or false if nothing can be found)
+     * looking for the featured image or, if missing, taking the first media in the gallery and
+     * if again missing, searching the first reference to a media in the post content.
+     *
+     * @param int $post_id
+     * @return int
+     */
+    static function get_post_thumbnail_id($post_id) {
+        if (is_object($post_id)) {
+            $post_id = $post_id->ID;
+        }
+
+        // Find a media id to be used as featured image
+        $media_id = get_post_thumbnail_id($post_id);
+        if (!empty($media_id)) {
+            return $media_id;
+        }
+
+        $attachments = get_children(array('numberpost' => 1, 'post_parent' => $post_id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order'));
+        if (!empty($attachments)) {
+            foreach ($attachments as $id => &$attachment) {
+                return $id;
+            }
+        }
+
+        $post = get_post($post_id);
+
+        $r = preg_match('/wp-image-(\d+)/', $post->post_content, $matches);
+        if ($matches) {
+            return (int) $matches[1];
+        }
+
+        return false;
+    }
+
+}
+
+/**
+ * Generate multicolumn and responsive html template for email.
+ * Initialize class with max columns per row and start to add cells.
+ */
+class TNP_Composer_Grid_System {
+
+    /**
+     * @var TNP_Composer_Grid_Row[]
+     */
+    private $rows;
+
+    /**
+     * @var int
+     */
+    private $cells_per_row;
+
+    /**
+     * @var int
+     */
+    private $cells_counter;
+
+    /**
+     * TNP_Composer_Grid_System constructor.
+     *
+     * @param int $columns_per_row Max columns per row
+     */
+    public function __construct($columns_per_row) {
+        $this->cells_per_row = $columns_per_row;
+        $this->cells_counter = 0;
+        $this->rows = [];
+    }
+
+    public function __toString() {
+        return $this->render();
+    }
+
+    /**
+     * Add cell to grid
+     *
+     * @param TNP_Composer_Grid_Cell $cell
+     */
+    public function add_cell($cell) {
+
+        if ($this->cells_counter % $this->cells_per_row === 0) {
+            $this->add_row(new TNP_Composer_Grid_Row());
+        }
+
+        $row_idx = (int) floor($this->cells_counter / $this->cells_per_row);
+        $this->rows[$row_idx]->add_cell($cell);
+        $this->cells_counter++;
+    }
+
+    private function add_row($row) {
+        $this->rows[] = $row;
+    }
+
+    public function render() {
+
+        $str = '';
+        foreach ($this->rows as $row) {
+            $str .= $row->render();
+        }
+
+        return $str;
+    }
+
+}
+
+/**
+ * Class TNP_Composer_Grid_Row
+ */
+class TNP_Composer_Grid_Row {
+
+    /**
+     * @var TNP_Composer_Grid_Cell[]
+     */
+    private $cells;
+
+    public function __construct(...$cells) {
+        if (!empty($cells)) {
+            foreach ($cells as $cell) {
+                $this->add_cell($cell);
+            }
+        }
+    }
+
+    /**
+     * @param TNP_Composer_Grid_Cell $cell
+     */
+    public function add_cell($cell) {
+        $this->cells[] = $cell;
+    }
+
+    public function render() {
+        $rendered_cells = '';
+        $column_percentage_width = round(100 / $this->cells_count(), 0, PHP_ROUND_HALF_DOWN) . '%';
+        foreach ($this->cells as $cell) {
+            $rendered_cells .= $cell->render(['width' => $column_percentage_width]);
+        }
+
+        $row_template = $this->get_template();
+
+        return str_replace('TNP_ROW_CONTENT_PH', $rendered_cells, $row_template);
+    }
+
+    private function cells_count() {
+        return count($this->cells);
+    }
+
+    private function get_template() {
+        return "<table border='0'
+				       cellpadding='0'
+				       cellspacing='0'
+				       width='100%'>
+				    <tbody>
+				    <tr>
+				        <td>
+				            TNP_ROW_CONTENT_PH
+				        </td>
+				    </tr>
+				    </tbody>
+				</table>";
+    }
+
+}
+
+/**
+ * Class TNP_Composer_Grid_Cell
+ */
+class TNP_Composer_Grid_Cell {
+
+    /**
+     * @var string
+     */
+    private $content;
+
+    /**
+     * @var array
+     */
+    public $args;
+
+    public function __construct($content = null, $args = []) {
+        $default_args = [
+            'width' => '100%',
+            'class' => '',
+            'align' => 'left',
+            'valign' => 'top'
+        ];
+
+        $this->args = array_merge($default_args, $args);
+
+        $this->content = $content ? $content : '';
+    }
+
+    public function add_content($content) {
+        $this->content .= $content;
+    }
+
+    public function render($args) {
+        $this->args = array_merge($this->args, $args);
+
+        $column_template = $this->get_template();
+        $column = str_replace(
+                [
+                    'TNP_ALIGN_PH',
+                    'TNP_VALIGN_PH',
+                    'TNP_WIDTH_PH',
+                    'TNP_CLASS_PH',
+                    'TNP_COLUMN_CONTENT_PH'
+                ], [
+            $this->args['align'],
+            $this->args['valign'],
+            $this->args['width'],
+            $this->args['class'],
+            $this->content
+                ], $column_template);
+
+        return $column;
+    }
+
+    private function get_template() {
+        return "<table border='0'
+				       cellpadding='0'
+				       cellspacing='0'
+				       width='TNP_WIDTH_PH'
+				       align='left'
+				       class='responsive-table'>
+				    <tbody>
+				    <tr>
+				        <td border='0'
+				            style='padding: 20px 10px 40px;'
+				            align='TNP_ALIGN_PH'
+				            valign='TNP_VALIGN_PH'
+				            class='TNP_CLASS_PH'>
+				            TNP_COLUMN_CONTENT_PH
+				        </td>
+				    </tr>
+				    </tbody>
+				</table>";
     }
 
 }

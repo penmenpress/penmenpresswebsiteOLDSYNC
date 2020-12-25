@@ -1,7 +1,7 @@
 <?php
 defined('ABSPATH') || exit;
 
-@include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
+include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
 $controls = new NewsletterControls();
 $module = NewsletterSubscription::instance();
 
@@ -72,6 +72,7 @@ if ($controls->is_action()) {
             $addresses = array();
             foreach ($users as &$user) {
                 $addresses[] = $user->email;
+                $user->language = $current_language;
                 $res = $module->send_message('confirmation', $user);
                 if (!$res) {
                     $controls->errors = 'The email address ' . $user->email . ' failed.';
@@ -93,6 +94,8 @@ if ($controls->is_action()) {
             $addresses = array();
             foreach ($users as $user) {
                 $addresses[] = $user->email;
+                // Force the language to send the message coherently with the current panel view
+                $user->language = $current_language;
                 $res = $module->send_message('confirmed', $user);
                 if (!$res) {
                     $controls->errors = 'The email address ' . $user->email . ' failed.';
@@ -117,7 +120,7 @@ if ($controls->is_action()) {
     <div id="tnp-heading">
 
         <h2><?php _e('Subscription Configuration', 'newsletter') ?></h2>
-        <?php $controls->page_help('https://www.thenewsletterplugin.com/documentation/subscription') ?>
+        <?php $controls->page_help('https://www.thenewsletterplugin.com/documentation/subscription/subscription/') ?>
 
     </div>
 
@@ -139,24 +142,15 @@ if ($controls->is_action()) {
                     <table class="form-table">
                         
                         <tr>
-                            <th><?php _e('Opt In', 'newsletter') ?></th>
+                            <th><?php $controls->field_label(__('Opt In', 'newsletter'), '/documentation/subscription/subscription/') ?></th>
                             <td>
                                 <?php $controls->select('noconfirmation', array(0 => __('Double Opt In', 'newsletter'), 1 => __('Single Opt In', 'newsletter'))); ?>
-                                <?php $controls->help('https://www.thenewsletterplugin.com/documentation/subscription#opt-in') ?>
                             </td>
                         </tr>
                         <tr>
-                            <th><?php _e('Override Opt In', 'newsletter') ?></th>
+                            <th><?php $controls->field_label(__('Override Opt In', 'newsletter'), '/documentation/subscription/subscription/#advanced') ?></th>
                             <td>
                                 <?php $controls->yesno('optin_override'); ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('Repeated subscriptions', 'newsletter') ?></th>
-                            <td>
-                                <?php //$controls->select('multiple', array('0'=>__('No', 'newsletter'), '1'=>__('Yes', 'newsletter'), '2'=>__('On new lists added', 'newsletter'))); ?> 
-                                <?php $controls->select('multiple', array('0'=>__('No', 'newsletter'), '1'=>__('Yes', 'newsletter'))); ?> 
-                                <?php $controls->help('https://www.thenewsletterplugin.com/documentation/subscription#repeated')?>
                             </td>
                         </tr>
                         
@@ -169,7 +163,7 @@ if ($controls->is_action()) {
                         </tr>
                     </table>
                     <?php } else { ?>
-                    <p>Switch to "All languages" to manage these options.</p>
+                        <?php $controls->switch_to_all_languages_notice(); ?>
                     <?php } ?>
                     
                 </div>
@@ -187,12 +181,12 @@ if ($controls->is_action()) {
                         
                     </table>
 
-                    <h3>Special cases</h3>
-
                     <table class="form-table">
                         <tr>
-                            <th><?php _e('Error page', 'newsletter') ?></th>
+                            <th><?php _e('Repeated subscriptions', 'newsletter')?></th>
                             <td>
+                                <?php $controls->select('multiple', array('0'=>__('Not allowed', 'newsletter'), '1'=>__('Allowed', 'newsletter'))); ?> 
+                                <br><br>
                                 <?php $controls->wp_editor('error_text'); ?>
                             </td>
                         </tr>

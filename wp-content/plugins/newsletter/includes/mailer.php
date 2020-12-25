@@ -1,7 +1,9 @@
 <?php
 
+use TNP\Mailer\PHPMailerLoader;
+
 /**
- * 
+ *
  */
 class NewsletterMailer {
 
@@ -41,7 +43,7 @@ class NewsletterMailer {
     }
 
     /**
-     * 
+     *
      * @param TNP_Mailer_Message $message
      * @return bool|WP_Error
      */
@@ -62,7 +64,7 @@ class NewsletterMailer {
     }
 
     /**
-     * 
+     *
      * @param TNP_Mailer_Message[] $messages
      * @return bool|WP_Error
      */
@@ -110,19 +112,18 @@ class NewsletterMailer {
     }
 
     /**
-     * 
      * @return NewsletterLogger
      */
     function get_logger() {
         if ($this->logger) {
             return $this->logger;
         }
-        $this->logger = new NewsletterLogger('mailer-' . $this->name);
+        $this->logger = new NewsletterLogger($this->name . '-mailer');
         return $this->logger;
     }
 
     /**
-     * 
+     *
      * @param TNP_Mailer_Message $message
      * @return bool|WP_Error
      */
@@ -162,7 +163,7 @@ class NewsletterMailer {
     /**
      * Original mail function simulation for compatibility.
      * @deprecated
-     * 
+     *
      * @param string $to
      * @param string $subject
      * @param array $message
@@ -196,12 +197,12 @@ class NewsletterMailer {
 }
 
 /**
- * @property string $to 
- * @property string $subject 
+ * @property string $to
+ * @property string $subject
  * @property string $body
- * @property array $headers 
+ * @property array $headers
  * @property string $from
- * @property string $from_name 
+ * @property string $from_name
  */
 class TNP_Mailer_Message {
 
@@ -216,7 +217,6 @@ class TNP_Mailer_Message {
 
 }
 
-
 /**
  * Wrapper mailer for old addons registering the "mail" method (ultra deprecated).
  */
@@ -226,7 +226,7 @@ class NewsletterMailMethodWrapper extends NewsletterMailer {
 
     /**
      * The reference to the mail method.
-     * 
+     *
      * @param callback $callable Must be an array with object and method to call, no other callback formats allowed.
      */
     function __construct($callable) {
@@ -250,7 +250,7 @@ class NewsletterMailMethodWrapper extends NewsletterMailer {
                 return new WP_Error(self::ERROR_GENERIC, 'Unreported error');
             }
         } else {
-            $message->error = 'Mail mathod not available';
+            $message->error = 'Mail method not available';
             return new WP_Error(self::ERROR_FATAL, 'Mail method not available');
         }
         return true;
@@ -278,7 +278,7 @@ class NewsletterOldMailerWrapper extends NewsletterMailer {
 
     /**
      * Only send() needs to be implemented all other method will use the defail base-class implementation
-     * 
+     *
      * @param TNP_Mailer_Message $message
      * @return \WP_Error|boolean
      */
@@ -308,7 +308,7 @@ class NewsletterDefaultMailer extends NewsletterMailer {
 
     /**
      * Static to be accessed in the hook: on some installation the object $this is not working, we're still trying to understand why
-     * @var TNP_Mailer_Message 
+     * @var TNP_Mailer_Message
      */
     var $current_message = null;
 
@@ -322,23 +322,28 @@ class NewsletterDefaultMailer extends NewsletterMailer {
     }
 
     function fix_mailer($mailer) {
-        $newsletter = Newsletter::instance();
-        if (!empty($newsletter->options['content_transfer_encoding'])) {
-            $mailer->Encoding = $newsletter->options['content_transfer_encoding'];
-        } else {
-            $mailer->Encoding = 'base64';
-        }
-
         // If there is not a current message, wp_mail() was not called by us
         if (is_null($this->current_message)) {
             return;
         }
 
+        $newsletter = Newsletter::instance();
+        if (isset($this->current_message->encoding)) {
+            $mailer->Encoding = $this->current_message->encoding;
+        } else {
+            if (!empty($newsletter->options['content_transfer_encoding'])) {
+                $mailer->Encoding = $newsletter->options['content_transfer_encoding'];
+            } else {
+                $mailer->Encoding = 'base64';
+            }
+        }
+
         /* @var $mailer PHPMailer */
         $mailer->Sender = $newsletter->options['return_path'];
 
-        if (!empty($this->current_message->current_message->body) && !empty($this->current_message->current_message->body_text)) {
-            $mailer->AltBody = $this->current_message->current_message->body_text;
+        // If there is an HTML body AND a text body, add the text part.
+        if (!empty($this->current_message->body) && !empty($this->current_message->body_text)) {
+            $mailer->AltBody = $this->current_message->body_text;
         }
     }
 
@@ -412,11 +417,11 @@ class NewsletterDefaultSMTPMailer extends NewsletterMailer {
     }
 
     function get_description() {
-        return 'Internal SMTP (deprecated)';
+        return 'Internal SMTP';
     }
 
     /**
-     * 
+     *
      * @param TNP_Mailer_Message $message
      * @return \WP_Error|boolean
      */
@@ -472,20 +477,24 @@ class NewsletterDefaultSMTPMailer extends NewsletterMailer {
     }
 
     /**
-     * 
+     *
      * @return PHPMailer
      */
     function get_mailer() {
+        global $wp_version;
+
         if ($this->mailer) {
             return $this->mailer;
         }
 
         $logger = $this->get_logger();
         $logger->debug('Setting up PHP mailer');
-        require_once ABSPATH . WPINC . '/class-phpmailer.php';
-        require_once ABSPATH . WPINC . '/class-smtp.php';
 
-        $this->mailer = new PHPMailer();
+        require_once 'PHPMailerLoader.php';
+        $this->mailer = PHPMailerLoader::make_instance();
+        
+        $this->mailer->XMailer = ' '; // A space!
+
         $this->mailer->IsSMTP();
         $this->mailer->Host = $this->options['host'];
         if (!empty($this->options['port'])) {
@@ -536,5 +545,3 @@ class NewsletterDefaultSMTPMailer extends NewsletterMailer {
     }
 
 }
-
-

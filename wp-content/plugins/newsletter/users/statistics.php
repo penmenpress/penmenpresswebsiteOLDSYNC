@@ -1,16 +1,16 @@
 <?php
-if (!defined('ABSPATH'))
-    exit;
+/* @var $this NewsletterUsers */
+defined('ABSPATH') || exit;
 
-@include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
+
+include_once NEWSLETTER_INCLUDES_DIR . '/controls.php';
+$controls = new NewsletterControls();
 
 wp_enqueue_script('tnp-chart');
 
 $all_count = $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE);
 $options_profile = get_option('newsletter_profile');
 
-$module = NewsletterUsers::instance();
-$controls = new NewsletterControls();
 ?>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -89,9 +89,9 @@ $controls = new NewsletterControls();
                     </tbody>
                 </table>
                 
-                <?php if ($module->is_multilanguage()) { ?>
+                <?php if ($this->is_multilanguage()) { ?>
                 <h3>By language</h3>
-                <?php $languages = $module->get_languages(); ?>
+                <?php $languages = $this->get_languages(); ?>
                 
                 <table class="widefat" style="width: auto">
                     <thead>
@@ -133,7 +133,7 @@ $controls = new NewsletterControls();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $lists = $module->get_lists(); ?>
+                        <?php $lists = $this->get_lists(); ?>
                         <?php foreach ($lists as $list) { ?>
                             <tr>
                                 <td><?php echo $list->id ?></td>

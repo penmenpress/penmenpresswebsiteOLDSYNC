@@ -41,6 +41,14 @@
 			<a href="#"><?php _e('10 Warning Signs That <em>[something]</em>', 'newsletter') ?></a><br>
 			<a href="#"><?php _e('10 Lies <em>[kind of people]</em> Likes to Tell', 'newsletter') ?></a><br>
 
+                        <h3 class="tnp-subject-category"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 48 48" xml:space="preserve" width="18" height="18"><g class="nc-icon-wrapper"><path fill="#43A6DD" d="M10,5C9.668,5,9.358,5.165,9.172,5.439C8.986,5.714,8.948,6.063,9.071,6.371 c0.078,0.194,7.669,19.475,0.222,26.922c-0.286,0.286-0.372,0.716-0.217,1.09C9.23,34.757,9.596,35,10,35h28c0.553,0,1-0.447,1-1 C39,18.01,25.99,5,10,5z"></path> <path fill="#BADEFC" d="M46,43c0.552,0,1-0.448,1-1V30.544c-0.646,0.29-1.257,0.684-1.787,1.214c-2.343,2.343-6.142,2.343-8.485,0 c-2.343-2.343-6.142-2.343-8.485,0c-2.343,2.343-6.142,2.343-8.485,0s-6.142-2.343-8.485,0s-6.142,2.343-8.485,0 c-0.53-0.53-1.141-0.924-1.787-1.214V42c0,0.552,0.448,1,1,1H46z"></path></g></svg>Dangers</h3>
+                        <a href="#"><?php _e('Last day to save 30%', 'newsletter') ?></a><br>
+                        <a href="#"><?php _e('Black Friday Sale is almost over', 'newsletter') ?></a><br>
+                        <a href="#"><?php _e('Black Friday 65% off ending soon!', 'newsletter') ?></a><br>
+                        <a href="#"><?php _e('Your Final 24 Hours | Last Call for Black Friday Deals', 'newsletter') ?></a><br>
+                        <a href="#"><?php _e('Black Friday Sale is Live', 'newsletter') ?></a><br>   
+                        <a href="#"><?php _e('Black Friday Sale: few hours left!', 'newsletter') ?></a><br>   
+
 			<h3 class="tnp-subject-category"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 48 48" xml:space="preserve" width="18" height="18"><g class="nc-icon-wrapper"><path fill="#7C5839" d="M38.75586,31.34473C38.56543,31.12598,38.29004,31,38,31H10c-0.29004,0-0.56543,0.12598-0.75586,0.34473 c-0.18945,0.21924-0.27539,0.50977-0.23438,0.79688l2,14C11.08008,46.63428,11.50195,47,12,47h24 c0.49805,0,0.91992-0.36572,0.99023-0.8584l2-14C39.03125,31.85449,38.94531,31.56396,38.75586,31.34473z"></path> <path fill="#72C472" d="M34,6c-3.96655,0-7.38348,2.31537-9,5.66302V2c0-0.55225-0.44727-1-1-1s-1,0.44775-1,1v26 c0,0.55225,0.44727,1,1,1s1-0.44775,1-1v-8h1c5.52283,0,10-4.47717,10-10V6H34z"></path> <path fill="#A67C52" d="M42,33H6c-0.55273,0-1-0.44775-1-1v-4c0-0.55225,0.44727-1,1-1h36c0.55273,0,1,0.44775,1,1v4 C43,32.55225,42.55273,33,42,33z"></path></g></svg>Better life, problem management</h3>
 			<a href="#"><?php _e('10 Ways to Simplify Your <em>[something]</em>', 'newsletter') ?></a><br>
 			<a href="#"><?php _e('Get Rid of <em>[problem]</em> Once and Forever', 'newsletter') ?></a><br>

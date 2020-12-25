@@ -182,13 +182,14 @@ class NewsletterStore {
      */
     function delete($table, $id) {
         global $wpdb;
+        if (empty($id)) return false;
         if (is_array($id)) {
             for ($i=0; $i<count($id); $i++) {
                 $id[$i] = (int)$id[$i];
             }
             $wpdb->query("delete from " . $table . " where id in (" . implode(',', $id) . ")");
         } else {
-            $wpdb->delete($table, array('id' => (int)$id));
+            $wpdb->delete($table, ['id' => (int)$id]);
         }
         if ($wpdb->last_error) {
             $this->logger->error($wpdb->last_error);

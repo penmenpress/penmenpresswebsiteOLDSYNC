@@ -15,6 +15,8 @@ $default_options = array(
     'font_color'=>'#000000',
     'block_padding_left'=>15,
     'block_padding_right'=>15,
+    'block_padding_top' => 20,
+    'block_padding_bottom' => 20,
     'block_background'=>'#ffffff'
 );
 
@@ -30,7 +32,7 @@ $options['html'] = str_replace('<p', '<p inline-class="text-p"', $options['html'
         font-family: <?php echo $options['font_family']?>;
         font-size: <?php echo $options['font_size']?>px;
         color: <?php echo $options['font_color']?>;
-        line-height: 1.5rem;
+        line-height: 1.5;
     }
     .text-p {
         font-family: <?php echo $options['font_family']?>;

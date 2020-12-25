@@ -17,36 +17,37 @@ class NewsletterUnsubscription extends NewsletterModule {
     }
 
     function __construct() {
-        parent::__construct('unsubscription', '1.0.1');
-        add_filter('newsletter_replace', array($this, 'hook_newsletter_replace'), 10, 3);
+        parent::__construct('unsubscription', '1.0.3');
+
+        add_filter('newsletter_replace', array($this, 'hook_newsletter_replace'), 10, 4);
         add_filter('newsletter_page_text', array($this, 'hook_newsletter_page_text'), 10, 3);
-        add_action('newsletter_action', array($this, 'hook_newsletter_action'));
+        add_filter('newsletter_message_headers', array($this, 'hook_add_unsubscribe_headers_to_email'), 10, 3);
+
+        add_action('newsletter_action', array($this, 'hook_newsletter_action'), 11, 3);
     }
 
-    function hook_newsletter_action($action) {
-        global $wpdb;
+    function hook_newsletter_action($action, $user, $email) {
+
+        if (in_array($action, ['u', 'uc', 'lu', 'reactivate'])) {
+            if (!$user) {
+                $this->dienow(__('Subscriber not found', 'newsletter'), 'Already deleted or using the wrong subscriber key in the URL', 404);
+            }
+        }
 
         switch ($action) {
             case 'u':
-                $user = $this->get_user_from_request();
-                $email = $this->get_email_from_request();
-                if ($user == null) {
-                    $url = $this->build_message_url(null, 'unsubscription_error', $user);
-                } else {
-                    $url = $this->build_message_url(null, 'unsubscribe', $user);
-                }
+                $url = $this->build_message_url(null, 'unsubscribe', $user, $email);
                 wp_redirect($url);
                 die();
                 break;
 
+            case 'lu': //Left for backwards compatibility, could be removed after some time
             case 'uc':
-                if ($this->antibot_form_check()) {
-                    $user = $this->unsubscribe();
-                    if ($user->status == 'E') {
-                        $url = $this->build_message_url(null, 'unsubscription_error', $user);
-                    } else {
-                        $url = $this->build_message_url(null, 'unsubscribed', $user);
-                    }
+                if (isset($_POST['List-Unsubscribe']) && 'One-Click' === $_POST['List-Unsubscribe']) {
+                    $this->unsubscribe($user, $email);
+                } else if ($this->antibot_form_check()) {
+                    $this->unsubscribe($user, $email);
+                    $url = $this->build_message_url(null, 'unsubscribed', $user, $email);
                     wp_redirect($url);
                 } else {
                     $this->request_to_antibot_form('Unsubscribe');
@@ -56,7 +57,7 @@ class NewsletterUnsubscription extends NewsletterModule {
 
             case 'reactivate':
                 if ($this->antibot_form_check()) {
-                    $user = $this->reactivate();
+                    $this->reactivate($user);
                     $url = $this->build_message_url(null, 'reactivated', $user);
                     wp_redirect($url);
                 } else {
@@ -72,30 +73,27 @@ class NewsletterUnsubscription extends NewsletterModule {
      *
      * @return TNP_User
      */
-    function unsubscribe() {
-        $user = $this->get_user_from_request(true);
+    function unsubscribe($user, $email = null) {
+        global $wpdb;
 
         if ($user->status == TNP_User::STATUS_UNSUBSCRIBED) {
             return $user;
         }
 
-        $user = $this->refresh_user_token($user);
-        $user = $this->set_user_status($user, TNP_User::STATUS_UNSUBSCRIBED);
+        $this->refresh_user_token($user);
+        $this->set_user_status($user, TNP_User::STATUS_UNSUBSCRIBED);
 
         $this->add_user_log($user, 'unsubscribe');
 
-        do_action('newsletter_unsubscribed', $user);
+        do_action('newsletter_user_unsubscribed', $user);
 
-        global $wpdb;
-
-        $email = $this->get_email_from_request();
         if ($email) {
             $wpdb->update(NEWSLETTER_USERS_TABLE, array('unsub_email_id' => (int) $email->id, 'unsub_time' => time()), array('id' => $user->id));
         }
 
         $this->send_unsubscribed_email($user);
 
-        NewsletterSubscription::instance()->notify_admin($user, 'Newsletter unsubscription');
+        $this->notify_admin_on_unsubscription($user);
 
         return $user;
     }
@@ -112,30 +110,44 @@ class NewsletterUnsubscription extends NewsletterModule {
         return NewsletterSubscription::instance()->mail($user, $subject, $message);
     }
 
-    /**
-     * Reactivate the subscriber extracted from the request setting his status 
-     * to confirmed and logging. No email are sent. Dies on subscriber extraction failure.
-     * 
-     * @return TNP_User
-     */
-    function reactivate() {
-        $user = $this->get_user_from_request(true);
+    function notify_admin_on_unsubscription($user) {
 
-        $user = $this->set_user_status($user, TNP_User::STATUS_CONFIRMED);
-        $this->add_user_log($user, 'reactivate');
+        if (empty($this->options['notify_admin_on_unsubscription'])) {
+            return;
+        }
 
-        return $user;
+        $message = $this->generate_admin_notification_message($user);
+        $email = trim(get_option('admin_email'));
+        $subject = $this->generate_admin_notification_subject('New cancellation');
+
+        Newsletter::instance()->mail($email, $subject, array('html' => $message));
     }
 
-    function hook_newsletter_replace($text, $user, $email) {
+    /**
+     * Reactivate the subscriber extracted from the request setting his status
+     * to confirmed and logging. No email are sent. Dies on subscriber extraction failure.
+     *
+     * @return TNP_User
+     */
+    function reactivate($user = null) {
+        // For compatibility, to be removed
+        if (!$user) {
+            $user = $this->get_user_from_request(true);
+        }
+        $this->set_user_status($user, TNP_User::STATUS_CONFIRMED);
+        $this->add_user_log($user, 'reactivate');
+        do_action('newsletter_user_reactivated', $user);
+    }
+
+    function hook_newsletter_replace($text, $user, $email, $html = true) {
 
         if ($user) {
-            $text = $this->replace_url($text, 'UNSUBSCRIPTION_CONFIRM_URL', $this->build_action_url('uc', $user, $email));
-            $text = $this->replace_url($text, 'UNSUBSCRIPTION_URL', $this->build_action_url('u', $user, $email));
-            $text = $this->replace_url($text, 'REACTIVATE_URL', $this->build_action_url('reactivate', $user, $email));
+            $text = $this->replace_url($text, 'unsubscription_confirm_url', $this->build_action_url('uc', $user, $email));
+            $text = $this->replace_url($text, 'unsubscription_url', $this->build_action_url('u', $user, $email));
+            $text = $this->replace_url($text, 'reactivate_url', $this->build_action_url('reactivate', $user, $email));
         } else {
-            $text = $this->replace_url($text, 'UNSUBSCRIPTION_CONFIRM_URL', '#');
-            $text = $this->replace_url($text, 'UNSUBSCRIPTION_URL', '#');
+            $text = $this->replace_url($text, 'unsubscription_confirm_url', $this->build_action_url('nul'));
+            $text = $this->replace_url($text, 'unsubscription_url', $this->build_action_url('nul'));
         }
 
         return $text;
@@ -168,29 +180,36 @@ class NewsletterUnsubscription extends NewsletterModule {
         return $text;
     }
 
-    function upgrade() {
-        global $wpdb, $charset_collate;
-
-        parent::upgrade();
-
-        // Migration code
-        if (empty($this->options) || empty($this->options['unsubscribe_text'])) {
-            // Options of the subscription module (worng name, I know)
-            $options = get_option('newsletter');
-            $this->options['unsubscribe_text'] = $options['unsubscription_text'];
-
-            $this->options['reactivated_text'] = $options['reactivated_text'];
-
-            $this->options['unsubscribed_text'] = $options['unsubscribed_text'];
-            $this->options['unsubscribed_message'] = $options['unsubscribed_message'];
-            $this->options['unsubscribed_subject'] = $options['unsubscribed_subject'];
-
-            $this->save_options($this->options);
-        }
-    }
-
     function admin_menu() {
         $this->add_admin_page('index', 'Unsubscribe');
+    }
+
+    /**
+     * @param array $headers
+     * @param TNP_Email $email
+     * @param TNP_User $user
+     *
+     * @return array
+     */
+    function hook_add_unsubscribe_headers_to_email($headers, $email, $user) {
+
+        if (isset($this->options['disable_unsubscribe_headers']) && $this->options['disable_unsubscribe_headers'] == 1) {
+            return $headers;
+        }
+
+        $list_unsubscribe_values = [];
+        if (!empty($this->options['list_unsubscribe_mailto_header'])) {
+            $unsubscribe_address = $this->options['list_unsubscribe_mailto_header'];
+            $list_unsubscribe_values[] = "<mailto:$unsubscribe_address?subject=unsubscribe>";
+        }
+
+        $unsubscribe_action_url = $this->build_action_url('uc', $user, $email);
+        $list_unsubscribe_values[] = "<$unsubscribe_action_url>";
+
+        $headers['List-Unsubscribe'] = implode(', ', $list_unsubscribe_values);
+        $headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+
+        return $headers;
     }
 
 }

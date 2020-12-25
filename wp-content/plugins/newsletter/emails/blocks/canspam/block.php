@@ -35,9 +35,9 @@ $options = array_merge($default_options, $options);
 </style>
 
 <div inline-class="canspam-text">
-    <strong><?php echo $options['title'] ?></strong>
+    <strong><?php echo esc_html($options['title']) ?></strong>
     <br>
-    <?php echo $options['address'] ?>
+    <?php echo esc_html($options['address']) ?>
     <br>
-    <em><?php echo $options['copyright'] ?></em>
+    <em><?php echo esc_html($options['copyright']) ?></em>
 </div>
