@@ -46,6 +46,13 @@ function _cme_core_caps() {
 	'update_plugins', 'delete_plugins', 'install_plugins', 'update_themes', 'install_themes', 
 	'update_core', 'list_users', 'remove_users', 'promote_users', 'edit_theme_options', 'delete_themes', 'export' ), true );
 	
+	// @todo (possibly) 
+	/*
+	if (is_multisite()) {
+		$core_caps['manage_network_plugins'] = true;
+	}
+	*/
+
 	ksort( $core_caps );
 	return $core_caps;
 }
@@ -306,13 +313,13 @@ class CapabilityManager
 	            'capsman', 
 	            __('Upgrade to Pro', 'capsman-enhanced'), 
 	            __('Upgrade to Pro', 'capsman-enhanced'), 
-	            'read', 
+	            'manage_capabilities', 
 	            'capabilities-pro', 
 	            array($this, 'generalManager')
 	        );
 		}
 	}
-	
+
 	/**
 	 * Sets the 'manage_capabilities' cap to the administrator role.
 	 *
@@ -320,8 +327,9 @@ class CapabilityManager
 	 */
 	public function setAdminCapability ()
 	{
-		$admin = get_role('administrator');
-		$admin->add_cap('manage_capabilities');
+		if ($admin = get_role('administrator')) {
+			$admin->add_cap('manage_capabilities');
+		}
 	}
 
 	/**
@@ -472,7 +480,7 @@ class CapabilityManager
 			$capsman_modify->adminDeleteRole();
 		}
 		
-		if (!isset($this->current)) { // By default, we manage the default role
+		if ( ! isset($this->current) ) { // By default, we manage the default role
 			if (empty($_POST) && !empty($_REQUEST['role'])) {
 				$this->current = $_REQUEST['role'];
 			}

@@ -55,10 +55,10 @@ class TemplateLoader implements TemplateLoaderInterface
      */
     private function load($moduleName, $templateName, $context = [], $return = false)
     {
-        $templatePath = $this->templatesPath . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . $templateName . '.php';
+        $templatePath = $this->templatesPath . '/' . $moduleName . '/' . $templateName . '.php';
 
         if (!file_exists($templatePath)) {
-            throw new TemplateNotFoundException('Template file not found');
+            throw new TemplateNotFoundException('Template file not found: ' . $templatePath);
         }
 
         if ($return) {

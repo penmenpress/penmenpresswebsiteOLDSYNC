@@ -35,7 +35,7 @@ class Capsman_PP_UI {
 		
 			echo '<ul class="ul-disc publishpress-caps-extra-hints" style="margin-top:10px;display:none">';
 			
-			$pp_prefix = ( defined( 'PRESSPERMIT_VERSION') ) ? 'presspermit' : 'pp';
+			$pp_prefix = (defined('PPC_VERSION') && !defined('PRESSPERMIT_VERSION')) ? 'pp' : 'presspermit';
 
 			if ( defined( 'PPCE_VERSION' ) || ! defined( 'PRESSPERMIT_ACTIVE' ) || in_array( $default, array( 'subscriber', 'contributor', 'author', 'editor' ) ) ) {
 				echo '<li>';
@@ -48,7 +48,7 @@ class Capsman_PP_UI {
 					$parenthetical = '';
 
 				if ( defined( 'PRESSPERMIT_ACTIVE' ) )
-					printf( __( '"Posts" capabilities selected here also define type-specific role assignment for Permission Groups%s.', $cme_id ), $parenthetical );
+					printf( __( '"Posts" capabilities selected here also define type-specific role assignment for Permission Groups%s.', $cme_id ), $parenthetical ) ;
 				else
 					printf( __( '"Posts" capabilities selected here also define type-specific role assignment for Permit Groups%s.', $cme_id ), $parenthetical ) ;
 
@@ -83,7 +83,7 @@ class Capsman_PP_UI {
 			$pp_only = (array) pp_capabilities_get_permissions_option( 'supplemental_role_defs' );
 			$checked = ( in_array( $default, $pp_only ) ) ? 'checked="checked"': '';
 			?>
-			<label for="pp_only_role" title="<?php _e('Make role available for supplemental assignment to Permission Groups only', 'capsman-enhanced');?>"><input type="checkbox" name="pp_only_role" id="pp_only_role" value="1" <?php echo $checked;?>> <?php _e('hidden role', 'capsman-enhanced'); ?> </label>
+			<label for="pp_only_role" title="<?php _e('Make role available for supplemental assignment to Permission Groups only', 'capsman-enhanced');?>"><input type="checkbox" name="pp_only_role" id="pp_only_role" autocomplete="off" value="1" <?php echo $checked;?>> <?php _e('hidden role', 'capsman-enhanced'); ?> </label>
 		</div>
 		<?php endif; ?>
 	<?php
@@ -108,13 +108,15 @@ class Capsman_PP_UI {
 				
 				echo "<table style='width:100%'><tr>";
 				
-				$unfiltered = apply_filters( 'pp_unfiltered_post_types', array('forum','topic','reply','wp_block') );			// bbPress' dynamic role def requires additional code to enforce stored caps
+				$unfiltered = apply_filters( 'pp_unfiltered_post_types', array('forum','topic','reply','wp_block', 'customize_changeset') );			// bbPress' dynamic role def requires additional code to enforce stored caps
 				$hidden = apply_filters( 'pp_hidden_post_types', array() );
 				
 				echo '<td style="width:50%">';
 				
 				$option_basename = 'enabled_post_types';
-				$enabled = get_option( 'pp_' . $option_basename, array( 'post' => true, 'page' => true ) );
+				$pp_prefix = (defined('PPC_VERSION') && !defined('PRESSPERMIT_VERSION')) ? 'pp' : 'presspermit';
+
+				$enabled = get_option( $pp_prefix . '_' . $option_basename, array( 'post' => true, 'page' => true ) );
 				
 				foreach( $defined_types as $key => $type_obj ) {
 					if ( ! $key )
@@ -134,7 +136,7 @@ class Capsman_PP_UI {
 						<div class="agp-vspaced_input">
 						<label for="<?php echo($id);?>" title="<?php echo($key);?>">
 						<input name="<?php echo("{$option_basename}-options[]");?>" type="hidden" value="<?php echo($key)?>" />
-						<input name="<?php echo($id);?>" type="checkbox" id="<?php echo($id);?>" value="1" <?php checked('1', ! empty($enabled[$key]) );?> /> <?php echo($type_obj->label);?>
+						<input name="<?php echo($id);?>" type="checkbox" id="<?php echo($id);?>" autocomplete="off" value="1" <?php checked('1', ! empty($enabled[$key]) );?> /> <?php echo($type_obj->label);?>
 						
 						<?php 
 						echo ('</label></div>');
@@ -148,11 +150,13 @@ class Capsman_PP_UI {
 				</tr>
 				</table>
 				
-				<?php $define_create_posts_cap = get_option( 'pp_define_create_posts_cap' );?>
+				<?php 
+				
+				$define_create_posts_cap = get_option("{$pp_prefix}_define_create_posts_cap");?>
 				
 					<div style="margin-top:10px;margin-bottom:10px">
 					<label for="pp_define_create_posts_cap">
-					<input name="pp_define_create_posts_cap" type="checkbox" id="pp_define_create_posts_cap" value="1" <?php checked('1', $define_create_posts_cap );?> title="<?php esc_attr( _e( 'Make selected post types require a different capability to add new posts.', 'capsman-enhanced') );?>" /> <?php _e('Use create_posts capability');?>
+					<input name="pp_define_create_posts_cap" type="checkbox" id="pp_define_create_posts_cap" autocomplete="off" value="1" <?php checked('1', $define_create_posts_cap );?> title="<?php esc_attr( _e( 'Make selected post types require a different capability to add new posts.', 'capsman-enhanced') );?>" /> <?php _e('Use create_posts capability');?>
 					</label>
 					</div>
 				
@@ -180,8 +184,10 @@ class Capsman_PP_UI {
 				
 				echo '<td style="width:50%">';
 
+				$pp_prefix = (defined('PPC_VERSION') && !defined('PRESSPERMIT_VERSION')) ? 'pp' : 'presspermit';
+
 				$option_basename = 'enabled_taxonomies';
-				$option_name = 'pp_' . $option_basename;
+				$option_name = $pp_prefix . '_' . $option_basename;
 				
 				$enabled = get_option( $option_name, array() );
 				
@@ -203,7 +209,7 @@ class Capsman_PP_UI {
 						<div class="agp-vspaced_input">
 						<label for="<?php echo($id);?>" title="<?php echo($taxonomy);?>">
 						<input name="<?php echo("{$option_basename}-options[]");?>" type="hidden" value="<?php echo($taxonomy)?>" />
-						<input name="<?php echo($id);?>" type="checkbox" id="<?php echo($id);?>" value="1" <?php checked('1', ! empty($enabled[$taxonomy]) );?> /> <?php echo($type_obj->label);?>
+						<input name="<?php echo($id);?>" type="checkbox" autocomplete="off" id="<?php echo($id);?>" value="1" <?php checked('1', ! empty($enabled[$taxonomy]) );?> /> <?php echo($type_obj->label);?>
 						
 						<?php 
 						echo ('</label></div>');
@@ -259,7 +265,7 @@ class Capsman_PP_UI {
 						<div class="agp-vspaced_input">
 						<label for="<?php echo($id);?>" title="<?php echo($taxonomy);?>">
 						<input name="<?php echo("{$option_basename}-options[]");?>" type="hidden" value="<?php echo($taxonomy)?>" />
-						<input name="<?php echo($id);?>" type="checkbox" id="<?php echo($id);?>" value="1" <?php checked('1', ! empty($enabled[$taxonomy]) );?> /> <?php echo($type_obj->label);?>
+						<input name="<?php echo($id);?>" type="checkbox" autocomplete="off" id="<?php echo($id);?>" value="1" <?php checked('1', ! empty($enabled[$taxonomy]) );?> /> <?php echo($type_obj->label);?>
 						
 						<?php 
 						echo ('</label></div>');

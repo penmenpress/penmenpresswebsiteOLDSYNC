@@ -28,6 +28,7 @@ namespace PPVersionNotices;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use PPVersionNotices\Module\TopNotice\Module as TopNoticeModule;
+use PPVersionNotices\Module\MenuLink\Module as MenuLinkModule;
 use PPVersionNotices\Template\TemplateLoader;
 
 class ServicesProvider implements ServiceProviderInterface
@@ -35,11 +36,15 @@ class ServicesProvider implements ServiceProviderInterface
     public function register(Container $pimple)
     {
         $pimple['TEMPLATES_PATH'] = function (Container $c) {
-            return PP_VERSION_NOTICES_BASE_PATH . DIRECTORY_SEPARATOR . 'templates';
+            return PP_VERSION_NOTICES_BASE_PATH . '/templates';
         };
 
         $pimple['module_top_notice'] = function (Container $c) {
             return new TopNoticeModule($c['template_loader']);
+        };
+
+        $pimple['module_menu_link'] = function (Container $c) {
+            return new MenuLinkModule($c['template_loader']);
         };
 
         $pimple['template_loader'] = function (Container $c) {
