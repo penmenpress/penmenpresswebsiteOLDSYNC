@@ -1,6 +1,6 @@
 <?php
 /**
- * Publish to Apple News: \Apple_Exporter\Components\Advertisement class
+ * Publish to Apple News: \Apple_Exporter\Components\End_Of_Article class
  *
  * @package Apple_News
  * @subpackage Apple_Exporter\Components
@@ -9,12 +9,13 @@
 namespace Apple_Exporter\Components;
 
 /**
- * Represents an Article Format Advertisement. It gets generated automatically
- * so not much to do here but define the static JSON.
+ * Represents an End of Article module. The module initializes as empty and
+ * is defined by the user via the Customize JSON feature. If non-empty, it is
+ * inserted onto the end of the article body.
  *
- * @since 0.4.0
+ * @since 2.1.0
  */
-class Advertisement extends Component {
+class End_Of_Article extends Component {
 
 	/**
 	 * Register all specs for the component.
@@ -25,21 +26,13 @@ class Advertisement extends Component {
 		$this->register_spec(
 			'json',
 			__( 'JSON', 'apple-news' ),
-			array(
-				'role'       => 'banner_advertisement',
-				'bannerType' => 'standard',
-			)
+			array()
 		);
 
 		$this->register_spec(
 			'layout',
 			__( 'Layout', 'apple-news' ),
-			array(
-				'margin' => array(
-					'top'    => 25,
-					'bottom' => 25,
-				),
-			)
+			array()
 		);
 	}
 
@@ -65,7 +58,7 @@ class Advertisement extends Component {
 	 */
 	private function set_layout() {
 		$this->register_full_width_layout(
-			'advertisement-layout',
+			'end-of-article-layout',
 			'layout',
 			array(),
 			'layout'

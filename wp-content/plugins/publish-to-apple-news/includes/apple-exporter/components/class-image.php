@@ -8,8 +8,6 @@
 
 namespace Apple_Exporter\Components;
 
-use Apple_Exporter\Components\Component;
-
 /**
  * Represents a simple image.
  *
@@ -26,10 +24,25 @@ class Image extends Component {
 	 */
 	public static function node_matches( $node ) {
 
+		$has_image_child = false;
+		// If this is a figure and it has children, see if we can find an image.
+		if ( $node->hasChildNodes() && 'figure' === $node->tagName ) {
+			foreach ( $node->childNodes as $child ) {
+				if ( 'img' === $child->nodeName ) {
+					$has_image_child = true;
+				}
+			}
+		}
+
 		// Is this an image node?
-		if (
-			( self::node_has_class( $node, 'wp-block-cover' ) || 'img' === $node->nodeName || ( 'figure' === $node->nodeName && Component::is_embed_figure( $node ) ) )
-			&& self::remote_file_exists( $node )
+		if ( self::node_has_class( $node, 'wp-block-cover' )
+			|| 'img' === $node->nodeName
+			|| ( 'figure' === $node->nodeName
+				&& ( Component::is_embed_figure( $node )
+					|| self::node_has_class( $node, 'wp-caption' )
+					|| $has_image_child
+				)
+			)
 		) {
 			return $node;
 		}
@@ -43,6 +56,7 @@ class Image extends Component {
 	 * @access public
 	 */
 	public function register_specs() {
+		$theme = \Apple_Exporter\Theme::get_used();
 		$this->register_spec(
 			'json-without-caption',
 			__( 'JSON without caption', 'apple-news' ),
@@ -52,6 +66,19 @@ class Image extends Component {
 				'layout' => '#layout#',
 			)
 		);
+
+		$conditional = array();
+		if ( ! empty( $theme->get_value( 'caption_color_dark' ) ) ) {
+			$conditional = array(
+				'conditional' => array(
+					'textColor'  => '#caption_color_dark#',
+					'conditions' => array(
+						'minSpecVersion'       => '1.14',
+						'preferredColorScheme' => 'dark',
+					),
+				),
+			);
+		}
 
 		$this->register_spec(
 			'json-with-caption',
@@ -63,24 +90,30 @@ class Image extends Component {
 						'role'    => 'photo',
 						'URL'     => '#url#',
 						'layout'  => '#layout#',
-						'caption' => '#caption#',
+						'caption' => array(
+							'format'    => 'html',
+							'text'      => '#caption#',
+							'textStyle' => array(
+								'fontName' => '#caption_font#',
+							),
+						),
 					),
 					array(
 						'role'      => 'caption',
 						'text'      => '#caption_text#',
 						'format'    => 'html',
-						'textStyle' => array(
-							'textAlignment' => '#text_alignment#',
-							'fontName'      => '#caption_font#',
-							'fontSize'      => '#caption_size#',
-							'tracking'      => '#caption_tracking#',
-							'lineHeight'    => '#caption_line_height#',
-							'textColor'     => '#caption_color#',
+						'textStyle' => array_merge(
+							array(
+								'textAlignment' => '#text_alignment#',
+								'fontName'      => '#caption_font#',
+								'fontSize'      => '#caption_size#',
+								'tracking'      => '#caption_tracking#',
+								'lineHeight'    => '#caption_line_height#',
+								'textColor'     => '#caption_color#',
+							),
+							$conditional
 						),
 						'layout'    => array(
-							'margin'               => array(
-								'top' => 20,
-							),
 							'ignoreDocumentMargin' => '#full_bleed_images#',
 						),
 					),
@@ -135,7 +168,7 @@ class Image extends Component {
 	 * @access protected
 	 */
 	protected function build( $html ) {
-		// Is this is Gutenberg Cover Bloock?
+		// Is this is Gutenberg Cover Block?
 		$is_cover_block = preg_match( '#class="wp-block-cover#', $html );
 
 		// Extract the URL from the text.
@@ -174,7 +207,7 @@ class Image extends Component {
 		}
 
 		// Check for caption.
-		$caption_regex = $is_cover_block ? '#<div.*?>?\n(.*)#m' : '#<figcaption.*?>(.*?)</figcaption>#m';
+		$caption_regex = $is_cover_block ? '#<div.*?>?\n(.*)#m' : '#<figcaption.*?>(.*?)</figcaption>#ms';
 		if ( preg_match( $caption_regex, $html, $matches ) ) {
 			$caption                  = trim( $matches[1] );
 			$values['#caption#']      = ! $is_cover_block ? $caption : array(
@@ -305,6 +338,7 @@ class Image extends Component {
 				'#caption_tracking#'    => intval( $theme->get_value( 'caption_tracking' ) ) / 100,
 				'#caption_line_height#' => intval( $theme->get_value( 'caption_line_height' ) ),
 				'#caption_color#'       => $theme->get_value( 'caption_color' ),
+				'#caption_color_dark#'  => $theme->get_value( 'caption_color_dark' ),
 				'#full_bleed_images#'   => ( 'yes' === $this->get_setting( 'full_bleed_images' ) ),
 			)
 		);

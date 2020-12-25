@@ -3,9 +3,9 @@ Contributors: potatomaster, kevinfodness, jomurgel, danbowles, alleyinteractive,
 Donate link: https://wordpress.org
 Tags: publish, apple, news, iOS
 Requires at least: 4.0
-Tested up to: 5.2.2
+Tested up to: 5.5
 Requires PHP: 5.6
-Stable tag: 2.0.3
+Stable tag: 2.1.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl.html
 
@@ -46,6 +46,53 @@ Please visit our [wiki](https://github.com/alleyinteractive/apple-news/wiki) for
 
 == Changelog ==
 
+= 2.1.0 =
+* Enhancement: The cover component now supports captions. If a featured image is used for the cover, the caption will come from the attachment itself in the database. If the first image from the content is used, the caption will be read from the HTML. There is also a new filter, apple_news_exporter_cover_caption, which allows for filtering of the caption text.
+* Enhancement: HTML is now allowed in lightbox image captions.
+* Enhancement: Allows configuration of cover images in the sidebar / metabox explicitly, rather than pulling them out of the featured image or main content.
+* Enhancement: Adds support for Brightcove videos via the Brightcove Video Connect plugin for videos added via either the Gutenberg block or the shortcode. Note that this feature will only work if you contact Apple support to link your Brightcove account with your Apple News channel.
+* Enhancement: Replaces usage of the deprecated `advertisingSettings` object with the new `autoplacement.advertising` object. Bumps default advertisement frequency from 1 to 5 (out of 10).
+* Enhancement: Adds an error to the notice bar if the `DATE_NOT_RECENT` API error is encountered advising the user to synchronize the time on their server to restore API connectivity.
+* Enhancement: Adds padding above and below `EmbedWebVideo` components.
+* Enhancement: Converts notices in a block editor context to native block editor notice components, rather than the previous custom implementation.
+* Enhancement: In the block editor, warns when the post has unsaved changes, and publishing to Apple News would result in unsaved changes not being published.
+* Bugfix: Removes Cover Art configuration, as Cover Art is no longer used by Apple.
+* Bugfix: Fixes the logic in the default theme checker to properly check the configured values against the defaults and prompt the user if they are using the default theme that ships with Apple News without modification.
+* Bugfix: Fixes a bug where renaming a theme would not carry over any changes made to the theme, and renaming the active theme would make it no longer active.
+* Bugfix: If the same image is used for the featured image and the first image embedded into the post, it no longer shows up twice.
+* Bugfix: Removed extra space between an image and its caption.
+* Bugfix: If a custom excerpt is used, but the custom excerpt repeats text in its entirety from elsewhere in the article (e.g., the first paragraph), then the Intro component will be skipped. This prevents an issue where Apple will flag articles that contain repeated text due to the Intro component using a custom excerpt suitable in a WordPress context but not an Apple News context.
+* Bugfix: Select menus are no longer oversized on the settings page.
+* Updated filter name for `get_sections_for_post` to `apple_news_get_sections_for_post`.
+
+= 2.0.8 =
+* Enhancement: Adds styles for Button elements that are links which are added by the Gutenberg editor.
+* Enhancement: Bumps the Apple News Format version from 1.7 to 1.11 to make support for new features possible, like LinkButton.
+
+= 2.0.7 =
+* Fixes a bug where sections by category is not checked by default for new posts.
+* Fixes visual bug when manual section selection are visible.
+
+= 2.0.6 =
+* Bugfix: Rolled back support for Button elements for now due to a problematic implementation.
+
+= 2.0.5 =
+* Enhancement: Added support for audio, video, and table captions in Gutenberg.
+* Enhancement: Adds styles for Button elements that are links.
+* Bugfix: Blockquotes using alignments other than left are now properly recognized.
+* Bugfix: Facebook URLs inline within other elements no longer getting converted to Facebook embeds.
+* Diversity and Inclusion: Replaced instances of "whitelist" with "allowlist" throughout the codebase, change head branch from "master" to "develop". Language matters.
+
+= 2.0.4 =
+* Bump "tested up to" tag to 5.4.
+* Upgrades node version used for compiling assets to version 12, and patches vulnerabilities reported via npm audit.
+* Adds TikTok compatibility to the generic embed handler (props to @hrkhal for the fix).
+* Fixes an undefined property notice when there is an error but no error message (props to @khoipro for the fix).
+* Adds size attributes to select fields and API configuration fields for better readability (props to @paulschreiber for the fix).
+* Fixes a bug where captions were not being correctly read from images.
+* Adds a warning for the isPaid flag to prevent confusion if a channel is not set up for paid content.
+* Fixes a bug where settings are not initialized to an array when the plugin is loaded via code.
+
 = 2.0.3 =
 * Bugfix: Resolves fatal error when trying to load posts that aren't active in some cases.
 
@@ -68,7 +115,7 @@ Please visit our [wiki](https://github.com/alleyinteractive/apple-news/wiki) for
 * Enhancement: Added the apple_news_notification_headers filter to allow headers to be added to the notification email message. Props to @paulschreiber for the addition.
 * Bugfix: Improved handling of UTF-8 multibyte characters to provide better support for the French language.
 * Updated the description that appears below the section selection checkboxes to more accurately explain the current behavior.
-* Updated to the latest version of the phpcs and vipwpcs standards, resolving most issues, while whitelisting some rules for resolution in the next version. Props to @paulschreiber for doing most of the work here.
+* Updated to the latest version of the phpcs and vipwpcs standards, resolving most issues, while allowlisting some rules for resolution in the next version. Props to @paulschreiber for doing most of the work here.
 
 = 1.4.3 =
 * Bugfix: Decodes HTML entities in URLs before performing remote file exists check for embedded media. Props to @kasparsd for the fix.

@@ -2,6 +2,13 @@
 /**
  * Publish to Apple News partials: Single Push page template
  *
+ * phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+ *
+ * @global string  $message
+ * @global WP_Post $post
+ * @global array   $post_meta
+ * @global array   $sections
+ *
  * @package Apple_News
  */
 
@@ -37,7 +44,7 @@
 				<td>
 					<label for="apple-news-is-paid">
 						<input id="apple-news-is-paid" name="apple_news_is_paid" type="checkbox" value="1" <?php checked( $post_meta['apple_news_is_paid'][0] ); ?>>
-						<?php esc_html_e( 'Check this to indicate that viewing the article requires a paid subscription.', 'apple-news' ); ?>
+						<?php esc_html_e( 'Check this to indicate that viewing the article requires a paid subscription. Note that Apple must approve your channel for paid content before using this feature.', 'apple-news' ); ?>
 					</label>
 				</td>
 			</tr>
@@ -73,8 +80,8 @@
 				<td>
 					<select id="apple-news-maturity-rating" name="apple_news_maturity_rating">
 						<option value=""></option>
-						<?php foreach ( \Apple_News::$maturity_ratings as $rating ) : ?>
-							<option value="<?php echo esc_attr( $rating ); ?>" <?php selected( isset( $post_meta['apple_news_maturity_rating'][0] ) ? $post_meta['apple_news_maturity_rating'][0] : '', $rating ); ?>><?php echo esc_html( ucwords( strtolower( $rating ) ) ); ?></option>
+						<?php foreach ( \Apple_News::$maturity_ratings as $apple_rating ) : ?>
+							<option value="<?php echo esc_attr( $apple_rating ); ?>" <?php selected( isset( $post_meta['apple_news_maturity_rating'][0] ) ? $post_meta['apple_news_maturity_rating'][0] : '', $apple_rating ); ?>><?php echo esc_html( ucwords( strtolower( $apple_rating ) ) ); ?></option>
 						<?php endforeach; ?>
 					</select>
 					<p class="description"><?php esc_html_e( 'Select the optional maturity rating for this post.', 'apple-news' ); ?></p>
@@ -90,30 +97,13 @@
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Pull quote position', 'apple-news' ); ?></th>
 				<td>
-					<?php $pullquote_position = ! empty( $post_meta['apple_news_pullquote_position'][0] ) ? $post_meta['apple_news_pullquote_position'][0] : 'middle'; ?>
+					<?php $apple_pullquote_position = ! empty( $post_meta['apple_news_pullquote_position'][0] ) ? $post_meta['apple_news_pullquote_position'][0] : 'middle'; ?>
 					<select name="apple_news_pullquote_position">
-						<option <?php selected( $pullquote_position, 'top' ); ?> value="top"><?php esc_html_e( 'top', 'apple-news' ); ?></option>
-						<option <?php selected( $pullquote_position, 'middle' ); ?> value="middle"><?php esc_html_e( 'middle', 'apple-news' ); ?></option>
-						<option <?php selected( $pullquote_position, 'bottom' ); ?> value="bottom"><?php esc_html_e( 'bottom', 'apple-news' ); ?></option>
+						<option <?php selected( $apple_pullquote_position, 'top' ); ?> value="top"><?php esc_html_e( 'top', 'apple-news' ); ?></option>
+						<option <?php selected( $apple_pullquote_position, 'middle' ); ?> value="middle"><?php esc_html_e( 'middle', 'apple-news' ); ?></option>
+						<option <?php selected( $apple_pullquote_position, 'bottom' ); ?> value="bottom"><?php esc_html_e( 'bottom', 'apple-news' ); ?></option>
 					</select>
 					<p class="description"><?php esc_html_e( 'The position in the article where the pull quote will appear.', 'apple-news' ); ?></p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Cover art', 'apple-news' ); ?></th>
-				<td>
-					<?php if ( $enable_cover_art ) : ?>
-						<?php include plugin_dir_path( __FILE__ ) . 'cover-art.php'; ?>
-					<?php else : ?>
-						<?php
-							printf(
-								/* translators: First token is opening a tag, second is closing a tag */
-								esc_html__( 'Cover Art must be enabled on the %1$ssettings page%2$s.', 'apple-news' ),
-								'<a href="' . esc_url( admin_url( 'admin.php?page=apple-news-options' ) ) . '">',
-								'</a>'
-							);
-						?>
-					<?php endif; ?>
 				</td>
 			</tr>
 		</table>
