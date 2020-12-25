@@ -4,7 +4,8 @@
  *
  */
 class WDWLibraryEmbed {
-	public function __construct() {}
+
+  public function __construct() {}
 
 	public function get_provider($oembed, $url, $args = '') {
 		$provider = false;
@@ -57,9 +58,8 @@ class WDWLibraryEmbed {
    *  5. add _DIRECT_URL from static URL of image (not implemented yet)
    *
    */
-  public static function add_embed($url, $instagram_data = null) {
+  public static function add_embed( $url = '', $instagram_data = array() ) {
     $url = sanitize_text_field(urldecode($url));
-
     $embed_type = '';
     $host = '';
     /*returns this array*/
@@ -75,7 +75,8 @@ class WDWLibraryEmbed {
       'filetype' => '',
       'date_modified' => '',
       'resolution' => '',
-      'redirect_url' => '');
+      'redirect_url' => ''
+    );
 
     $accepted_oembeds = array(
       'YOUTUBE' => '/youtube/',
@@ -83,7 +84,7 @@ class WDWLibraryEmbed {
       'FLICKR' => '/flickr/',
       'INSTAGRAM' => '/instagram/',
       'DAILYMOTION' => '/dailymotion/'
-      );
+    );
     
     /*check if url is from facebook */
     //explodes URL based on slashes
@@ -96,6 +97,7 @@ class WDWLibraryEmbed {
     $fifth = strtok('/');
     //sixth is for video's fbid if url is video url
     $sixth = strtok('/');
+
     if ( $second_token === 'www.facebook.com') {
       $json_data = array("error", "Incorect url.");
       if ( has_filter('init_facebook_add_embed_bwg') ) {
@@ -116,7 +118,7 @@ class WDWLibraryEmbed {
 	
     /*check if we can embed this using wordpress class WP_oEmbed */
     if ( !function_exists( '_wp_oembed_get_object' ) )
-      include( ABSPATH . WPINC . '/class-oembed.php' );
+      include( BWG()->abspath . WPINC . '/class-oembed.php' );
     // get an oembed object
     $oembed = _wp_oembed_get_object();
     if (method_exists($oembed, 'get_provider')) {
@@ -139,149 +141,86 @@ class WDWLibraryEmbed {
       $parse = parse_url($url);
       $host = ($parse['host'] == "www.instagram.com") ? 'INSTAGRAM' : FALSE;
     }
+
     /*return json_encode($host); for test*/
     /*handling oembed cases*/    
     if ( $host ) {
-      /*instagram is exception*/
-      /*standard oembed fetching does not return thumbnail_url! so we do it manually*/
-      if ($host == 'INSTAGRAM' && strtolower(substr($url,-4)) != 'post') {
-        $embed_type = 'EMBED_OEMBED_INSTAGRAM';
-
-        $insta_host_and_id = strtok($url, '/')."/".strtok('/')."/".strtok('/')."/".strtok('/');
-        $insta_host = strtok($url, '/')."/".strtok('/')."/".strtok('/')."/";
-        $filename = str_replace($insta_host, "", $insta_host_and_id);
-        $thumb_filename = $filename;
-
-        if (!$instagram_data) {
-          $instagram_data = new stdClass();
-          $get_embed_data = wp_remote_get("http://api.instagram.com/oembed?url=http://instagram.com/p/".$filename);
-          if ( is_wp_error( $get_embed_data ) ) {
-            return json_encode(array("error", "cannot get Instagram data"));
-          }
-          $result  = json_decode(wp_remote_retrieve_body($get_embed_data));
-          if(empty($result)){
-            return json_encode(array("error", wp_remote_retrieve_body($get_embed_data)));
-          }
-          list($img_width, $img_height) = @getimagesize('https://instagram.com/p/' . $thumb_filename . '/media/?size=l');
-          $instagram_data->caption = new stdClass();
-          $instagram_data->caption->text = $result->title;
-          $instagram_data->images = new stdClass();
-          $instagram_data->images->standard_resolution = new stdClass();
-          $instagram_data->images->standard_resolution->width = $img_width;
-          $instagram_data->images->standard_resolution->height = $img_height;
-
-          /*get instagram post html page, parse its DOM to find video URL*/
-          $DOM = new DOMDocument;
-          libxml_use_internal_errors(true);
-          $html_code = wp_remote_get($url);
-          if ( is_wp_error( $html_code ) ) {
-            return json_encode(array("error", "cannot get Instagram data"));
-          }
-          $html_body = wp_remote_retrieve_body($html_code);
-          if(empty($html_body)){
-            return json_encode(array("error", wp_remote_retrieve_body($html_code)));
-          }
-
-          $DOM->loadHTML($html_body);
-          $finder = new DomXPath($DOM);
-          $query = "//meta[@property='og:video']";
-          $nodes = $finder->query($query);
-          $node = $nodes->item(0);
-          if ($node) {
-            $length = $node->attributes->length;
-            for ($i = 0; $i < $length; ++$i) {
-              $name = $node->attributes->item($i)->name;
-              $value = $node->attributes->item($i)->value;
-              if ($name == 'content') {
-                $filename = $value;
-              }
-            }
-            $instagram_data->videos = new stdClass();
-            $instagram_data->videos->standard_resolution = new stdClass();
-            $instagram_data->videos->standard_resolution->url = $filename;
-            $instagram_data->type = 'video';
+      if ( $host == 'INSTAGRAM' ) {
+      $matches = array();
+      $filename = '';
+      $regex = "/^.*?instagram\.com\/p\/(.*?)[\/]?$/";
+      if ( preg_match($regex, $url, $matches) ) {
+        $filename = $matches[1];
+        if ( strtolower(substr($filename, -5)) == '/post' ) {
+          $filename = substr($filename, 0, -5);
+        }
+      }
+      $description = !empty($instagram_data->caption) ? $instagram_data->caption : '';
+      // Content
+      if ( $host == 'INSTAGRAM' && strtolower(substr($url, -4)) != 'post' ) {
+        if ( !empty($instagram_data) ) {
+          $media_url = $instagram_data->media_url;
+          if ( $instagram_data->media_type == 'VIDEO' ) {
+            $embed_type = 'EMBED_OEMBED_INSTAGRAM_VIDEO';
+            $thumb_url = $instagram_data->thumbnail_url;
           }
           else {
-            $instagram_data->type = 'image';
+            if ( $instagram_data->media_type == 'IMAGE' ) {
+              $embed_type = 'EMBED_OEMBED_INSTAGRAM_IMAGE';
+              $thumb_url = $instagram_data->media_url;
+            }
           }
-        }
-        $embedData = array(
-          'name' => '',
-          'description' => isset($instagram_data->caption->text) ? htmlspecialchars($instagram_data->caption->text) : '',
-          'filename' => $filename,
-          'url' => $url,
-          'reliative_url' => $url,
-          'thumb_url' => 'https://instagram.com/p/' . $thumb_filename . '/media/?size=m',
-          'thumb' => 'https://instagram.com/p/' . $thumb_filename . '/media/?size=m',
-          'size' => '',
-          'filetype' => $embed_type,
-          'date_modified' => date("Y-m-d H:i:s"),
-          'resolution' => $instagram_data->images->standard_resolution->width . " x " . $instagram_data->images->standard_resolution->height . " px",
-          'resolution_thumb' => $instagram_data->images->standard_resolution->width . "x" . $instagram_data->images->standard_resolution->height,
-          'redirect_url' => '');
-        if ($instagram_data->type == 'video') {
-          $embedData['filename'] = $instagram_data->videos->standard_resolution->url;
-          $embedData['filetype'] .= '_VIDEO';
+          list($media_width, $media_height) = @getimagesize($thumb_url);
+          $img_width = !empty($media_width) ? $media_width : '640';
+          $img_height = !empty($media_height) ? $media_height : '640';
         }
         else {
-          $embedData['filetype'] .= '_IMAGE'; 
-        }
-
-        return json_encode($embedData);
-      }
-      if ($host == 'INSTAGRAM' && strtolower(substr($url,-4)) == 'post') {
-        /*check if instagram post*/
-        $url = substr($url, 0, -4);
-        $embed_type = 'EMBED_OEMBED_INSTAGRAM_POST';  
-        parse_str( parse_url( $url, PHP_URL_QUERY ), $my_array_of_vars );
-        $matches = array();
-        $filename = '';
-		$description = !empty($instagram_data->caption->text) ? $instagram_data->caption->text : '';
-        $regex = "/^.*?instagram\.com\/p\/(.*?)[\/]?$/";
-        if(preg_match($regex, $url, $matches)){
-          $filename = $matches[1];
-        }
-        if ( !$instagram_data ) {
-          $instagram_data = new stdClass();
-          $get_embed_data = wp_remote_get("http://api.instagram.com/oembed?url=http://instagram.com/p/".$filename);
-          if ( is_wp_error( $get_embed_data ) ) {
-            return json_encode(array("error", "cannot get Instagram data"));
+          $result = self::instagram_oembed_connect($url);
+          if ( !empty($result->error) ) {
+            return json_encode($result->error);
           }
-          $result = json_decode(wp_remote_retrieve_body($get_embed_data));
-          if ( empty($result) ) {
-            return json_encode(array("error", wp_remote_retrieve_body($get_embed_data)));
-          }
-		  $description = !empty($result->title) ? $result->title : '';
-          list($img_width, $img_height) = @getimagesize('https://instagram.com/p/' . $filename . '/media/?size=l');
-          $instagram_data->caption = new stdClass();
-          $instagram_data->caption->text = $description;
-          $instagram_data->images = new stdClass();
-          $instagram_data->images->standard_resolution = new stdClass();
-          $instagram_data->images->standard_resolution->width = $img_width;
-          $instagram_data->images->standard_resolution->height = $img_height;
+          $embed_type = 'EMBED_OEMBED_INSTAGRAM_POST';
+          $media_url = base64_encode($result->html);
+          $thumb_url = $result->thumbnail_url;
+          $img_width = $result->thumbnail_width;
+          $img_height = $result->thumbnail_height;
         }
-        $embedData = array(
-          'name' => '',
-          'description' => htmlspecialchars($description),
-          'filename' => $filename,
-          'url' => $url,
-          'reliative_url' => $url,
-          'thumb_url' => 'https://instagram.com/p/' . $filename . '/media/?size=m',
-          'thumb' => 'https://instagram.com/p/' . $filename . '/media/?size=m',
-          'size' => '',
-          'filetype' => $embed_type,
-          'date_modified' => date("Y-m-d H:i:s"),
-          'resolution' => $instagram_data->images->standard_resolution->width . " x " . $instagram_data->images->standard_resolution->height . " px",
-          'resolution_thumb' => $instagram_data->images->standard_resolution->width . "x" . $instagram_data->images->standard_resolution->height,
-          'redirect_url' => '');
- 
-        return json_encode($embedData);      
       }
-
+      // Whole post
+      if ( $host == 'INSTAGRAM' && strtolower(substr($url, -4)) == 'post' ) {
+        if ( !empty($instagram_data) ) {
+          $result = self::instagram_oembed_connect($instagram_data->permalink);
+          if ( !empty($result->error) ) {
+            return json_encode($result->error);
+          }
+          $embed_type = 'EMBED_OEMBED_INSTAGRAM_POST';
+          $media_url = base64_encode($result->html);
+          $thumb_url = $result->thumbnail_url;
+          $img_width = $result->thumbnail_width;
+          $img_height = $result->thumbnail_height;
+        }
+      }
+      $embedData = array(
+        'name' => '',
+        'description' => htmlspecialchars($description),
+        'filename' => $filename,
+        'url' => $media_url,
+        'reliative_url' => $media_url,
+        'thumb_url' => $thumb_url,
+        'thumb' => $thumb_url,
+        'size' => '',
+        'filetype' => $embed_type,
+        'resolution' => $img_width . " x " . $img_height . " px",
+        'resolution_thumb' => $img_width . "x" . $img_height,
+        'redirect_url' => '',
+        'date_modified' => date("Y-m-d H:i:s"),
+      );
+      return json_encode($embedData);
+    }
       $result = $oembed->fetch( $provider, $url);
       /*no data fetched for a known provider*/
-      if(!$result){
-		return json_encode(array("error", "please enter ". $host . " correct single media URL"));
+      if ( !$result ) {
+        return json_encode(array( "error", "please enter " . $host . " correct single media URL" ));
       }
       else { /*one of known oembed types*/
         $embed_type = 'EMBED_OEMBED_'.$host;
@@ -536,22 +475,49 @@ class WDWLibraryEmbed {
           # code...not implemented yet
           break;
         }
-      case 'EMBED_OEMBED_INSTAGRAM_VIDEO':
+      case 'EMBED_OEMBED_INSTAGRAM_POST':
         $oembed_instagram_html = '<div ';
+        $id = '';
         foreach ($attrs as $attr => $value) {
           if (preg_match('/src/i', $attr) === 0) {
             if ($attr != '' && $value != '') {
+              $oembed_instagram_html .= ' ' . $attr . '="' . $value . '"';
+              if (strtolower($attr) == 'class') {
+                $class = $value;
+              }
+            }
+          }
+        }
+        $oembed_instagram_html .= ">";
+        if ($file_url != '') {
+          if ($is_visible) {
+            $oembed_instagram_html .= '<div class="inner_instagram_iframe_' . $class . '"';
+          } else {
+            $oembed_instagram_html .= '<dev id="bwg_carousel_preload_' . $bwg . '_' . $image_key . '" class="inner_instagram_iframe_' . $class . '"';
+          }
+          $oembed_instagram_html .= ' frameborder="0" scrolling="no" allowtransparency="false" allowfullscreen ' .
+            'style="max-width: 100% !important; max-height: 100% !important; width: 100%; height: 100%; margin:0; vertical-align:middle;">' . base64_decode($file_url) . '</div>';
+        }
+        $oembed_instagram_html .= "</div>";
+        $html_to_insert .= $oembed_instagram_html;
+        break;
+      case 'EMBED_OEMBED_INSTAGRAM_VIDEO':
+        $oembed_instagram_html = '<div ';
+        foreach ( $attrs as $attr => $value ) {
+          if ( preg_match('/src/i', $attr) === 0 ) {
+            if ( $attr != '' && $value != '' ) {
               $oembed_instagram_html .= ' ' . $attr . '="' . $value . '"';
             }
           }
         }
         $oembed_instagram_html .= " >";
-        if ($embed_id != '') {
+        if ( $file_url != '' ) {
           $oembed_instagram_html .= '<video class="bwg_carousel_video" style="width:auto !important; height:auto !important; max-width:100% !important; max-height:100% !important; margin:0 !important;" controls>';
-          if ($is_visible) {
-            $oembed_instagram_html .= '<source src="' . $embed_id;
-          } else {
-            $oembed_instagram_html .= '<source id="bwg_carousel_preload_' . $bwg . '_' . $image_key . '" data-src="' . $embed_id;
+          if ( $is_visible ) {
+            $oembed_instagram_html .= '<source src="' . $file_url;
+          }
+          else {
+            $oembed_instagram_html .= '<source id="bwg_carousel_preload_' . $bwg . '_' . $image_key . '" data-src="' . $file_url;
           }
           $oembed_instagram_html .= '" type="video/mp4"> Your browser does not support the video tag. </video>';
         }
@@ -567,12 +533,12 @@ class WDWLibraryEmbed {
             }
           }
         }
-        $oembed_instagram_html .= " >";
+        $oembed_instagram_html .= ">";
         if ($embed_id != '') {
           if ($is_visible) {
-            $oembed_instagram_html .= '<img src="//instagram.com/p/' . $embed_id . '/media/?size=l"';
+            $oembed_instagram_html .= '<img src="' . $file_url . '"';
           } else {
-            $oembed_instagram_html .= '<img  id="bwg_carousel_preload_' . $bwg . '_' . $image_key . '" data-src="//instagram.com/p/' . $embed_id . '/media/?size=l"';
+            $oembed_instagram_html .= '<img  id="bwg_carousel_preload_' . $bwg . '_' . $image_key . '" data-src=" '. $file_url .' "';
           }
           $oembed_instagram_html .= ' style="' .
             'max-width:' . '100%' . " !important" .
@@ -629,39 +595,6 @@ class WDWLibraryEmbed {
         $oembed_facebook_html .= " ></iframe>";
         $html_to_insert .= $oembed_facebook_html;
         break;
-      case 'EMBED_OEMBED_INSTAGRAM_POST':
-        $oembed_instagram_html = '<div ';
-        $id = '';
-        foreach ($attrs as $attr => $value) {
-          if (preg_match('/src/i', $attr) === 0) {
-            if ($attr != '' && $value != '') {
-              $oembed_instagram_html .= ' ' . $attr . '="' . $value . '"';
-              if (strtolower($attr) == 'class') {
-                $class = $value;
-              }
-            }
-          }
-        }
-        $oembed_instagram_html .= " >";
-        if ($embed_id != '') {
-          if ($is_visible) {
-            $oembed_instagram_html .= '<iframe class="inner_instagram_iframe_' . $class . '" src="//instagr.am/p/' . $embed_id . '/embed/?enablejsapi=1"';
-          } else {
-            $oembed_instagram_html .= '<iframe id="bwg_carousel_preload_' . $bwg . '_' . $image_key . '" class="inner_instagram_iframe_' . $class . '" data-src="//instagr.am/p/' . $embed_id . '/embed/?enablejsapi=1"';
-          }
-          $oembed_instagram_html .= ' style="' .
-            'max-width:' . '100%' . " !important" .
-            '; max-height:' . '100%' . " !important" .
-            '; width:' . '100%' .
-            '; height:' . '100%' .
-            '; margin:0' .
-            '; display:table-cell; vertical-align:middle;"' .
-            'frameborder="0" scrolling="no" allowtransparency="false" allowfullscreen' .
-            '></iframe>';
-        }
-        $oembed_instagram_html .= "</div>";
-        $html_to_insert .= $oembed_instagram_html;
-        break;
       case 'EMBED_OEMBED_DAILYMOTION_VIDEO':
         $oembed_dailymotion_html = '<iframe ';
         if ($embed_id != '') {
@@ -696,43 +629,39 @@ class WDWLibraryEmbed {
    */
   public static function add_instagram_gallery( $access_token, $whole_post, $autogallery_image_number ) {
     @set_time_limit(0);
-    $instagram_posts_response = wp_remote_get("https://api.instagram.com/v1/users/self/media/recent/?access_token=" . $access_token . "&count=" . $autogallery_image_number);
+    $instagram_api_url = 'https://graph.instagram.com/v1.0/' . BWG()->options->instagram_user_id . '/media/?limit=100&fields=id,media_type,media_url,permalink,thumbnail_url,username,caption,timestamp&access_token=' . $access_token;
+    $instagram_posts_response = wp_remote_get($instagram_api_url);
     if ( is_wp_error($instagram_posts_response) ) {
       return json_encode(array( "error", "cannot get Instagram user posts" ));
     }
-    $posts_json = wp_remote_retrieve_body($instagram_posts_response);
-    $response_code = json_decode($posts_json)->meta->code;
-    /*
-    instagram API returns
-    *private user
-    '{"meta":{"error_type":"APINotAllowedError","code":400,"error_message":"you cannot view this resource"}}'
-    */
-    if ( $response_code != 200 ) {
-      return json_encode(array( "error", json_decode($posts_json)->meta->error_message ));
-    }
-    if ( !property_exists(json_decode($posts_json), 'data') ) {
+    $posts_json = json_decode( wp_remote_retrieve_body( $instagram_posts_response ) );
+    if ( !property_exists( $posts_json, 'data') ) {
       return json_encode(array( "error", "cannot get Instagram user posts data" ));
     }
     /*
     if instagram user has no posts
     */
-    if ( empty(json_decode($posts_json)->data) ) {
+    if ( empty( $posts_json->data) ) {
       return json_encode(array( "error", "Instagram user has no posts" ));
     }
-    $posts_array = json_decode($posts_json)->data;
+    $posts_array = $posts_json->data;
+
     $instagram_album_data = array();
+    $post_flag = '';
     if ( $whole_post == 1 ) {
       $post_flag = "post";
     }
-    else {
-      $post_flag = '';
-    }
     foreach ( $posts_array as $post_data ) {
-      $url = $post_data->link . $post_flag;
-      $post_to_embed = json_decode(self::add_embed($url, $post_data), TRUE);
-      /* if add_embed function did not indexed array because of error */
-      if ( !isset($post_to_embed[0]) ) {
-        array_push($instagram_album_data, $post_to_embed);
+      if( $post_data->media_type == 'CAROUSEL_ALBUM' ) {
+        continue;
+      }
+      if ( count( $instagram_album_data ) < $autogallery_image_number ) {
+        $url = $post_data->permalink . $post_flag;
+        $post_to_embed = json_decode( self::add_embed( $url, $post_data ), TRUE );
+        /* if add_embed function did not indexed array because of error */
+        if ( !isset( $post_to_embed[0] ) ) {
+          array_push( $instagram_album_data, $post_to_embed );
+        }
       }
     }
 
@@ -800,7 +729,7 @@ class WDWLibraryEmbed {
     if ( empty($images_new) ) {
       return array(false, "Cannot get social data");
     }
-    $images = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "bwg_image WHERE gallery_id = '" . $id . "' ", OBJECT);
+    $images = $wpdb->get_results($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . "bwg_image WHERE gallery_id = %d", $id), OBJECT);
     $images_count = sizeof($images);
     
     $images_update = array(); /*ids and orders of images existing in both arrays*/
@@ -894,25 +823,30 @@ class WDWLibraryEmbed {
     if($images_count != 0){
 		if($to_unpublish){
     		foreach ($images_dated as $image) {
-    			$q = 'UPDATE ' .  $wpdb->prefix . 'bwg_image SET published=0, `order` ='.$image['order'].' WHERE `id`='.$image['id'];
-				$wpdb->query($q);
+    			$q = 'UPDATE ' .  $wpdb->prefix . 'bwg_image SET published=0, `order` =%s WHERE `id`=%d';
+				  $wpdb->query( $wpdb->prepare($q, array($image['order'], $image['id'])) );
     		}
     	}
     	else {
     		foreach ($images_dated as $image) {
-				$q = 'UPDATE ' .  $wpdb->prefix . 'bwg_image SET `order` ='.$image['order'].' WHERE `id`='.$image['id'];
-    			$wpdb->query($q);
+				$q = 'UPDATE ' .  $wpdb->prefix . 'bwg_image SET `order` =%s WHERE `id`=%d';
+          $wpdb->query( $wpdb->prepare($q, array($image['order'], $image['id'])) );
     		}		
     	}
 
 		foreach ($images_update as $image) {
-			$save = $wpdb->update($wpdb->prefix . 'bwg_image', array(
+			$save = $wpdb->update($wpdb->prefix . 'bwg_image',
+        array(
 			  'order' => $image['order'],
 			  'slug' => self::spider_replace4byte($image['slug']),
 			  'description' => self::spider_replace4byte($image['description']),
 			  'alt' => self::spider_replace4byte($image['alt']),
 			  'date' => $image['date']
-			  ), array('id' => $image['id']));
+			  ),
+        array('id' => $image['id']),
+        array('%s','%s','%s','%s','%s'),
+        array('%d')
+      );
 		}
     }
 		/*add new images*/
@@ -936,9 +870,32 @@ class WDWLibraryEmbed {
         'comment_count' => $image['comment_count'],
         'avg_rating' => $image['avg_rating'],
         'rate_count' => $image['rate_count'],
-        'hit_count' => $image['hit_count'],
-        'redirect_url' => $image['redirect_url'],
-      ));
+      ),
+      array(
+        '%d',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%d',
+        '%d',
+        '%d',
+        '%d',
+        '%f',
+        '%d',
+        '%d',
+        '%s',
+        '%d',
+        '%d',
+      )
+      );
     }
 
 		$time = date('d F Y, H:i');
@@ -959,4 +916,29 @@ class WDWLibraryEmbed {
 			| \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
 		)%xs', '', $string);    
 	}
+
+  /**
+   * Instagram oembed connect.
+   *
+   * @param string $url
+   *
+   * @return false|mixed|string
+   */
+  public static function instagram_oembed_connect( $url = '' ) {
+    // oEmbed API 2020 connect.
+    $data = new stdClass();
+    $instagram_oembed_url = 'https://graph.facebook.com/v9.0/instagram_oembed/?url=' . $url . '&omitscript=true&access_token=356432828483035|0e211da32da5f501d25541fa10f4d6c0';
+    $get_embed_data = wp_remote_get($instagram_oembed_url);
+    if ( is_wp_error($get_embed_data) ) {
+      $data->error = array( 'error', 'Instagram API connect failed.' );
+      return $data;
+    }
+    $data = json_decode(wp_remote_retrieve_body($get_embed_data));
+    if ( empty($data) ) {
+      $data->error = array( 'error', wp_remote_retrieve_body($get_embed_data) );
+      return $data;
+    }
+
+    return $data;
+  }
 }

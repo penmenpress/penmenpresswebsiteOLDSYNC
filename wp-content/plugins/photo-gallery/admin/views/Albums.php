@@ -41,6 +41,7 @@ class AlbumsView_bwg extends AdminView_bwg {
 							'add_new_button' => array(
 								'href' => add_query_arg(array( 'page' => $params['page'], 'task' => 'edit' ), admin_url('admin.php')),
 							),
+              'add_new_button_text' => __('Add new group', BWG()->prefix),
               'how_to_button' => true,
 						  )
 						);
@@ -53,7 +54,7 @@ class AlbumsView_bwg extends AdminView_bwg {
 		?>
 		</div>
 		<table class="images_table adminlist table table-striped wp-list-table widefat fixed pages media bwg-gallery-lists">
-			<thead>
+			<thead class="alternate">
 				<td id="cb" class="column-cb check-column">
 				  <label class="screen-reader-text" for="cb-select-all-1"><?php _e('Select all', BWG()->prefix); ?></label>
 					<input id="check_all" type="checkbox" onclick="spider_check_all(this)" />
@@ -64,6 +65,7 @@ class AlbumsView_bwg extends AdminView_bwg {
 			<tbody>
 			<?php
       if ( $params['rows'] ) {
+        $alternate = 'alternate';
         foreach ( $params['rows'] as $row ) {
 					$user = get_userdata($row->author);
 					$alternate = (!isset($alternate) || $alternate == '') ? 'class="alternate"' : '';
@@ -169,117 +171,123 @@ class AlbumsView_bwg extends AdminView_bwg {
     $row = $params['row'];
     $enable_wp_editor = isset(BWG()->options->enable_wp_editor) ? BWG()->options->enable_wp_editor : 0;
     ?>
-    <div class="bwg-page-header">
-      <div class="wd-page-title wd-header">
-        <h1 class="wp-heading-inline"><?php _e('Gallery Group Title', BWG()->prefix); ?></h1>
-        <input type="text" id="name" name="name" value="<?php echo !empty($row->name) ? esc_attr( $row->name ) : ''; ?>">
+    <div class="bwg-page-header wd-list-view-header">
+      <div class="wd-page-title wd-header wd-list-view-header-left">
+        <div>
+          <h1 class="wp-heading-inline bwg-heading"><?php _e('Gallery Group Title', BWG()->prefix); ?></h1>
+          <input type="text" id="name" name="name" value="<?php echo !empty($row->name) ? esc_attr( $row->name ) : ''; ?>">
+        </div>
         <div class="bwg-page-actions">
           <?php
           if ( $params['shortcode_id'] ) {
             require BWG()->plugin_dir . '/framework/howto/howto.php';
           }
           ?>
-          <button class="button button-primary button-large" onclick="if (spider_check_required('name', 'Title')) {return false;}; spider_set_input_value('task', 'save')">
+          <button class="tw-button-primary button-large" onclick="if (spider_check_required('name', 'Title')) {return false;}; spider_set_input_value('task', 'save')">
             <?php echo ($params['id']) ? __('Update', BWG()->prefix) : __('Publish', BWG()->prefix); ?>
           </button>
           <?php if ($params['id'] && $params['preview_action']) { ?>
-            <a class="button preview-button button-large" href="<?php echo $params['preview_action']; ?>" target="_blank"><?php _e('Preview', BWG()->prefix); ?></a>
+            <a class="tw-button-secondary tw-preview-button button-large" href="<?php echo $params['preview_action']; ?>" target="_blank"><?php _e('Preview', BWG()->prefix); ?></a>
           <?php } ?>
         </div>
       </div>
+        <?php
+        if (!BWG()->is_pro) {
+          WDWLibrary::topbar_upgrade_ask_question();
+        }?>
       <div class="bwg-clear"></div>
     </div>
     <div class="wd-table meta-box-sortables">
       <div class="wd-table-row wd-table-col-100 wd-table-col-left">
         <div class="wd-box-section">
-			<div class="postbox <?php echo $params['id'] ? 'closed' : '' ?>">
-				<button class="button-link handlediv" type="button" aria-expanded="true">
-					<span class="screen-reader-text"><?php _e('Toggle panel:', BWG()->prefix); ?></span>
-					<span class="toggle-indicator" aria-hidden="true"></span>
-				</button>
-				<h2 class="hndle">
-					<span><?php _e('Basic', BWG()->prefix); ?></span>
-				</h2>
-				<div class="inside">
-					<div class="wd-box-content">
-				<div class="wd-group">
-				  <label class="wd-label" for="preview_image"><?php _e('Preview image', BWG()->prefix); ?></label>
-				  <div>
-					<a href="<?php echo $params['add_preview_image_action']; ?>" id="button_preview_image" class="button wd-preview-image-btn thickbox thickbox-preview <?php echo ($row->preview_image == '') ? 'bwg_not-preview-image' : '' ?>" title="<?php _e('Add Preview Image', BWG()->prefix); ?>" onclick="return false;" style="<?php echo !empty($row->preview_image)?'display:none;':'' ?>">
-						<span class="dashicons dashicons-camera"></span><?php _e('Add', BWG()->prefix); ?>
-					</a>
-					<img id="img_preview_image" src="<?php echo $row->preview_image ? (BWG()->upload_url . esc_url( $row->preview_image )) : ''; ?>" style="<?php echo empty($row->preview_image)?'display:none;':'' ?>"/>
-					<span id="delete_preview_image" class="spider_delete_img dashicons dashicons-no-alt" onclick="spider_remove_url('button_preview_image', 'preview_image', 'delete_preview_image', 'img_preview_image')" style="<?php echo empty($row->preview_image)?'display:none;':'' ?>"></span>
-					<input type="hidden" id="preview_image" name="preview_image" value="<?php echo esc_url( $row->preview_image ); ?>"/>
-					<p class="description"><?php _e('Add a preview image, which will be displayed as the cover image of the gallery group when it is published in a parent gallery group.', BWG()->prefix); ?></p>
-				  </div>
-				</div>
-				<div class="wd-group">
-				  <label class="wd-label"><?php _e('Published', BWG()->prefix); ?></label>
-				  <input type="radio" class="inputbox" id="published1" name="published" <?php echo(($row->published == 1 || !$params['id']) ? 'checked="checked"' : ''); ?> value="1"/>
-				  <label for="published1"><?php _e('Yes', BWG()->prefix); ?></label>
-				  <input type="radio" class="inputbox" id="published0" name="published" <?php echo(($row->published) ? '' : 'checked="checked"'); ?> value="0"/>
-				  <label for="published0"><?php _e('No', BWG()->prefix); ?></label>
-				</div>
-				</div>
-				</div>
-			</div>
-        </div>
-      </div>
-	  <div class="wd-table-row wd-table-col-100 wd-table-col-left">
-		<div class="wd-box-section">
-            <div class="postbox closed">
-              <button class="button-link handlediv" type="button" aria-expanded="true">
-                <span class="screen-reader-text"><?php _e('Toggle panel:', BWG()->prefix); ?></span>
-                <span class="toggle-indicator" aria-hidden="false"></span>
-              </button>
-              <h2 class="hndle">
-                <span><?php _e('Advanced', BWG()->prefix); ?></span>
-              </h2>
-              <div class="inside">
+          <div class="postbox <?php echo $params['id'] ? 'closed' : '' ?>">
+            <button class="button-link handlediv" type="button" aria-expanded="true">
+              <span class="screen-reader-text"><?php _e('Toggle panel:', BWG()->prefix); ?></span>
+              <span class="toggle-indicator" aria-hidden="true"></span>
+            </button>
+            <h2 class="hndle">
+              <span><?php _e('Basic', BWG()->prefix); ?></span>
+            </h2>
+            <div class="inside">
+              <div class="wd-box-content">
                 <div class="wd-group">
-                  <label class="wd-label"><?php _e('Author', BWG()->prefix); ?></label>
-                  <span><?php echo esc_html( $row->author ); ?></span>
+                  <label class="wd-label" for="preview_image"><?php _e('Preview image', BWG()->prefix); ?></label>
+                  <div>
+                    <a href="<?php echo $params['add_preview_image_action']; ?>" id="button_preview_image" class="button wd-preview-image-btn thickbox thickbox-preview <?php echo ($row->preview_image == '') ? 'bwg_not-preview-image' : '' ?>" title="<?php _e('Add Preview Image', BWG()->prefix); ?>" onclick="return false;" style="<?php echo !empty($row->preview_image) ? 'display:none;' : '' ?>">
+                      <span class="dashicons dashicons-camera"></span><?php _e('Add', BWG()->prefix); ?>
+                    </a>
+                    <img id="img_preview_image" src="<?php echo $row->preview_image ? (BWG()->upload_url . esc_url($row->preview_image)) : ''; ?>" style="<?php echo empty($row->preview_image) ? 'display:none;' : '' ?>" />
+                    <span id="delete_preview_image" class="spider_delete_img dashicons dashicons-no-alt" onclick="spider_remove_url('button_preview_image', 'preview_image', 'delete_preview_image', 'img_preview_image')" style="<?php echo empty($row->preview_image) ? 'display:none;' : '' ?>"></span>
+                    <input type="hidden" id="preview_image" name="preview_image" value="<?php echo esc_url($row->preview_image); ?>" />
+                    <p class="description"><?php _e('Add a preview image, which will be displayed as the cover image of the gallery group when it is published in a parent gallery group.', BWG()->prefix); ?></p>
+                  </div>
                 </div>
                 <div class="wd-group">
-                  <label class="wd-label" for="slug"><?php _e('Slug', BWG()->prefix); ?></label>
-                  <input type="text" id="slug" name="slug" value="<?php echo esc_attr( $row->slug ); ?>">
-                  <input type="hidden" id="old_slug" name="old_slug" value="<?php echo esc_attr( $row->slug ); ?>">
-                </div>
-                <div class="wd-group">
-                  <label class="wd-label" for="description"><?php _e('Description', BWG()->prefix); ?> </label>
-                  <?php
-                  if ( user_can_richedit() && $enable_wp_editor ) {
-                    wp_editor(esc_html( $row->description ), 'description', array(
-                      'teeny' => TRUE,
-                      'textarea_name' => 'description',
-                      'media_buttons' => FALSE,
-                      'textarea_rows' => 5,
-                    ));
-                  }
-                  else {
-                    ?>
-                    <textarea cols="36" rows="5" id="description" name="description" class="wd-resize-vertical"><?php echo esc_html( $row->description ); ?></textarea>
-                    <?php
-                  }
-                  ?>
+                  <label class="wd-label"><?php _e('Published', BWG()->prefix); ?></label>
+                  <input type="radio" class="inputbox" id="published1" name="published" <?php echo(($row->published == 1 || !$params['id']) ? 'checked="checked"' : ''); ?> value="1" />
+                  <label for="published1"><?php _e('Yes', BWG()->prefix); ?></label>
+                  <input type="radio" class="inputbox" id="published0" name="published" <?php echo(($row->published) ? '' : 'checked="checked"'); ?> value="0" />
+                  <label for="published0"><?php _e('No', BWG()->prefix); ?></label>
                 </div>
               </div>
             </div>
+          </div>
         </div>
-	</div>
-	</div>
-	<div class="wd-table">
+      </div>
+      <div class="wd-table-row wd-table-col-100 wd-table-col-left">
+        <div class="wd-box-section">
+          <div class="postbox closed">
+            <button class="button-link handlediv" type="button" aria-expanded="true">
+              <span class="screen-reader-text"><?php _e('Toggle panel:', BWG()->prefix); ?></span>
+              <span class="toggle-indicator" aria-hidden="false"></span>
+            </button>
+            <h2 class="hndle">
+              <span><?php _e('Advanced', BWG()->prefix); ?></span>
+            </h2>
+            <div class="inside">
+              <div class="wd-group">
+                <label class="wd-label"><?php _e('Author', BWG()->prefix); ?></label>
+                <span><?php echo esc_html($row->author); ?></span>
+              </div>
+              <div class="wd-group">
+                <label class="wd-label" for="slug"><?php _e('Slug', BWG()->prefix); ?></label>
+                <input type="text" id="slug" name="slug" value="<?php echo esc_attr($row->slug); ?>">
+                <input type="hidden" id="old_slug" name="old_slug" value="<?php echo esc_attr($row->slug); ?>">
+              </div>
+              <div class="wd-group">
+                <label class="wd-label" for="description"><?php _e('Description', BWG()->prefix); ?> </label>
+                <?php
+                if ( user_can_richedit() && $enable_wp_editor ) {
+                  wp_editor(esc_html($row->description), 'description', array(
+                    'teeny' => TRUE,
+                    'textarea_name' => 'description',
+                    'media_buttons' => FALSE,
+                    'textarea_rows' => 5,
+                  ));
+                }
+                else {
+                  ?>
+                  <textarea cols="36" rows="5" id="description" name="description" class="wd-resize-vertical"><?php echo esc_html($row->description); ?></textarea>
+                  <?php
+                }
+                ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wd-table">
       <div class="wd-table-col wd-table-col-100 meta-box-sortables">
         <div class="wd-box-section">
           <div class="wd-box-content">
             <div class="wd-group">
               <h2 class="wd-titles"><?php _e('Galleries and Gallery Groups', BWG()->prefix); ?></h2>
-              <div id="bwg_tabs" class="bwg_tabs">
+              <div id="bwg_tabs" class="bwg_tabs hidden">
                 <?php
-                foreach ($params['albums_galleries'] as $item) {
+                foreach ( $params['albums_galleries'] as $item ) {
                   $item->published = !$item->published ? 'dashicons-hidden' : 'bwg-hidden';
-                  $item->preview_image = 'style="background-image:url(&quot;'. $item->preview_image .'&quot;)"';
+                  $item->preview_image = 'style="background-image:url(&quot;' . $item->preview_image . '&quot;)"';
                   echo $this->albumgallery_template($item);
                 }
                 $template = new stdClass();
@@ -288,7 +296,7 @@ class AlbumsView_bwg extends AdminView_bwg {
                 $template->preview_image = '%%preview_image%%';
                 $template->name = '%%name%%';
                 $template->published = '%%status%%';
-                echo $this->albumgallery_template($template, true);
+                echo $this->albumgallery_template($template, TRUE);
                 ?>
                 <div class="bwg_subtab">
                   <div class="new_tab_image">
@@ -298,13 +306,13 @@ class AlbumsView_bwg extends AdminView_bwg {
                   </div>
                 </div>
               </div>
-              <input type="hidden" id="albums_galleries" name="albumgallery_ids" value=""/>
+              <input type="hidden" id="albums_galleries" name="albumgallery_ids" value="" />
             </div>
-		   </div>
+          </div>
         </div>
       </div>
     </div>
-	<div id="loading_div" class="bwg_show"></div>
+    <div id="loading_div" class="bwg_show"></div>
     <input type="hidden" value="<?php echo !empty($row->modified_date) ? $row->modified_date : time() ?>" id="modified_date" name="modified_date" />
 	<?php
   }

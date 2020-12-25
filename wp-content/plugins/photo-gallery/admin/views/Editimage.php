@@ -58,10 +58,10 @@ class EditimageView_bwg {
     <script language="javascript" type="text/javascript" src="<?php echo BWG()->plugin_url . '/js/bwg_embed.js?ver=' . BWG()->plugin_version; ?>"></script>
     <script>
       var file_type = window.parent.document.getElementById("input_filetype_<?php echo $image_id; ?>").value;
+      var file_url = window.parent.document.getElementById("image_url_<?php echo $image_id; ?>").value;
       var is_embed = file_type.indexOf("EMBED_") > -1 ? true : false;
       //for facebook
       var is_facebook_post = file_type.indexOf("_FACEBOOK_POST") > -1 ? true : false;
-      var file_url = window.parent.document.getElementById("image_url_<?php echo $image_id; ?>").value;
       var is_instagram_post = file_type.indexOf("INSTAGRAM_POST") > -1 ? true : false;
       if (is_embed) {
         var embed_id = window.parent.document.getElementById("input_filename_<?php echo $image_id; ?>").value;
@@ -87,7 +87,7 @@ class EditimageView_bwg {
           }
         }
       }
-      jQuery(window).load(function() {
+      jQuery(window).on('load',function(){
       jQuery('#loading_div', window.parent.document).hide();
 	  });
     </script>
@@ -315,6 +315,7 @@ class EditimageView_bwg {
 		  <input id="y" type="hidden" name="y" value="" />
 		  <input id="w" type="hidden" name="w" value="" />
 		  <input id="h" type="hidden" name="h" value="" />
+      <input id="res_thumb_crop" type="hidden" name="res_thumb_crop" value="" />
 		</form>
 
     <div id="croped_preview"  class="bwg-hidden wp-core-ui">
@@ -326,7 +327,7 @@ class EditimageView_bwg {
     </div>
 	</div>
 	<script language="javascript">
-	  jQuery(window).load(function () {
+	  jQuery(window).on('load',function(){
         spider_crop_fix("<?php echo $thumb_width * 300 / $thumb_height; ?>", "<?php echo 300; ?>");
       });
       function spider_crop_ratio() {
@@ -390,6 +391,9 @@ class EditimageView_bwg {
             'margin': 'auto',
             'display': 'block',
           });
+          //this will save thumbnail cropped size
+          var res = jQuery("#res_thumb_crop").val();
+          window.parent.jQuery("#input_resolution_thumb_<?php echo $image_id; ?>").val(res);
 
           jQuery('.message').hide();
         });
@@ -422,6 +426,7 @@ class EditimageView_bwg {
         jQuery('#y').val(c.y * ratio);
         jQuery('#w').val(c.w * ratio);
         jQuery('#h').val(c.h * ratio);
+        jQuery('#res_thumb_crop').val(c.w+'x'+c.h);
         jQuery('.message').css('visibility', 'hidden');
         if ( jQuery('.message').hasClass('croped') ) {
           /* TODO. remove TB_window block.
@@ -948,7 +953,7 @@ class EditimageView_bwg {
         window.parent.document.getElementById("image_thumb_<?php echo $image_id; ?>").src = image_src + "<?php echo isset($updated_image['modified_date']) && $updated_image['modified_date'] ? '?bwg=' . $updated_image['modified_date'] : ''; ?>";
       }
 
-      jQuery(document).ready(function () {
+      jQuery(function() {
         jQuery(".bwg_opt_cont").click(function () {
           if (jQuery('#brightness_contrast').height() == 0) {
             jQuery('#brightness_contrast').animate({

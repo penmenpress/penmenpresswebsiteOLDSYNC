@@ -18,6 +18,7 @@ class WD_BWG_Options {
   public $noindex_custom_post = 1;
   public $show_hide_post_meta = 0;
   public $tags_filter_and_or = 0;
+  public $gdpr_compliance = 0;
   public $save_ip = 1;
   public $image_right_click = 0;
   public $use_inline_stiles_and_scripts = 0;
@@ -28,6 +29,7 @@ class WD_BWG_Options {
   public $auto_rotate = 0;
   public $front_ajax = 0;
   public $developer_mode = 0;
+  public $enable_date_parameter = 1;
 
   // Thumbnail
   public $thumb_width = 250;
@@ -165,6 +167,8 @@ class WD_BWG_Options {
   public $carousel_play_pause_butt = 1;
   public $carousel_sort_by = 'order';
   public $carousel_order_by = 'asc';
+  public $carousel_show_gallery_title = 0;
+  public $carousel_show_gallery_description = 0;
   public $carousel_gallery_download = 0;
 
   // Album compact
@@ -292,6 +296,10 @@ class WD_BWG_Options {
   // Advanced
   public $autoupdate_interval = 30;
   public $instagram_access_token = '';
+  public $instagram_access_token_start_in = '';
+  public $instagram_access_token_expires_in = '';
+  public $instagram_user_id = '';
+  public $instagram_username = '';
   public $facebook_app_id = '';
   public $facebook_app_secret = '';
   public $permissions = 'manage_options';
@@ -347,7 +355,8 @@ class WD_BWG_Options {
     }
     else {
       // For old users, who have changed images directory.
-      $this->upload_dir = ABSPATH . '/' . $this->images_directory . '/photo-gallery';
+      // Using ABSPATH here instead of BWG()->abspath to avoid memory leak.
+      $this->upload_dir = BWG::get_abspath() . '/' . $this->images_directory . '/photo-gallery';
       $this->upload_url = site_url() . '/' . $this->images_directory . '/photo-gallery';
     }
 
@@ -368,6 +377,19 @@ class WD_BWG_Options {
 
     $this->jpeg_quality = $this->image_quality;
     $this->png_quality = 9 - round(9 * $this->image_quality / 100);
+
+    // Will access_token refresh in the last 30 dey.
+    if ( !empty( $this->instagram_access_token ) && !empty( $this->instagram_access_token_start_in ) && !empty( $this->instagram_access_token_expires_in ) ) {
+      $expires_time = $this->instagram_access_token_start_in + $this->instagram_access_token_expires_in - (30 * 24 * 60 * 60);
+      if ( time() >= $expires_time ) {
+        $instagram_access_token = WDWLibrary::refresh_instagram_access_token( $this->instagram_access_token, $this );
+        if ( isset( $instagram_access_token['access_token'] ) ) {
+          $this->instagram_access_token = $instagram_access_token['access_token'];
+          $this->instagram_access_token_start_in = time();;
+          $this->instagram_access_token_expires_in = $instagram_access_token['expires_in'];
+        }
+      }
+    }
   }
 
   public function __get($name) {

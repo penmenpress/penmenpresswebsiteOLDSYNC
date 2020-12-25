@@ -21,7 +21,7 @@ class UninstallController_bwg {
     if ( !BWG()->is_pro ) {
       global $bwg_options;
       if ( !class_exists("TenWebNewLibConfig") ) {
-        $plugin_dir = apply_filters('tenweb_free_users_lib_path', array('version' => '1.1.1', 'path' => BWG()->plugin_dir));
+        $plugin_dir = apply_filters('tenweb_new_free_users_lib_path', array('version' => '1.1.3', 'path' => BWG()->plugin_dir));
         include_once($plugin_dir['path'] . "/wd/config.php");
       }
       $config = new TenWebNewLibConfig();

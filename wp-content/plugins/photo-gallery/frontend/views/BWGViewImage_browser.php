@@ -64,7 +64,7 @@ class BWGViewImage_browser extends BWGViewSite {
     else {
       echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
       echo '<script id="bwg-script-' . $bwg .'">
-        jQuery(document).ready(function () {
+        jQuery(function() {
           bwg_main_ready();
         });
       </script>';
@@ -77,7 +77,9 @@ class BWGViewImage_browser extends BWGViewSite {
     $bwg_params = json_encode($bwg_param);
     ob_start();
     ?>
-	<div id="bwg_<?php echo $params['gallery_type'] . '_' . $bwg ?>" class="image_browser_images_conteiner_<?php echo $bwg; ?>" data-params='<?php echo $bwg_params ?>'>
+	  <div id="bwg_<?php echo $params['gallery_type'] . '_' . $bwg ?>" class="image_browser_images_conteiner_<?php echo $bwg; ?> bwg-container"
+         data-params='<?php echo $bwg_params ?>'
+         data-lightbox-url="<?php echo addslashes(add_query_arg($params['params_array'], admin_url('admin-ajax.php'))); ?>">
       <div class="image_browser_images_<?php echo $bwg; ?>">
         <?php
         foreach ( $images as $image_row ) {

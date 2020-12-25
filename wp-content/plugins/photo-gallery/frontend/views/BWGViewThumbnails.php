@@ -1,5 +1,6 @@
 <?php
 class BWGViewThumbnails extends BWGViewSite {
+
   public function display($params = array(), $bwg = 0, $ajax = FALSE) {
     $theme_row = $params['theme_row'];
     $image_rows = $params['image_rows'];
@@ -19,7 +20,7 @@ class BWGViewThumbnails extends BWGViewSite {
     else {
       echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
       echo '<script id="bwg-script-' . $bwg .'">
-        jQuery(document).ready(function () {
+        jQuery(function() {
           bwg_main_ready();
         });
       </script>';
@@ -121,22 +122,23 @@ class BWGViewThumbnails extends BWGViewSite {
     ?>
     #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> .bwg-container-<?php echo $bwg; ?>.bwg-standard-thumbnails {
       width: <?php echo ($params['image_column_number'] * $params['thumb_width']) + ($theme_row->container_margin ? $theme_row->thumb_margin : 0); ?>px;
-      justify-content: <?php echo $theme_row->thumb_align; ?>;
       <?php
       if ( $theme_row->thumb_align == 'center' ) {
         ?>
-        margin-left: auto;
-        margin-right: auto;
+        justify-content: center;
+        margin:0 auto !important;
         <?php
       }
       elseif ( $theme_row->thumb_align == 'left') {
         ?>
-        margin-right: auto;
+        justify-content: flex-start;
+        margin-right:auto;
         <?php
       }
       else {
         ?>
-        margin-left: auto;
+        justify-content: flex-end;
+        margin-left:auto;
         <?php
       }
       ?>
@@ -179,7 +181,8 @@ class BWGViewThumbnails extends BWGViewSite {
     }
     #bwg_container1_<?php echo $bwg; ?> #bwg_container2_<?php echo $bwg; ?> .bwg-container-<?php echo $bwg; ?>.bwg-standard-thumbnails .bwg-item0 {
       padding: <?php echo $theme_row->thumb_padding; ?>px;
-      background-color: #<?php echo $theme_row->thumb_bg_color; ?>;
+      <?php $thumb_bg_color = WDWLibrary::spider_hex2rgb( $theme_row->thumb_bg_color ); ?>
+      background-color:rgba(<?php echo $thumb_bg_color['red'] .','. $thumb_bg_color['green'] . ',' . $thumb_bg_color['blue'] . ', '.number_format($theme_row->thumb_bg_transparency / 100, 2, ".", ""); ?>);
       border: <?php echo $theme_row->thumb_border_width; ?>px <?php echo $theme_row->thumb_border_style; ?> #<?php echo $theme_row->thumb_border_color; ?>;
       opacity: <?php echo number_format($theme_row->thumb_transparent / 100, 2, ".", ""); ?>;
       border-radius: <?php echo $theme_row->thumb_border_radius; ?>;

@@ -18,6 +18,7 @@ class ThemesModel_bwg {
     $page_num = $params['page_num'];
     $search = $params['search'];
 
+    $prepareArgs = array();
     if ( !$total ) {
       $query = 'SELECT *';
     }
@@ -27,19 +28,29 @@ class ThemesModel_bwg {
     $query .= ' FROM `' . $wpdb->prefix . 'bwg_theme` AS `t`';
 
     if ( $search ) {
-      $query .= ' WHERE `t`.`name` LIKE "%' . $search . '%"';
+      $query .= ' WHERE `t`.`name` LIKE %s';
+      $prepareArgs[] = "%" . $search . "%";
     }
 
     if ( !$total ) {
       $query .= ' ORDER BY `t`.`' . $orderby . '` ' . $order;
-      $query .= ' LIMIT ' . $page_num . ',' . $page_per;
+      $query .= ' LIMIT %d, %d';
+      $prepareArgs[] = $page_num;
+      $prepareArgs[] = $page_per;
     }
-
     if ( !$total ) {
-      $rows = $wpdb->get_results($query);
+      if ( !empty($prepareArgs) ) {
+          $rows = $wpdb->get_results( $wpdb->prepare( $query, $prepareArgs ) );
+      } else {
+          $rows = $wpdb->get_results($query);
+      }
     }
     else {
-      $rows = $wpdb->get_var($query);
+      if ( !empty($prepareArgs) ) {
+          $rows = $wpdb->get_var($wpdb->prepare($query, $prepareArgs));
+      } else {
+          $rows = $wpdb->get_var($query);
+      }
     }
     return $rows;
   }

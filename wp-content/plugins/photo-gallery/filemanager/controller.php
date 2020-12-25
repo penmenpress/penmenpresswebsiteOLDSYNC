@@ -189,7 +189,16 @@ class FilemanagerController {
 		'thumb' => '/filemanager/images/dir.png',
 		'date_modified' => date("Y-m-d H:i:s")
       );
-      $wpdb->insert($wpdb->prefix . 'bwg_file_paths', $data);
+      $format = array(
+        '%d',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s',
+        '%s'
+      );
+      $wpdb->insert($wpdb->prefix . 'bwg_file_paths', $data, $format);
       mkdir($new_dir_path);
     }
     $args = array(
@@ -269,11 +278,33 @@ class FilemanagerController {
         $msg = __("Can't rename the file.", BWG()->prefix);
       }
       else {
-        $wpdb->query('UPDATE ' . $wpdb->prefix . 'bwg_image SET
-          image_url = INSERT(image_url, LOCATE("' . $input_dir . '/' . $file_name . '", image_url), CHAR_LENGTH("' . $input_dir . '/' . $file_name . '"), "' . $input_dir . '/' . $file_new_name . '"),
-          thumb_url = INSERT(thumb_url, LOCATE("' . $input_dir . '/' . $file_name . '", thumb_url), CHAR_LENGTH("' . $input_dir . '/' . $file_name . '"), "' . $input_dir . '/' . $file_new_name . '")');
-        $wpdb->query('UPDATE ' . $wpdb->prefix . 'bwg_gallery SET
-          preview_image = INSERT(preview_image, LOCATE("' . $input_dir . '/' . $file_name . '", preview_image), CHAR_LENGTH("' . $input_dir . '/' . $file_name . '"), "' . $input_dir . '/' . $file_new_name . '")');
+        $args = array(
+          $input_dir,
+          $file_name,
+          $input_dir,
+          $file_name,
+          $input_dir,
+          $file_name,
+          $input_dir,
+          $file_name,
+          $input_dir,
+          $file_name,
+          $input_dir,
+          $file_name
+        );
+        $wpdb->query($wpdb->prepare('UPDATE ' . $wpdb->prefix . 'bwg_image SET
+          image_url = INSERT(image_url, LOCATE("%s/%s", image_url), CHAR_LENGTH("%s/%s"), "%s/%s"),
+          thumb_url = INSERT(thumb_url, LOCATE("%s/%s", thumb_url), CHAR_LENGTH("%s/%s"), "%s/%s")', $args));
+        $args = array(
+          $input_dir,
+          $file_name,
+          $input_dir,
+          $file_name,
+          $input_dir,
+          $file_name
+        );
+          $wpdb->query($wpdb->prepare('UPDATE ' . $wpdb->prefix . 'bwg_gallery SET
+          preview_image = INSERT(preview_image, LOCATE("%s/%s", preview_image), CHAR_LENGTH("%s/%s"), "%s/%s")', $args));
 
 		// Update all paths.
 		$path_where = (empty($input_dir) ? '/' : $input_dir .'/');
@@ -284,14 +315,18 @@ class FilemanagerController {
 				'filename' => $file_new_name,
 				'alt' => $file_new_name
 			),
-			array('path' => $path_where, 'name' => $file_name)
+			array('path' => $path_where, 'name' => $file_name),
+      array('%s','%s','%s'),
+      array('%s','%s')
 		);
 		if ( !empty($paths) ) {
 			foreach( $paths as $val) {
 				$wpdb->update($wpdb->prefix . 'bwg_file_paths',
 					array('path' => str_replace($file_name, $file_new_name, $val)),
-					array('path' =>  $val)
-				);
+					array('path' =>  $val),
+          array('%s'),
+          array('%s')
+        );
 			}
 		}
 	  }
@@ -306,13 +341,18 @@ class FilemanagerController {
           'filename' => $file_new_name,
           'image_url' => $input_dir . '/' . $file_new_name . '.' . $file_extension,
           'thumb_url' => $input_dir . '/thumb/' . $file_new_name . '.' . $file_extension,
-          ), array(
-            'thumb_url' =>  $input_dir . '/thumb/' . $file_name,
-        ));
+          ),
+          array('thumb_url' =>  $input_dir . '/thumb/' . $file_name),
+          array('%s','%s','%s'),
+          array('%s')
+        );
         $wpdb->update($wpdb->prefix . 'bwg_gallery',
-		  array('preview_image' => $input_dir . '/thumb/' . $file_new_name . '.' . $file_extension),
-		  array('preview_image' =>  $input_dir . '/thumb/' . $file_name)
-		);
+                      array('preview_image' => $input_dir . '/thumb/' . $file_new_name . '.' . $file_extension),
+                      array('preview_image' =>  $input_dir . '/thumb/' . $file_name),
+                      array('%s'),
+                      array('%s')
+
+        );
 
 		$path = $input_dir .'/';
 		$wpdb->update($wpdb->prefix . 'bwg_file_paths',
@@ -323,8 +363,11 @@ class FilemanagerController {
 				'alt' 		=> $file_new_name,
 				'date_modified' => date('Y-m-d H:i:s')
 			),
-			array('path' => $path, 'name' => $file_name)
-		);
+			array('path' => $path, 'name' => $file_name),
+      array('%s','%s','%s','%s','%s'),
+      array('%s','%s')
+
+    );
 
         rename($thumb_file_path, $cur_dir_path . '/thumb/' . $file_new_name . '.' . $file_extension);
         rename($original_file_path, $cur_dir_path . '/.original/' . $file_new_name . '.' . $file_extension);
@@ -376,14 +419,14 @@ class FilemanagerController {
         if ( is_dir($file_path) == true ) {
 			$paths = $this->getRecursivePathLists($path, $file_name);
 			if ( !empty($paths) ) {
-				$wpdb->delete( $file_path_tbl, array('path' => $path, 'name' => $file_name) );
+				$wpdb->delete( $file_path_tbl, array('path' => $path, 'name' => $file_name), array('%s','%s'));
 				foreach( $paths as $val ) {
-					$wpdb->delete( $file_path_tbl, array('path' => $val) );
+					$wpdb->delete( $file_path_tbl, array('path' => $val), array('%s') );
 				}
 			}
         }
         else {
-          $wpdb->delete( $file_path_tbl, array('path' => $path, 'name' => $file_name) );
+          $wpdb->delete( $file_path_tbl, array('path' => $path, 'name' => $file_name), array('%s','%s') );
         }
         $this->remove_file_dir($file_path, $input_dir, $file_name);
         if (file_exists($thumb_file_path)) {
@@ -441,7 +484,7 @@ class FilemanagerController {
 	switch ((isset($_REQUEST['clipboard_task']) ? stripslashes(WDWLibrary::get('clipboard_task','','sanitize_text_field','REQUEST')) : '')) {
 		case 'copy': {
 			foreach ($file_names as $file_name) {
-				$file = $wpdb->get_row( 'SELECT * FROM `' . $file_path_tbl . '` WHERE `path` ="' . $path_old . '" AND `name`="' . $file_name . '"', 'ARRAY_A' );
+				$file = $wpdb->get_row( $wpdb->prepare('SELECT * FROM `' . $file_path_tbl . '` WHERE `path` ="%s" AND `name`="%s"', array($path_old, $file_name)), 'ARRAY_A' );
 				unset($file['id']);
 				$file_name = htmlspecialchars_decode($file_name, ENT_COMPAT | ENT_QUOTES);
 				$file_name = str_replace('../', '', $file_name);
@@ -505,7 +548,7 @@ class FilemanagerController {
 					$file['alt'] = !empty($new_file_title) ? $new_file_title : $file['alt'];
 					$wpdb->insert( $file_path_tbl, $file );
 
-					$files = $wpdb->get_results( 'SELECT * FROM `' . $file_path_tbl . '` WHERE `path` ="' . $path_where . '"', 'ARRAY_A' );
+					$files = $wpdb->get_results( $wpdb->prepare('SELECT * FROM `' . $file_path_tbl . '` WHERE `path` ="%s"',array($path_where)), 'ARRAY_A' );
 					foreach( $files as $file ) {
 						unset($file['id']);
 						$file['path'] = $path_file . (!empty($new_file_title) ? $new_file_title .'/' : $file_name .'/');
@@ -532,19 +575,46 @@ class FilemanagerController {
 				}
 				else {
 					if ( is_dir($dest_dir . '/' . $file_name) ) {
-						$wpdb->query('UPDATE ' . $wpdb->prefix . 'bwg_image SET
-						image_url = INSERT(image_url, LOCATE("' . str_replace($this->uploads_dir . '/', '', $src) . '", image_url), CHAR_LENGTH("' . str_replace($this->uploads_dir . '/', '', $src) . '"), "' . str_replace(str_replace($input_dir, '', $dest_dir), '', $dest) . '"),
-						thumb_url = INSERT(thumb_url, LOCATE("' . str_replace($this->uploads_dir . '/', '', $src) . '", thumb_url), CHAR_LENGTH("' . str_replace($this->uploads_dir . '/', '', $src) . '"), "' . str_replace(str_replace($input_dir, '', $dest_dir), '', $dest) . '")');
+					  $temp_dir = str_replace($this->uploads_dir . '/', '', $src);
+					  $temp_inputdir = str_replace(str_replace($input_dir, '', $dest_dir), '', $dest);
+            $prepareArgs = array(
+              $temp_dir,
+              $temp_dir,
+              $temp_inputdir,
+              $temp_dir,
+              $temp_dir,
+              $temp_inputdir
+            );
+						$wpdb->query($wpdb->prepare('UPDATE ' . $wpdb->prefix . 'bwg_image SET
+						image_url = INSERT(image_url, LOCATE("%s", image_url), CHAR_LENGTH("%s"), "%s"),
+						thumb_url = INSERT(thumb_url, LOCATE("%s", thumb_url), CHAR_LENGTH("%s"), "%s")', $prepareArgs));
 
-						$wpdb->query('UPDATE ' . $wpdb->prefix . 'bwg_gallery SET preview_image =
-						INSERT(preview_image, LOCATE("' . str_replace($this->uploads_dir . '/', '', $src) . '", preview_image), CHAR_LENGTH("' . str_replace($this->uploads_dir . '/', '', $src) . '"), "' . str_replace(str_replace($input_dir, '', $dest_dir), '', $dest) . '")');
+            $prepareArgs = array(
+              $temp_dir,
+              $temp_dir,
+              $temp_inputdir
+            );
+						$wpdb->query($wpdb->prepare('UPDATE ' . $wpdb->prefix . 'bwg_gallery SET preview_image =
+						INSERT(preview_image, LOCATE("%s", preview_image), CHAR_LENGTH("%s"), "%s")', $prepareArgs));
 
 						$paths = $this->getRecursivePathLists($path_old, $file_name);
-						$wpdb->update( $file_path_tbl, array('path' => $path_new), array('path' => $path_old, 'name' => $file_name) );
+						$wpdb->update(
+						  $file_path_tbl,
+              array('path' => $path_new),
+              array('path' => $path_old, 'name' => $file_name),
+              array('%s'),
+              array('%s','%s')
+            );
 						$path_where = $path_old . $file_name .'/';
 						foreach ( $paths as $val ) {
 							$path_update = $path_new . str_replace($path_old, '', $val);
-							$wpdb->update( $file_path_tbl, array('path' => $path_update), array('path' => $val) );
+							$wpdb->update(
+							  $file_path_tbl,
+                array('path' => $path_update),
+                array('path' => $val),
+                array('%s'),
+                array('%s')
+              );
 						}
 					}
 					else {
@@ -567,18 +637,24 @@ class FilemanagerController {
 								'image_url' => str_replace(str_replace($input_dir, '', $dest_dir), '', $dest),
 								'thumb_url' => $input_dir . '/thumb/' . $file_name,
 							),
-							array(
-								'thumb_url' => $relative_source_dir . '/thumb/' . $file_name,
-						));
+							array('thumb_url' => $relative_source_dir . '/thumb/' . $file_name),
+              array('%s','%s','%s'),
+              array('%s')
+            );
 						$wpdb->update($wpdb->prefix . 'bwg_gallery',
-							array(
-								'preview_image' => $input_dir . '/thumb/' . $file_name,
-							),
-							array(
-								'preview_image' => $relative_source_dir . '/thumb/' . $file_name,
-						));
+							array('preview_image' => $input_dir . '/thumb/' . $file_name),
+							array('preview_image' => $relative_source_dir . '/thumb/' . $file_name),
+              array('%s'),
+              array('%s')
+            );
 
-						$wpdb->update( $file_path_tbl, array('path' => $path_new), array('path' => $path_old, 'name' => $file_name) );
+						$wpdb->update(
+						  $file_path_tbl,
+              array('path' => $path_new),
+              array('path' => $path_old, 'name' => $file_name) ,
+              array('%s'),
+              array('%s','%s')
+            );
 						}
 					}
 				}
@@ -641,9 +717,9 @@ class FilemanagerController {
         global $wpdb;
         $deleted_image_dir = $input_dir . '/thumb/' . $file_name;
         // delete image by preview_image.
-        $wpdb->delete($wpdb->prefix . 'bwg_image', array( 'thumb_url' => $deleted_image_dir ));
+        $wpdb->delete($wpdb->prefix . 'bwg_image', array( 'thumb_url' => $deleted_image_dir ), array('%s'));
         // Get gallery by preview_image or random_preview_image.
-        $galleries = $wpdb->get_results('SELECT `id` FROM `' . $wpdb->prefix . 'bwg_gallery` WHERE `preview_image` = "' . $deleted_image_dir . '" OR `random_preview_image` = "' . $deleted_image_dir . '"');
+        $galleries = $wpdb->get_results($wpdb->prepare('SELECT `id` FROM `' . $wpdb->prefix . 'bwg_gallery` WHERE `preview_image` = "%s" OR `random_preview_image` = "%s"', array($deleted_image_dir,$deleted_image_dir)));
         // Update random preview image on bwg_gallery.
         if ( !empty($galleries) ) {
           $gallerIds = array();
@@ -652,7 +728,8 @@ class FilemanagerController {
           }
           // Get thumb images by gallery id.
           $thumbIds = array();
-          $thumbs = $wpdb->get_results('SELECT `gallery_id`, `thumb_url` FROM `' . $wpdb->prefix . 'bwg_image` WHERE `gallery_id` IN (' . implode(',', $gallerIds) . ')');
+          $implodeGalIds = implode(',', $gallerIds);
+          $thumbs = $wpdb->get_results($wpdb->prepare('SELECT `gallery_id`, `thumb_url` FROM `' . $wpdb->prefix . 'bwg_image` WHERE `gallery_id` IN (%s)', array($implodeGalIds)));
           if ( !empty($thumbs) ) {
             foreach ( $thumbs as $item ) {
               $thumbIds[$item->gallery_id][] = $item->thumb_url;
@@ -670,7 +747,11 @@ class FilemanagerController {
             $wpdb->update($wpdb->prefix . 'bwg_gallery', array(
               'preview_image' => '',
               'random_preview_image' => $random_preview_image,
-            ), array( 'id' => $gid ));
+            ),
+            array( 'id' => $gid ),
+            array('%s','%s'),
+            array('%d')
+            );
           }
         }
       }
@@ -713,9 +794,15 @@ class FilemanagerController {
    */
 	private function getRecursivePathLists( $path = '/', $name = '', $level = 0 ) {
 		global $wpdb;
+    $prepareArgs = array($path);
 		static $parents = array();
-		$where = ($level == 0) ? ' AND `name`="' . $name . '"' : '';
-		$items = $wpdb->get_results( 'SELECT * FROM `' . $wpdb->prefix . 'bwg_file_paths` WHERE `is_dir` = 1 AND `path` ="' . $path . '"' . $where );
+		$where = '';
+		if( $level == 0 ) {
+      $where = ' AND `name`="%s"';
+      $prepareArgs[] = $name;
+    }
+
+		$items = $wpdb->get_results( $wpdb->prepare('SELECT * FROM `' . $wpdb->prefix . 'bwg_file_paths` WHERE `is_dir` = 1 AND `path` ="%s"' . $where, $prepareArgs) );
 		if( !empty($items) ) {
 			foreach( $items as $item) {
 				$path = $item->path . $item->name .'/';

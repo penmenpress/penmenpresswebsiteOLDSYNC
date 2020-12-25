@@ -22,7 +22,7 @@ class BWGControllerGalleryBox {
 
   public function save_rate() {
     global $wpdb;
-    $image_id = WDWLibrary::get('image_id', 0, 'intval');
+    $image_id = WDWLibrary::get('image_id', 0, 'intval','POST');
     $rate = WDWLibrary::get('rate');
     $ip = BWG()->options->save_ip ? $_SERVER['REMOTE_ADDR'] : '';
     if ( !$ip || !$wpdb->get_var($wpdb->prepare('SELECT `image_id` FROM `' . $wpdb->prefix . 'bwg_image_rate` WHERE `ip`="%s" AND `image_id`="%d"', $ip, $image_id)) ) {
@@ -42,7 +42,8 @@ class BWGControllerGalleryBox {
     $wpdb->update($wpdb->prefix . 'bwg_image', array(
       'avg_rating' => $rates->average,
       'rate_count' => $rates->rate_count
-    ), array( 'id' => $image_id ));
+    ), array( 'id' => $image_id ),
+      array('%f','%d'),array('%d'));
     $this->display();
   }
 

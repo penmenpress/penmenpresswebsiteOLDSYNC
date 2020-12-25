@@ -94,7 +94,7 @@ class BWGElementor extends \Elementor\Widget_Base {
             tb_click.call(this);
             bwg_create_loading_block();
             bwg_set_shortcode_popup_dimensions(); } return false;" href="'.$url.'" class="bwg-shortcode-btn button">
-              <img src="'.BWG()->plugin_url .'/images/tw-gb/photo-gallery.svg" alt="Photo Gallery" style="height: 36px; width: 36px;">
+              <img src="'.BWG()->plugin_url .'/images/tw-gb/shortcode_new_small.jpg" alt="Photo Gallery">
             </a>',
         'type' => \Elementor\Controls_Manager::CHOOSE,
         'options' => [
@@ -108,9 +108,6 @@ class BWGElementor extends \Elementor\Widget_Base {
       'bwg_elementor_shortcode',
       [
         'type' => \Elementor\Controls_Manager::HIDDEN,
-        'dynamic' => [
-          'active' => true,
-        ],
         'placeholder' => __( '', 'elementor' ),
         'default' => __( '', 'elementor' ),
       ]

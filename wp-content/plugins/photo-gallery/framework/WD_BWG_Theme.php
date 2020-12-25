@@ -33,6 +33,7 @@ class WD_BWG_Theme {
   public $album_compact_thumb_title_pos = "bottom";
   public $album_compact_thumb_transition = 1;
   public $album_compact_thumb_transparent = 100;
+  public $album_compact_thumb_bg_transparency = 30;
   public $album_compact_thumbs_bg_color = "FFFFFF";
   public $album_compact_title_font_color = "323A45";
   public $album_compact_title_font_color_hover = "FFFFFF";
@@ -207,6 +208,13 @@ class WD_BWG_Theme {
   public $carousel_rl_btn_width = 35;
   public $carousel_title_border_radius = "5px";
   public $carousel_title_opacity = 100;
+  public $carousel_gal_title_align = "center";
+  public $carousel_gal_title_font_color = "323A45";
+  public $carousel_gal_title_font_size = 16;
+  public $carousel_gal_title_font_style = "Ubuntu";
+  public $carousel_gal_title_font_weight = "bold";
+  public $carousel_gal_title_margin = "2px";
+  public $carousel_gal_title_shadow = "0px 0px 0px #888888";
 
   public $compact_container_margin = "1";
   public $container_margin = "1";
@@ -398,6 +406,7 @@ class WD_BWG_Theme {
   public $masonry_thumb_title_margin = "2px";
   public $masonry_thumb_transition = "1";
   public $masonry_thumb_transparent = "100";
+  public $masonry_thumb_bg_transparency = "30";
   public $masonry_thumbs_bg_color = "FFFFFF";
 
   public $mosaic_container_margin = "1";
@@ -427,6 +436,7 @@ class WD_BWG_Theme {
   public $mosaic_thumb_title_shadow = "";
   public $mosaic_thumb_transition = "1";
   public $mosaic_thumb_transparent = "100";
+  public $mosaic_thumb_bg_transparency = "30";
   public $mosaic_thumbs_bg_color = "FFFFFF";
 
   public $page_nav_align = "center";
@@ -530,6 +540,7 @@ class WD_BWG_Theme {
   public $thumb_title_shadow = "";
   public $thumb_transition = 1;
   public $thumb_transparent = 100;
+  public $thumb_bg_transparency = 30;
   public $thumbs_bg_color = "FFFFFF";
 
   public function __construct($id = 0, $reset = false, $predefined_version = false) {
@@ -565,6 +576,7 @@ class WD_BWG_Theme {
         $this->album_compact_thumb_title_pos = "bottom";
         $this->album_compact_thumb_transition = 1;
         $this->album_compact_thumb_transparent = 100;
+        $this->album_compact_thumb_bg_transparency = 30;
         $this->album_compact_thumbs_bg_color = "FFFFFF";
         $this->album_compact_title_font_color = "CCCCCC";
         $this->album_compact_title_font_color_hover = "FFFFFF";
@@ -735,6 +747,13 @@ class WD_BWG_Theme {
         $this->carousel_rl_btn_width = 40;
         $this->carousel_title_border_radius = "5px";
         $this->carousel_title_opacity = 100;
+        $this->carousel_gal_title_align = "center";
+        $this->carousel_gal_title_font_color = "323A45";
+        $this->carousel_gal_title_font_size = 16;
+        $this->carousel_gal_title_font_style = "Ubuntu";
+        $this->carousel_gal_title_font_weight = "bold";
+        $this->carousel_gal_title_margin = "2px";
+        $this->carousel_gal_title_shadow = "0px 0px 0px #888888";
         $this->compact_container_margin = "1";
         $this->container_margin = "1";
         $this->image_browser_align = "center";
@@ -922,6 +941,7 @@ class WD_BWG_Theme {
         $this->masonry_thumb_title_margin = "2px";
         $this->masonry_thumb_transition = 1;
         $this->masonry_thumb_transparent = 80;
+        $this->masonry_thumb_bg_transparency = 30;
         $this->masonry_thumbs_bg_color = "FFFFFF";
         $this->mosaic_container_margin = "1";
         $this->mosaic_thumb_align = "center";
@@ -950,6 +970,7 @@ class WD_BWG_Theme {
         $this->mosaic_thumb_title_shadow = "0px 0px 0px #888888";
         $this->mosaic_thumb_transition = 1;
         $this->mosaic_thumb_transparent = 80;
+        $this->mosaic_thumb_bg_transparency = 30;
         $this->mosaic_thumbs_bg_color = "FFFFFF";
         $this->page_nav_align = "center";
         $this->page_nav_border_color = "E3E3E3";
@@ -1047,6 +1068,7 @@ class WD_BWG_Theme {
         $this->thumb_title_shadow = "";
         $this->thumb_transition = 1;
         $this->thumb_transparent = 100;
+        $this->thumb_bg_transparency = 30;
         $this->thumbs_bg_color = "FFFFFF";
       }
     }
@@ -1089,7 +1111,7 @@ class WD_BWG_Theme {
 
   /* get theme font style google or default */
   public static function font_style($name) {
-    $input_names = [
+    $input_names = array(
       'thumb_gal_title_font_style' => 'thumb_gal_title_google_fonts',
       'thumb_title_font_style' => 'thumb_title_google_fonts',
       'thumb_description_font_style' => 'thumb_description_google_fonts',
@@ -1119,7 +1141,7 @@ class WD_BWG_Theme {
       'page_nav_font_style' => 'page_nav_google_fonts',
       'slideshow_description_font' => 'slideshow_description_google_fonts',
       'slideshow_title_font' => 'slideshow_title_google_fonts'
-    ];
+    );
     if ( array_key_exists( $name, $input_names ) ) {
       return $input_names[ $name ];
     }

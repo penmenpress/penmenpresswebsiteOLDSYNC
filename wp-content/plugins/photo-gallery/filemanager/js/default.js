@@ -8,7 +8,7 @@ var params = [];
 var no_selected_files = [];
 var wdb_all_files_filtered = [];
 
-jQuery(document).ready(function () {
+jQuery(function() {
 	var page = 1;
 	var page_per = jQuery("#explorer_body").data('page_per');
 	jQuery("#explorer_body_container").scroll(function () {

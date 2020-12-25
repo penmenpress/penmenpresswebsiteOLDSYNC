@@ -8,7 +8,7 @@ class TenWebLibNew {
   public $overview_instance;
   public $subscribe_instance;
   public $config;
-  private $version = "1.1.1";
+  private $version = "1.1.3";
 
   public function __construct() {
     // Add menu for Overview page

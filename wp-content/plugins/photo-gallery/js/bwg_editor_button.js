@@ -1,11 +1,11 @@
-jQuery(window).load(function(){
+jQuery(window).on('load',function(){
   window.bwgDocumentReady = true;
   if (window.bwgTinymceRendered) {
     jQuery(document).trigger("onUploadImg");
   }
 });
 
-jQuery(document).ready(function() {
+jQuery(function() {
   bwg_shortcode_ready();
 });
 jQuery(window).resize(function() {
@@ -91,7 +91,7 @@ function bwg_shortcode_ready() {
     },
     _do_bwg:function (ed) {
       return ed.replace(/\[Best_Wordpress_Gallery([^\]]*)\]/g, function (d, c) {
-        return '<img src="' + bwg_plugin_url + '/images/icons/gallery-icon.png" class="bwg_shortcode mceItem" title="Best_Wordpress_Gallery' + tinymce.DOM.encode(c) + '" />';
+        return '<img src="' + bwg_plugin_url + '/images/tw-gb/shortcode_new.jpg" class="bwg_shortcode mceItem" title="Best_Wordpress_Gallery' + tinymce.DOM.encode(c) + '" />';
       })
     },
     _get_bwg:function (b) {

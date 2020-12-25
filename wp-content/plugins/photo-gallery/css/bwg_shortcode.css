@@ -1,18 +1,3 @@
-.gallery_type {
-  border: 1px solid #CCCCCC;
-  display: flex;
-  flex-direction: column;
-  width: 150px;
-  font-size: 8px;
-  margin: 0 2px;
-  text-align: center;
-}
-
-.gallery_type img {
-  max-width: 98%;
-  font-size: 8px;
-}
-
 .spider_label {
   font-weight: bold;
   font-family: Verdana;
@@ -65,7 +50,6 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 	line-height: 13px;
-  
 }
 a.wd-btn{
 	line-height: 26px;
@@ -116,10 +100,10 @@ a.wd-btn-icon{
 .select_icon {
 	background-image:url("../images/icons/arrow.png");
 	background-repeat: no-repeat;
-	-webkit-appearance: none; 
-	-moz-appearance: none;  
+	-webkit-appearance: none;
+	-moz-appearance: none;
 	background-position:93% 49%;
-	padding: 0 2px 2px 2px !important; 
+	padding: 0 2px 2px 2px !important;
   width: 22%;
   height:28px !important;
   display: block;
@@ -139,7 +123,6 @@ th.sorted a span {
   width:100%;
   display:block;
   margin-top:23px;
-  
 }
 .bwg_shortcodetab_active {
   top: 12px !important;
@@ -158,16 +141,7 @@ th.sorted a span {
    display: table-row;
    width: 100%;
 }
-.gallery_type_div,
-.album_type_div {
-  align-items:center;
-  border-top: 1px solid #CCCCCC;
-  display: flex;
-  flex-grow: 1;
-  height: 30px;
-  padding: 0 3px;
-  text-align: left;
-} 
+
 .gallery_type_radio,
 .gallery_type_label,
 .album_type_radio,
@@ -176,11 +150,15 @@ th.sorted a span {
   display: inline-block !important;
   margin: 0 auto !important;
 }
+
 .gallery_type_label,
 .album_type_label  {
-  font-size: 12px;
   text-align: left;
-  width: 75%;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 21px;
+  letter-spacing: 0;
+  width: 100%;
   word-wrap: break-word;
 }
 .bwg_change_gallery_type {
@@ -212,7 +190,7 @@ hr {
   border-top:1px solid #919B9C !important;
 }
 .select_icon_pos {
-    background-position: 98% 49% !important; 
+    background-position: 98% 49% !important;
 }
 .bwg_enable_page {
   display:block;
@@ -232,26 +210,21 @@ input[type=radio][name=gallery_type] {
   margin: 0 6px;
 }
 
-.pro_btn {
-  background: rgb(146, 8, 27) none repeat scroll 0 0;
-  border-radius: 45px;
-  box-sizing: content-box !important;
-  color: #fff;
-  display: inline-block;
-  font-size: 9px;
-  height: 20px;
-  left: 0;
-  line-height: 20px;
-  padding: 3px;
-  position: relative;
-  top: 0;
-  width: 20px;
-}
-
 .wrap.wd-wrap-ajax .media-frame-toolbar .media-toolbar {
   bottom: -20px;
 }
 
 .media-frame-toolbar #insert {
   margin: 5px 10px 0 0;
+}
+
+@media screen and (max-width: 1890px) {
+  .gallery_type .pro_btn, .album_type_div .pro_btn {
+    top: 95px;
+  }
+}
+@media screen and (max-width: 1275px) {
+  #bwg_shortcode_form #bwg_tab_galleries_content, #bwg_shortcode_form #bwg_tab_albums_content {
+    margin-left: 0;
+  }
 }

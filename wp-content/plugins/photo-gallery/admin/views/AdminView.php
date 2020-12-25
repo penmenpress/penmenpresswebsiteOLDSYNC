@@ -9,6 +9,7 @@ class AdminView_bwg {
 	public function __construct() {
 		wp_enqueue_style(BWG()->prefix . '_tables');
 		wp_enqueue_script(BWG()->prefix . '_admin');
+		do_action( 'bwg_admin_scripts_after' );
 	}
   /**
    * Generate form.
@@ -19,7 +20,6 @@ class AdminView_bwg {
    * @return string Form html.
    */
   protected function form($content = '', $attr = array()) {
-    WDWLibrary::topbar();
     ob_start();
     // Form.
     $action = isset($attr['action']) ? esc_attr($attr['action']) : '';
@@ -28,6 +28,7 @@ class AdminView_bwg {
     $id = isset($attr['id']) ? esc_attr($attr['id']) : '';
     $class = isset($attr['class']) ? esc_attr($attr['class']) : BWG()->prefix . '_form';
     $style = isset($attr['style']) ? esc_attr($attr['style']) : '';
+    $style .= "display:none;".$style;
     $current_id = isset($attr['current_id']) ? esc_attr($attr['current_id']) : '';
     $task = isset($attr['task']) ? esc_attr($attr['task']) : '';
     ?><div class="wrap<?php echo (isset($_GET['action']) ? ' wd-wrap-ajax' : ''); ?>">
@@ -42,7 +43,7 @@ class AdminView_bwg {
       <?php echo $method ? 'method="' . $method . '"' : ''; ?>
       <?php echo $name ? ' name="' . $name . '"' : ''; ?>
       <?php echo $id ? ' id="' . $id . '"' : ''; ?>
-      <?php echo $class ? ' class="' . $class . '"' : ''; ?>
+      <?php echo $class ? ' class="bwg_form ' . $class . '"' : ''; ?>
       <?php echo $style ? ' style="' . $style . '"' : ''; ?>
     ><h1 class="bwg-hidden"></h1><?php
       echo $content;
@@ -53,6 +54,7 @@ class AdminView_bwg {
       <input id="current_id" name="current_id" type="hidden" value="<?php echo $current_id; ?>"/>
     </form>
     </div><?php
+    do_action( 'bwg_admin_view_form_after' );
     return ob_get_clean();
   }
 
@@ -71,6 +73,9 @@ class AdminView_bwg {
     $title_value = !empty($params['title_value']) ? $params['title_value'] : '';
     $add_new_button = !empty($params['add_new_button']) ? $params['add_new_button'] : '';
     $how_to_button = !empty($params['how_to_button']) ? $params['how_to_button'] : false;
+    $buttons = !empty($params['buttons']) ? $params['buttons'] : false;
+    $add_new_button_text = !empty($params['add_new_button_text']) ? $params['add_new_button_text'] : __('Add new', BWG()->prefix);
+    $popup_window = !empty($params['popup_window']) ? false : true;
 
     $attributes = '';
     if ( !empty($add_new_button) && is_array($add_new_button) ) {
@@ -79,31 +84,47 @@ class AdminView_bwg {
       }
     }
     ob_start();
-    ?><div class="wd-page-title <?php echo $title_class; ?>">
-    <h1 class="wp-heading-inline"><?php echo $title; ?>
+    ?>
+    <div class="wd-list-view-header">
+      <div class="wd-list-view-header-left">
+        <div class="wd-page-title <?php echo $title_class; ?>">
+          <h1 class="wd-heading-inline"><?php echo $title; ?>
+            <?php
+            if ( $title_name || $title_id || $title_value ) {
+              ?>
+              <span>
+              <input type="text" id="<?php echo $title_id; ?>" name="<?php echo $title_name; ?>" value="<?php echo $title_value; ?>" />
+            </span>
+              <?php
+            }?>
+          </h1>
+          <?php WDWLibrary::user_guide_icon(); ?>
+        </div>
+        <div class="wd-list-view-header-buttons">
+          <?php
+          if ( $add_new_button ) {
+            ?>
+            <a class="page-title-action" <?php echo $attributes; ?>>
+              <?php echo $add_new_button_text; ?>
+            </a>
+            <?php
+          }
+          if ( $how_to_button ) {
+            require BWG()->plugin_dir . '/framework/howto/howto.php';
+          }
+          if( $buttons ){
+            echo $this->buttons($buttons, FALSE);
+          }
+          ?>
+        </div>
+      </div>
       <?php
-      if ( $title_name || $title_id || $title_value ) {
-        ?>
-        <span>
-          <input type="text" id="<?php echo $title_id; ?>" name="<?php echo $title_name; ?>" value="<?php echo $title_value; ?>" />
-        </span>
-        <?php
-      }
-      if ( $add_new_button ) {
-        ?>
-        <a class="page-title-action" <?php echo $attributes; ?>>
-          <?php _e('Add New', BWG()->prefix); ?>
-        </a>
-        <?php
+      if (!BWG()->is_pro && $popup_window ) {
+        WDWLibrary::topbar_upgrade_ask_question();
       }
       ?>
-    </h1>
+    </div>
     <?php
-    if ( $how_to_button ) {
-      require BWG()->plugin_dir . '/framework/howto/howto.php';
-    }
-    ?>
-    </div><?php
     return ob_get_clean();
   }
 
@@ -188,15 +209,16 @@ class AdminView_bwg {
     $search = WDWLibrary::get('s', '', 'esc_attr');
     ob_start();
     ?>
-    <p class="search-box">
+    <div class="list-search-box">
       <?php
       if (isset($params['sorting']) && $params['sorting']) {
         echo $this->sorting();
       }
       ?>
-      <input name="s" value="<?php echo $search; ?>" type="search" onkeypress="return input_search(event, this)" />
-      <input class="button" value="<?php echo __('Search', BWG()->prefix) . ' ' . ( !empty( $params['search_item_name'] ) ? $params['search_item_name'] : '' ); ?>" type="button" onclick="search(this)" />
-    </p>
+      <input name="s" value="<?php echo $search; ?>" type="search" onkeypress="return input_search(event, this)" placeholder="<?php _e('Search', BWG()->prefix); ?>" />
+      <?php // ToDo Search button comment is not deleted, it can be used again. ?>
+<!--      <input class="button" value="--><?php //echo __('Search', BWG()->prefix) . ' ' . ( !empty( $params['search_item_name'] ) ? $params['search_item_name'] : '' ); ?><!--" type="button" onclick="search(this)" />-->
+    </div>
     <?php
     return ob_get_clean();
   }
@@ -241,53 +263,53 @@ class AdminView_bwg {
     ob_start();
     ?>
     <div class="tablenav-pages">
-      <span class="displaying-num">
-        <?php printf(_n('%s item', '%s items', $total, BWG()->prefix), $total); ?>
-      </span>
       <?php
       if ( $total > $items_per_page ) {
         ?>
-        <span class="pagination-links" data-pages-count="<?php echo $pages_count; ?>">
+        <div class="pagination-links" data-pages-count="<?php echo $pages_count; ?>">
         <?php
         if ( $page_number == 1 ) {
           ?>
-          <span class="tablenav-pages-navspan button disabled" aria-hidden="true">«</span>
-          <span class="tablenav-pages-navspan button disabled" aria-hidden="true">‹</span>
+          <div class="bwg-disabled bwg-pagination-prev-all" aria-hidden="true"></div>
+          <div class="bwg-disabled bwg-pagination-prev" aria-hidden="true"></div>
           <?php
         }
         else {
           ?>
-          <a data-paged="<?php echo 1; ?>" href="<?php echo add_query_arg(array('paged' => 1), $page_url); ?>" class="wd-page first-page button"><span class="screen-reader-text"><?php _e('First page', BWG()->prefix); ?></span><span aria-hidden="true">«</span></a>
-          <a data-paged="<?php echo ($page_number == 1 ? 1 : ($page_number - 1)); ?>" href="<?php echo add_query_arg(array('paged' => ($page_number == 1 ? 1 : ($page_number - 1))), $page_url); ?>" class="wd-page previous-page button"><span class="screen-reader-text"><?php _e('Previous page', BWG()->prefix); ?></span><span aria-hidden="true">‹</span></a>
+          <a data-paged="<?php echo 1; ?>" href="<?php echo add_query_arg(array('paged' => 1), $page_url); ?>" class="bwg-pagination-a-link wd-page first-page"><span class="screen-reader-text"><?php _e('First page', BWG()->prefix); ?></span><span class="bwg-pagination-prev-all" aria-hidden="true"></span></a>
+          <a data-paged="<?php echo ($page_number == 1 ? 1 : ($page_number - 1)); ?>" href="<?php echo add_query_arg(array('paged' => ($page_number == 1 ? 1 : ($page_number - 1))), $page_url); ?>" class="bwg-pagination-a-link wd-page previous-page"><span class="screen-reader-text"><?php _e('Previous page', BWG()->prefix); ?></span><span class="bwg-pagination-prev" aria-hidden="true"></span></a>
           <?php
         }
         ?>
-          <span class="paging-input">
+          <div class="paging-input">
           <label for="current-page-selector" class="screen-reader-text"><?php _e('Current Page', BWG()->prefix); ?></label>
-          <input type="text" class="current-page" name="current_page" value="<?php echo $page_number; ?>" onkeypress="return input_pagination(event, this)" size="1" />
+          <input type="text" class="bwg-current-page current-page" name="current_page" value="<?php echo $page_number; ?>" onkeypress="return input_pagination(event, this)" size="1" />
           <span class="tablenav-paging-text">
              <?php _e('of', BWG()->prefix); ?>
             <span class="total-pages"><?php echo $pages_count; ?></span>
           </span>
-        </span>
+        </div>
           <?php
           if ( $page_number >= $pages_count ) {
             ?>
-            <span class="tablenav-pages-navspan button disabled" aria-hidden="true">›</span>
-            <span class="tablenav-pages-navspan button disabled" aria-hidden="true">»</span>
+            <div class="bwg-disabled bwg-pagination-next" aria-hidden="true"></div>
+            <div class="bwg-disabled bwg-pagination-next-all" aria-hidden="true"></div>
             <?php
           }
           else {
             ?>
-            <a data-paged="<?php echo ($page_number >= $pages_count ? $pages_count : ($page_number + 1)); ?>" href="<?php echo add_query_arg(array('paged' => ($page_number >= $pages_count ? $pages_count : ($page_number + 1))), $page_url); ?>" class="wd-page next-page button"><span class="screen-reader-text"><?php _e('Next page', BWG()->prefix); ?></span><span aria-hidden="true">›</span></a>
-            <a data-paged="<?php echo $pages_count; ?>" href="<?php echo add_query_arg(array('paged' => $pages_count), $page_url); ?>" class="wd-page last-page button"><span class="screen-reader-text"><?php _e('Last page', BWG()->prefix); ?></span><span aria-hidden="true">»</span></a>
+            <a data-paged="<?php echo ($page_number >= $pages_count ? $pages_count : ($page_number + 1)); ?>" href="<?php echo add_query_arg(array('paged' => ($page_number >= $pages_count ? $pages_count : ($page_number + 1))), $page_url); ?>" class="bwg-pagination-a-link wd-page next-page"><span class="screen-reader-text"><?php _e('Next page', BWG()->prefix); ?></span><span class="bwg-pagination-next" aria-hidden="true"></span></a>
+            <a data-paged="<?php echo $pages_count; ?>" href="<?php echo add_query_arg(array('paged' => $pages_count), $page_url); ?>" class="bwg-pagination-a-link wd-page last-page"><span class="screen-reader-text"><?php _e('Last page', BWG()->prefix); ?></span><span class="bwg-pagination-next-all" aria-hidden="true"></span></a>
             <?php
           }
           ?>
-      </span>
+      </div>
         <?php
       }
       ?>
+      <div class="displaying-num">
+        <?php printf(_n('%s item', '%s items', $total, BWG()->prefix), $total); ?>
+      </div>
     </div>
     <?php
 
@@ -307,26 +329,21 @@ class AdminView_bwg {
     ob_start();
     ?>
     <div class="alignleft actions bulkactions">
-      <?php
-      if ( $select_all ) {
-        ?>
-      <span class="button wd-check-all" onclick="spider_check_all_items(event)">
-        <input type="checkbox" id="check_all_items" name="check_all_items" onclick="spider_check_all_items_checkbox(event)" />
-        <span><?php _e('Select All', BWG()->prefix); ?></span>
-      </span>
-        <?php
-      }
-      ?>
+	  <?php
+	  // ToDo not show according to design, not deleted-it can be used again.
+	  if ( $select_all ) { ?>
+		<span class="button wd-check-all" onclick="spider_check_all_items(event)">
+		  <input type="checkbox" id="check_all_items" name="check_all_items" onclick="spider_check_all_items_checkbox(event)" />
+		  <span><?php _e('Select All', BWG()->prefix); ?></span>
+	    </span>
+	  <?php } ?>
+		
       <label for="bulk-action-selector-top" class="screen-reader-text"><?php _e('Select bulk action', BWG()->prefix); ?></label>
       <select name="<?php echo $name; ?>" id="bulk-action-selector-top">
         <option value="-1"><?php _e('Bulk Actions', BWG()->prefix); ?></option>
-        <?php
-        foreach ( $actions as $key => $action ) {
-          ?>
+        <?php foreach ( $actions as $key => $action ) { ?>
           <option value="<?php echo $key; ?>" <?php echo isset($action['disabled']) ? $action['disabled'] : ''; ?>><?php echo $action['title']; ?></option>
-          <?php
-        }
-        ?>
+        <?php } ?>
       </select>
       <input type="button" id="doaction" class="button action" onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\')' : 'wd_bulk_action(this)'); ?>" value="<?php _e('Apply', BWG()->prefix); ?>" />
     </div>

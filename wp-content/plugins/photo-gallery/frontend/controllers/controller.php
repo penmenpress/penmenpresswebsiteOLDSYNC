@@ -3,7 +3,6 @@ class BWGControllerSite {
 
   private $model;
   private $view;
-
   public $thumb_urls;
 
   public function __construct( $view = 'Thumbnails' ) {
@@ -249,6 +248,8 @@ class BWGControllerSite {
           $params['carousel_height'] = BWG()->options->carousel_height;
           $params['carousel_image_column_number'] = BWG()->options->carousel_image_column_number;
           $params['carousel_image_par'] = BWG()->options->carousel_image_par;
+          $params['carousel_show_gallery_title'] = BWG()->options->carousel_show_gallery_title;
+          $params['carousel_show_gallery_description'] = BWG()->options->carousel_show_gallery_description;
           $params['enable_carousel_title'] = BWG()->options->carousel_enable_title;
           $params['enable_carousel_autoplay'] = BWG()->options->carousel_enable_autoplay;
           $params['carousel_r_width'] = BWG()->options->carousel_r_width;
@@ -351,6 +352,7 @@ class BWGControllerSite {
     if ( !isset( $params['current_url'] ) ) {
       $params['current_url'] = trim((is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     }
+
     $params_array = array(
       'action' => 'GalleryBox',
       'current_view' => $bwg,

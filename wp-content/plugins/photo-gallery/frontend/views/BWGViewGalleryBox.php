@@ -46,6 +46,7 @@ class BWGViewGalleryBox {
       $params['popup_enable_tumblr'] = FALSE;
       $params['popup_enable_email'] = FALSE;
       $params['popup_enable_captcha'] = FALSE;
+      $params['gdpr_compliance'] = FALSE;
       $params['comment_moderation'] = FALSE;
       $params['enable_addthis'] = FALSE;
       $params['addthis_profile_id'] = FALSE;
@@ -76,7 +77,7 @@ class BWGViewGalleryBox {
       }
     }
     $image_rows = $this->model->get_image_rows_data($gallery_id, $bwg, $params['sort_by'], $params['order_by'], $tag);
-    $image_id = WDWLibrary::get('image_id', $current_image_id, 'intval');
+    $image_id = WDWLibrary::get('image_id', $current_image_id, 'intval', 'POST');
     $pricelist_id = 0;
     if ( function_exists('BWGEC') && $params['popup_enable_ecommerce'] == 1 ) {
       $image_pricelist = $this->model->get_image_pricelist($image_id);
@@ -318,7 +319,7 @@ class BWGViewGalleryBox {
       }
         .bwg_ecommerce_body  p, .bwg_ecommerce_body span, .bwg_ecommerce_body div {
           color:#<?php echo $theme_row->lightbox_comment_font_color; ?>!important;
-        } 															
+        }
         .pge_tabs li{
           float:left;
           border-top: 1px solid #<?php echo $theme_row->lightbox_bg_color; ?>!important;
@@ -344,7 +345,7 @@ class BWGViewGalleryBox {
        .pge_tabs_container{
           border:1px solid #<?php echo $theme_row->lightbox_comment_font_color; ?>;
           border-radius: 0 0 <?php echo $theme_row->lightbox_comment_button_border_radius; ?> <?php echo $theme_row->lightbox_comment_button_border_radius; ?>;
-       }	  
+       }
 
       .pge_pricelist {
         padding:0 !important;
@@ -454,7 +455,7 @@ class BWGViewGalleryBox {
         <?php echo $width_or_height; ?>: <?php echo $theme_row->lightbox_filmstrip_rl_btn_size; ?>px;
         <?php echo $left_or_top; ?>: 0;
         <?php echo ($filmstrip_direction == 'horizontal' ? 'position: relative;' : 'position: absolute;') ?>
-        <?php echo ($filmstrip_direction == 'horizontal' ? '' : 'width: 100%;') ?> 
+        <?php echo ($filmstrip_direction == 'horizontal' ? '' : 'width: 100%;') ?>
       }
       .bwg_filmstrip_right {
         background-color: #<?php echo $theme_row->lightbox_filmstrip_rl_bg_color; ?>;
@@ -582,7 +583,6 @@ class BWGViewGalleryBox {
     $has_embed = FALSE;
     $data = array();
     foreach ($image_rows as $key => $image_row) {
-
       if ($image_row->id == $image_id) {
         $current_avg_rating = $image_row->avg_rating;
         $current_rate = $image_row->rate;
@@ -614,7 +614,9 @@ class BWGViewGalleryBox {
       $image_resolution = explode(' x ', $image_row->resolution);
       if (is_array($image_resolution)) {
         $instagram_post_width = $image_resolution[0];
-        $instagram_post_height = explode(' ', $image_resolution[1]);
+        if (isset($image_resolution[1])) {
+          $instagram_post_height = explode(' ', $image_resolution[1]);
+        }
         $instagram_post_height = $instagram_post_height[0];
       }
 
@@ -773,7 +775,7 @@ class BWGViewGalleryBox {
           if ($params['show_image_counts']) {
             ?>
             <span class="bwg_image_count_container bwg_ctrl_btn">
-              <span class="bwg_image_count"><?php echo $current_image_key + 1; ?></span> / 
+              <span class="bwg_image_count"><?php echo $current_image_key + 1; ?></span> /
               <span><?php echo count($image_rows); ?></span>
             </span>
             <?php
@@ -796,7 +798,7 @@ class BWGViewGalleryBox {
           <i title="<?php echo __('Show rating', BWG()->prefix); ?>" class="bwg-icon-<?php echo $theme_row->lightbox_rate_icon; ?> bwg_ctrl_btn bwg_rate"></i>
           <?php }
           $is_embed = preg_match('/EMBED/', $current_filetype) == 1 ? TRUE : FALSE;
-          $share_image_url = str_replace('%252F', '%2F', urlencode( $is_embed ? $current_thumb_url : BWG()->upload_url . rawurlencode($current_image_url)));
+          $share_image_url = str_replace(array('%252F', '%25252F'), '%2F', urlencode( $is_embed ? $current_thumb_url : BWG()->upload_url . rawurlencode($current_image_url)));
           if ($params['popup_enable_facebook']) {
             ?>
             <a id="bwg_facebook_a" href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($share_url); ?>" target="_blank" title="<?php echo __('Share on Facebook', BWG()->prefix); ?>">
@@ -806,7 +808,7 @@ class BWGViewGalleryBox {
           }
           if ($params['popup_enable_twitter']) {
             ?>
-            <a id="bwg_twitter_a" href="https://twitter.com/share?url=<?php echo urlencode($current_url . '#bwg' . $gallery_id . '/' . $current_image_id); ?>" target="_blank" title="<?php echo __('Share on Twitter', BWG()->prefix); ?>">
+            <a id="bwg_twitter_a" href="https://twitter.com/share?url=<?php echo urlencode($share_url); ?>" target="_blank" title="<?php echo __('Share on Twitter', BWG()->prefix); ?>">
               <i title="<?php echo __('Share on Twitter', BWG()->prefix); ?>" class="bwg-icon-twitter-square bwg_ctrl_btn bwg_twitter"></i>
             </a>
             <?php
@@ -920,11 +922,11 @@ class BWGViewGalleryBox {
               <span class="bwg_popup_image_spun" id="bwg_popup_image" image_id="<?php echo $image_row->id; ?>">
                 <span class="bwg_popup_image_spun1" style="display: <?php echo ( !$is_embed ? 'table' : 'block' ); ?>;">
                   <span class="bwg_popup_image_spun2" style="display: <?php echo ( !$is_embed ? 'table-cell' : 'block' ); ?>; ">
-                    <?php 
-                      if (!$is_embed) {
+                    <?php
+                      if ( !$is_embed ) {
                       ?>
-                      <img class="bwg_popup_image bwg_popup_watermark" src="<?php echo BWG()->upload_url . urldecode($image_row->image_url); ?>" alt="<?php echo $image_row->alt; ?>" />
-                      <?php 
+                      <img class="bwg_popup_image bwg_popup_watermark" src="<?php echo BWG()->upload_url . $image_row->image_url; ?>" alt="<?php echo $image_row->alt; ?>" />
+                      <?php
                       }
                       else { /*$is_embed*/ ?>
                         <span id="embed_conteiner" class="bwg_popup_embed bwg_popup_watermark" style="display: <?php echo ( $is_ifrem ? 'block' : 'table' ); ?>; ">
@@ -947,7 +949,6 @@ class BWGViewGalleryBox {
                             $instagram_post_height = explode(' ', $image_resolution[1]);
                             $instagram_post_height = $instagram_post_height[0];
                           }
-                          
                           WDWLibraryEmbed::display_embed($image_row->filetype, $image_row->image_url, $image_row->filename, array('class' => "bwg_embed_frame", 'data-width' => $instagram_post_width, 'data-height' => $instagram_post_height, 'frameborder' => "0", 'style' => "width:" . $post_width . "px; height:" . $post_height . "px; vertical-align:middle; display:inline-block; position:relative;"));
                         }
                         else{
@@ -957,11 +958,11 @@ class BWGViewGalleryBox {
                       </span>
                       <?php
                       }
-                    ?>                    
+                    ?>
                   </span>
                 </span>
               </span>
-              <span class="bwg_popup_image_second_spun">                
+              <span class="bwg_popup_image_second_spun">
               </span>
               <input type="hidden" id="bwg_current_image_key" value="<?php echo $key; ?>" />
               <?php
@@ -1006,7 +1007,9 @@ class BWGViewGalleryBox {
 				<p><label for="bwg_comment"><?php echo __('Comment', BWG()->prefix); ?> </label></p>
 				<p><textarea class="bwg-validate bwg_comment_textarea" name="bwg_comment" id="bwg_comment"></textarea></p>
 				<p><span class="bwg_comment_error bwg_comment_textarea_error"></span></p>
-              <?php if ( $params['popup_enable_captcha'] ) { ?>
+
+              <?php if ( $params['popup_enable_captcha'] && !$params['gdpr_compliance']) { ?>
+
 				<p><label for="bwg_captcha_input"><?php echo __('Verification Code', BWG()->prefix); ?></label></p>
 				<p>
 					<input id="bwg_captcha_input" name="bwg_captcha_input" class="bwg_captcha_input" type="text" autocomplete="off">
@@ -1047,6 +1050,7 @@ class BWGViewGalleryBox {
 			  <input id="image_id"id="image_id" name="image_id" type="hidden" value="<?php echo $image_id; ?>" />
               <input id="comment_id" name="comment_id" type="hidden" value="" />
               <input type="hidden" value="<?php echo $params['comment_moderation'] ?>" id="bwg_comment_moderation">
+              <input type="hidden" value="<?php echo ($params['gdpr_compliance']) ? 0 : $params['popup_enable_captcha']; ?>" id="bwg_popup_enable_captcha">
             </form>
           <div id="bwg_added_comments">
             <?php
@@ -1092,22 +1096,22 @@ class BWGViewGalleryBox {
 									<ul class="pge_tabs" <?php if(count($pricelist_sections)<=1) echo "style='display:none;'"; ?>>
 										<li id="manual_li" <?php if(!in_array("manual",$pricelist_sections)) { echo "style='display:none;'"; } ?> class="pge_active">
 											<a href= "#manual">
-												<span class="manualh4" >	
+												<span class="manualh4" >
 													<?php echo __('Prints and products', BWG()->prefix); ?>
 												</span>
-											</a>											
+											</a>
 										</li>
 										<li id="downloads_li" <?php if(!in_array("downloads",$pricelist_sections)) echo "style='display:none;'"; ?> >
 											<a href= "#downloads">
-											<span class="downloadsh4" >	
+											<span class="downloadsh4" >
 												<?php echo __('Downloads', BWG()->prefix); ?>
 											</span>
-											</a>											
+											</a>
 										</li>
 									</ul>
 									<div class="pge_tabs_container" >
 									<!-- manual -->
-									<div class="manual pge_pricelist" id="manual" <?php if( count($pricelist_sections) == 2  || (count($pricelist_sections) == 1 && end($pricelist_sections) == "manual")) echo 'style="display: block;"'; else echo 'style="display: none;"'; ?>  >																	
+									<div class="manual pge_pricelist" id="manual" <?php if( count($pricelist_sections) == 2  || (count($pricelist_sections) == 1 && end($pricelist_sections) == "manual")) echo 'style="display: block;"'; else echo 'style="display: none;"'; ?>  >
 										<div>
 											<div class="product_manual_price_div">
 												<p><?php echo $pricelist->manual_title ? __('Name', BWG()->prefix).': '.$pricelist->manual_title : "";?></p>
@@ -1143,7 +1147,7 @@ class BWGViewGalleryBox {
 												<p><?php //echo __('Parameters', BWG()->prefix); ?></p>
 												<?php
 													$i = 0;
-													foreach($parameters as $parameter_id => $parameter){	
+													foreach($parameters as $parameter_id => $parameter){
 														echo '<div class="parameter_row">';
 														switch($parameter["type"]){
 															case "1" :
@@ -1152,37 +1156,37 @@ class BWGViewGalleryBox {
 																echo '</div>';
 																break;
 															case "2" :
-																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';															
+																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';
 																echo '<label for="parameter_input">'.$parameter["title"].'</label>';
-																echo '<input type="text" name="parameter_input'.$parameter_id.'" id="parameter_input"  value="'. $parameter["values"][0]["parameter_value"] .'">';																	
+																echo '<input type="text" name="parameter_input'.$parameter_id.'" id="parameter_input"  value="'. $parameter["values"][0]["parameter_value"] .'">';
 																echo '</div>';
 																break;
 															case "3" :
-																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';															
-																echo '<label for="parameter_textarea">'.$parameter["title"].'</label>';															
-																echo '<textarea  name="parameter_textarea'.$parameter_id.'" id="parameter_textarea"  >'. $parameter["values"][0]["parameter_value"] .'</textarea>';																	
+																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';
+																echo '<label for="parameter_textarea">'.$parameter["title"].'</label>';
+																echo '<textarea  name="parameter_textarea'.$parameter_id.'" id="parameter_textarea"  >'. $parameter["values"][0]["parameter_value"] .'</textarea>';
 																echo '</div>';
 																break;
 															case "4" :
-																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';											
-																echo '<label for="parameter_select">'.$parameter["title"].'</label>';		
+																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';
+																echo '<label for="parameter_select">'.$parameter["title"].'</label>';
 																echo '<select name="parameter_select'.$parameter_id.'" id="parameter_select" onchange="onSelectableParametersChange(this)">';
 																echo '<option value="+*0*">-Select-</option>';
 																foreach($parameter["values"] as $values){
                                                                     $price_addon = $values["parameter_value_price"] == "0" ? "" : ' ('.$values["parameter_value_price_sign"].$options->currency_sign.number_format((float)$values["parameter_value_price"],2).')';
-																	echo '<option value="'.$values["parameter_value_price_sign"].'*'.$values["parameter_value_price"].'*'.$values["parameter_value"].'">'.$values["parameter_value"].$price_addon.'</option>';	
+																	echo '<option value="'.$values["parameter_value_price_sign"].'*'.$values["parameter_value_price"].'*'.$values["parameter_value"].'">'.$values["parameter_value"].$price_addon.'</option>';
 																}
 																echo '</select>';
 																echo '<input type="hidden" class="already_selected_values">';
 																echo '</div>';
-																break;	
+																break;
 															case "5" :
-																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';															
+																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';
 																echo '<label>'.$parameter["title"].'</label>';
-																foreach($parameter["values"] as $values){	
-                                                                    $price_addon = $values["parameter_value_price"] == "0"	? "" : 	' ('.$values["parameter_value_price_sign"].$options->currency_sign.number_format((float)$values["parameter_value_price"],2).')';													
+																foreach($parameter["values"] as $values){
+                                                                    $price_addon = $values["parameter_value_price"] == "0"	? "" : 	' ('.$values["parameter_value_price_sign"].$options->currency_sign.number_format((float)$values["parameter_value_price"],2).')';
 																	echo '<div>';
-																	echo '<input type="radio" name="parameter_radio'.$parameter_id.'"  id="parameter_radio'.$i.'" value="'.$values["parameter_value_price_sign"].'*'.$values["parameter_value_price"].'*'.$values["parameter_value"].'"  onchange="onSelectableParametersChange(this)">';	
+																	echo '<input type="radio" name="parameter_radio'.$parameter_id.'"  id="parameter_radio'.$i.'" value="'.$values["parameter_value_price_sign"].'*'.$values["parameter_value_price"].'*'.$values["parameter_value"].'"  onchange="onSelectableParametersChange(this)">';
 																	echo '<label for="parameter_radio'.$i.'">'.$values["parameter_value"].$price_addon.'</label>';
 																	echo '</div>';
 																	$i++;
@@ -1191,26 +1195,26 @@ class BWGViewGalleryBox {
 																echo '</div>';
 																break;
 															case "6" :
-																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';															
+																echo '<div class="image_selected_parameter" data-parameter-id="'.$parameter_id.'" data-parameter-type = "'.$parameter["type"].'">';
 																echo '<label>'.$parameter["title"].'</label>';
 																foreach($parameter["values"] as $values){
                                                                     $price_addon = $values["parameter_value_price"] == "0" ? "" : ' ('.$values["parameter_value_price_sign"].$options->currency_sign.number_format((float)$values["parameter_value_price"],2).')';
 																	echo '<div>';
-																	echo '<input type="checkbox" name="parameter_checkbox'.$parameter_id.'" id="parameter_checkbox'.$i.'" value="'.$values["parameter_value_price_sign"].'*'.$values["parameter_value_price"].'*'.$values["parameter_value"].'"  onchange="onSelectableParametersChange(this)">';	
+																	echo '<input type="checkbox" name="parameter_checkbox'.$parameter_id.'" id="parameter_checkbox'.$i.'" value="'.$values["parameter_value_price_sign"].'*'.$values["parameter_value_price"].'*'.$values["parameter_value"].'"  onchange="onSelectableParametersChange(this)">';
 																	echo '<label for="parameter_checkbox'.$i.'">'.$values["parameter_value"].$price_addon.'</label>';
 																	echo '</div>';
 																	$i++;
 																}
 																echo '<input type="hidden" class="already_selected_values">';
 																echo '</div>';
-																break;	
+																break;
 															default:
 																break;
 														}
 														echo '</div>';
 													}
 												?>
-												
+
 											</div>
 											<?php } ?>
 											<p>
@@ -1231,7 +1235,7 @@ class BWGViewGalleryBox {
 												</tr>
 											</thead>
 											<tbody>
-												<?php	
+												<?php
 													if(empty($download_items) === false){
 														foreach($download_items as $download_item){
 														?>
@@ -1253,18 +1257,18 @@ class BWGViewGalleryBox {
 															  </tr>
 														<?php
 														}
-													}													
+													}
 												?>
 											</tbody>
-										</table>	
+										</table>
 										<p>
 											<span><b><?php echo __('Total', BWG()->prefix).': '.$options->currency_sign;?></b></span>
 											<b><span class="product_downloads_price">0</span></b>
-										</p>										
+										</p>
 									</div>
 									</div>
 								</div>
-								<div style="margin-top:10px;">	
+								<div style="margin-top:10px;">
 									<input type="button" class="bwg_submit" value="<?php echo __('Add to cart', BWG()->prefix); ?>" onclick="onBtnClickAddToCart();">
 									<input type="button" class="bwg_submit" value="<?php echo __('View cart', BWG()->prefix); ?>" onclick="onBtnViewCart()">
 									&nbsp;<span class="add_to_cart_msg"></span>
@@ -1275,9 +1279,9 @@ class BWGViewGalleryBox {
 								<input id="image_id" name="image_id" type="hidden" value="<?php echo $image_id; ?>" />
 								<div class="pge_options">
 									<input type="hidden" name="option_checkout_page" value="<?php  echo get_permalink($options->checkout_page);?>">
-									<input type="hidden" name="option_show_digital_items_count" value="<?php echo $options->show_digital_items_count;?>">								
+									<input type="hidden" name="option_show_digital_items_count" value="<?php echo $options->show_digital_items_count;?>">
 								</div>
-							</form>	
+							</form>
 						</div>
 					</div>
 				</div>
@@ -1324,7 +1328,7 @@ class BWGViewGalleryBox {
       'image_filmstrip_width'                 => $image_filmstrip_width,
       'image_filmstrip_height'                => $image_filmstrip_height,
       'lightbox_info_margin'                  => $theme_row->lightbox_info_margin,
-      'bwg_share_url'                         => add_query_arg(array('curr_url' => $current_url, 'image_id' => ''), WDWLibrary::get_share_page()),
+      'bwg_share_url'                         => add_query_arg(array('curr_url' => urlencode($current_url), 'image_id' => ''), WDWLibrary::get_share_page()),
       'bwg_share_image_url'                   => urlencode(BWG()->upload_url),
       'slideshow_interval'                    => $params['popup_interval'],
       'open_with_fullscreen'                  => $params['popup_fullscreen'],
@@ -1379,7 +1383,7 @@ class BWGViewGalleryBox {
 		<div class="bwg_comment_body_p">
 		  <span class="bwg_comment_body"><?php echo wpautop($row->comment); ?></span>
 		</div>
-	  </div>
+  </div>
     <?php
     return ob_get_clean();
   }

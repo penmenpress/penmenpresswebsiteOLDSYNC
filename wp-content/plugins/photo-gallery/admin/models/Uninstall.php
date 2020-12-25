@@ -67,6 +67,7 @@ class UninstallModel_bwg {
       $wpdb->query("DROP TABLE IF EXISTS `" . $table . "`");
     }
     delete_option("wd_bwg_version");
+    delete_option('wd_bwg_initial_version');
     delete_option("bwg_subscribe_done");
     delete_option("wd_bwg_options");
     delete_option('tenweb_notice_status');
@@ -80,5 +81,6 @@ class UninstallModel_bwg {
     if ( isset($_COOKIE['bwg_image_order_by']) ) {
       $_COOKIE['bwg_image_order_by'] = '';
     }
+    do_action( 'bwg_uninstall_after' );
   }
 }

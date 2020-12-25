@@ -527,39 +527,42 @@ class bwg_UploadHandler {
         $file->error = 'Failed to create scaled version: ' . $failed_versions[0];
         break;
       default:
-        $file->error = 'Failed to create scaled versions: ' . implode($failed_versions, ', ');
+        $file->error = 'Failed to create scaled versions: ' . implode(', ', $failed_versions);
     }
 
     if ( !$file->error ) {
-      global $wpdb;
-      $file->filename = str_replace("_", " ", substr($file->name, 0, strrpos($file->name, '.')));
-      $file_ex = explode('.', $file->name);
-      $file->type = strtolower(end($file_ex));
-      $file->thumb = $file->name;
-      $file->size = (int) ($file->size / 1024) . ' KB';
-      // ini_set('allow_url_fopen',1);
-      $image_info = @getimagesize(htmlspecialchars_decode($file->url, ENT_COMPAT | ENT_QUOTES));
-      if ( $file->type == 'svg') {
-          $size = $this->get_svg_size($file->dir.$file->name);
-          if( !empty($size) ) {
-            $file->resolution = $size['width'] . " x " . $size['height'] . " px ";
-          } else {
-            $file->resolution = "";
-          }
-      } else {
-          $file->resolution = $image_info[0] . ' x ' . $image_info[1] . ' px';
-      }
-      $meta = WDWLibrary::read_image_metadata($file->dir . '/.original/' . $file->name);
-      $file->alt = (BWG()->options->read_metadata && $meta['title']) ? $meta['title'] : str_replace("_", " ", $file->filename);
-      $file->credit = !empty($meta['credit']) ? $meta['credit'] : '';
-      $file->aperture = !empty($meta['aperture']) ? $meta['aperture'] : '';
-      $file->camera = !empty($meta['camera']) ? $meta['camera'] : '';
-      $file->caption = !empty($meta['caption']) ? $meta['caption'] : '';
-      $file->iso = !empty($meta['iso']) ? $meta['iso'] : '';
-      $file->orientation = !empty($meta['orientation']) ? $meta['orientation'] : '';
-      $file->copyright = !empty($meta['copyright']) ? $meta['copyright'] : '';
-      $file->tags = !empty($meta['tags']) ? $meta['tags'] : '';
-
+	 global $wpdb;
+	 $file->filename = str_replace("_", " ", substr($file->name, 0, strrpos($file->name, '.')));
+	 $file_ex = explode('.', $file->name);
+	 $file->type = strtolower(end($file_ex));
+	 $file->thumb = $file->name;
+	 $file->size = (int) ($file->size / 1024) . ' KB';
+	 // ini_set('allow_url_fopen',1);
+	 $image_info = @getimagesize(htmlspecialchars_decode($file->url, ENT_COMPAT | ENT_QUOTES));
+	 if ( $file->type == 'svg' ) {
+	   $size = $this->get_svg_size($file->dir . $file->name);
+	   if ( !empty($size) ) {
+		$file->resolution = $size['width'] . " x " . $size['height'] . " px ";
+	   }
+	   else {
+		$file->resolution = "";
+	   }
+	 }
+	 else {
+	   $file->resolution = $image_info[0] . ' x ' . $image_info[1] . ' px';
+	 }
+	 if ( BWG()->options->read_metadata ) {
+	   $meta = WDWLibrary::read_image_metadata($file->dir . '/.original/' . $file->name);
+	   $file->alt = ($meta['title']) ? $meta['title'] : str_replace("_", " ", $file->filename);
+	   $file->credit = isset($meta['credit']) ? $meta['credit'] : '';
+	   $file->aperture = isset($meta['aperture']) ? $meta['aperture'] : '';
+	   $file->camera = isset($meta['camera']) ? $meta['camera'] : '';
+	   $file->caption = isset($meta['caption']) ? $meta['caption'] : '';
+	   $file->iso = isset($meta['iso']) ? $meta['iso'] : '';
+	   $file->orientation = isset($meta['orientation']) ? $meta['orientation'] : '';
+	   $file->copyright = isset($meta['copyright']) ? $meta['copyright'] : '';
+	   $file->tags = isset($meta['tags']) ? $meta['tags'] : '';
+	 }
       $wpdb->insert($wpdb->prefix . 'bwg_file_paths', $this->set_file_info($file));
     }
   }
@@ -795,10 +798,10 @@ class bwg_UploadHandler {
     $xml = simplexml_load_file($image);
     $attr = $xml->attributes();
 
-    $size = [
+    $size = array(
       'width' => json_decode($attr->width),
       'height'=> json_decode($attr->height),
-      ];
+    );
 
     return $size;
   }
@@ -1108,11 +1111,12 @@ class bwg_UploadHandler {
   }
 
   private function mime_decode($value, $function_exist) {
-    if ( $value && $function_exist ) {
-      $value = iconv_mime_decode($value);
-    }
 
+    if ( $value && $function_exist ) {
+	 $value = iconv_mime_decode($value, 2, 'UTF-8');
+    }
     return $value;
+
   }
 }
 

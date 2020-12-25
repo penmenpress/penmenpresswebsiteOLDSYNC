@@ -12,7 +12,7 @@ wp_print_scripts('jquery-ui-tabs');
     jQuery('.wd-howto-menu').toggleClass('wd-howto-menu-opened');
     jQuery('.wd-howto-menu-overlay').toggleClass('hidden');
   }
-  jQuery(document).ready(function () {
+  jQuery(function() {
     jQuery('#wd_howto_wrap').tabs({
       activate: function() {
         if (jQuery('#wd_howto_wrap .wd-howto-menu').hasClass('wd-howto-menu-opened')) {
@@ -21,7 +21,7 @@ wp_print_scripts('jquery-ui-tabs');
       }
     });
     jQuery(document).keyup(function(e) {
-      if ( e.keyCode == 27 && !jQuery('#wd_howto_container').hasClass('hidden') ) {
+      if ( e.key == 'Escape' && !jQuery('#wd_howto_container').hasClass('hidden') ) {
         wd_how_to_use();
       }
     });
@@ -405,7 +405,7 @@ wp_print_scripts('jquery-ui-tabs');
     </div>
   </div>
 </div>
-<button type="button" class="button button-secondary button-large bwg-howto-button" onclick="wd_how_to_use(); return false;">
+<button type="button" class="tw-button-secondary button-large bwg-howto-button" onclick="wd_how_to_use(); return false;">
   <?php _e('How to use', BWG()->prefix); ?>
 </button>
 <?php

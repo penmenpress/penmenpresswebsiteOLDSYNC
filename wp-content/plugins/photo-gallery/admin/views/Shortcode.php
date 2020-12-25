@@ -10,15 +10,18 @@ class ShortcodeView_bwg extends AdminView_bwg {
       wp_print_scripts(BWG()->prefix . '_shortcode');
       wp_print_scripts(BWG()->prefix . '_jscolor');
       wp_print_styles(BWG()->prefix . '_shortcode');
+      wp_print_styles(BWG()->prefix . '-opensans');
       wp_print_styles(BWG()->prefix . '_tables');
       wp_print_scripts('jquery-ui-tabs');
     }
     else {
       wp_enqueue_script(BWG()->prefix . '_shortcode');
       wp_enqueue_style(BWG()->prefix . '_shortcode');
+      wp_enqueue_style(BWG()->prefix . '-opensans');
       wp_enqueue_script(BWG()->prefix . '_jscolor');
       wp_enqueue_script('jquery-ui-tabs');
     }
+    do_action( 'bwg_shortcode_scripts_after' );
     require_once BWG()->plugin_dir . '/admin/views/Options.php';
     ob_start();
     echo $this->body($params);
@@ -64,59 +67,79 @@ class ShortcodeView_bwg extends AdminView_bwg {
         </ul>
         <div id="bwg_tab_galleries_content" style="display: none" class="bwg-section bwg-no-bottom-border wd-box-content">
           <div class="bwg_change_gallery_type">
-            <span class="gallery_type" onClick="bwg_gallery_type('thumbnails')">
-              <div><label for="thumbnails"><img id="display_thumb" src="<?php echo BWG()->plugin_url . '/images/thumbnails.jpg'; ?>" /></label></div>
+            <span class="gallery_type bwg-thumbnails" onClick="bwg_gallery_type('thumbnails')">
               <div class="gallery_type_div">
+                <label for="thumbnails">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/thumbnails.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/thumbnails_active.svg'; ?>" />
+                </label>
                 <input type="radio" class="gallery_type_radio" id="thumbnails" name="gallery_type" value="thumbnails" /><label class="gallery_type_label" for="thumbnails"><?php echo __('Thumbnails', BWG()->prefix); ?></label>
               </div>
             </span>
-            <span class="gallery_type" onClick="bwg_gallery_type('thumbnails_masonry')">
-              <div>
-                <label for="thumbnails_masonry"><img src="<?php echo BWG()->plugin_url . '/images/thumbnails_masonry.jpg'; ?>" /></label>
-              </div>
+            <span class="gallery_type bwg-thumbnails_masonry" onClick="bwg_gallery_type('thumbnails_masonry')" data-img-url="<?php echo BWG()->plugin_url . '/images/upgrade_to_pro_masonry.png'; ?>" data-title="Masonry" data-demo-link="https://demo.10web.io/photo-gallery/masonry/?utm_source=photo_gallery&utm_medium=free_plugin">
               <div class="gallery_type_div">
-                <input type="radio" class="gallery_type_radio" id="thumbnails_masonry" name="gallery_type" value="thumbnails_masonry" /><label class="gallery_type_label" for="thumbnails_masonry"><?php echo __('Masonry', BWG()->prefix); ?></label>
+                <label for="thumbnails_masonry">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/thumbnails_masonry.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/thumbnails_masonry_active.svg'; ?>" />
+                </label>
+                <input type="radio" class="gallery_type_radio" id="thumbnails_masonry" name="gallery_type" value="thumbnails_masonry" />
+                <label class="gallery_type_label" for="thumbnails_masonry"><?php echo __('Masonry', BWG()->prefix); ?></label>
                 <?php if ( !BWG()->is_pro ) { ?>
-                  <span class="pro_btn">Paid</span>
+                  <span class="pro_btn">Premium</span>
                 <?php } ?>
               </div>
             </span>
-            <span class="gallery_type" onClick="bwg_gallery_type('thumbnails_mosaic')">
-              <div><label for="thumbnails_mosaic"><img src="<?php echo BWG()->plugin_url . '/images/thumbnails_mosaic.jpg'; ?>" /></label></div>
+            <span class="gallery_type bwg-thumbnails_mosaic" onClick="bwg_gallery_type('thumbnails_mosaic')" data-img-url="<?php echo BWG()->plugin_url . '/images/upgrade_to_pro_mosaic.png'; ?>" data-title="Mosaic" data-demo-link="https://demo.10web.io/photo-gallery/mosaic/?utm_source=photo_gallery&utm_medium=free_plugin">
               <div class="gallery_type_div">
+                <label for="thumbnails_mosaic">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/thumbnails_mosaic.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/thumbnails_mosaic_active.svg'; ?>" />
+                </label>
                 <input type="radio" class="gallery_type_radio" id="thumbnails_mosaic" name="gallery_type" value="thumbnails_mosaic" /><label class="gallery_type_label" for="thumbnails_mosaic"><?php echo __('Mosaic', BWG()->prefix); ?></label>
                 <?php if ( !BWG()->is_pro ) { ?>
-                  <span class="pro_btn">Paid</span>
+                  <span class="pro_btn">Premium</span>
                 <?php } ?>
               </div>
             </span>
-            <span class="gallery_type" onClick="bwg_gallery_type('slideshow')">
-              <div><label for="slideshow"><img src="<?php echo BWG()->plugin_url . '/images/slideshow.jpg'; ?>" /></label></div>
+            <span class="gallery_type bwg-slideshow" onClick="bwg_gallery_type('slideshow')">
               <div class="gallery_type_div">
+                <label for="slideshow">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/slideshow.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/slideshow_active.svg'; ?>" />
+                </label>
                 <input type="radio" class="gallery_type_radio" id="slideshow" name="gallery_type" value="slideshow" /><label class="gallery_type_label" for="slideshow"><?php echo __('Slideshow', BWG()->prefix); ?></label>
               </div>
             </span>
-            <span class="gallery_type" onClick="bwg_gallery_type('image_browser')">
-              <div><label for="image_browser"><img src="<?php echo BWG()->plugin_url . '/images/image_browser.jpg'; ?>" /></label></div>
+            <span class="gallery_type bwg-image_browser" onClick="bwg_gallery_type('image_browser')">
               <div class="gallery_type_div">
+                <label for="image_browser">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/image_browser.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/image_browser_active.svg'; ?>" />
+                </label>
                 <input type="radio" class="gallery_type_radio" id="image_browser" name="gallery_type" value="image_browser" /><label class="gallery_type_label" for="image_browser"><?php echo __('Image Browser', BWG()->prefix); ?></label>
               </div>
             </span>
-            <span class="gallery_type" onClick="bwg_gallery_type('blog_style')">
-              <div><label for="blog_style"><img src="<?php echo BWG()->plugin_url . '/images/blog_style.jpg'; ?>" /></label></div>
+            <span class="gallery_type bwg-blog_style" onClick="bwg_gallery_type('blog_style')" data-img-url="<?php echo BWG()->plugin_url . '/images/upgrade_to_pro_blog_style.png'; ?>" data-title="Blog Style" data-demo-link="https://demo.10web.io/photo-gallery/blog-style/?utm_source=photo_gallery&utm_medium=free_plugin">
               <div class="gallery_type_div">
+                <label for="blog_style">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/blog_style.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/blog_style_active.svg'; ?>" />
+                </label>
                 <input type="radio" class="gallery_type_radio" id="blog_style" name="gallery_type" value="blog_style" /><label class="gallery_type_label" for="blog_style"><?php echo __('Blog Style', BWG()->prefix); ?></label>
                 <?php if ( !BWG()->is_pro ) { ?>
-                  <span class="pro_btn">Paid</span>
+                  <span class="pro_btn">Premium</span>
                 <?php } ?>
               </div>
             </span>
-            <span class="gallery_type" onClick="bwg_gallery_type('carousel')">
-              <div><label for="carousel"><img src="<?php echo BWG()->plugin_url . '/images/Carousel.png'; ?>" /></label></div>
+            <span class="gallery_type bwg-carousel" onClick="bwg_gallery_type('carousel')" data-img-url="<?php echo BWG()->plugin_url . '/images/upgrade_to_pro_carousel.png'; ?>" data-title="Carousel" data-demo-link="https://demo.10web.io/photo-gallery/carousel/?utm_source=photo_gallery&utm_medium=free_plugin">
               <div class="gallery_type_div">
+                <label for="carousel">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/carousel.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/carousel_active.svg'; ?>" />
+                </label>
                 <input class="gallery_type_radio" type="radio" id="carousel" name="gallery_type" value="carousel" /><label class="gallery_type_label" for="carousel"><?php echo __('Carousel', BWG()->prefix); ?></label>
                 <?php if ( !BWG()->is_pro ) { ?>
-                  <span class="pro_btn">Paid</span>
+                  <span class="pro_btn">Premium</span>
                 <?php } ?>
               </div>
             </span>
@@ -132,28 +155,57 @@ class ShortcodeView_bwg extends AdminView_bwg {
               }
               ?>
             </select>
+            <div class="bwg-gallery-type-select">
+              <div class="bwg-btn-gallery-type-select type-closed" value="thumbnails" id="gallery-view-type">Thumbnails</div>
+              <div class="bwg-gallery-ul-div">
+                <ul class="bwg-gallery-ul">
+                  <?php
+                  foreach ($gallery_types_name as $key=>$gallery_type_name) {
+                    ?>
+                    <li class="gallery-type-li" data-value="<?php echo $key; ?>">
+                      <img src="<?php echo BWG()->plugin_url . '/images/' . $key . '.svg'; ?>">
+                      <span><?php echo $gallery_type_name; ?> </span>
+                      <?php if ( !BWG()->is_pro && ( $key == 'thumbnails_masonry' || $key == 'thumbnails_mosaic' || $key == 'blog_style' || $key == 'carousel' )) { ?>
+                        <span class="pro_btn">Premium</span>
+                      <?php } ?>
+                    </li>
+                    <?php
+                  }
+                  ?>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <div id="bwg_tab_albums_content" style="display: none" class="bwg-section bwg-no-bottom-border wd-box-content">
           <div class="bwg_change_gallery_type">
-            <span class="gallery_type" onClick="bwg_gallery_type('album_compact_preview')">
-              <div><label for="album_compact_preview"><img src="<?php echo BWG()->plugin_url . '/images/album_compact_preview.jpg'; ?>" /></label></div>
+            <span class="gallery_type bwg-album_compact_preview" onClick="bwg_gallery_type('album_compact_preview')">
               <div class="album_type_div">
+                <label for="album_compact_preview">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/album_compact_preview.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/album_compact_preview_active.svg'; ?>" />
+                </label>
                 <input type="radio" class="album_type_radio" id="album_compact_preview" name="gallery_type" value="album_compact_preview" /><label class="album_type_label" for="album_compact_preview"><?php echo __('Compact', BWG()->prefix); ?></label>
               </div>
             </span>
-            <span class="gallery_type" onClick="bwg_gallery_type('album_masonry_preview')">
-              <div><label for="album_masonry_preview"><img src="<?php echo BWG()->plugin_url . '/images/thumbnails_masonry.jpg'; ?>" /></label></div>
+            <span class="gallery_type bwg-album_masonry_preview" onClick="bwg_gallery_type('album_masonry_preview')" data-img-url="<?php echo BWG()->plugin_url . '/images/upgrade_to_pro_masonry.png'; ?>" data-title="Masonry" data-demo-link="https://demo.10web.io/photo-gallery/masonry/?utm_source=photo_gallery&utm_medium=free_plugin">
               <div class="album_type_div">
+                <label for="album_masonry_preview">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/album_masonry_preview.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/album_masonry_preview_active.svg'; ?>" />
+                </label>
                 <input type="radio" class="album_type_radio" id="album_masonry_preview" name="gallery_type" value="album_masonry_preview" /><label class="album_type_label" for="album_masonry_preview"><?php echo __('Masonry', BWG()->prefix); ?></label>
                 <?php if ( !BWG()->is_pro ) { ?>
-                  <span class="pro_btn">Paid</span>
+                  <span class="pro_btn">Premium</span>
                 <?php } ?>
               </div>
             </span>
-            <span class="gallery_type" onClick="bwg_gallery_type('album_extended_preview')">
-              <div><label for="album_extended_preview"><img src="<?php echo BWG()->plugin_url . '/images/album_extended_preview.jpg'; ?>" /></label></div>
+            <span class="gallery_type bwg-album_extended_preview" onClick="bwg_gallery_type('album_extended_preview')">
               <div class="album_type_div">
+                <label for="album_extended_preview">
+                  <img class="view_type_img" src="<?php echo BWG()->plugin_url . '/images/album_extended_preview.svg'; ?>" />
+                  <img class="view_type_img_active" src="<?php echo BWG()->plugin_url . '/images/album_extended_preview_active.svg'; ?>" />
+                </label>
                 <input type="radio" class="album_type_radio" id="album_extended_preview" name="gallery_type" value="album_extended_preview" /><label class="album_type_label" for="album_extended_preview"><?php echo __('Extended', BWG()->prefix); ?></label>
               </div>
             </span>
@@ -169,15 +221,43 @@ class ShortcodeView_bwg extends AdminView_bwg {
               }
               ?>
             </select>
+            <div class="bwg-gallery-type-select">
+              <div class="bwg-btn-gallery-type-select type-closed" value="album_compact_preview" id="album-view-type">Compact</div>
+              <div class="bwg-gallery-ul-div">
+                <ul class="bwg-gallery-ul">
+                  <?php
+                  foreach ($album_types_name as $key=>$album_type_name) {
+                    ?>
+                    <li class="gallery-type-li" data-value="<?php echo $key; ?>">
+                      <img src="<?php echo BWG()->plugin_url . '/images/' . $key . '.svg'; ?>">
+                      <span><?php echo $album_type_name; ?> </span>
+                      <?php if ( !BWG()->is_pro && ( $key == 'album_masonry_preview' ) ) { ?>
+                        <span class="pro_btn">Premium</span>
+                      <?php } ?>
+                    </li>
+                    <?php
+                  }
+                  ?>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <?php
         if ( !BWG()->is_pro ) {
           ?>
-          <div class="wd-box-content wd-width-100 wd-free-msg">
-            <?php
-            echo WDWLibrary::message_id(0, __('This view is not available in free version.', BWG()->prefix), 'error');
-            ?>
+          <div class="wd-box-content wd-width-100 wd-free-msg bwg-upgrade-view">
+            <div class="upgrade-to-pro-text">
+              <p class="upgrade-to-pro-title"></p>
+              <p class="upgrade-to-pro-desc">
+                <?php _e('Visit demo page for this view');?>
+              </p>
+              <a href="https://10web.io/plugins/wordpress-photo-gallery/?utm_source=photo_gallery/?utm_medium=free_plugin" target="_blank" class="button-upgrade"><?php _e('UPGRADE to Premium');?></a>
+              <a class="button-demo" href="https://demo.10web.io/photo-gallery/" target="_blank" ><?php _e('view demo');?></a>
+            </div>
+            <div class="upgrade-to-img">
+              <img class="desktop pro-views-img" src="">
+            </div>
           </div>
           <?php
         }
@@ -426,14 +506,15 @@ class ShortcodeView_bwg extends AdminView_bwg {
             <div class="media-toolbar-primary search-form">
               <button class="button media-button button-primary button-large media-button-insert button-hero" type="button" id="insert" name="insert" <?php if($params['elementor_callback']) { ?> data-callback="elementor" <?php } ?> onClick="bwg_insert_shortcode('');"><?php _e('Insert into post', BWG()->prefix); ?></button>
             </div>
-            <?php if ( !BWG()->is_pro ) { ?>
-              <div class="media-toolbar-primary search-form" style="float: left;">
-            <span class="media-button button-large">
-              <a id="bwg_pro_version_link" class="bwg_link_shortcode" target="_blank" href="https://demo.10web.io/photo-gallery/<?php echo BWG()->utm_source; ?>"><?php _e('Please see ', BWG()->prefix) ?><span id="bwg_pro_version"><?php _e('Thumbnails', BWG()->prefix) ?></span> <?php _e('View in Premium version', BWG()->prefix) ?></a>
-            </span>
-              </div>
-            <?php } ?>
-          </div>
+            <!--          needed to remove after dicessing with design team-->
+<!--            --><?php //if ( !BWG()->is_pro ) { ?>
+<!--              <div class="media-toolbar-primary search-form" style="float: left;">-->
+<!--            <span class="media-button button-large">-->
+<!--              <a id="bwg_pro_version_link" class="bwg_link_shortcode" target="_blank" href="https://demo.10web.io/photo-gallery/--><?php //echo BWG()->utm_source; ?><!--">--><?php //_e('Please see ', BWG()->prefix) ?><!--<span id="bwg_pro_version">--><?php //_e('Thumbnails', BWG()->prefix) ?><!--</span> --><?php //_e('View in Premium version', BWG()->prefix) ?><!--</a>-->
+<!--            </span>-->
+<!--              </div>-->
+<!--            --><?php //} ?>
+<!--          </div>-->
         </div>
         <?php
       }
@@ -580,8 +661,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
           content = jQuery("#bwg_shortcode").val();
           <?php } ?>
           jQuery('#insert').attr('onclick', "jQuery('#loading_div').show(); bwg_insert_shortcode(content);");
-          jQuery("select[id=theme] option[value='" + short_code['theme_id'] + "']").attr('selected', 'selected');
-          jQuery("select[id=gallery_types_name] option[value='" + short_code['gallery_type'] + "']").attr('selected', 'selected');
+          jQuery("select[id=theme] option[value='" + short_code['theme_id'] + "']").prop('selected', true);
+          jQuery("select[id=gallery_types_name] option[value='" + short_code['gallery_type'] + "']").prop('selected', true);
           jQuery("#use_option_defaults").prop('checked', true).trigger('change');
           if (short_code['type'] == 'album' || short_code['gallery_type'] == 'album_compact_preview' || short_code['gallery_type'] == 'album_masonry_preview' || short_code['gallery_type'] == 'album_extended_preview') {
             short_code['type'] = 'album';
@@ -591,9 +672,9 @@ class ShortcodeView_bwg extends AdminView_bwg {
             short_code['type'] = 'gallery';
             jQuery(".bwg_tabs").tabs({active: 0});
           }
-          jQuery("select[id=gallery] option[value='" + short_code['gallery_id'] + "']").attr('selected', 'selected');
-          jQuery("select[id=album] option[value='" + short_code['album_id'] + "']").attr('selected', 'selected');
-          jQuery("select[id=tag] option[value='" + short_code['tag'] + "']").attr('selected', 'selected');
+          jQuery("select[id=gallery] option[value='" + short_code['gallery_id'] + "']").prop('selected', true);
+          jQuery("select[id=album] option[value='" + short_code['album_id'] + "']").prop('selected', true);
+          jQuery("select[id=tag] option[value='" + short_code['tag'] + "']").prop('selected', true);
           bwg_gallery_type(short_code['gallery_type']);
           if (short_code['use_option_defaults'] != 1) {
             jQuery("#use_option_defaults").prop('checked', false).trigger('change');
@@ -604,26 +685,26 @@ class ShortcodeView_bwg extends AdminView_bwg {
               jQuery("#thumb_height").val(short_code['thumb_height']);
               jQuery("#image_column_number").val(short_code['image_column_number']);
               if (short_code['image_enable_page'] == 1) {
-                jQuery("#image_enable_page_1").attr('checked', 'checked');
+                jQuery("#image_enable_page_1").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 0) {
-                jQuery("#image_enable_page_0").attr('checked', 'checked');
+                jQuery("#image_enable_page_0").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 2) {
-                jQuery("#image_enable_page_2").attr('checked', 'checked');
+                jQuery("#image_enable_page_2").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 3) {
-                jQuery("#image_enable_page_3").attr('checked', 'checked');
+                jQuery("#image_enable_page_3").prop('checked', true);
               }
               jQuery("#images_per_page").val(short_code['images_per_page']);
               jQuery("#load_more_image_count").val(short_code['load_more_image_count']);
-              jQuery("select[id=sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
               if (short_code['show_search_box'] == 1) {
-                jQuery("#show_search_box_1").attr('checked', 'checked');
+                jQuery("#show_search_box_1").prop('checked', true);
               }
               else {
-                jQuery("#show_search_box_0").attr('checked', 'checked');
+                jQuery("#show_search_box_0").prop('checked', true);
               }
               if (short_code['placeholder']) {
                 jQuery("#placeholder").val(short_code['placeholder']);
@@ -632,118 +713,118 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#search_box_width").val(short_code['search_box_width']);
               }
               if (short_code['show_sort_images'] == 1) {
-                jQuery("#show_sort_images_1").attr('checked', 'checked');
+                jQuery("#show_sort_images_1").prop('checked', true);
               }
               else {
-                jQuery("#show_sort_images_0").attr('checked', 'checked');
+                jQuery("#show_sort_images_0").prop('checked', true);
               }
               if (short_code['show_tag_box'] == 1) {
-                jQuery("#show_tag_box_1").attr('checked', 'checked');
+                jQuery("#show_tag_box_1").prop('checked', true);
               }
               else {
-                jQuery("#show_tag_box_0").attr('checked', 'checked');
+                jQuery("#show_tag_box_0").prop('checked', true);
               }
               if (short_code['showthumbs_name'] == 1) {
-                jQuery("#thumb_name_yes").attr('checked', 'checked');
+                jQuery("#thumb_name_yes").prop('checked', true);
               }
               else {
-                jQuery("#thumb_name_no").attr('checked', 'checked');
+                jQuery("#thumb_name_no").prop('checked', true);
               }
               if (short_code['show_gallery_description'] == 1) {
-                jQuery("#show_gallery_description_1").attr('checked', 'checked');
+                jQuery("#show_gallery_description_1").prop('checked', true);
               }
               else {
-                jQuery("#show_gallery_description_0").attr('checked', 'checked');
+                jQuery("#show_gallery_description_0").prop('checked', true);
               }
               if (short_code['image_title'] == 'hover') {
-                jQuery("#image_title_show_hover_1").attr('checked', 'checked');
+                jQuery("#image_title_show_hover_1").prop('checked', true);
               }
               else if (short_code['image_title'] == 'show') {
-                jQuery("#image_title_show_hover_0").attr('checked', 'checked');
+                jQuery("#image_title_show_hover_0").prop('checked', true);
               }
               else {
-                jQuery("#image_title_show_hover_2").attr('checked', 'checked');
+                jQuery("#image_title_show_hover_2").prop('checked', true);
               }
               if( short_code['show_thumb_description'] == 1 ) {
-                jQuery("#thumb_desc_1").attr('checked', 'checked');
+                jQuery("#thumb_desc_1").prop('checked', true);
               }
               else {
-                jQuery("#thumb_desc_0").attr('checked', 'checked');
+                jQuery("#thumb_desc_0").prop('checked', true);
               }
               if (short_code['play_icon'] == 1) {
-                jQuery("#play_icon_yes").attr('checked', 'checked');
+                jQuery("#play_icon_yes").prop('checked', true);
               }
               else {
-                jQuery("#play_icon_no").attr('checked', 'checked');
+                jQuery("#play_icon_no").prop('checked', true);
               }
               if (short_code['gallery_download'] == 1) {
-                jQuery("#gallery_download_1").attr('checked', 'checked');
+                jQuery("#gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#gallery_download_0").attr('checked', 'checked');
+                jQuery("#gallery_download_0").prop('checked', true);
               }
               if (short_code['ecommerce_icon'] == 'hover') {
-                jQuery("#ecommerce_icon_show_hover_1").attr('checked', 'checked');
+                jQuery("#ecommerce_icon_show_hover_1").prop('checked', true);
               }
               else if (short_code['ecommerce_icon'] == 'show') {
-                jQuery("#ecommerce_icon_show_hover_0").attr('checked', 'checked');
+                jQuery("#ecommerce_icon_show_hover_0").prop('checked', true);
               }
               else {
-                jQuery("#ecommerce_icon_show_hover_2").attr('checked', 'checked');
+                jQuery("#ecommerce_icon_show_hover_2").prop('checked', true);
               }
               break;
             }
             case 'thumbnails_masonry': {
               if (short_code['masonry_hor_ver'] == 'horizontal') {
                 jQuery("#masonry_0").prop('checked', false).removeAttr('checked');
-                jQuery("#masonry_1").attr('checked', 'checked');
+                jQuery("#masonry_1").prop('checked', true);
                 jQuery("#masonry_thumb_size").val(short_code['thumb_height']);
                 jQuery('.masonry_col_num').hide();
                 jQuery('.masonry_row_num').show();
               }
               else {
-                jQuery("#masonry_0").attr('checked', 'checked');
+                jQuery("#masonry_0").prop('checked', true);
                 jQuery("#masonry_thumb_size").val(short_code['thumb_width']);
                 jQuery('.masonry_row_num').hide();
                 jQuery('.masonry_col_num').show();
               }
                 if (short_code['image_title'] == 'hover') {
-                  jQuery("#masonry_image_title_0").attr('checked', 'checked');
+                  jQuery("#masonry_image_title_0").prop('checked', true);
                 }
                 else if (short_code['image_title'] == 'show') {
-                  jQuery("#masonry_image_title_1").attr('checked', 'checked');
+                  jQuery("#masonry_image_title_1").prop('checked', true);
                 }
                 else {
-                  jQuery("#masonry_image_title_2").attr('checked', 'checked');
+                  jQuery("#masonry_image_title_2").prop('checked', true);
                 }
                 if (short_code['show_masonry_thumb_description'] == 1) {
-                  jQuery("#masonry_thumb_desc_1").attr('checked', 'checked');
+                  jQuery("#masonry_thumb_desc_1").prop('checked', true);
                 }
                 else {
-                  jQuery("#masonry_thumb_desc_0").attr('checked', 'checked');
+                  jQuery("#masonry_thumb_desc_0").prop('checked', true);
                 }
               jQuery("#masonry_image_column_number").val(short_code['image_column_number']);
               if (short_code['image_enable_page'] == 1) {
-                jQuery("#masonry_image_enable_page_1").attr('checked', 'checked');
+                jQuery("#masonry_image_enable_page_1").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 0) {
-                jQuery("#masonry_image_enable_page_0").attr('checked', 'checked');
+                jQuery("#masonry_image_enable_page_0").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 2) {
-                jQuery("#masonry_image_enable_page_2").attr('checked', 'checked');
+                jQuery("#masonry_image_enable_page_2").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 3) {
-                jQuery("#masonry_image_enable_page_3").attr('checked', 'checked');
+                jQuery("#masonry_image_enable_page_3").prop('checked', true);
               }
               jQuery("#masonry_images_per_page").val(short_code['images_per_page']);
               jQuery("#masonry_load_more_image_count").val(short_code['load_more_image_count']);
-              jQuery("select[id=masonry_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=masonry_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=masonry_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=masonry_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
               if (short_code['show_search_box'] == 1) {
-                jQuery("#masonry_show_search_box_1").attr('checked', 'checked');
+                jQuery("#masonry_show_search_box_1").prop('checked', true);
               }
               else {
-                jQuery("#masonry_show_search_box_0").attr('checked', 'checked');
+                jQuery("#masonry_show_search_box_0").prop('checked', true);
               }
               if (short_code['placeholder']) {
                 jQuery("#masonry_placeholder").val(short_code['placeholder']);
@@ -752,89 +833,89 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#masonry_search_box_width").val(short_code['search_box_width']);
               }
               else if (short_code['image_enable_page'] == 2) {
-                jQuery("#masonry_image_page_loadmore").attr('checked', 'checked');
+                jQuery("#masonry_image_page_loadmore").prop('checked', true);
               }
               if (short_code['show_sort_images'] == 1) {
-                jQuery("#masonry_show_sort_images_1").attr('checked', 'checked');
+                jQuery("#masonry_show_sort_images_1").prop('checked', true);
               }
               else {
-                jQuery("#masonry_show_sort_images_0").attr('checked', 'checked');
+                jQuery("#masonry_show_sort_images_0").prop('checked', true);
               }
               if (short_code['show_tag_box'] == 1) {
-                jQuery("#masonry_show_tag_box_1").attr('checked', 'checked');
+                jQuery("#masonry_show_tag_box_1").prop('checked', true);
               }
               else {
-                jQuery("#masonry_show_tag_box_0").attr('checked', 'checked');
+                jQuery("#masonry_show_tag_box_0").prop('checked', true);
               }
               if (short_code['showthumbs_name'] == 1) {
-                jQuery("#masonry_thumb_name_yes").attr('checked', 'checked');
+                jQuery("#masonry_thumb_name_yes").prop('checked', true);
               }
               else {
-                jQuery("#masonry_thumb_name_no").attr('checked', 'checked');
+                jQuery("#masonry_thumb_name_no").prop('checked', true);
               }
               if (short_code['show_gallery_description'] == 1) {
-                jQuery("#masonry_show_gallery_description_1").attr('checked', 'checked');
+                jQuery("#masonry_show_gallery_description_1").prop('checked', true);
               }
               else {
-                jQuery("#masonry_show_gallery_description_0").attr('checked', 'checked');
+                jQuery("#masonry_show_gallery_description_0").prop('checked', true);
               }
               if (short_code['play_icon'] == 1) {
-                jQuery("#masonry_play_icon_yes").attr('checked', 'checked');
+                jQuery("#masonry_play_icon_yes").prop('checked', true);
               }
               else {
-                jQuery("#masonry_play_icon_no").attr('checked', 'checked');
+                jQuery("#masonry_play_icon_no").prop('checked', true);
               }
               if (short_code['gallery_download'] == 1) {
-                jQuery("#masonry_gallery_download_1").attr('checked', 'checked');
+                jQuery("#masonry_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#masonry_gallery_download_0").attr('checked', 'checked');
+                jQuery("#masonry_gallery_download_0").prop('checked', true);
               }
               if (short_code['ecommerce_icon'] == 'hover') {
-                jQuery("#masonry_ecommerce_icon_show_hover_1").attr('checked', 'checked');
+                jQuery("#masonry_ecommerce_icon_show_hover_1").prop('checked', true);
               }
               else {
-                jQuery("#masonry_ecommerce_icon_show_hover_2").attr('checked', 'checked');
+                jQuery("#masonry_ecommerce_icon_show_hover_2").prop('checked', true);
               }
               break;
             }
             case 'thumbnails_mosaic': {
               if (short_code['mosaic_hor_ver'] == 'horizontal') {
-                jQuery("#mosaic_1").attr('checked', 'checked');
+                jQuery("#mosaic_1").prop('checked', true);
                 jQuery("#mosaic_thumb_size").val(short_code['thumb_height']);
               }
               else {
-                jQuery("#mosaic_0").attr('checked', 'checked');
+                jQuery("#mosaic_0").prop('checked', true);
                 jQuery("#mosaic_thumb_size").val(short_code['thumb_width']);
               }
               if (short_code['resizable_mosaic'] == 1) {
-                jQuery("#resizable_mosaic_1").attr('checked', 'checked');
+                jQuery("#resizable_mosaic_1").prop('checked', true);
               }
               else {
-                jQuery("#resizable_mosaic_0").attr('checked', 'checked');
+                jQuery("#resizable_mosaic_0").prop('checked', true);
               }
               jQuery("#mosaic_total_width").val(short_code['mosaic_total_width']);
               if (short_code['image_enable_page'] == 1) {
-                jQuery("#mosaic_image_enable_page_1").attr('checked', 'checked');
+                jQuery("#mosaic_image_enable_page_1").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 0) {
-                jQuery("#mosaic_image_enable_page_0").attr('checked', 'checked');
+                jQuery("#mosaic_image_enable_page_0").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 2) {
-                jQuery("#mosaic_image_enable_page_2").attr('checked', 'checked');
+                jQuery("#mosaic_image_enable_page_2").prop('checked', true);
               }
               else if (short_code['image_enable_page'] == 3) {
-                jQuery("#mosaic_image_enable_page_3").attr('checked', 'checked');
+                jQuery("#mosaic_image_enable_page_3").prop('checked', true);
               }
               jQuery("#mosaic_images_per_page").val(short_code['images_per_page']);
               jQuery("#mosaic_load_more_image_count").val(short_code['load_more_image_count']);
-              jQuery("select[id=mosaic_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=mosaic_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=mosaic_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=mosaic_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
               if (short_code['show_search_box'] == 1) {
-                jQuery("#mosaic_show_search_box_1").attr('checked', 'checked');
+                jQuery("#mosaic_show_search_box_1").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_show_search_box_0").attr('checked', 'checked');
+                jQuery("#mosaic_show_search_box_0").prop('checked', true);
               }
               if (short_code['placeholder']) {
                 jQuery("#mosaic_placeholder").val(short_code['placeholder']);
@@ -843,167 +924,167 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#mosaic_search_box_width").val(short_code['search_box_width']);
               }
               if (short_code['show_sort_images'] == 1) {
-                jQuery("#mosaic_show_sort_images_1").attr('checked', 'checked');
+                jQuery("#mosaic_show_sort_images_1").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_show_sort_images_0").attr('checked', 'checked');
+                jQuery("#mosaic_show_sort_images_0").prop('checked', true);
               }
               if (short_code['show_tag_box'] == 1) {
-                jQuery("#mosaic_show_tag_box_1").attr('checked', 'checked');
+                jQuery("#mosaic_show_tag_box_1").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_show_tag_box_0").attr('checked', 'checked');
+                jQuery("#mosaic_show_tag_box_0").prop('checked', true);
               }
               if (short_code['showthumbs_name'] == 1) {
-                jQuery("#mosaic_thumb_name_yes").attr('checked', 'checked');
+                jQuery("#mosaic_thumb_name_yes").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_thumb_name_no").attr('checked', 'checked');
+                jQuery("#mosaic_thumb_name_no").prop('checked', true);
               }
               if (short_code['show_gallery_description'] == 1) {
-                jQuery("#mosaic_show_gallery_description_1").attr('checked', 'checked');
+                jQuery("#mosaic_show_gallery_description_1").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_show_gallery_description_0").attr('checked', 'checked');
+                jQuery("#mosaic_show_gallery_description_0").prop('checked', true);
               }
               if (short_code['image_title'] == 'hover') {
-                jQuery("#mosaic_image_title_show_hover_1").attr('checked', 'checked');
+                jQuery("#mosaic_image_title_show_hover_1").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_image_title_show_hover_0").attr('checked', 'checked');
+                jQuery("#mosaic_image_title_show_hover_0").prop('checked', true);
               }
               if (short_code['play_icon'] == 1) {
-                jQuery("#mosaic_play_icon_yes").attr('checked', 'checked');
+                jQuery("#mosaic_play_icon_yes").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_play_icon_no").attr('checked', 'checked');
+                jQuery("#mosaic_play_icon_no").prop('checked', true);
               }
               if (short_code['gallery_download'] == 1) {
-                jQuery("#mosaic_gallery_download_1").attr('checked', 'checked');
+                jQuery("#mosaic_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_gallery_download_0").attr('checked', 'checked');
+                jQuery("#mosaic_gallery_download_0").prop('checked', true);
               }
               if (short_code['ecommerce_icon'] == 'hover') {
-                jQuery("#mosaic_ecommerce_icon_show_hover_1").attr('checked', 'checked');
+                jQuery("#mosaic_ecommerce_icon_show_hover_1").prop('checked', true);
               }
               else {
-                jQuery("#mosaic_ecommerce_icon_show_hover_2").attr('checked', 'checked');
+                jQuery("#mosaic_ecommerce_icon_show_hover_2").prop('checked', true);
               }
               break;
             }
             case 'slideshow': {
-              jQuery("select[id=slideshow_type] option[value='" + short_code['slideshow_effect'] + "']").attr('selected', 'selected');
+              jQuery("select[id=slideshow_type] option[value='" + short_code['slideshow_effect'] + "']").prop('selected', true);
               jQuery("#slideshow_interval").val(short_code['slideshow_interval']);
               jQuery("#slideshow_width").val(short_code['slideshow_width']);
               jQuery("#slideshow_height").val(short_code['slideshow_height']);
-              jQuery("select[id=slideshow_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=slideshow_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=slideshow_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=slideshow_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
               if (short_code['enable_slideshow_autoplay'] == 1) {
-                jQuery("#slideshow_enable_autoplay_yes").attr('checked', 'checked');
+                jQuery("#slideshow_enable_autoplay_yes").prop('checked', true);
               }
               else {
-                jQuery("#slideshow_enable_autoplay_no").attr('checked', 'checked');
+                jQuery("#slideshow_enable_autoplay_no").prop('checked', true);
               }
               if (short_code['enable_slideshow_shuffle'] == 1) {
-                jQuery("#slideshow_enable_shuffle_yes").attr('checked', 'checked');
+                jQuery("#slideshow_enable_shuffle_yes").prop('checked', true);
               }
               else {
-                jQuery("#slideshow_enable_shuffle_no").attr('checked', 'checked');
+                jQuery("#slideshow_enable_shuffle_no").prop('checked', true);
               }
               if (short_code['enable_slideshow_ctrl'] == 1) {
-                jQuery("#slideshow_enable_ctrl_yes").attr('checked', 'checked');
+                jQuery("#slideshow_enable_ctrl_yes").prop('checked', true);
               }
               else {
-                jQuery("#slideshow_enable_ctrl_no").attr('checked', 'checked');
+                jQuery("#slideshow_enable_ctrl_no").prop('checked', true);
               }
               if (short_code['autohide_slideshow_navigation'] == 1) {
-                jQuery("#autohide_slideshow_navigation_1").attr('checked', 'checked');
+                jQuery("#autohide_slideshow_navigation_1").prop('checked', true);
               }
               else {
-                jQuery("#autohide_slideshow_navigation_0").attr('checked', 'checked');
+                jQuery("#autohide_slideshow_navigation_0").prop('checked', true);
               }
               if (short_code['enable_slideshow_filmstrip'] == 1) {
-                jQuery("#slideshow_enable_filmstrip_yes").attr('checked', 'checked');
+                jQuery("#slideshow_enable_filmstrip_yes").prop('checked', true);
               }
               else {
-                jQuery("#slideshow_enable_filmstrip_no").attr('checked', 'checked');
+                jQuery("#slideshow_enable_filmstrip_no").prop('checked', true);
               }
               if (short_code['slideshow_filmstrip_height']) {
                 jQuery( "#slideshow_filmstrip_height" ).val( short_code['slideshow_filmstrip_height'] );
               }
               if (short_code['slideshow_enable_title'] == 1) {
-                jQuery("#slideshow_enable_title_yes").attr('checked', 'checked');
+                jQuery("#slideshow_enable_title_yes").prop('checked', true);
               }
               else {
-                jQuery("#slideshow_enable_title_no").attr('checked', 'checked');
+                jQuery("#slideshow_enable_title_no").prop('checked', true);
               }
               if (short_code['slideshow_title_position']) {
                 jQuery( "input[name=slideshow_title_position][value=" + short_code['slideshow_title_position'] + "]" ).attr( 'checked', 'checked' );
               }
               if (short_code['slideshow_title_full_width']) {
-                jQuery( "#slideshow_title_full_width_" + short_code['slideshow_title_full_width'] ).attr( 'checked', 'checked' );
+                jQuery( "#slideshow_title_full_width_" + short_code['slideshow_title_full_width'] ).prop('checked', true);
               }
               if (short_code['slideshow_enable_description'] == 1) {
-                jQuery("#slideshow_enable_description_yes").attr('checked', 'checked');
+                jQuery("#slideshow_enable_description_yes").prop('checked', true);
               }
               else {
-                jQuery("#slideshow_enable_description_no").attr('checked', 'checked');
+                jQuery("#slideshow_enable_description_no").prop('checked', true);
               }
               if (short_code['slideshow_description_position']) {
-                jQuery("input[name=slideshow_description_position][value=" + short_code['slideshow_description_position'] + "]").attr('checked', 'checked');
+                jQuery("input[name=slideshow_description_position][value=" + short_code['slideshow_description_position'] + "]").prop('checked', true);
               }
               if (short_code['enable_slideshow_music'] == 1) {
-                jQuery("#slideshow_enable_music_yes").attr('checked', 'checked');
+                jQuery("#slideshow_enable_music_yes").prop('checked', true);
               }
               else {
-                jQuery("#slideshow_enable_music_no").attr('checked', 'checked');
+                jQuery("#slideshow_enable_music_no").prop('checked', true);
               }
               if (short_code['slideshow_music_url']) {
                 jQuery("#slideshow_audio_url").val(short_code['slideshow_music_url']);
               }
               jQuery("#slideshow_effect_duration").val(short_code['slideshow_effect_duration']);
               if (short_code['gallery_download'] == 1) {
-                jQuery("#slideshow_gallery_download_1").attr('checked', 'checked');
+                jQuery("#slideshow_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#slideshow_gallery_download_0").attr('checked', 'checked');
+                jQuery("#slideshow_gallery_download_0").prop('checked', true);
               }
               break;
             }
             case 'image_browser': {
               jQuery("#image_browser_width").val(short_code['image_browser_width']);
               if (short_code['image_browser_title_enable']) {
-                jQuery("#image_browser_title_enable_" + short_code['image_browser_title_enable']).attr('checked', 'checked');
+                jQuery("#image_browser_title_enable_" + short_code['image_browser_title_enable']).prop('checked', true);
               }
               if (short_code['image_browser_description_enable']) {
-                jQuery("#image_browser_description_enable_" + short_code['image_browser_description_enable']).attr('checked', 'checked');
+                jQuery("#image_browser_description_enable_" + short_code['image_browser_description_enable']).prop('checked', true);
               }
-              jQuery("select[id=image_browser_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=image_browser_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=image_browser_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=image_browser_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
               if (short_code['showthumbs_name'] == 1) {
-                jQuery("#image_browser_thumb_name_yes").attr('checked', 'checked');
+                jQuery("#image_browser_thumb_name_yes").prop('checked', true);
               }
               else {
-                jQuery("#image_browser_thumb_name_no").attr('checked', 'checked');
+                jQuery("#image_browser_thumb_name_no").prop('checked', true);
               }
               if (short_code['show_gallery_description']) {
-                jQuery("#image_browser_show_gallery_description_" + short_code['show_gallery_description']).attr('checked', 'checked');
+                jQuery("#image_browser_show_gallery_description_" + short_code['show_gallery_description']).prop('checked', true);
               }
               if (short_code['show_search_box']) {
-                jQuery("#image_browser_show_search_box_" + short_code['show_search_box']).attr('checked', 'checked');
+                jQuery("#image_browser_show_search_box_" + short_code['show_search_box']).prop('checked', true);
               }
               if (short_code['show_sort_images'] == 1) {
-                jQuery("#image_browser_show_sort_images_1").attr('checked', 'checked');
+                jQuery("#image_browser_show_sort_images_1").prop('checked', true);
               }
               else {
-                jQuery("#image_browser_show_sort_images_0").attr('checked', 'checked');
+                jQuery("#image_browser_show_sort_images_0").prop('checked', true);
               }
               if (short_code['show_tag_box'] == 1) {
-                jQuery("#image_browser_show_tag_box_1").attr('checked', 'checked');
+                jQuery("#image_browser_show_tag_box_1").prop('checked', true);
               }
               else {
-                jQuery("#image_browser_show_tag_box_0").attr('checked', 'checked');
+                jQuery("#image_browser_show_tag_box_0").prop('checked', true);
               }
 
               if (short_code['placeholder']) {
@@ -1013,60 +1094,60 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#image_browser_search_box_width").val(short_code['search_box_width']);
               }
               if (short_code['gallery_download'] == 1) {
-                jQuery("#image_browser_gallery_download_1").attr('checked', 'checked');
+                jQuery("#image_browser_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#image_browser_gallery_download_0").attr('checked', 'checked');
+                jQuery("#image_browser_gallery_download_0").prop('checked', true);
               }
               break;
             }
             case 'blog_style': {
               jQuery("#blog_style_width").val(short_code['blog_style_width']);
               if (short_code['blog_style_title_enable'] == 1) {
-                jQuery("#blog_style_title_enable_1").attr('checked', 'checked');
+                jQuery("#blog_style_title_enable_1").prop('checked', true);
               }
               else {
-                jQuery("#blog_style_title_enable_0").attr('checked', 'checked');
+                jQuery("#blog_style_title_enable_0").prop('checked', true);
               }
               jQuery("#blog_style_images_per_page").val(short_code['blog_style_images_per_page']);
               jQuery("#blog_style_load_more_image_count").val(short_code['blog_style_load_more_image_count']);
               if (short_code['blog_style_enable_page'] == 1) {
-                jQuery("#blog_style_enable_page_1").attr('checked', 'checked');
+                jQuery("#blog_style_enable_page_1").prop('checked', true);
               }
               else if (short_code['blog_style_enable_page'] == 0) {
-                jQuery("#blog_style_enable_page_0").attr('checked', 'checked');
+                jQuery("#blog_style_enable_page_0").prop('checked', true);
               }
               else if (short_code['blog_style_enable_page'] == 2) {
-                jQuery("#blog_style_enable_page_2").attr('checked', 'checked');
+                jQuery("#blog_style_enable_page_2").prop('checked', true);
               }
               else if (short_code['blog_style_enable_page'] == 3) {
-                jQuery("#blog_style_enable_page_3").attr('checked', 'checked');
+                jQuery("#blog_style_enable_page_3").prop('checked', true);
               }
               if (short_code['blog_style_description_enable'] == 1) {
-                jQuery("#blog_style_description_enable_1").attr('checked', 'checked');
+                jQuery("#blog_style_description_enable_1").prop('checked', true);
               }
               else {
-                jQuery("#blog_style_description_enable_0").attr('checked', 'checked');
+                jQuery("#blog_style_description_enable_0").prop('checked', true);
               }
-              jQuery("select[id=blog_style_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=blog_style_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=blog_style_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=blog_style_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
 			         if (short_code['showthumbs_name'] == 1) {
-                jQuery("#blog_style_thumb_name_yes").attr('checked', 'checked');
+                jQuery("#blog_style_thumb_name_yes").prop('checked', true);
               }
               else {
-                jQuery("#blog_style_thumb_name_no").attr('checked', 'checked');
+                jQuery("#blog_style_thumb_name_no").prop('checked', true);
               }
               if (short_code['show_gallery_description'] == 1) {
-                jQuery("#blog_style_show_gallery_description_1").attr('checked', 'checked');
+                jQuery("#blog_style_show_gallery_description_1").prop('checked', true);
               }
               else {
-                jQuery("#blog_style_show_gallery_description_0").attr('checked', 'checked');
+                jQuery("#blog_style_show_gallery_description_0").prop('checked', true);
               }
               if (short_code['show_search_box'] == 1) {
-                jQuery("#blog_style_show_search_box_1").attr('checked', 'checked');
+                jQuery("#blog_style_show_search_box_1").prop('checked', true);
               }
               else {
-                jQuery("#blog_style_show_search_box_0").attr('checked', 'checked');
+                jQuery("#blog_style_show_search_box_0").prop('checked', true);
               }
               if (short_code['placeholder']) {
                 jQuery("#blog_style_placeholder").val(short_code['placeholder']);
@@ -1075,22 +1156,22 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#blog_style_search_box_width").val(short_code['search_box_width']);
               }
               if (short_code['show_sort_images'] == 1) {
-                jQuery("#blog_style_show_sort_images_1").attr('checked', 'checked');
+                jQuery("#blog_style_show_sort_images_1").prop('checked', true);
               }
               else {
-                jQuery("#blog_style_show_sort_images_0").attr('checked', 'checked');
+                jQuery("#blog_style_show_sort_images_0").prop('checked', true);
               }
               if (short_code['show_tag_box'] == 1) {
-                jQuery("#blog_style_show_tag_box_1").attr('checked', 'checked');
+                jQuery("#blog_style_show_tag_box_1").prop('checked', true);
               }
               else {
-                jQuery("#blog_style_show_tag_box_0").attr('checked', 'checked');
+                jQuery("#blog_style_show_tag_box_0").prop('checked', true);
               }
               if (short_code['gallery_download'] == 1) {
-                jQuery("#blog_style_gallery_download_1").attr('checked', 'checked');
+                jQuery("#blog_style_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#blog_style_gallery_download_0").attr('checked', 'checked');
+                jQuery("#blog_style_gallery_download_0").prop('checked', true);
               }
               break;
             }
@@ -1101,43 +1182,55 @@ class ShortcodeView_bwg extends AdminView_bwg {
               jQuery("#carousel_image_column_number").val(short_code['carousel_image_column_number']);
               jQuery("#carousel_image_par").val(short_code['carousel_image_par']);
               if (short_code['enable_carousel_title'] == 1) {
-                jQuery("#carousel_enable_title_yes").attr('checked', 'checked');
+                jQuery("#carousel_enable_title_yes").prop('checked', true);
               }
               else {
-                jQuery("#carousel_enable_title_no").attr('checked', 'checked');
+                jQuery("#carousel_enable_title_no").prop('checked', true);
               }
               if (short_code['enable_carousel_autoplay'] == 1) {
-                jQuery("#carousel_enable_autoplay_yes").attr('checked', 'checked');
+                jQuery("#carousel_enable_autoplay_yes").prop('checked', true);
               }
               else {
-                jQuery("#carousel_enable_autoplay_no").attr('checked', 'checked');
+                jQuery("#carousel_enable_autoplay_no").prop('checked', true);
               }
               jQuery("#carousel_r_width").val(short_code['carousel_r_width']);
               if (short_code['carousel_fit_containerWidth'] == 1) {
-                jQuery("#carousel_fit_containerWidth_yes").attr('checked', 'checked');
+                jQuery("#carousel_fit_containerWidth_yes").prop('checked', true);
               }
               else {
-                jQuery("#carousel_fit_containerWidth_no").attr('checked', 'checked');
+                jQuery("#carousel_fit_containerWidth_no").prop('checked', true);
               }
               if (short_code['carousel_prev_next_butt'] == 1) {
-                jQuery("#carousel_prev_next_butt_yes").attr('checked', 'checked');
+                jQuery("#carousel_prev_next_butt_yes").prop('checked', true);
               }
               else {
-                jQuery("#carousel_prev_next_butt_no").attr('checked', 'checked');
+                jQuery("#carousel_prev_next_butt_no").prop('checked', true);
               }
               if (short_code['carousel_play_pause_butt'] == 1) {
-                jQuery("#carousel_play_pause_butt_yes").attr('checked', 'checked');
+                jQuery("#carousel_play_pause_butt_yes").prop('checked', true);
               }
               else {
-                jQuery("#carousel_play_pause_butt_no").attr('checked', 'checked');
+                jQuery("#carousel_play_pause_butt_no").prop('checked', true);
               }
-              jQuery("select[id=carousel_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=carousel_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=carousel_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=carousel_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
               if (short_code['gallery_download'] == 1) {
-                jQuery("#carousel_gallery_download_1").attr('checked', 'checked');
+                jQuery("#carousel_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#carousel_gallery_download_0").attr('checked', 'checked');
+                jQuery("#carousel_gallery_download_0").prop('checked', true);
+              }
+              if (short_code['showthumbs_name'] == 1) {
+                jQuery("#carousel_thumb_name_yes").prop('checked', true);
+              }
+              else {
+                jQuery("#carousel_thumb_name_no").prop('checked', true);
+              }
+              if (short_code['show_gallery_description'] == 1) {
+                jQuery("#carousel_show_gallery_description_1").prop('checked', true);
+              }
+              else {
+                jQuery("#carousel_show_gallery_description_0").prop('checked', true);
               }
               break;
             }
@@ -1149,20 +1242,20 @@ class ShortcodeView_bwg extends AdminView_bwg {
               jQuery("#album_image_thumb_width").val(short_code['compuct_album_image_thumb_width']);
               jQuery("#album_image_thumb_height").val(short_code['compuct_album_image_thumb_height']);
               if (short_code['compuct_album_enable_page']) {
-                jQuery("#album_enable_page_" + short_code['compuct_album_enable_page']).attr('checked', 'checked');
+                jQuery("#album_enable_page_" + short_code['compuct_album_enable_page']).prop('checked', true);
               }
               jQuery("#albums_per_page").val(short_code['compuct_albums_per_page']);
               jQuery("#album_images_per_page").val(short_code['compuct_album_images_per_page']);
-              jQuery("select[id=compact_album_sort_by] option[value='" + short_code['all_album_sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=compact_album_order_by] option[value='" + short_code['all_album_order_by'] + "']").attr('selected', 'selected');
-			        jQuery("select[id=album_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=album_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=compact_album_sort_by] option[value='" + short_code['all_album_sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=compact_album_order_by] option[value='" + short_code['all_album_order_by'] + "']").prop('selected', true);
+			        jQuery("select[id=album_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=album_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
 
               if (short_code['show_search_box'] == 1) {
-                jQuery("#album_show_search_box_1").attr('checked', 'checked');
+                jQuery("#album_show_search_box_1").prop('checked', true);
               }
               else {
-                jQuery("#album_show_search_box_0").attr('checked', 'checked');
+                jQuery("#album_show_search_box_0").prop('checked', true);
               }
               if (short_code['placeholder']) {
                 jQuery("#album_placeholder").val(short_code['placeholder']);
@@ -1171,66 +1264,66 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#album_search_box_width").val(short_code['search_box_width']);
               }
               if (short_code['show_sort_images'] == 1) {
-                jQuery("#album_show_sort_images_1").attr('checked', 'checked');
+                jQuery("#album_show_sort_images_1").prop('checked', true);
               }
               else {
-                jQuery("#album_show_sort_images_0").attr('checked', 'checked');
+                jQuery("#album_show_sort_images_0").prop('checked', true);
               }
               if (short_code['show_tag_box'] == 1) {
-                jQuery("#album_show_tag_box_1").attr('checked', 'checked');
+                jQuery("#album_show_tag_box_1").prop('checked', true);
               }
               else {
-                jQuery("#album_show_tag_box_0").attr('checked', 'checked');
+                jQuery("#album_show_tag_box_0").prop('checked', true);
               }
               if (short_code['show_album_name'] == 1) {
-                jQuery("#show_album_name_enable_1").attr('checked', 'checked');
+                jQuery("#show_album_name_enable_1").prop('checked', true);
               }
               else {
-                jQuery("#show_album_name_enable_0").attr('checked', 'checked');
+                jQuery("#show_album_name_enable_0").prop('checked', true);
               }
               if (short_code['show_gallery_description'] == 1) {
-                jQuery("#album_show_gallery_description_1").attr('checked', 'checked');
+                jQuery("#album_show_gallery_description_1").prop('checked', true);
               }
               else {
-                jQuery("#album_show_gallery_description_0").attr('checked', 'checked');
+                jQuery("#album_show_gallery_description_0").prop('checked', true);
               }
-              jQuery("input[name=album_title_show_hover][value=" + short_code['compuct_album_title'] + "]").attr('checked', 'checked');
+              jQuery("input[name=album_title_show_hover][value=" + short_code['compuct_album_title'] + "]").prop('checked', true);
 			       jQuery('#album_view_type').find('option').removeAttr("selected");
-			       jQuery("#album_view_type option[value='"+ short_code['compuct_album_view_type'] +"']").attr('selected', 'selected');
-              jQuery("input[name='album_image_title_show_hover'][value='" + short_code['compuct_album_image_title'] + "']").attr('checked', 'checked');
+			       jQuery("#album_view_type option[value='"+ short_code['compuct_album_view_type'] +"']").prop('selected', true);
+              jQuery("input[name='album_image_title_show_hover'][value='" + short_code['compuct_album_image_title'] + "']").prop('checked', true);
               if (short_code['compuct_album_mosaic_hor_ver'] == "vertical") {
-                jQuery("#album_mosaic_0").attr('checked', 'checked');
+                jQuery("#album_mosaic_0").prop('checked', true);
               }
               else {
-                jQuery("#album_mosaic_1").attr('checked', 'checked');
+                jQuery("#album_mosaic_1").prop('checked', true);
               }
               if (short_code['compuct_album_resizable_mosaic'] == 1) {
-                jQuery("#album_resizable_mosaic_1").attr('checked', 'checked');
+                jQuery("#album_resizable_mosaic_1").prop('checked', true);
               }
               else {
-                jQuery("#album_resizable_mosaic_0").attr('checked', 'checked');
+                jQuery("#album_resizable_mosaic_0").prop('checked', true);
               }
               jQuery("#album_mosaic_total_width").val(short_code['compuct_album_mosaic_total_width']);
               if (short_code['play_icon'] == 1) {
-                jQuery("#album_play_icon_yes").attr('checked', 'checked');
+                jQuery("#album_play_icon_yes").prop('checked', true);
               }
               else {
-                jQuery("#album_play_icon_no").attr('checked', 'checked');
+                jQuery("#album_play_icon_no").prop('checked', true);
               }
               if (short_code['gallery_download'] == 1) {
-                jQuery("#album_gallery_download_1").attr('checked', 'checked');
+                jQuery("#album_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#album_gallery_download_0").attr('checked', 'checked');
+                jQuery("#album_gallery_download_0").prop('checked', true);
               }
               if (short_code['ecommerce_icon'] == 'hover') {
-                jQuery("#album_ecommerce_icon_show_hover_1").attr('checked', 'checked');
+                jQuery("#album_ecommerce_icon_show_hover_1").prop('checked', true);
               }
               else if (short_code['ecommerce_icon'] == 'show') {
-                jQuery("#album_ecommerce_icon_show_hover_0").attr('checked', 'checked');
+                jQuery("#album_ecommerce_icon_show_hover_0").prop('checked', true);
               }
               else {
-                jQuery("#album_ecommerce_icon_show_hover_2").attr('checked', 'checked');
+                jQuery("#album_ecommerce_icon_show_hover_2").prop('checked', true);
               }
               break;
             }
@@ -1240,19 +1333,19 @@ class ShortcodeView_bwg extends AdminView_bwg {
               jQuery("#album_masonry_image_column_number").val(short_code['masonry_album_image_column_number']);
               jQuery("#album_masonry_image_thumb_width").val(short_code['masonry_album_image_thumb_width']);
               if (short_code['masonry_album_enable_page']) {
-                jQuery("#album_masonry_enable_page_" + short_code['masonry_album_enable_page']).attr('checked', 'checked');
+                jQuery("#album_masonry_enable_page_" + short_code['masonry_album_enable_page']).prop('checked', true);
               }
               jQuery("#albums_masonry_per_page").val(short_code['masonry_albums_per_page']);
               jQuery("#album_masonry_images_per_page").val(short_code['masonry_album_images_per_page']);
-              jQuery("select[id=masonry_album_sort_by] option[value='" + short_code['all_album_sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=masonry_album_order_by] option[value='" + short_code['all_album_order_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=album_masonry_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=album_masonry_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=masonry_album_sort_by] option[value='" + short_code['all_album_sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=masonry_album_order_by] option[value='" + short_code['all_album_order_by'] + "']").prop('selected', true);
+              jQuery("select[id=album_masonry_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=album_masonry_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
               if (short_code['show_search_box'] == 1) {
-                jQuery("#album_masonry_show_search_box_1").attr('checked', 'checked');
+                jQuery("#album_masonry_show_search_box_1").prop('checked', true);
               }
               else {
-                jQuery("#album_masonry_show_search_box_0").attr('checked', 'checked');
+                jQuery("#album_masonry_show_search_box_0").prop('checked', true);
               }
               if (short_code['placeholder']) {
                 jQuery("#album_masonry_placeholder").val(short_code['placeholder']);
@@ -1261,66 +1354,66 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#album_masonry_search_box_width").val(short_code['search_box_width']);
               }
               if (short_code['show_sort_images'] == 1) {
-                jQuery("#album_masonry_show_sort_images_1").attr('checked', 'checked');
+                jQuery("#album_masonry_show_sort_images_1").prop('checked', true);
               }
               else {
-                jQuery("#album_masonry_show_sort_images_0").attr('checked', 'checked');
+                jQuery("#album_masonry_show_sort_images_0").prop('checked', true);
               }
               if (short_code['show_tag_box'] == 1) {
-                jQuery("#album_masonry_show_tag_box_1").attr('checked', 'checked');
+                jQuery("#album_masonry_show_tag_box_1").prop('checked', true);
               }
               else {
-                jQuery("#album_masonry_show_tag_box_0").attr('checked', 'checked');
+                jQuery("#album_masonry_show_tag_box_0").prop('checked', true);
               }
               if (short_code['show_album_name'] == 1) {
-                jQuery("#show_album_masonry_name_enable_1").attr('checked', 'checked');
+                jQuery("#show_album_masonry_name_enable_1").prop('checked', true);
               }
               else {
-                jQuery("#show_album_masonry_name_enable_0").attr('checked', 'checked');
+                jQuery("#show_album_masonry_name_enable_0").prop('checked', true);
               }
               if (short_code['show_gallery_description'] == 1) {
-                jQuery("#album_masonry_show_gallery_description_1").attr('checked', 'checked');
+                jQuery("#album_masonry_show_gallery_description_1").prop('checked', true);
               }
               else {
-                jQuery("#album_masonry_show_gallery_description_0").attr('checked', 'checked');
+                jQuery("#album_masonry_show_gallery_description_0").prop('checked', true);
               }
-              jQuery("input[name='album_masonry_image_title'][value='" + short_code['image_title'] + "']").attr('checked', 'checked');
+              jQuery("input[name='album_masonry_image_title'][value='" + short_code['image_title'] + "']").prop('checked', true);
               if (short_code['gallery_download'] == 1) {
-                jQuery("#album_masonry_gallery_download_1").attr('checked', 'checked');
+                jQuery("#album_masonry_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#album_masonry_gallery_download_0").attr('checked', 'checked');
+                jQuery("#album_masonry_gallery_download_0").prop('checked', true);
               }
               if (short_code['ecommerce_icon'] == 'hover') {
-                jQuery("#album_masonry_ecommerce_icon_show_hover_1").attr('checked', 'checked');
+                jQuery("#album_masonry_ecommerce_icon_show_hover_1").prop('checked', true);
               }
               else {
-                jQuery("#album_masonry_ecommerce_icon_show_hover_2").attr('checked', 'checked');
+                jQuery("#album_masonry_ecommerce_icon_show_hover_2").prop('checked', true);
               }
               break;
             }
             case 'album_extended_preview': {
               jQuery("#extended_album_height").val(short_code['extended_album_height']);
-              jQuery("#extended_album_column_number_" + short_code['extended_album_column_number']).attr('checked', 'checked');
+              jQuery("#extended_album_column_number_" + short_code['extended_album_column_number']).prop('checked', true);
               jQuery("#album_extended_thumb_width").val(short_code['extended_album_thumb_width']);
               jQuery("#album_extended_thumb_height").val(short_code['extended_album_thumb_height']);
               jQuery("#album_extended_image_column_number").val(short_code['extended_album_image_column_number']);
               jQuery("#album_extended_image_thumb_width").val(short_code['extended_album_image_thumb_width']);
               jQuery("#album_extended_image_thumb_height").val(short_code['extended_album_image_thumb_height']);
               if (short_code['extended_album_enable_page']) {
-                jQuery("#album_extended_enable_page_" + short_code['extended_album_enable_page']).attr('checked', 'checked');
+                jQuery("#album_extended_enable_page_" + short_code['extended_album_enable_page']).prop('checked', true);
               }
               jQuery("#albums_extended_per_page").val(short_code['extended_albums_per_page']);
               jQuery("#album_extended_images_per_page").val(short_code['extended_album_images_per_page']);
-              jQuery("select[id=extended_album_sort_by] option[value='" + short_code['all_album_sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=extended_album_order_by] option[value='" + short_code['all_album_order_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=album_extended_sort_by] option[value='" + short_code['sort_by'] + "']").attr('selected', 'selected');
-              jQuery("select[id=album_extended_order_by] option[value='" + short_code['order_by'] + "']").attr('selected', 'selected');
+              jQuery("select[id=extended_album_sort_by] option[value='" + short_code['all_album_sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=extended_album_order_by] option[value='" + short_code['all_album_order_by'] + "']").prop('selected', true);
+              jQuery("select[id=album_extended_sort_by] option[value='" + short_code['sort_by'] + "']").prop('selected', true);
+              jQuery("select[id=album_extended_order_by] option[value='" + short_code['order_by'] + "']").prop('selected', true);
               if (short_code['show_search_box'] == 1) {
-                jQuery("#album_extended_show_search_box_1").attr('checked', 'checked');
+                jQuery("#album_extended_show_search_box_1").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_show_search_box_0").attr('checked', 'checked');
+                jQuery("#album_extended_show_search_box_0").prop('checked', true);
               }
               if (short_code['placeholder']) {
                 jQuery("#album_extended_placeholder").val(short_code['placeholder']);
@@ -1329,97 +1422,97 @@ class ShortcodeView_bwg extends AdminView_bwg {
                 jQuery("#album_extended_search_box_width").val(short_code['search_box_width']);
               }
               if (short_code['show_sort_images'] == 1) {
-                jQuery("#album_extended_show_sort_images_1").attr('checked', 'checked');
+                jQuery("#album_extended_show_sort_images_1").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_show_sort_images_0").attr('checked', 'checked');
+                jQuery("#album_extended_show_sort_images_0").prop('checked', true);
               }
               if (short_code['show_tag_box'] == 1) {
-                jQuery("#album_extended_show_tag_box_1").attr('checked', 'checked');
+                jQuery("#album_extended_show_tag_box_1").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_show_tag_box_0").attr('checked', 'checked');
+                jQuery("#album_extended_show_tag_box_0").prop('checked', true);
               }
               if (short_code['show_album_name'] == 1) {
-                jQuery("#show_album_extended_name_enable_1").attr('checked', 'checked');
+                jQuery("#show_album_extended_name_enable_1").prop('checked', true);
               }
               else {
-                jQuery("#show_album_extended_name_enable_0").attr('checked', 'checked');
+                jQuery("#show_album_extended_name_enable_0").prop('checked', true);
               }
               if (short_code['extended_album_description_enable'] == 1) {
-                jQuery("#extended_album_description_enable_1").attr('checked', 'checked');
+                jQuery("#extended_album_description_enable_1").prop('checked', true);
               }
               else {
-                jQuery("#extended_album_description_enable_0").attr('checked', 'checked');
+                jQuery("#extended_album_description_enable_0").prop('checked', true);
               }
               if (short_code['show_gallery_description'] == 1) {
-                jQuery("#album_extended_show_gallery_description_1").attr('checked', 'checked');
+                jQuery("#album_extended_show_gallery_description_1").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_show_gallery_description_0").attr('checked', 'checked');
+                jQuery("#album_extended_show_gallery_description_0").prop('checked', true);
               }
 			        jQuery('#album_extended_view_type').find('option').removeAttr("selected");
-			        jQuery("#album_extended_view_type option[value='"+ short_code['extended_album_view_type'] +"']").attr('selected', 'selected');
-              jQuery("input[name='album_extended_image_title_show_hover'][value='" + short_code['extended_album_image_title'] + "']").attr('checked', 'checked');
+			        jQuery("#album_extended_view_type option[value='"+ short_code['extended_album_view_type'] +"']").prop('selected', true);
+              jQuery("input[name='album_extended_image_title_show_hover'][value='" + short_code['extended_album_image_title'] + "']").prop('checked', true);
               if (short_code['extended_album_mosaic_hor_ver'] == "vertical") {
-                jQuery("#album_extended_mosaic_0").attr('checked', 'checked');
+                jQuery("#album_extended_mosaic_0").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_mosaic_1").attr('checked', 'checked');
+                jQuery("#album_extended_mosaic_1").prop('checked', true);
               }
               if (short_code['extended_album_resizable_mosaic'] == 1) {
-                jQuery("#album_extended_resizable_mosaic_1").attr('checked', 'checked');
+                jQuery("#album_extended_resizable_mosaic_1").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_resizable_mosaic_0").attr('checked', 'checked');
+                jQuery("#album_extended_resizable_mosaic_0").prop('checked', true);
               }
               jQuery("#album_extended_mosaic_total_width").val(short_code['extended_album_mosaic_total_width']);
               if (short_code['play_icon'] == 1) {
-                jQuery("#album_extended_play_icon_yes").attr('checked', 'checked');
+                jQuery("#album_extended_play_icon_yes").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_play_icon_no").attr('checked', 'checked');
+                jQuery("#album_extended_play_icon_no").prop('checked', true);
               }
               if (short_code['gallery_download'] == 1) {
-                jQuery("#album_extended_gallery_download_1").attr('checked', 'checked');
+                jQuery("#album_extended_gallery_download_1").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_gallery_download_0").attr('checked', 'checked');
+                jQuery("#album_extended_gallery_download_0").prop('checked', true);
               }
               if (short_code['ecommerce_icon'] == 'hover') {
-                jQuery("#album_extended_ecommerce_icon_show_hover_1").attr('checked', 'checked');
+                jQuery("#album_extended_ecommerce_icon_show_hover_1").prop('checked', true);
               }
               else if (short_code['ecommerce_icon'] == 'show') {
-                jQuery("#album_extended_ecommerce_icon_show_hover_0").attr('checked', 'checked');
+                jQuery("#album_extended_ecommerce_icon_show_hover_0").prop('checked', true);
               }
               else {
-                jQuery("#album_extended_ecommerce_icon_show_hover_2").attr('checked', 'checked');
+                jQuery("#album_extended_ecommerce_icon_show_hover_2").prop('checked', true);
               }
               break;
             }
           }
           // Lightbox.
           if (!short_code['thumb_click_action'] || short_code['thumb_click_action'] == 'undefined' || short_code['thumb_click_action'] == 'do_nothing') {
-            jQuery("#thumb_click_action_3").attr('checked', 'checked');
+            jQuery("#thumb_click_action_3").prop('checked', true);
           }
           else if (short_code['thumb_click_action'] == 'redirect_to_url') {
-            jQuery("#thumb_click_action_2").attr('checked', 'checked');
+            jQuery("#thumb_click_action_2").prop('checked', true);
           }
           else if (short_code['thumb_click_action'] == 'open_lightbox') {
-            jQuery("#thumb_click_action_1").attr('checked', 'checked');
+            jQuery("#thumb_click_action_1").prop('checked', true);
           }
           if (short_code['thumb_link_target'] == 1 || !short_code['thumb_link_target'] || short_code['thumb_link_target'] == 'undefined') {
-            jQuery("#thumb_link_target_yes").attr('checked', 'checked');
+            jQuery("#thumb_link_target_yes").prop('checked', true);
           }
           else {
-            jQuery("#thumb_link_target_no").attr('checked', 'checked');
+            jQuery("#thumb_link_target_no").prop('checked', true);
           }
           if (short_code['popup_fullscreen'] != undefined) {
             if (short_code['popup_fullscreen'] == 1) {
-              jQuery("#popup_fullscreen_1").attr('checked', 'checked');
+              jQuery("#popup_fullscreen_1").prop('checked', true);
             }
             else {
-              jQuery("#popup_fullscreen_0").attr('checked', 'checked');
+              jQuery("#popup_fullscreen_0").prop('checked', true);
             }
           }
           if (short_code['popup_width'] != undefined) {
@@ -1429,17 +1522,17 @@ class ShortcodeView_bwg extends AdminView_bwg {
             jQuery("#popup_height").val(short_code['popup_height']);
           }
           if (short_code['popup_effect'] != undefined) {
-            jQuery("select[id=popup_type] option[value='" + short_code['popup_effect'] + "']").attr('selected', 'selected');
+            jQuery("select[id=popup_type] option[value='" + short_code['popup_effect'] + "']").prop('selected', true);
           }
           if (short_code['popup_effect_duration'] != undefined) {
             jQuery("#popup_effect_duration").val(short_code['popup_effect_duration']);
           }
           if (short_code['popup_autoplay'] != undefined) {
             if (short_code['popup_autoplay'] == 1) {
-              jQuery("#popup_autoplay_1").attr('checked', 'checked');
+              jQuery("#popup_autoplay_1").prop('checked', true);
             }
             else {
-              jQuery("#popup_autoplay_0").attr('checked', 'checked');
+              jQuery("#popup_autoplay_0").prop('checked', true);
             }
           }
           if (short_code['popup_interval'] != undefined) {
@@ -1447,185 +1540,191 @@ class ShortcodeView_bwg extends AdminView_bwg {
           }
           if (short_code['popup_enable_filmstrip'] != undefined) {
             if (short_code['popup_enable_filmstrip'] == 1) {
-              jQuery("#popup_enable_filmstrip_1").attr('checked', 'checked');
+              jQuery("#popup_enable_filmstrip_1").prop('checked', true);
             }
             else {
-              jQuery("#popup_enable_filmstrip_0").attr('checked', 'checked');
+              jQuery("#popup_enable_filmstrip_0").prop('checked', true);
             }
             jQuery("#popup_filmstrip_height").val(short_code['popup_filmstrip_height']);
           }
           if (short_code['popup_enable_ctrl_btn'] != undefined) {
             if (short_code['popup_enable_ctrl_btn'] == 1) {
-              jQuery("#popup_enable_ctrl_btn_1").attr('checked', 'checked');
+              jQuery("#popup_enable_ctrl_btn_1").prop('checked', true);
               bwg_enable_disable('', 'tbody_popup_ctrl_btn1', 'popup_ctrl_btn_1');
               bwg_enable_disable('', 'tbody_popup_ctrl_btn2', 'popup_ctrl_btn_1');
               if (short_code['popup_enable_fullscreen'] == 1) {
-                jQuery("#popup_enable_fullscreen_1").attr('checked', 'checked');
+                jQuery("#popup_enable_fullscreen_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_fullscreen_0").attr('checked', 'checked');
+                jQuery("#popup_enable_fullscreen_0").prop('checked', true);
               }
               if (short_code['popup_enable_comment'] == 1) {
-                jQuery("#popup_enable_comment_1").attr('checked', 'checked');
+                jQuery("#popup_enable_comment_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_comment_0").attr('checked', 'checked');
+                jQuery("#popup_enable_comment_0").prop('checked', true);
               }
               if (short_code['popup_enable_email'] == 1) {
-                jQuery("#popup_enable_email_1").attr('checked', 'checked');
+                jQuery("#popup_enable_email_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_email_0").attr('checked', 'checked');
+                jQuery("#popup_enable_email_0").prop('checked', true);
+              }
+              if (short_code['gdpr_compliance'] == 1) {
+                jQuery("#gdpr_compliance_1").attr('checked', 'checked');
+              }
+	      else {
+                jQuery("#gdpr_compliance_0").attr('checked', 'checked');
               }
               if (short_code['popup_enable_captcha'] == 1) {
-                jQuery("#popup_enable_captcha_1").attr('checked', 'checked');
+                jQuery("#popup_enable_captcha_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_captcha_0").attr('checked', 'checked');
+                jQuery("#popup_enable_captcha_0").prop('checked', true);
               }
               if (short_code['comment_moderation'] == 1) {
-                jQuery("#comment_moderation_1").attr('checked', 'checked');
+                jQuery("#comment_moderation_1").prop('checked', true);
               }
               else {
-                jQuery("#comment_moderation_0").attr('checked', 'checked');
+                jQuery("#comment_moderation_0").prop('checked', true);
               }
               if (short_code['popup_enable_info'] == 1 || !short_code['popup_enable_info']) {
-                jQuery("#popup_enable_info_1").attr('checked', 'checked');
+                jQuery("#popup_enable_info_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_info_0").attr('checked', 'checked');
+                jQuery("#popup_enable_info_0").prop('checked', true);
               }
               if (short_code['popup_info_always_show'] == 1 && short_code['popup_info_always_show']) {
-                jQuery("#popup_info_always_show_1").attr('checked', 'checked');
+                jQuery("#popup_info_always_show_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_info_always_show_0").attr('checked', 'checked');
+                jQuery("#popup_info_always_show_0").prop('checked', true);
               }
               if (short_code['popup_info_full_width'] == 1) {
-                jQuery("#popup_info_full_width_1").attr('checked', 'checked');
+                jQuery("#popup_info_full_width_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_info_full_width_0").attr('checked', 'checked');
+                jQuery("#popup_info_full_width_0").prop('checked', true);
               }
               if (short_code['autohide_lightbox_navigation'] == 1) {
-                jQuery("#autohide_lightbox_navigation_1").attr('checked', 'checked');
+                jQuery("#autohide_lightbox_navigation_1").prop('checked', true);
               }
               else {
-                jQuery("#autohide_lightbox_navigation_0").attr('checked', 'checked');
+                jQuery("#autohide_lightbox_navigation_0").prop('checked', true);
               }
               if (short_code['popup_hit_counter'] == 1 && short_code['popup_hit_counter']) {
-                jQuery("#popup_hit_counter_1").attr('checked', 'checked');
+                jQuery("#popup_hit_counter_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_hit_counter_0").attr('checked', 'checked');
+                jQuery("#popup_hit_counter_0").prop('checked', true);
               }
               if (short_code['popup_enable_rate'] == 1 && short_code['popup_enable_rate']) {
-                jQuery("#popup_enable_rate_1").attr('checked', 'checked');
+                jQuery("#popup_enable_rate_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_rate_0").attr('checked', 'checked');
+                jQuery("#popup_enable_rate_0").prop('checked', true);
               }
               if (short_code['popup_enable_fullsize_image'] == 1) {
-                jQuery("#popup_enable_fullsize_image_1").attr('checked', 'checked');
+                jQuery("#popup_enable_fullsize_image_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_fullsize_image_0").attr('checked', 'checked');
+                jQuery("#popup_enable_fullsize_image_0").prop('checked', true);
               }
               if (short_code['popup_enable_download'] == 1) {
-                jQuery("#popup_enable_download_1").attr('checked', 'checked');
+                jQuery("#popup_enable_download_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_download_0").attr('checked', 'checked');
+                jQuery("#popup_enable_download_0").prop('checked', true);
               }
               if (short_code['show_image_counts'] == 1) {
-                jQuery("#show_image_counts_current_image_number_1").attr('checked', 'checked');
+                jQuery("#show_image_counts_current_image_number_1").prop('checked', true);
               }
               else {
-                jQuery("#show_image_counts_current_image_number_0").attr('checked', 'checked');
+                jQuery("#show_image_counts_current_image_number_0").prop('checked', true);
               }
               if (short_code['enable_loop'] == 1) {
-                jQuery("#enable_loop_1").attr('checked', 'checked');
+                jQuery("#enable_loop_1").prop('checked', true);
               }
               else {
-                jQuery("#enable_loop_0").attr('checked', 'checked');
+                jQuery("#enable_loop_0").prop('checked', true);
               }
               if (short_code['enable_addthis'] == 1) {
-                jQuery("#enable_addthis_1").attr('checked', 'checked');
+                jQuery("#enable_addthis_1").prop('checked', true);
               }
               else {
-                jQuery("#enable_addthis_0").attr('checked', 'checked');
+                jQuery("#enable_addthis_0").prop('checked', true);
               }
               if (short_code['addthis_profile_id'] != 'undefined') {
                 jQuery("#addthis_profile_id").val(short_code['addthis_profile_id']);
               }
               if (short_code['popup_enable_facebook'] == 1) {
-                jQuery("#popup_enable_facebook_1").attr('checked', 'checked');
+                jQuery("#popup_enable_facebook_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_facebook_0").attr('checked', 'checked');
+                jQuery("#popup_enable_facebook_0").prop('checked', true);
               }
               if (short_code['popup_enable_twitter'] == 1) {
-                jQuery("#popup_enable_twitter_1").attr('checked', 'checked');
+                jQuery("#popup_enable_twitter_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_twitter_0").attr('checked', 'checked');
+                jQuery("#popup_enable_twitter_0").prop('checked', true);
               }
               if (short_code['popup_enable_pinterest'] == 1) {
-                jQuery("#popup_enable_pinterest_1").attr('checked', 'checked');
+                jQuery("#popup_enable_pinterest_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_pinterest_0").attr('checked', 'checked');
+                jQuery("#popup_enable_pinterest_0").prop('checked', true);
               }
               if (short_code['popup_enable_tumblr'] == 1) {
-                jQuery("#popup_enable_tumblr_1").attr('checked', 'checked');
+                jQuery("#popup_enable_tumblr_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_enable_tumblr_0").attr('checked', 'checked');
+                jQuery("#popup_enable_tumblr_0").prop('checked', true);
               }
               if (short_code['popup_enable_ecommerce'] == 1) {
-                jQuery("#popup_ecommerce_1").attr('checked', 'checked');
+                jQuery("#popup_ecommerce_1").prop('checked', true);
               }
               else {
-                jQuery("#popup_ecommerce_0").attr('checked', 'checked');
+                jQuery("#popup_ecommerce_0").prop('checked', true);
               }
             }
             else {
-              jQuery("#popup_enable_ctrl_btn_0").attr('checked', 'checked');
+              jQuery("#popup_enable_ctrl_btn_0").prop('checked', true);
             }
           }
           bwg_lightbox_hide_show_params();
           // Watermark.
           if (short_code['watermark_type'] == 'text') {
-            jQuery("#watermark_type_text").attr('checked', 'checked');
+            jQuery("#watermark_type_text").prop('checked', true);
             jQuery("#watermark_link").val(decodeURIComponent(short_code['watermark_link']));
             jQuery("#watermark_text").val(short_code['watermark_text']);
             jQuery("#watermark_font_size").val(short_code['watermark_font_size']);
             if (in_array(short_code['watermark_font'], bwg_objectGGF)) {
-              jQuery("#watermark_google_fonts1").attr('checked', 'checked');
+              jQuery("#watermark_google_fonts1").prop('checked', true);
               bwg_change_fonts('watermark_font', 'watermark_google_fonts1');
             }
             else {
-              jQuery("#watermark_google_fonts0").attr('checked', 'checked');
+              jQuery("#watermark_google_fonts0").prop('checked', true);
               bwg_change_fonts('watermark_font', '');
             }
-            jQuery("select[id=watermark_font] option[value='" + short_code['watermark_font'] + "']").attr('selected', 'selected');
+            jQuery("select[id=watermark_font] option[value='" + short_code['watermark_font'] + "']").prop('selected', true);
             jQuery("#watermark_color").val(short_code['watermark_color']);
             jQuery("#watermark_opacity").val(short_code['watermark_opacity']);
-            jQuery("#watermark_type_text").attr('checked', 'checked');
-            jQuery("#watermark_" + short_code['watermark_position']).attr('checked', 'checked');
+            jQuery("#watermark_type_text").prop('checked', true);
+            jQuery("#watermark_" + short_code['watermark_position']).prop('checked', true);
           }
           else if (short_code['watermark_type'] == 'image') {
-            jQuery("#watermark_type_image").attr('checked', 'checked');
+            jQuery("#watermark_type_image").prop('checked', true);
             jQuery("#watermark_link").val(decodeURIComponent(short_code['watermark_link']));
             jQuery("#watermark_url").val(short_code['watermark_url']);
             jQuery("#watermark_width").val(short_code['watermark_width']);
             jQuery("#watermark_height").val(short_code['watermark_height']);
             jQuery("#watermark_opacity").val(short_code['watermark_opacity']);
-            jQuery("#watermark_type_image").attr('checked', 'checked');
-            jQuery("#watermark_" + short_code['watermark_position']).attr('checked', 'checked');
+            jQuery("#watermark_type_image").prop('checked', true);
+            jQuery("#watermark_" + short_code['watermark_position']).prop('checked', true);
           }
           else {
-            jQuery("#watermark_type_none").attr('checked', 'checked');
+            jQuery("#watermark_type_none").prop('checked', true);
           }
           bwg_watermark('watermark_type_' + short_code['watermark_type']);
         }
@@ -1779,7 +1878,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
             tagtext += ' show_tag_box="' + jQuery("input[name=masonry_show_tag_box]:checked").val() + '"';
             tagtext += ' showthumbs_name="' + jQuery("input[name=masonry_show_gallery_title]:checked").val() + '"';
             tagtext += ' image_title="' + jQuery("input[name=masonry_image_title]:checked").val() + '"';
-			tagtext += ' show_gallery_description="' + jQuery("input[name=masonry_show_gallery_description]:checked").val() + '"';
+			      tagtext += ' show_gallery_description="' + jQuery("input[name=masonry_show_gallery_description]:checked").val() + '"';
             tagtext += ' play_icon="' + jQuery("input[name=masonry_play_icon]:checked").val() + '"';
             tagtext += ' gallery_download="' + jQuery("input[name=masonry_gallery_download]:checked").val() + '"';
             tagtext += ' ecommerce_icon="' + jQuery("input[name=masonry_ecommerce_icon_show_hover]:checked").val() + '"';
@@ -1897,6 +1996,8 @@ class ShortcodeView_bwg extends AdminView_bwg {
             tagtext += ' carousel_play_pause_butt="' + jQuery("input[name=carousel_play_pause_butt]:checked").val() + '"';
             tagtext += ' sort_by="' + jQuery("#carousel_sort_by").val() + '"';
             tagtext += ' order_by="' + jQuery("#carousel_order_by").val() + '"';
+            tagtext += ' showthumbs_name="' + jQuery("input[name=carousel_show_gallery_title]:checked").val() + '"';
+            tagtext += ' show_gallery_description="' + jQuery("input[name=carousel_show_gallery_description]:checked").val() + '"';
             tagtext += ' gallery_download="' + jQuery("input[name=carousel_gallery_download]:checked").val() + '"';
             break;
           }
@@ -2015,6 +2116,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
         tagtext += ' popup_enable_comment="' + jQuery("input[name=popup_enable_comment]:checked").val() + '"';
         tagtext += ' popup_enable_email="' + jQuery("input[name=popup_enable_email]:checked").val() + '"';
         tagtext += ' popup_enable_captcha="' + jQuery("input[name=popup_enable_captcha]:checked").val() + '"';
+        tagtext += ' gdpr_compliance="' + jQuery("input[name=gdpr_compliance]:checked").val() + '"';
         tagtext += ' comment_moderation="' + jQuery("input[name=comment_moderation]:checked").val() + '"';
         tagtext += ' popup_enable_info="' + jQuery("input[name=popup_enable_info]:checked").val() + '"';
         tagtext += ' popup_info_always_show="' + jQuery("input[name=popup_info_always_show]:checked").val() + '"';
@@ -2058,7 +2160,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
           // If there is no builder, then shortcode replace to image.
           if( !page_builder_activated ) {
             short_code = short_code.replace(/\[Best_Wordpress_Gallery([^\]]*)\]/g, function (d, c) {
-              return "<img src='<?php echo BWG()->plugin_url; ?>/images/icons/gallery-icon.png' class='bwg_shortcode mceItem' title='Best_Wordpress_Gallery" + short_id + "' />";
+              return "<img src='<?php echo BWG()->plugin_url; ?>/images/tw-gb/shortcode_new.jpg' class='bwg_shortcode mceItem' title='Best_Wordpress_Gallery" + short_id + "' />";
             });
           }
         }
@@ -2118,7 +2220,7 @@ class ShortcodeView_bwg extends AdminView_bwg {
           <?php
           if ( $params['gutenberg_callback'] ) {
           ?>
-			window.parent.window.jQuery(".edit-post-layout__content").css({"z-index":"0","overflow":"auto"});
+			window.parent.window.jQuery(".edit-post-layout, .edit-post-layout__content").css({"z-index":"0","overflow":"auto"});
 			window.parent['<?php echo $params['gutenberg_callback']; ?>'](content, shortcode_id);
           return;
           <?php
@@ -2146,9 +2248,12 @@ class ShortcodeView_bwg extends AdminView_bwg {
         }
         return false;
       }
-      jQuery(document).ready(function () {
+      jQuery(function() {
         bwg_shortcode_hide_show_params();
         bwg_change_tab();
+        jQuery("input[type=text]").change(function (){
+          jQuery(this).val(jQuery(this).val().trim());
+        })
       });
       jQuery(window).resize(function () {
         bwg_change_tab();

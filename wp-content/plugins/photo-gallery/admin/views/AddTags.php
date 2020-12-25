@@ -49,6 +49,7 @@ class AddTagsView_bwg extends AdminView_bwg {
                'title' => $params['page_title'],
                'title_class' => 'wd-header',
                'add_new_button' => FALSE,
+                'popup_window' => TRUE,
                )
     );
     $params['page_url'] = add_query_arg(array('image_id' => $image_id), $params['page_url']);
@@ -111,7 +112,7 @@ class AddTagsView_bwg extends AdminView_bwg {
 		</div>
 	</div>
 	<script>
-	jQuery(window).load(function() {
+	jQuery(window).on('load',function(){
 		jQuery("#loading_div", window.parent.document).hide();
 	});
   </script>

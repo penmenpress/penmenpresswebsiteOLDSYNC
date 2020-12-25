@@ -2,13 +2,6 @@
 function bwg_addons_display() {
   wp_enqueue_style(BWG()->prefix . '_addons');
   $addons = array(
-    'photo-gallery-ecomerce'   => array(
-      'name'        => __('Photo Gallery Ecommerce', BWG()->prefix),
-      'url'         => BWG()->plugin_link . BWG()->utm_source,
-      'description' => __('Using Photo Gallery Ecommerce you can sell images included in galleries either as digital downloads or products/prints via Paypal or Stripe.', BWG()->prefix),
-      'icon'        => '',
-      'image'       => BWG()->plugin_url . '/addons/images/ecommerce.png',
-    ),
     'ngitopg'   => array(
       'name'        => __('NextGen Gallery Import to Photo Gallery', BWG()->prefix),
       'url'         => BWG()->plugin_link . BWG()->utm_source,

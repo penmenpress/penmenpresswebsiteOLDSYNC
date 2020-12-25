@@ -10,7 +10,6 @@ class WidgetView_bwg {
    */
 	function widget($args, $instance) {
 		extract($args);
-
 		$title = (!empty($instance['title']) ? $instance['title'] : "");
 		$type  = (!empty($instance['type']) ? $instance['type'] : "gallery");
 		$view_type = (!empty($instance['view_type']) && BWG()->is_pro ? $instance['view_type'] : "thumbnails");

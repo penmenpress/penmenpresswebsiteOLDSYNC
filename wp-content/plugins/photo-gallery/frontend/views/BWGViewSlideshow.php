@@ -111,7 +111,7 @@ public function display($params = array(), $bwg = 0) {
     else {
       echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
       echo '<script id="bwg-script-' . $bwg .'">
-        jQuery(document).ready(function () {
+        jQuery(function() {
           bwg_main_ready();
         });
       </script>';
@@ -132,7 +132,7 @@ public function display($params = array(), $bwg = 0) {
       $data[$bwg][$key]["alt"] = htmlspecialchars(str_replace(array( "\r\n", "\n", "\r" ), esc_html('<br />'), esc_html($image_row->alt)), ENT_COMPAT | ENT_QUOTES);
       $data[$bwg][$key]["description"] =  htmlspecialchars(str_replace(array("\r\n", "\n", "\r"), esc_html('<br />'), esc_html($image_row->description)), ENT_QUOTES);
       $data[$bwg][$key]["filetype"] = $image_row->filetype;
-      $data[$bwg][$key]["filename"] = $image_row->filename;
+      $data[$bwg][$key]["filename"] = htmlspecialchars(str_replace(array( "\r\n", "\n", "\r" ), esc_html('<br />'), esc_html($image_row->filename)), ENT_COMPAT | ENT_QUOTES);
       $data[$bwg][$key]["image_url"] = htmlspecialchars($image_row->image_url, ENT_COMPAT | ENT_QUOTES);
       $data[$bwg][$key]["thumb_url"] = htmlspecialchars($image_row->thumb_url, ENT_COMPAT | ENT_QUOTES);
       $data[$bwg][$key]["redirect_url"] = htmlspecialchars($image_row->redirect_url, ENT_COMPAT | ENT_QUOTES);
@@ -141,7 +141,7 @@ public function display($params = array(), $bwg = 0) {
       $data[$bwg][$key]["is_embed_video"] = (((preg_match('/EMBED/', $image_row->filetype) == 1) && (preg_match('/_VIDEO/', $image_row->filetype) == 1)) ? TRUE : FALSE);
     }
     ob_start();
-    $trans_dur = (($params['slideshow_interval'] < 4) && ($params['slideshow_interval'] != 0)) ? ($params['slideshow_interval'] * 1000) / 4 : ($params['slideshow_effect_duration'] * 1000);
+    $trans_dur = ((floatval($params['slideshow_interval'] ) < 4) && (floatval($params['slideshow_interval']) != 0)) ? (floatval($params['slideshow_interval']) * 1000) / 4 : (floatval($params['slideshow_effect_duration']) * 1000);
     $bwg_param = array(
       'bwg_source' => 'slider',
       'bwg_current_key' => isset($current_key) ? $current_key : '',
@@ -180,7 +180,8 @@ public function display($params = array(), $bwg = 0) {
       'enable_slideshow_music' => $enable_slideshow_music,
     );
     ?>
-  <div class="bwg_slideshow_image_wrap_<?php echo $bwg; ?>">
+  <div class="bwg_slideshow_image_wrap_<?php echo $bwg; ?> bwg-container"
+       data-lightbox-url="<?php echo addslashes(add_query_arg($params['params_array'], admin_url('admin-ajax.php'))); ?>">
     <?php
     $current_pos = 0;
     if ( $enable_slideshow_filmstrip ) {

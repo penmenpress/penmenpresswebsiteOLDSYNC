@@ -65,7 +65,7 @@ class ShortcodeController_bwg {
       if (!$insert) {
         $wpdb->update($wpdb->prefix . 'bwg_shortcode', array(
         'tagtext' => $tagtext
-        ), array('id' => $id));
+        ), array('id' => $id), array('%s'), array('%d'));
       }
       else {
         $wpdb->insert($wpdb->prefix . 'bwg_shortcode', array(

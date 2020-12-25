@@ -65,23 +65,21 @@ function spider_display_embed(embed_type, file_url, embed_id, attrs) {
 
         html_to_insert += oembed_flickr_html;
         break;
-      case 'EMBED_OEMBED_FLICKR_VIDEO':
+    case 'EMBED_OEMBED_FLICKR_VIDEO':
         /* code...*/
         break;
-
     case 'EMBED_OEMBED_INSTAGRAM_VIDEO':
-      var oembed_instagram_html ='<div ';     
-        for (attr in attrs) {
-        if(!(/src/i).test(attr)){
-          if(attr != '' && attrs[attr] != ''){
-            oembed_instagram_html += ' '+ attr + '="'+ attrs[attr] + '"';
+      var oembed_instagram_html = '<div ';
+      for ( attr in attrs ) {
+        if ( !(/src/i).test(attr) ) {
+          if ( attr != '' && attrs[attr] != '' ) {
+            oembed_instagram_html += ' ' + attr + '="' + attrs[attr] + '"';
           }
         }
       }
       oembed_instagram_html += " >";
-        if(embed_id!=''){
-
-        /*oembed_instagram_html += '<iframe src="'+embed_id+'"'+ 
+      if ( file_url != '' ) {
+        /*oembed_instagram_html += '<iframe src="'+embed_id+'"'+
         ' style="'+
         'max-width:'+'100%'+" !important"+
         '; max-height:'+'100%'+" !important"+
@@ -90,75 +88,58 @@ function spider_display_embed(embed_type, file_url, embed_id, attrs) {
         '; margin:0;"'+
         'frameborder="0" scrolling="no" allowtransparency="false"></iframe>';
         */
-        oembed_instagram_html += '<video style="width:auto !important; height:auto !important; max-width:100% !important; max-height:100% !important; margin:0 !important;" controls>'+
-        '<source src="'+embed_id+
-        '" type="video/mp4"> Your browser does not support the video tag. </video>';
 
-        }
-        
-        
-        oembed_instagram_html +="</div>";
-
-        html_to_insert += oembed_instagram_html;
-
-        break;
-
+        oembed_instagram_html += '<video style="width:auto !important; height:auto !important; max-width:100% !important; max-height:100% !important; margin:0 !important;" controls>' +
+          '<source src="' + decodeURIComponent(file_url) +
+          '" type="video/mp4"> Your browser does not support the video tag. </video>';
+      }
+      oembed_instagram_html += "</div>";
+      html_to_insert += oembed_instagram_html;
+      break;
     case 'EMBED_OEMBED_INSTAGRAM_IMAGE':
-      var oembed_instagram_html ='<div ';     
-        for (attr in attrs) {
-        if(!(/src/i).test(attr)){
-          if(attr != '' && attrs[attr] != ''){
-            oembed_instagram_html += ' '+ attr + '="'+ attrs[attr] + '"';
+      var oembed_instagram_html = '<div ';
+      for ( attr in attrs ) {
+        if ( !(/src/i).test(attr) ) {
+          if ( attr != '' && attrs[attr] != '' ) {
+            oembed_instagram_html += ' ' + attr + '="' + attrs[attr] + '"';
           }
         }
       }
       oembed_instagram_html += " >";
-        if(embed_id!=''){
-
-        oembed_instagram_html += '<img src="//instagram.com/p/'+embed_id+'/media/?size=l"'+ 
-        ' style=" '+
-        'max-width:'+'100%'+" !important"+
-        '; max-height:'+'100%'+" !important"+
-        '; width:'+'auto'+
-        '; height:'+ 'auto' +
-        ';">';
-        }
-        oembed_instagram_html +="</div>";
-
-        html_to_insert += oembed_instagram_html;
-
-        break;
+      if ( file_url != '' ) {
+        oembed_instagram_html += '<img src="' + decodeURIComponent(file_url) + '"' +
+          ' style=" ' +
+          'max-width:' + '100%' + " !important" +
+          '; max-height:' + '100%' + " !important" +
+          '; width:' + 'auto' +
+          '; height:' + 'auto' +
+          ';">';
+      }
+      oembed_instagram_html += "</div>";
+      html_to_insert += oembed_instagram_html;
+      break;
     case 'EMBED_OEMBED_INSTAGRAM_POST':
-      var oembed_instagram_html ='<div '; 
+      var oembed_instagram_html = '<div ';
       var id = '';
-        for (attr in attrs) {
-        if(!(/src/i).test(attr)){
-          if(attr != '' && attrs[attr] != ''){
-            oembed_instagram_html += ' '+ attr + '="'+ attrs[attr] + '"';
-            if(attr == 'CLASS' || attr =='class' || attr =='Class'){
+      for ( attr in attrs ) {
+        if ( !(/src/i).test(attr) ) {
+          if ( attr != '' && attrs[attr] != '' ) {
+            oembed_instagram_html += ' ' + attr + '="' + attrs[attr] + '"';
+            if ( attr == 'CLASS' || attr == 'class' || attr == 'Class' ) {
               obj_class = attrs[attr];
             }
           }
         }
       }
-      oembed_instagram_html += " >";
-        if(embed_id!=''){
-        oembed_instagram_html += '<iframe class="inner_instagram_iframe_'+obj_class+'" src="//instagr.am/p/'+embed_id+'/embed/?enablejsapi=1"'+ 
-        ' style="'+
-        'max-width:'+'100%'+" !important"+
-        '; max-height:'+'100%'+" !important"+
-        '; width:'+'100%'+
-        '; height:'+ '100%' + 
-        '; margin:0'+
-        '; display:table-cell; vertical-align:middle;"'+
-        'frameborder="0" scrolling="no" allowtransparency="false" allowfullscreen'+
-        '></iframe>';
-        }
-
-        oembed_instagram_html +="</div>";
-        html_to_insert += oembed_instagram_html;
-    break;       
-	case 'EMBED_OEMBED_FACEBOOK_IMAGE':
+      oembed_instagram_html += ">";
+      if ( file_url != '' ) {
+        oembed_instagram_html += '<div class="inner_instagram_iframe_' + obj_class + '" frameborder="0" scrolling="no" allowtransparency="false" allowfullscreen ' +
+          ' style="max-width: 100% !important; max-height: 100% !important; width: 100%; height: 100%; margin:0; vertical-align:middle;">' + atob(file_url) + '</div>';
+      }
+      oembed_instagram_html += "</div>";
+      html_to_insert += oembed_instagram_html;
+      break;
+	  case 'EMBED_OEMBED_FACEBOOK_IMAGE':
       var oembed_facebook_html ='<span ';	
         for (attr in attrs) {
           if(!(/src/i).test(attr)){
@@ -169,7 +150,7 @@ function spider_display_embed(embed_type, file_url, embed_id, attrs) {
         }
       oembed_facebook_html += " >";
       if(embed_id!=''){
-        oembed_facebook_html += '<img src="'+file_url+'"'+ 
+        oembed_facebook_html += '<img src="'+file_url+'"'+
         ' style=" '+
         'max-width:'+'100%'+" !important"+
         '; max-height:'+'100%'+" !important"+
@@ -180,7 +161,7 @@ function spider_display_embed(embed_type, file_url, embed_id, attrs) {
       oembed_facebook_html +="</span>";
       html_to_insert += oembed_facebook_html;
     break; 	
-	case 'EMBED_OEMBED_FACEBOOK_VIDEO': 
+	  case 'EMBED_OEMBED_FACEBOOK_VIDEO':
       var oembed_facebook_video_html ='<div ';     
         for (attr in attrs) {
           if(!(/src/i).test(attr)){
@@ -272,14 +253,13 @@ function spider_display_embed(embed_type, file_url, embed_id, attrs) {
       html_to_insert += oembed_google_photos_html;
 
       break;
-
     default:
       var html = {content: ''};
       jQuery(document).trigger('bwg_display_embed', [html, embed_type, file_url, embed_id, attrs]);
       html_to_insert = html.content;
   }
   
-  return html_to_insert;
+  return html_to_insert
 
 }
 
@@ -314,7 +294,7 @@ function bwg_add_instagram_gallery(instagram_access_token, from_popup){
       whole_post = '1';
     }
     
-    var instagram_user = encodeURI(jQuery("#gallery_source").val());
+    var instagram_user = encodeURI(jQuery("#gallery_source").val()); // @ToDo if content type instagram only then user is undefined.
     var update_flag = jQuery("input[name=update_flag]:checked").val();
     var autogallery_image_number = encodeURI(jQuery("#autogallery_image_number").val());
   }
@@ -325,7 +305,7 @@ function bwg_add_instagram_gallery(instagram_access_token, from_popup){
   var filesValid = [];
   var data = {
     'action': 'addInstagramGallery',
-    'instagram_user': instagram_user,
+    'instagram_user': instagram_user, // @ToDo instagram user is undefined
     'instagram_access_token': instagram_access_token,
     'whole_post': whole_post,
     'autogallery_image_number':autogallery_image_number,
@@ -357,7 +337,7 @@ function bwg_add_instagram_gallery(instagram_access_token, from_popup){
       /*filter out other echoed characters*/
       /*18 is the length of "wd_delimiter_start"*/
       response = response.substring(index_start+18,index_end);
-      response_JSON = jQuery.parseJSON(response);
+      response_JSON = JSON.parse(response);
 
       if(!response_JSON ){
         alert('There is some error. Cannot add Instagram gallery.');
@@ -369,7 +349,7 @@ function bwg_add_instagram_gallery(instagram_access_token, from_popup){
       }
       else{
         if(response_JSON[0] == 'error'){
-          alert('Error: ' + jQuery.parseJSON(response)[1]);
+          alert('Error: ' + JSON.parse(response)[1]);
           jQuery('#loading_div').hide();
           if(from_popup){
             jQuery('#bulk_embed').show();

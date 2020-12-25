@@ -30,7 +30,7 @@ final class WDWSitemap {
     $post = get_post($post_id);
 
     remove_all_shortcodes();
-    if ( defined('ELEMENTOR_VERSION') ) {
+    if ( defined('ELEMENTOR_VERSION') && did_action( 'elementor/loaded' ) ) {
       \Elementor\Plugin::instance()->frontend->get_builder_content($post->ID);
     }
     add_shortcode('Best_Wordpress_Gallery', array($this, 'shortcode'));

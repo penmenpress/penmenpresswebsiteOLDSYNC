@@ -1,4 +1,4 @@
-jQuery("document").ready(function () {
+jQuery(function() {
     elementor.hooks.addAction( 'panel/open_editor/widget/bwg-elementor', function( panel, model, view ) {
         var bwg_view_type = jQuery('select[data-setting="bwg_gallery_view_type"]',window.parent.document);
         var bwg_group_view_type = jQuery('select[data-setting="bwg_gallery_group_view_type"]',window.parent.document);

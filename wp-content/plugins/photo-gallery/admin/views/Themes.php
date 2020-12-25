@@ -15,14 +15,131 @@ class ThemesView_bwg extends AdminView_bwg {
    * @param $params
    */
   public function display( $params = array() ) {
-    if ( !BWG()->is_pro && get_option("wd_bwg_theme_version") ) {
-      WDWLibrary::topbar();
       ?>
       <div class="wrap">
       <?php
-      echo WDWLibrary::message_id(0, __('You can\'t change theme parameters in free version.', BWG()->prefix), 'error inline');
+      if ( !BWG()->is_pro && get_option("wd_bwg_theme_version") ) {
+        wp_enqueue_style( BWG()->prefix . '_gallery-upgrade');
+        WDWLibrary::ask_question();
       ?>
-      <img class="wd-width-100" src="<?php echo BWG()->plugin_url . '/images/theme.png'; ?>" />
+        <div class="gallery_upgrade_main">
+          <div class="gallery_upgrade_wrapper">
+            <div class="gallery_info">
+              <h2 class="gallery_info-text"><?php echo __('Photo Gallery Themes',  BWG()->prefix) ?></h2>
+              <div class="gallery_info-question_mark">
+                <a href="https://help.10web.io/hc/en-us/articles/360016082231-Editing-Photo-Gallery-Themes?utm_source=photo_gallery&utm_medium=free_plugin">
+                  <img src="<?php  echo BWG()->plugin_url . '/images/Question_mark_upgrade.svg'?>" alt="">
+                </a>
+              </div>
+            </div>
+            <div class="gallery_upgrade-head">
+              <div class="gallery_upgrade-head-content">
+                <div class="gallery_upgrade-head-content-heading">
+                  <h2>
+                    <?php echo __('Build Fully Customized Gallery Views', BWG()->prefix); ?>
+                  </h2>
+                </div>
+                <div class="gallery_upgrade-head-content-text">
+                  <p>
+                    <?php echo __('Unlimited options to completely customize every detail. ', BWG()->prefix); ?>
+                    <br class="break_768">
+                    <?php echo __(' Use default dark and light themes, or
+                    create new from scratch.', BWG()->prefix); ?>
+                  </p>
+                </div>
+                <div class="gallery_upgrade-head-content-buttons">
+                  <div class="button-upgrade">
+                    <a href="https://10web.io/plugins/wordpress-photo-gallery/?utm_source=photo_gallery&utm_medium=free_plugin">
+                      <input type="button" value="<?php echo __('UPGRADE TO PREMIUM', BWG()->prefix); ?>">
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="gallery_upgrade-head-media">
+                <div class="gallery_upgrade-head-media-picture">
+                </div>
+              </div>
+            </div>
+            <?php
+            $data = array(
+              'thumbnails' => array(
+                'picture_url' => BWG()->plugin_url . '/images/Thumbnails_upgrade.svg',
+                'class' => 'thumb',
+                'heading' => 'Thumbnails',
+                'description' => 'Fully customizable thumbnails. Incorporate animation, transparency, borders, and more',
+              ),
+              'pagination' => array(
+                'picture_url' => BWG()->plugin_url . '/images/Pagination_upgrade.svg',
+                'class' => 'pagination',
+                'heading' => 'Pagination',
+                'description' => 'Set the positioning and how your images load in a variety of gallery views and group gallery
+                      views',
+              ),
+              'font' => array(
+                'picture_url' => BWG()->plugin_url . '/images/Font_upgrade.svg',
+                'class' => 'font',
+                'heading' => 'Font',
+                'description' => 'Choose your font type from the existing library or from Google fonts',
+              ),
+              'control_buttons' => array(
+                'picture_url' => BWG()->plugin_url . '/images/Control buttons_upgrade.svg',
+                'class' => 'control',
+                'heading' => 'Control buttons',
+                'description' => 'Customize the control button type, size, color and more, for Lightbox, Slideshow, and Carousel
+                      views',
+              ),
+              'color' => array(
+                'picture_url' => BWG()->plugin_url . '/images/Color_upgrade.svg',
+                'class' => 'color',
+                'heading' => 'Color',
+                'description' => 'Modify and create custom colors of any item of your gallery',
+              ),
+              'filmstrip' => array(
+                'picture_url' => BWG()->plugin_url . '/images/Filmstrip_upgrade.svg',
+                'class' => 'filmstrip',
+                'heading' => 'Filmstrip',
+                'description' => 'Customize film strip style, position, color, and placement',
+              ),
+              'lightbox' => array(
+                'picture_url' => BWG()->plugin_url . '/images/Lightbox_upgrade.svg',
+                'class' => 'lightbox',
+                'heading' => 'Lightbox',
+                'description' => 'Fully customizable lightbox allows for the creation of a unique viewing experience',
+              ),
+              'alignment' => array(
+                'picture_url' => BWG()->plugin_url . '/images/Alignment_upgrade.svg',
+                'class' => 'alignment',
+                'heading' => 'Alignment',
+                'description' => 'Set custom alignment of images, titles, descriptions, and more',
+              ),
+              'flex-empty-item' => array(),
+            );
+            ?>
+            <div class="gallery_upgrade-content">
+              <div class="gallery_upgrade-content-features">
+                <?php foreach ( $data as $item ) {
+                  ?>
+                  <div class="gallery_feature">
+                    <div class="gallery_feature-image">
+                      <img class="<?php echo $item['class']; ?>" src="<?php echo $item['picture_url']; ?>" alt="">
+                    </div>
+                    <div class="gallery_feature-heading">
+                      <h3>
+                        <?php echo __($item['heading'], BWG()->prefix); ?>
+                      </h3>
+                    </div>
+                    <div class="gallery_feature-text">
+                      <p>
+                        <?php echo __($item['description'], BWG()->prefix); ?>
+                      </p>
+                    </div>
+                  </div>
+                  <?php
+                } ?>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <?php
       return;
@@ -62,6 +179,7 @@ class ThemesView_bwg extends AdminView_bwg {
                         'add_new_button' => array(
 							          'href' => add_query_arg(array( 'page' => $page, 'task' => 'edit' ), admin_url('admin.php')),
                         ),
+                        'add_new_button_text' => __('Add new theme', BWG()->prefix),
                       ));
     echo $this->search();
     ?>
@@ -220,12 +338,12 @@ class ThemesView_bwg extends AdminView_bwg {
 				<input type="text" id="name" name="name" value="<?php echo !empty( $row->name ) ? $row->name : ''; ?>" class="spider_text_input bwg_requried">
         <?php if ( BWG()->is_pro || get_option("wd_bwg_theme_version") ) { ?>
         <div class="bwg-page-actions">
-					<button class="button button-primary button-large" onclick="if (spider_check_required('name', 'Title')) {return false;}; spider_set_input_value('task', 'save')">
+					<button class="tw-button-primary button-large" onclick="if (spider_check_required('name', 'Title')) {return false;}; spider_set_input_value('task', 'save')">
 					<?php echo !empty($row->name) ? __('Update', BWG()->prefix) :  __('Save', BWG()->prefix); ?>
 					</button>
 					<?php if( $id ) { ?>
 					<input title="<?php _e('Reset to default theme', BWG()->prefix); ?>"
-						class="button preview-button button-large wd-btn-reset" type="submit"
+						class="tw-button-secondary preview-button button-large wd-btn-reset" type="submit"
 						onclick="if (confirm('<?php echo addslashes(__('Do you want to reset to default?', BWG()->prefix)); ?>')) {
 																spider_set_input_value('task', 'reset');
 															} else {
@@ -361,6 +479,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<input type="text" name="thumb_bg_color" id="thumb_bg_color" value="<?php echo $row->thumb_bg_color; ?>" class="color"/>
 								  </td>
 								</tr>
+                <tr>
+                  <td class="spider_label"><label for="thumb_bg_transparency"><?php echo __('Thumbnail background transparency:', BWG()->prefix); ?> </label></td>
+                  <td>
+                    <input type="text" name="thumb_bg_transparency" id="thumb_bg_transparency" value="<?php echo $row->thumb_bg_transparency; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> %
+                    <div class="spider_description"><?php echo __('Value must be between 0 to 100.', BWG()->prefix); ?></div>
+                  </td>
+                </tr>
 								<tr>
 								  <td class="spider_label"><label for="thumb_transparent"><?php echo __('Thumbnail transparency:', BWG()->prefix); ?> </label></td>
 								  <td>
@@ -651,6 +776,13 @@ class ThemesView_bwg extends AdminView_bwg {
 											<input type="text" name="masonry_thumb_bg_color" id="masonry_thumb_bg_color" value="<?php echo $row->masonry_thumb_bg_color; ?>" class="color" />
 										</td>
 									</tr>
+                  <tr>
+                    <td class="spider_label"><label for="masonry_thumb_bg_transparency"><?php echo __('Thumbnail background transparency:', BWG()->prefix); ?> </label></td>
+                    <td>
+                      <input type="text" name="masonry_thumb_bg_transparency" id="masonry_thumb_bg_transparency" value="<?php echo $row->masonry_thumb_bg_transparency; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> %
+                      <div class="spider_description"><?php echo __('Value must be between 0 to 100.', BWG()->prefix); ?></div>
+                    </td>
+                  </tr>
 									<tr>
 										<td class="spider_label"><label for="masonry_thumb_transparent"><?php echo __('Transparency:', BWG()->prefix); ?> </label></td>
 										<td>
@@ -912,11 +1044,18 @@ class ThemesView_bwg extends AdminView_bwg {
 								<table style="clear:both;">
 								  <tbody>
 									<tr>
-									  <td class="spider_label"><label for="mosaic_thumb_bg_color"><?php echo __('Background color:', BWG()->prefix); ?> </label></td>
+									  <td class="spider_label"><label for="mosaic_thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label></td>
 									  <td>
 										<input type="text" name="mosaic_thumb_bg_color" id="mosaic_thumb_bg_color" value="<?php echo $row->mosaic_thumb_bg_color; ?>" class="color" />
 									  </td>
 									</tr>
+                  <tr>
+                    <td class="spider_label"><label for="mosaic_thumb_bg_transparency"><?php echo __('Thumbnail background transparency:', BWG()->prefix); ?> </label></td>
+                    <td>
+                      <input type="text" name="mosaic_thumb_bg_transparency" id="mosaic_thumb_bg_transparency" value="<?php echo $row->mosaic_thumb_bg_transparency; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> %
+                      <div class="spider_description"><?php echo __('Value must be between 0 to 100.', BWG()->prefix); ?></div>
+                    </td>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="mosaic_thumb_transparent"><?php echo __('Transparency:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -1878,6 +2017,13 @@ class ThemesView_bwg extends AdminView_bwg {
 										<input type="text" name="album_compact_thumb_bg_color" id="album_compact_thumb_bg_color" value="<?php echo $row->album_compact_thumb_bg_color; ?>" class="color" />
 									  </td>
 									</tr>
+                  <tr>
+                    <td class="spider_label"><label for="album_compact_thumb_bg_transparency"><?php echo __('Thumbnail background transparency:', BWG()->prefix); ?> </label></td>
+                    <td>
+                      <input type="text" name="album_compact_thumb_bg_transparency" id="album_compact_thumb_bg_transparency" value="<?php echo $row->album_compact_thumb_bg_transparency; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> %
+                      <div class="spider_description"><?php echo __('Value must be between 0 to 100.', BWG()->prefix); ?></div>
+                    </td>
+                  </tr>
 									<tr>
 									  <td class="spider_label"><label for="album_compact_thumb_transparent"><?php echo __('Thumbnail transparency:', BWG()->prefix); ?> </label></td>
 									  <td>
@@ -4559,6 +4705,65 @@ class ThemesView_bwg extends AdminView_bwg {
 									</select>
 								  </td>
 								</tr>
+                <tr>
+                  <td class="spider_label"><label for="carousel_gal_title_font_size"><?php echo __('Gallery title/description font size:', BWG()->prefix); ?> </label></td>
+                  <td>
+                    <input type="text" name="carousel_gal_title_font_size" id="carousel_gal_title_font_size" value="<?php echo
+                    $row->carousel_gal_title_font_size; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> px
+                  </td>
+                </tr>
+                <tr>
+                  <td class="spider_label"><label for="carousel_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
+                  <td>
+                    <input type="text" name="carousel_gal_title_font_color" id="carousel_gal_title_font_color" value="<?php echo $row->carousel_gal_title_font_color; ?>" class="color" />
+                  </td>
+                </tr>
+                <tr>
+                  <!--generate font style with google fonts -->
+                  <?php $this->font_style_row( $row->carousel_gal_title_font_style, 'carousel_gal_title_font_style', __('Gallery title/description font family:', BWG()->prefix), 'carousel_gal_title_google_fonts' ); ?>
+                </tr>
+                <tr>
+                  <td class="spider_label"><label for="carousel_gal_title_font_weight"><?php echo __('Gallery title/description font weight:', BWG()->prefix); ?> </label></td>
+                  <td>
+                    <select name="carousel_gal_title_font_weight" id="carousel_gal_title_font_weight">
+                      <?php
+                      foreach ($font_weights as $key => $font_weight) {
+                        ?>
+                        <option value="<?php echo $key; ?>" <?php echo (($row->carousel_gal_title_font_weight == $key) ? 'selected="selected"' : ''); ?>><?php echo __($font_weight, BWG()->prefix); ?></option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="spider_label"><label for="carousel_gal_title_shadow"><?php echo __('Gallery title/description box shadow:', BWG()->prefix); ?> </label></td>
+                  <td>
+                    <input type="text" name="carousel_gal_title_shadow" id="carousel_gal_title_shadow" value="<?php echo $row->carousel_gal_title_shadow; ?>" class="spider_box_input" placeholder="10px 10px 10px #888888" />
+                    <div class="spider_description"><?php echo __('Use CSS type values.', BWG()->prefix); ?></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="spider_label"><label for="carousel_gal_title_margin"><?php echo __('Gallery title/description margin:', BWG()->prefix); ?> </label></td>
+                  <td>
+                    <input type="text" name="carousel_gal_title_margin" id="carousel_gal_title_margin" value="<?php echo $row->carousel_gal_title_margin; ?>" class="spider_char_input" />
+                    <div class="spider_description"><?php echo __('Use CSS type values.', BWG()->prefix); ?></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="spider_label"><label for="carousel_gal_title_align"><?php echo __('Gallery title alignment:', BWG()->prefix); ?> </label></td>
+                  <td>
+                    <select name="carousel_gal_title_align" id="carousel_gal_title_align">
+                      <?php
+                      foreach ($aligns as $key => $align) {
+                        ?>
+                        <option value="<?php echo $key; ?>" <?php echo (($row->carousel_gal_title_align == $key) ? 'selected="selected"' : ''); ?>><?php echo _e($align, BWG()->prefix); ?></option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                  </td>
+                </tr>
 							  </tbody>
 							</table>
 						</div>

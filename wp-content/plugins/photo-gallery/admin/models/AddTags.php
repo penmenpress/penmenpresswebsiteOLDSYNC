@@ -13,12 +13,15 @@ class AddTagsModel_bwg {
    * @return array|null|object|string
    */
   public function get_rows_data( $params, $total = FALSE ) {
+
     global $wpdb;
     $order = $params['order'];
     $orderby = $params['orderby'];
     $page_per = $params['items_per_page'];
     $page_num = $params['page_num'];
     $search = $params['search'];
+
+    $prepareArgs = array("bwg_tag");
 
     if ( !$total ) {
       $query = 'SELECT table1.term_id as id, table1.name, table1.slug';
@@ -27,23 +30,27 @@ class AddTagsModel_bwg {
       $query = 'SELECT COUNT(*)';
     }
 
+
     $query .= ' FROM `' . $wpdb->prefix . 'terms` AS table1';
     $query .= ' INNER JOIN `' . $wpdb->prefix . 'term_taxonomy` AS table2 ON table1.term_id = table2.term_id';
-    $query .= ' WHERE table2.taxonomy="bwg_tag"';
+    $query .= ' WHERE table2.taxonomy=%s';
 
     if ( $search ) {
-      $query .= ' AND `name` LIKE "%' . $search . '%"';
+      $query .= ' AND `name` LIKE %s';
+      $prepareArgs[] = "%" . $wpdb->esc_like($search) . "%";
     }
     if ( !$total ) {
-      $query .= ' ORDER BY `' . $orderby . '` ' . $order;
-      $query .= ' LIMIT ' . $page_num . ',' . $page_per;
+      $query .= ' ORDER BY `' . $orderby . '` ' .$order;
+      $query .= ' LIMIT %d, %d';
+      $prepareArgs[] = $page_num;
+      $prepareArgs[] = $page_per;
     }
 
     if ( !$total ) {
-      $rows = $wpdb->get_results($query);
+      $rows = $wpdb->get_results($wpdb->prepare($query, $prepareArgs));
     }
     else {
-      $rows = $wpdb->get_var($query);
+      $rows = $wpdb->get_var($wpdb->prepare($query, $prepareArgs));
     }
 
     return $rows;

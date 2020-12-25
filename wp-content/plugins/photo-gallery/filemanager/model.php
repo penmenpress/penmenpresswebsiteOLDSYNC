@@ -60,9 +60,12 @@ class FilemanagerModel {
 		$page_per = $params['page_per'];
 
 		$query  = ' SELECT * FROM `' . $wpdb->prefix . 'bwg_file_paths`';
-		$query .= ' WHERE `path` = "' . $dir . '"';
+		$query .= ' WHERE `path` = %s';
+    $prepareArgs = array($dir);
 		if ( $search ) {
-			$query .= ' AND ((filename LIKE "%' . $search . '%") OR (alt LIKE "%' . $search . '%")) ';
+			$query .= ' AND ((filename LIKE %s) OR (alt LIKE %s)) ';
+      $prepareArgs[] = "%" . $search . "%";
+      $prepareArgs[] = "%" . $search . "%";
 		}
 		if ( $orderby == 'size') {
 			$orderby = 'CAST('. $orderby .' AS unsigned)';
@@ -70,15 +73,18 @@ class FilemanagerModel {
 		$query .= ' ORDER BY `is_dir` DESC, '. $orderby . ' ' . $order;
 		// Get total num rows.
 		$results['page_per'] = $page_per;
-		$results['num_rows'] = $wpdb->get_var( str_replace('SELECT *', 'SELECT COUNT(*)', $query) );
-		$query .= ' LIMIT ' . ($page_num * $page_per) . ',' . $page_per;
-		$items = $wpdb->get_results($query, 'ARRAY_A');
+		$results['num_rows'] = $wpdb->get_var( $wpdb->prepare(str_replace('SELECT *', 'SELECT COUNT(*)', $query), $prepareArgs) );
+		$page_mix = $page_num * $page_per;
+    $query .= ' LIMIT %d, %d';
+    $prepareArgs[] = $page_mix;
+    $prepareArgs[] = $page_per;
+		$items = $wpdb->get_results($wpdb->prepare($query, $prepareArgs), 'ARRAY_A');
 		if ( empty($items) && empty($search) ) {
 			$params['dir'] = BWG()->upload_dir . $dir;
 			$params['path'] = $dir;
 			$this->files_parsing_db( $params );
 			$items = $wpdb->get_results($query, 'ARRAY_A');
-			$results['num_rows'] = $wpdb->get_var( str_replace('SELECT *', 'SELECT COUNT(*)', $query) );
+			$results['num_rows'] = $wpdb->get_var( $wpdb->prepare(str_replace('SELECT *', 'SELECT COUNT(*)', $query),$prepareArgs) );
 		}
 		if ( !empty($items) ) {
 		  foreach( $items as $item ) {
@@ -163,12 +169,15 @@ class FilemanagerModel {
 		}
 
 		$query  = ' SELECT * FROM `' . $wpdb->prefix . 'bwg_file_paths`';
-		$query .= ' WHERE `path` = "' . $dir . '"';
+		$query .= ' WHERE `path` = %s';
+    $prepareArgs = array($dir);
 		if ( $search ) {
-			$query .= ' AND ((filename LIKE "%' . $search . '%") OR (alt LIKE "%' . $search . '%")) ';
-		}
+      $query .= ' AND ((filename LIKE %s) OR (alt LIKE %s)) ';
+      $prepareArgs[] = "%" . $search . "%";
+      $prepareArgs[] = "%" . $search . "%";
+    }
 		$query .= ' ORDER BY `is_dir` DESC, `' . $orderby . '` ' . $order;
-		$items = $wpdb->get_results($query, 'ARRAY_A');
+    $items = $wpdb->get_results($wpdb->prepare($query, $prepareArgs), 'ARRAY_A');
 		$results = array();
 		if ( !empty($items) ) {
 		  foreach( $items as $item ) {
@@ -208,7 +217,7 @@ class FilemanagerModel {
 				/*
 				$paths = $value;
 				array_pop($paths);
-				$implode_path = implode($paths,'/');
+				$implode_path = implode('/', $paths);
 				$path = !empty($implode_path) ? '/'. $implode_path . '/' : '/';
 				*/
 				if ( is_dir($item) == TRUE ) {
@@ -257,7 +266,7 @@ class FilemanagerModel {
 			$insert = 0;
 			$tbl = $wpdb->prefix . 'bwg_file_paths';
 			if( !empty($params['refresh']) ) {
-				$wpdb->delete($tbl, array('path' => $path ) );
+				$wpdb->delete($tbl, array('path' => $path ), array('%s') );
 			}
 			foreach( $data as $val ) {
 				$insert = $wpdb->insert($tbl, $val );

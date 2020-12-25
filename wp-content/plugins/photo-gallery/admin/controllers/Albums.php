@@ -264,8 +264,12 @@ class AlbumsController_bwg {
    */
   public function publish( $id, $bulk = FALSE, $all = FALSE ) {
     global $wpdb;
-    $where = ($all ? '' : ' WHERE id=' . $id);
-    $updated = $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_album` SET published=1' . $where);
+    $where = ($all ? '' : ' WHERE id=%d');
+    if ( $where != '' ) {
+      $updated = $wpdb->query($wpdb->prepare('UPDATE `' . $wpdb->prefix . 'bwg_album` SET published=1' . $where, $id));
+    } else {
+      $updated = $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_album` SET published=1' . $where);
+    }
     $message = 2;
     if ($updated) {
       $message = 9;
@@ -293,8 +297,13 @@ class AlbumsController_bwg {
    */
   public function unpublish( $id, $bulk = FALSE, $all = FALSE ) {
     global $wpdb;
-    $where = ($all ? '' : ' WHERE id=' . $id);
-    $updated = $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_album` SET published=0' . $where);
+    $where = ($all ? '' : ' WHERE id=%d');
+    if ( $where != '' ) {
+      $updated = $wpdb->query($wpdb->prepare('UPDATE `' . $wpdb->prefix . 'bwg_album` SET published=0' . $where, $id));
+    } else {
+      $updated = $wpdb->query('UPDATE `' . $wpdb->prefix . 'bwg_album` SET published=0' . $where);
+
+    }
     $message = 2;
     if ($updated) {
       $message = 10;

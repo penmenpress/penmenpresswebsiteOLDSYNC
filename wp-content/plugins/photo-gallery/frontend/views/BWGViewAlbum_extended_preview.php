@@ -69,7 +69,7 @@ class BWGViewAlbum_extended_preview extends BWGViewSite {
     else {
       echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
       echo '<script id="bwg-script-' . $bwg .'">
-        jQuery(document).ready(function () {
+        jQuery(function() {
           bwg_main_ready();
         });
       </script>';
