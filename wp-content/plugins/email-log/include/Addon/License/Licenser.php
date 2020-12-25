@@ -67,7 +67,6 @@ final class Licenser implements Loadie {
 		$this->bundle_license->load();
 
 		add_action( 'el_before_addon_list', array( $this, 'render_bundle_license_form' ) );
-		add_action( 'el_before_logs_list_table', array( $this, 'render_more_fields_addon_upsell_message' ) );
 
 		add_action( 'el_bundle_license_activate', array( $this, 'activate_bundle_license' ) );
 		add_action( 'el_bundle_license_deactivate', array( $this, 'deactivate_bundle_license' ) );
@@ -111,16 +110,22 @@ final class Licenser implements Loadie {
 			$action       = 'el_bundle_license_deactivate';
 			$action_text  = __( 'Deactivate', 'email-log' );
 			$button_class = '';
-			$expiry_date  = date( 'F d, Y', strtotime( $this->get_bundle_license_expiry_date() ) );
 
-			if ( $this->bundle_license->has_expired() ) {
-				/* translators: 1 License expiry date, 2 License Renewal link */
-				$expiry_details       = sprintf( __( 'Your license has expired on %1$s. Please <a href="%2$s">renew it</a> to receive automatic updates and support.', 'email-log' ), $expiry_date, esc_url( $this->bundle_license->get_renewal_link() ) );
-				$expiry_details_class = 'notice notice-warning';
+			if ( $this->bundle_license->is_lifetime_license() ) {
+				$expiry_details       = __( 'You have a lifetime license, which will never expire!', 'email-log' );
+				$expiry_details_class = 'notice notice-success';
 			} else {
-				/* translators: 1 License expiry date */
-				$expiry_details       = sprintf( __( 'Your license is valid till %s', 'email-log' ), $expiry_date );
-				$expiry_details_class = 'expires';
+				$expiry_date = date( 'F d, Y', strtotime( $this->get_bundle_license_expiry_date() ) );
+
+				if ( $this->bundle_license->has_expired() ) {
+					/* translators: 1 License expiry date, 2 License Renewal link */
+					$expiry_details       = sprintf( __( 'Your license has expired on %1$s. Please <a href="%2$s">renew it</a> to receive automatic updates and support.', 'email-log' ), $expiry_date, esc_url( $this->bundle_license->get_renewal_link() ) );
+					$expiry_details_class = 'notice notice-warning';
+				} else {
+					/* translators: 1 License expiry date */
+					$expiry_details       = sprintf( __( 'Your license is valid till %s', 'email-log' ), $expiry_date );
+					$expiry_details_class = 'expires';
+				}
 			}
 		}
 		?>
@@ -158,28 +163,6 @@ final class Licenser implements Loadie {
 			</form>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Renders Upsell message for More Fields add-on.
-	 *
-	 * @since 2.2.5
-	 */
-	public function render_more_fields_addon_upsell_message() {
-		echo '<span id = "el-pro-msg">';
-		_e( 'Additional fields are available through More Fields add-on. ', 'email-log' );
-
-		if ( $this->is_bundle_license_valid() ) {
-			echo '<a href="admin.php?page=email-log-addons">';
-			_e( 'Install it', 'email-log' );
-			echo '</a>';
-		} else {
-			echo '<a rel="noopener" target="_blank" href="https://wpemaillog.com/addons/more-fields/?utm_campaign=Upsell&utm_medium=wpadmin&utm_source=inline&utm_content=mf" style="color:red">';
-			_e( 'Buy Now', 'email-log' );
-			echo '</a>';
-		}
-
-		echo '</span>';
 	}
 
 	/**
@@ -326,6 +309,32 @@ final class Licenser implements Loadie {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Is an add-on active?
+	 *
+	 * @since 2.4.0
+	 *
+	 * @param string $addon_name Add-on name.
+	 *
+	 * @return bool True if add-on is present and is active, false otherwise.
+	 */
+	public function is_addon_active( $addon_name ) {
+		return $this->addon_list->is_addon_active( $addon_name );
+	}
+
+	/**
+	 * Is an add-on installed?
+	 *
+	 * @since 2.4.0
+	 *
+	 * @param string $addon_name Add-on name.
+	 *
+	 * @return bool True if add-on is present and is installed, false otherwise.
+	 */
+	public function is_addon_installed( $addon_name ) {
+		return $this->addon_list->is_addon_installed( $addon_name );
 	}
 
 	/**

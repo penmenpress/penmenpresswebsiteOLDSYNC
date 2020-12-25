@@ -175,7 +175,6 @@ function stringify( $may_be_array, $delimiter = ',' ) {
  * Gets the User defined Date time format.
  *
  * @used-by \EmailLog\Core\UI\Setting\CoreSetting
- * @used-by \EmailLog\Util\render_auto_delete_logs_next_run_schedule()
  *
  * @since   2.3.0
  *
@@ -186,23 +185,28 @@ function get_user_defined_date_time_format() {
 }
 
 /**
- * Renders the next run auto delete logs schedule in Date and time format set within WordPress.
+ * Get the display format for displaying the email log time.
  *
- * @used-by \EmailLog\Addon\UI\Setting\DashboardWidget
- * @used-by \EmailLog\Core\UI\Component\AutoDeleteLogsSetting
+ * @since 2.4.3
  *
- * @since   2.3.0
+ * @return string Email log time display format.
  */
-function render_auto_delete_logs_next_run_schedule() {
-	?>
-	<?php if ( wp_next_scheduled( 'el_scheduled_delete_logs' ) ) : ?>
-		<p>
-			<?php _e( 'Auto delete logs cron will be triggered next at', 'email-log' ); ?>:
-			<?php $date_time_format = get_user_defined_date_time_format(); ?>
-			<strong><?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', wp_next_scheduled( 'el_scheduled_delete_logs' ) ), $date_time_format ); ?></strong>
-		</p>
-	<?php endif; ?>
-	<?php
+function get_display_format_for_log_time() {
+	$default_time_format = get_option( 'time_format', 'g:i:s a' );
+
+	if ( false === stripos( $default_time_format, 's' ) ) {
+		/* translators: Email Log time display format, see http://php.net/date */
+		$default_time_format = __( 'g:i:s a', 'email-log' );
+	}
+
+	/**
+	 * Filter the time format string for displaying log time.
+	 *
+	 * @since 2.4.3
+	 *
+	 * @param string $default_time_format Default time format.
+	 */
+	return apply_filters( 'el_log_time_display_format', $default_time_format );
 }
 
 /**
