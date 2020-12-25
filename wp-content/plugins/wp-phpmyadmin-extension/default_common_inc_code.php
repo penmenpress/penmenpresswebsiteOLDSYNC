@@ -11,6 +11,7 @@
 
 				// ============= INCLUDING WP CORE ================= //
 				$include_core=0;
+				// Including core breaks whole application
 				if ($include_core)
 				{
 					$abspth = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__)))))); 
@@ -37,8 +38,13 @@
 				//note, cookies are nulled after the below "use" namespaces load, so lets check here.
 				$file = dirname(__DIR__)."/_session_temp.php";  	if (!file_exists($file)) exit("session file doesnt exist");
 				include($file);
-				if( ( empty($_COOKIE[$sess_vars["name"]]) ||  $_COOKIE[$sess_vars["name"]] !=  $sess_vars["value"]) || ($sess_vars['require_ip'] && $_SERVER['REMOTE_ADDR'] !== $sess_vars['ip']) || $sess_vars['time'] < time() - 3*60*60 )	{
-					exit('Go back to Dashboard-Options page, and then click "Login" phpMyAdmin button again. If you still have problems, open ticket at <a href="https://wordpress.org/support/plugin/wp-phpmyadmin-extension/">Support pages</a>, probably something breaks a normal page-load in dashboard.');
+				$your_ip 			= $_SERVER['REMOTE_ADDR'];
+				$incorrect_session	= ( empty($_COOKIE[$sess_vars["name"]]) ||  $_COOKIE[$sess_vars["name"]] !=  $sess_vars["value"]);
+				$incorrect_ip		= ( $sess_vars['require_ip'] && $your_ip !== $sess_vars['ip'] );
+				$incorrect_time		= $sess_vars['time'] < time() - 3*60*60;
+				if( $incorrect_session || $incorrect_ip || $incorrect_time )	{
+					$notice = $incorrect_session ? "Session mismatch" : ($incorrect_ip ? "Your IP ($your_ip) not allowed. If your ISP provider assigns you the dynamic IP address on each request, then you can temporarily disable the checkbox <code style='background:#e7e7e7;'>Restrict access only to current IP</code> on Dashboard-PhpMyAdmin page (and after you are done with your work in PhpMyAdmin, enable that checkbox again, so you dont leave it unchecked)." : ($incorrect_time ? "Session time expired" : "")); 
+					exit($notice ." <br/>Now, go back to Dashboard-PhpMyAdmin page, and then click <b>Login phpMyAdmin</b> button again. If you still have problems, open ticket at <a href=\"https://wordpress.org/support/plugin/wp-phpmyadmin-extension/\">Support pages</a>, probably something breaks a normal page-load in dashboard.");
 				}
 				else{
 					define('wp_pma_allowed', true);

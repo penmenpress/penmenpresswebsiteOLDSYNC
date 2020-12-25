@@ -2,6 +2,7 @@
 /**
  * CLI interface.
  */
+
 declare(strict_types=1);
 
 namespace PhpMyAdmin\SqlParser\Utils;
@@ -9,6 +10,15 @@ namespace PhpMyAdmin\SqlParser\Utils;
 use PhpMyAdmin\SqlParser\Context;
 use PhpMyAdmin\SqlParser\Lexer;
 use PhpMyAdmin\SqlParser\Parser;
+use function count;
+use function getopt;
+use function implode;
+use function in_array;
+use function rtrim;
+use function stream_get_contents;
+use function stream_select;
+use function var_export;
+use const STDIN;
 
 /**
  * CLI interface.
@@ -27,7 +37,7 @@ class CLI
 
     public function usageHighlight()
     {
-        echo "Usage: highlight-query --query SQL [--format html|cli|text]\n";
+        echo "Usage: highlight-query --query SQL [--format html|cli|text] [--ansi]\n";
         echo "       cat file.sql | highlight-query\n";
     }
 
@@ -42,18 +52,21 @@ class CLI
             'help',
             'query:',
             'format:',
+            'ansi',
         ];
         $params = $this->getopt(
-            'hq:f:',
+            'hq:f:a',
             $longopts
         );
         if ($params === false) {
             return false;
         }
+
         $this->mergeLongOpts($params, $longopts);
         if (! isset($params['f'])) {
             $params['f'] = 'cli';
         }
+
         if (! in_array($params['f'], ['html', 'cli', 'text'])) {
             echo "ERROR: Invalid value for format!\n";
 
@@ -69,15 +82,23 @@ class CLI
         if ($params === false) {
             return 1;
         }
+
         if (isset($params['h'])) {
             $this->usageHighlight();
 
             return 0;
         }
+
         if (! isset($params['q'])) {
-            if ($stdIn = $this->readStdin()) {
+            $stdIn = $this->readStdin();
+
+            if ($stdIn) {
                 $params['q'] = $stdIn;
             }
+        }
+
+        if (isset($params['a'])) {
+            Context::setMode('ANSI_QUOTES');
         }
         if (isset($params['q'])) {
             echo Formatter::format(
@@ -88,6 +109,7 @@ class CLI
 
             return 0;
         }
+
         echo "ERROR: Missing parameters!\n";
         $this->usageHighlight();
 
@@ -96,7 +118,7 @@ class CLI
 
     public function usageLint()
     {
-        echo "Usage: lint-query --query SQL\n";
+        echo "Usage: lint-query --query SQL [--ansi]\n";
         echo "       cat file.sql | lint-query\n";
     }
 
@@ -106,9 +128,10 @@ class CLI
             'help',
             'query:',
             'context:',
+            'ansi',
         ];
         $params = $this->getopt(
-            'hq:c:',
+            'hq:c:a',
             $longopts
         );
         $this->mergeLongOpts($params, $longopts);
@@ -122,19 +145,28 @@ class CLI
         if ($params === false) {
             return 1;
         }
+
         if (isset($params['h'])) {
             $this->usageLint();
 
             return 0;
         }
+
         if (isset($params['c'])) {
             Context::load($params['c']);
         }
+
         if (! isset($params['q'])) {
-            if ($stdIn = $this->readStdin()) {
+            $stdIn = $this->readStdin();
+
+            if ($stdIn) {
                 $params['q'] = $stdIn;
             }
         }
+        if (isset($params['a'])) {
+            Context::setMode('ANSI_QUOTES');
+        }
+
         if (isset($params['q'])) {
             $lexer = new Lexer($params['q'], false);
             $parser = new Parser($lexer->list);
@@ -142,12 +174,14 @@ class CLI
             if (count($errors) === 0) {
                 return 0;
             }
+
             $output = Error::format($errors);
             echo implode("\n", $output);
             echo "\n";
 
             return 10;
         }
+
         echo "ERROR: Missing parameters!\n";
         $this->usageLint();
 
@@ -156,7 +190,7 @@ class CLI
 
     public function usageTokenize()
     {
-        echo "Usage: tokenize-query --query SQL\n";
+        echo "Usage: tokenize-query --query SQL [--ansi]\n";
         echo "       cat file.sql | tokenize-query\n";
     }
 
@@ -165,9 +199,10 @@ class CLI
         $longopts = [
             'help',
             'query:',
+            'ansi',
         ];
         $params = $this->getopt(
-            'hq:',
+            'hq:a',
             $longopts
         );
         $this->mergeLongOpts($params, $longopts);
@@ -181,15 +216,23 @@ class CLI
         if ($params === false) {
             return 1;
         }
+
         if (isset($params['h'])) {
             $this->usageTokenize();
 
             return 0;
         }
+
         if (! isset($params['q'])) {
-            if ($stdIn = $this->readStdin()) {
+            $stdIn = $this->readStdin();
+
+            if ($stdIn) {
                 $params['q'] = $stdIn;
             }
+        }
+
+        if (isset($params['a'])) {
+            Context::setMode('ANSI_QUOTES');
         }
         if (isset($params['q'])) {
             $lexer = new Lexer($params['q'], false);
@@ -208,6 +251,7 @@ class CLI
 
             return 0;
         }
+
         echo "ERROR: Missing parameters!\n";
         $this->usageTokenize();
 
@@ -216,10 +260,20 @@ class CLI
 
     public function readStdin()
     {
-        stream_set_blocking(STDIN, false);
-        $stdin = stream_get_contents(STDIN);
-        // restore-default block-mode setting
-        stream_set_blocking(STDIN, true);
+        $read = [STDIN];
+        $write = [];
+        $except = [];
+
+        // Assume there's nothing to be read from STDIN.
+        $stdin = null;
+
+        // Try to read from STDIN.  Wait 0.2 second before timing out.
+        $result = stream_select($read, $write, $except, 0, 2000);
+
+        if ($result > 0) {
+            $stdin = stream_get_contents(STDIN);
+        }
+
         return $stdin;
     }
 }

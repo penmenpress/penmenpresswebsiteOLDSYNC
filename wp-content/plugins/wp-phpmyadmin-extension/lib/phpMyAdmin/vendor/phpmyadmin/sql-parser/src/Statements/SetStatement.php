@@ -2,6 +2,7 @@
 /**
  * `SET` statement.
  */
+
 declare(strict_types=1);
 
 namespace PhpMyAdmin\SqlParser\Statements;
@@ -9,6 +10,7 @@ namespace PhpMyAdmin\SqlParser\Statements;
 use PhpMyAdmin\SqlParser\Components\OptionsArray;
 use PhpMyAdmin\SqlParser\Components\SetOperation;
 use PhpMyAdmin\SqlParser\Statement;
+use function trim;
 
 /**
  * `SET` statement.

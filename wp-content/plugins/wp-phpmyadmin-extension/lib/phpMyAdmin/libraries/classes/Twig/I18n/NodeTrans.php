@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin\Twig\I18n;
 
+use PhpMyAdmin\Twig\Extensions\Node\TransNode;
 use Twig\Compiler;
-use Twig\Extensions\Node\TransNode;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Node;
 
@@ -28,21 +28,21 @@ class NodeTrans extends TransNode
      * The attributes are automatically made available as array items ($this['name']).
      *
      * @param Node               $body    Body of node trans
-     * @param Node               $plural  Node plural
+     * @param Node|null          $plural  Node plural
      * @param AbstractExpression $count   Node count
-     * @param Node               $context Node context
-     * @param Node               $notes   Node notes
+     * @param Node|null          $context Node context
+     * @param Node|null          $notes   Node notes
      * @param int                $lineno  The line number
      * @param string             $tag     The tag name associated with the Node
      */
     public function __construct(
         Node $body,
-        Node $plural = null,
-        AbstractExpression $count = null,
-        Node $context = null,
-        Node $notes = null,
-        $lineno,
-        $tag = null
+        ?Node $plural,
+        ?AbstractExpression $count,
+        ?Node $context,
+        ?Node $notes,
+        int $lineno,
+        string $tag
     ) {
         $nodes = ['body' => $body];
         if (null !== $count) {
@@ -160,7 +160,7 @@ class NodeTrans extends TransNode
      *
      * @return string
      */
-    protected function getTransFunction($plural, $hasMsgContext = false)
+    protected function getTransFunction($plural, bool $hasMsgContext = false): string
     {
         if ($hasMsgContext) {
             return $plural ? '_ngettext' : '_pgettext';

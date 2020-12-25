@@ -4,42 +4,43 @@
  * Description:		The famous database browser & manager (for MySQL & MariaDB) - use it inside WordPress Dashboard without an extra hassle.
  * Text Domain:		wp-phpmyadmin-extension
  * Domain Path:		/languages
- * Version:			3.01
+ * Version:			5.0.4.1
  * WordPress URI:	https://wordpress.org/plugins/wp-phpmyadmin-extension/
  * Plugin URI:		https://puvox.software/wordpress/
  * Contributors: 	puvoxsoftware,ttodua
  * Author:			Puvox.software
  * Author URI:		https://puvox.software/
- * Donate Link:		https://paypal.me/puvox
+ * Donate Link:		https://paypal.me/Puvox
  * License:			GPL-3.0
  * License URI:		https://www.gnu.org/licenses/gpl-3.0.html
  
  * @copyright:		Puvox.software
 */
 
+
 namespace WpPhpMyAdminExtension
 {
   if (!defined('ABSPATH')) exit;
-  $lib_final=dirname(__DIR__)."/".($name='default_library_puvox.php');
-  if( file_exists($lib_start=__DIR__."/$name") && !defined("_puvox_machine_") ) { rename($lib_start, $lib_final); } require_once($lib_final);
+  require_once( __DIR__."/library_default_puvox.php" );
 
 
-  class PluginClass extends \default_plugin__PuvoxSoftware
+  class PluginClass extends \Puvox\default_plugin
   {
-	protected $required_version = "7.1.3";
+	  
 	public function declare_settings()
 	{
-		$this->initial_static_options =
+		$this->initial_static_options	=
 		[
-			'has_pro_version'	=>0, 
-			'show_opts'			=>true, 
-			'show_rating_message'=>true, 
-			'display_tabs'		=>false,
-			'required_role'		=>'install_plugins', 
-			'default_managed'	=>'network',			// network, singlesite
-			'menu_button_level'	=>'mainmenu', 
-			"menu_icon"			=>$this->helpers->pluginURL.'/assets/media/menu_icon.png" style="width:30px;',   
-			'menu_button_name'	=>'WP-phpMyAdmin' 
+			'has_pro_version'		=>0, 
+			'show_opts'				=>true, 
+			'show_rating_message'	=>true, 
+			'show_donation_popup'	=>true, 
+			'display_tabs'			=>[],
+			'required_role'			=>'install_plugins', 
+			'default_managed'		=>'network',			// network | singlesite
+			'menu_button_level'		=>'mainmenu', 
+			"menu_icon"				=>$this->helpers->baseURL.'/assets/media/menu_icon.png" style="width:30px;',   
+			'menu_button_name'		=>'WP-phpMyAdmin' 
 		];
 	
 		$this->initial_user_options	= 
@@ -58,6 +59,7 @@ namespace WpPhpMyAdminExtension
 		$this->is_new_php = $this->helpers->above_version($this->required_version);
 	}
  
+	protected $required_version = "7.1.3";
 	//by default, this will is disabled per requirements. Users can enable only for themselves.
 	private $pma_installed_using_ajax = false;
 	
@@ -91,9 +93,8 @@ namespace WpPhpMyAdminExtension
 		$this->pma_abspath			= __DIR__ . $this->pma_relpath;     
 		$this->pma_abspath_real		= __DIR__ . $this->pma_relpath_real;
 		 
-		$this->pma_mainpage_relpath_from_plugin	= $this->pma_relpath.'/index.php' ;
-		$this->pma_mainpage_relpath_from_plugin_URL = $this->pma_relpath.'/index.php' ;
-		$this->pma_mainpage_url		= $this->helpers->pluginURL	. substr($this->pma_mainpage_relpath_from_plugin,1);
+		$this->pma_mainpage_from_plugin	= $this->pma_relpath.'/index.php' ;
+		$this->pma_mainpage_url		= $this->helpers->baseURL	. substr($this->pma_mainpage_from_plugin,1);
 		$this->pma_mainpage_path	= $this->pma_abspath	. '/index.php';
 		
 		$this->pma_zipPath			= $this->lib_absPath	. '/phpMyAdmin.zip'; 
@@ -146,7 +147,8 @@ namespace WpPhpMyAdminExtension
 					}
 					// create extra directories & files
 					foreach($this->pma_create_files as $eachFile){
-						$this->helpers->file_put_contents($this->pma_abspath.'/'.$eachFile,""); 
+						$file = $this->pma_abspath.'/'.$eachFile; $this->helpers->mkdir( dirname($file) );
+						file_put_contents($file,""); 
 					}
 
 
@@ -168,7 +170,7 @@ namespace WpPhpMyAdminExtension
 							$content = str_replace('___BLOWFISHSECRET___',		'\''. addslashes($this->create_blowfish_secret()).'\'',	$content);
 							$content = str_replace('___LANG___',				'\''.$this->static_settings['lang'].'\'',				$content);
 							$content = str_replace('___DBARRAY___',				'[file_get_contents(__DIR__."/_session_temp_db_name_".$_SERVER["HTTP_HOST"].".php")]',	$content);   //DB_NAME //$_COOKIE["pma_DB_NAME"]
-							$content = str_replace('___PmaAbsoluteUri___',		'\''.str_replace( $this->helpers->domain,'', $this->helpers->OneSlash($this->helpers->pluginURL . $this->pma_relpath))."/'",	$content);
+							$content = str_replace('___PmaAbsoluteUri___',		'\''.str_replace( $this->helpers->domain,'', $this->helpers->OneSlash($this->helpers->baseURL . $this->pma_relpath))."/'",	$content);
 							//$content = str_replace( '___RELATIVEPATHTOFOLDER___',	'\'/plugins/wp-phpmyadmin/'.$this->pma_dirname.'\'',	$content);  
 							//
 							//$content = str_replace('___RESTRICTORCOOKIENAME___','\''.$this->opts['randomCookieName'].'\'',		$content);  
@@ -264,6 +266,14 @@ namespace WpPhpMyAdminExtension
 			}
 		} 
 	} 
+	public function replace_in_file($file, $from_pattern, $to){
+		if(file_exists($file))
+		{
+			$cont= file_get_contents($file);
+			$new_cont= preg_replace($from_pattern, $to, $cont);
+			file_put_contents($file, $new_cont);
+		}
+	}
 	
 	// https://docs.phpmyadmin.net/en/latest/setup.html#signon-authentication-mode 
 	public function if_redirect_to_pma()
@@ -336,7 +346,7 @@ namespace WpPhpMyAdminExtension
 		p.submit { text-align:center; }
 		.settingsTitle{display:none;}
 		.myplugin {padding:10px;}
-		.myplugin #install_pma:disabled{opacity:0.3;}
+		.myplugin #old_pma_install:disabled{opacity:0.3;}
 		.myplugin .enterb{font-size:1.5em; padding:10px; } 
 		#mainsubmit-button{display:none; background:green;}
 		.myplugin .sample_disabled{opacity:0.3;}
@@ -347,8 +357,6 @@ namespace WpPhpMyAdminExtension
 		.warning_ssl_img img{ filter: sepia(0.6) contrast(1.1); }
 		.installed_logins .manual_login {display:none;}
 		.red_warning {color:orange;}
-		.referrals { background: #efefef; margin: 10px; }
-		.referrals .line a > * {margin: 2px 5px; font-size: 1.6em; }
 		.error_ {color:red;}
 		</style>
 
@@ -359,7 +367,7 @@ namespace WpPhpMyAdminExtension
 		<?php if ($this->active_tab=="Options") 
 		{ 
 			//if form updated
-			if(isset($_POST["_wpnonce"]) && check_admin_referer("nonce_".$this->plugin_slug) ) 
+			if( $this->checkSubmission() ) 
 			{ 
 				$this->opts['manual_pma_login_url']	= sanitize_text_field($_POST[ $this->plugin_slug ]['manual_pma_login_url']);
 				
@@ -370,12 +378,12 @@ namespace WpPhpMyAdminExtension
 				$this->update_opts(); 
 				
 				//reflect changes immediately
-				$this->helpers->replace_in_file($this->path_to_pma_config, '/\$cfg\[\WSendErrorReports\W\]\s+=\s+\W(.*?)\W/', '$cfg["SendErrorReports"] = \''. ($this->opts['hide_phma_errors'] ? 'never':'ask') .'\'');
+				$this->replace_in_file($this->path_to_pma_config, '/\$cfg\[\WSendErrorReports\W\]\s+=\s+\W(.*?)\W/', '$cfg["SendErrorReports"] = \''. ($this->opts['hide_phma_errors'] ? 'never':'ask') .'\'');
 				$this->create_session_var(true);
 			}
 
 
-			$this->ssl_notice_msg = __("This is one-time message! <br/><br/> Seems that your site doesn\\'t use HTTPS. Automatic login (at this moment) works only for HTTPS. To use this feature, then you should bypass the SSL warning on the next page, like shown on this screenshot: ", "wp-phpmyadmin-extension") ."<br/><div class=\\'warning_ssl_img\\'><img src=\\'".$this->helpers->pluginURL."/assets/media/example_warning.png\\' /></div>".__("If the next page doesn\\'t work at all, then uncheck the HTTPS checkbox on this page.", "wp-phpmyadmin-extension");
+			$this->ssl_notice_msg = __("This is a one-time message! <br/><br/> Seems that your site doesn\\'t use HTTPS. We strongly recommend to use HTTPS (SSL) with PhpMyAdmin (Automatic login at this moment works only for HTTPS). To use this feature, then you should bypass the SSL warning on the next page, like shown on this screenshot: ", "wp-phpmyadmin-extension") ."<br/><div class=\\'warning_ssl_img\\'><img src=\\'".$this->helpers->baseURL."/assets/media/example_warning.png\\' /></div>".__("If the next page doesn\\'t work at all, then uncheck the HTTPS checkbox on this page, or try to open your WP-Dashboard with <code>https://</code> prefix and then try to enter PhpMyAdmin", "wp-phpmyadmin-extension");
 
 			$url_to_open =  trailingslashit(admin_url()).'?rand='.rand(1,99999999).'&goto_wp_phpmyadmin=1';
 			?> 
@@ -403,7 +411,7 @@ namespace WpPhpMyAdminExtension
 						if (!file_exists($this->pma_zipPath)) 
 						{
 							$error=true;
-							_e('<div class="error_2">If neither your hosting provider can help you, then as a temporary solution, you can click here to if you agree to <button id="install_pma">download & install PhpMyAdmin 4.9</button> from official website.</div>', 'wp-phpmyadmin-extension');
+							_e('<div class="error_2">If neither your hosting provider can help you, then as a temporary solution, you can <button id="old_pma_install">download & install PhpMyAdmin 4.9.4</button> from official website, but we strongly recommend to upgrate your PHP and then you will be able to use latest up-to-date version, instead of using old version.</div>', 'wp-phpmyadmin-extension');
 						}
 					}
 					?>
@@ -444,39 +452,57 @@ namespace WpPhpMyAdminExtension
 				</tr>
 				<?php if ( !is_ssl() ) { ?>
 				<tr>
-					<td class="xred_warning"><?php _e("Use HTTPS (so, auto-login will work)", 'wp-phpmyadmin-extension');?> <?php echo $this->question_mark($this->ssl_notice_msg, 2);?></td> 
+					<td class="red_warning"><?php _e("Use HTTPS (so, auto-login will work)", 'wp-phpmyadmin-extension');?> <?php echo $this->helpers->question_mark($this->ssl_notice_msg, $dialogType=2);?></td> 
 					<td><input type="checkbox" name="<?php echo $this->plugin_slug;?>[use_https]" <?php checked($this->opts['use_https']);?> data-onchange-save="true" /></td>
 					<td></td>
 				</tr>
 				<?php } ?>
 				<tr>
 					<td><?php $ip=$this->helpers->ip; _e("Restrict access only to current IP (<code>$ip</code>) to login into PMA <br/>(in rare cases, if you have continiously changing dynamic IP address, then you will need to uncheck IP restriction)", 'wp-phpmyadmin-extension');?></td> 
-					<td><input type="checkbox" name="<?php echo $this->plugin_slug;?>[require_ip]" <?php checked($this->opts['require_ip']);?>/> </td>
+					<td><input type="checkbox" name="<?php echo $this->plugin_slug;?>[require_ip]" <?php checked($this->opts['require_ip']);?> data-onchange-save="true" /> </td>
 					<td></td>
 				</tr>
 				<tr>
 					<td><?php _e('Hide errors in PMA <br/>(if you face error popup-boxes in phpMyAdmin frequently, you can hide them)', 'wp-phpmyadmin-extension');?></td> 
-					<td><input type="checkbox" name="<?php echo $this->plugin_slug;?>[hide_phma_errors]" <?php checked($this->opts['hide_phma_errors']);?>/> </td>
+					<td><input type="checkbox" name="<?php echo $this->plugin_slug;?>[hide_phma_errors]" <?php checked($this->opts['hide_phma_errors']);?> data-onchange-save="true" /> </td>
 					<td></td>
 				</tr>
 				<tr>
 					<td><?php _e('Strip slashes in PMA <br/>(if you see that when you update a textfield in phpMyAdmin, and extra backslash <code>\\</code> is added in front of <code>\\</code> or <code>\'</code> or <code>"</code> characters, then check this) :', 'wp-phpmyadmin-extension');?></td> 
-					<td><input type="checkbox" name="<?php echo $this->plugin_slug;?>[strip_slashes]" <?php checked($this->opts['strip_slashes']);?>/> </td>
+					<td><input type="checkbox" name="<?php echo $this->plugin_slug;?>[strip_slashes]" <?php checked($this->opts['strip_slashes']);?> data-onchange-save="true" /> </td>
 					<td></td>
 				</tr>
 			</table>
 			
-			<?php submit_button(  false, 'button-primary save', '', true,  $attrib= [ 'id' => 'save_button'] ); ?> 
-			<?php wp_nonce_field( "nonce_".$this->plugin_slug);  ?>
+			<?php $this->nonceSubmit();  ?>
 			</form>
 
+			<!-- 
 			<div class="referrals">
 				<div class="line">
-					<a href="https://bit.do/wp-migrate-db" target="_blank" style="display: flex; align-items: center;"><img style="height: 100px;" src="https://ps.w.org/wp-migrate-db/assets/icon-128x128.jpg" /> <span><?php _e("Do you need a professional WP Migration Plugin?", 'wp-phpmyadmin-extension');?></span> 
+					<a href="https://bit.do/wp-migrate-db" target="_blank" style="display: flex; align-items: center;"><img style="height: 100px;" src="ps/w/org/wp-migrate-db/assets/icon-128x128.jpg" /> <span><?php _e("Do you need a professional WP Migration Plugin?", 'wp-phpmyadmin-extension');?></span> 
 					</a>
 				</div>
 			</div>
-
+			-->
+			<div class="referrals2">
+				<style>
+				.referrals { background: #efefef; margin: 10px; }
+				.referrals .line a > * {margin: 2px 5px; font-size: 1.6em; }
+				.referrals2  { display:flex; justify-content: center; }.referrals2 a {width: 50%; } .referrals2 img { width: 100%; margin: 0 auto; }
+				.referrals2 .animation { background:#f6ad2d; color:white; text-transform: uppercase; font-size:1.5em; position:relative; animation: bounceAround 4s ease-in-out infinite; }
+				@keyframes bounceAround {
+				  0%  {transform: rotateY(-50deg) rotateX(+50deg);}
+				  25% {transform: rotateY(0deg) rotateX(0deg);}
+				  50% {transform: rotateY(+50deg) rotateX(+50deg);}
+				  75% {transform: rotateY(0deg) rotateX(0deg);}
+				  100%{transform: rotateY(-50deg) rotateX(+50deg);}
+				}
+				</style>
+				<a href="<?php echo $this->static_settings['wp_elementor_link'];?>" target="_blank"><img class="animation" src="<?php echo $this->helpers->baseURL;?>/assets/media/elementor.png"></a>
+			</div>
+			
+			
 			<script> 
 			// warning tooltips
 			shown_error_once = 0;
@@ -502,13 +528,13 @@ namespace WpPhpMyAdminExtension
 				
 				jQuery(".myplugin").tooltip({ show: { effect: "blind", duration: 800 } }); 
 				
-				jQuery("#install_pma").on("click", function(e){
+				jQuery("#old_pma_install").on("click", function(e){
 					var targetEl= this;
 					e.preventDefault();
 					ttLibrary.backend_call
 					(
 						{
-							'act': 'install_pma' 
+							'act': 'old_pma_install' 
 						},
 						function(response)
 						{
@@ -535,12 +561,12 @@ namespace WpPhpMyAdminExtension
  
 	public function backend_call($act)
     {
-		if($act=="install_pma")
+		if($act=="old_pma_install")
 		{
 			// remove if previous unpack was partial.
 			$dir = $this->getPMA_FolderName();  
 			if( !empty($dir) && is_dir($dir) ) {
-				if( !$this->rmdir_recursive($dir) )
+				if( !$this->helpers->rmdir_recursive($dir) )
 					exit(__("Failure: can't remove the old $dir folder, click OK to re-try (If you will see this message again, do it manually from FTP).", 'wp-phpmyadmin-extension'));
 			}
 	 
@@ -548,7 +574,7 @@ namespace WpPhpMyAdminExtension
 			//if ($this->pma_installed_using_download) if(!file_exists($this->pma_zipPath)) $this->getPmaZip();       // getPmaZip -----> removed: pastebin(dot)com/raw/r8jLN1P7
 			// unzip
 			wp_remote_get( $url=$this->old_pma_zip, ['timeout'=>300,  'stream'=>true,  'filename'=>$this->pma_zipPath ] );
-			$this->unzip($this->pma_zipPath, $this->lib_absPath);
+			$this->helpers->unzip($this->pma_zipPath, $this->lib_absPath);
 			usleep(500000);
 			//unlink($this->pma_zipPath);
 			rename( $this->lib_absPath .'/'.str_replace('.zip', '',basename($this->old_pma_zip)), $this->pma_abspath_real );

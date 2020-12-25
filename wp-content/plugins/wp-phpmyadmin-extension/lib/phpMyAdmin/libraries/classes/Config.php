@@ -113,7 +113,7 @@ class Config
      */
     public function checkSystem(): void
     {
-        $this->set('PMA_VERSION', '5.0.1');
+        $this->set('PMA_VERSION', '5.0.4');
         /* Major version */
         $this->set(
             'PMA_MAJOR_VERSION',
@@ -779,7 +779,7 @@ class Config
             $this->error_config_default_file = true;
             return false;
         }
-        $canUseErrorReporting = function_exists('error_reporting');
+        $canUseErrorReporting = Util::isErrorReportingAvailable();
         $oldErrorReporting = null;
         if ($canUseErrorReporting) {
             $oldErrorReporting = error_reporting(0);
@@ -837,7 +837,7 @@ class Config
          * Parses the configuration file, we throw away any errors or
          * output.
          */
-        $canUseErrorReporting = function_exists('error_reporting');
+        $canUseErrorReporting = Util::isErrorReportingAvailable();
         $oldErrorReporting = null;
         if ($canUseErrorReporting) {
             $oldErrorReporting = error_reporting(0);
@@ -1360,6 +1360,9 @@ class Config
             $is_https = true;
         } elseif (strtolower(Core::getenv('HTTP_CLOUDFRONT_FORWARDED_PROTO')) === 'https') {
             // Amazon CloudFront, issue #15621
+            $is_https = true;
+        } elseif (Util::getProtoFromForwardedHeader(Core::getenv('HTTP_FORWARDED')) === 'https') {
+            // RFC 7239 Forwarded header
             $is_https = true;
         } elseif (Core::getenv('SERVER_PORT') == 443) {
             $is_https = true;

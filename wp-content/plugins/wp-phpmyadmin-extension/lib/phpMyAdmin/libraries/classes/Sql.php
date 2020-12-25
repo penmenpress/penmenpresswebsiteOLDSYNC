@@ -331,6 +331,8 @@ class Sql
                     'total_time' => $one_result['Duration'],
                     'calls' => 1,
                 ];
+            } else {
+                $profiling_stats['states'][ucwords($one_result['Status'])]['calls']++;
             }
             $profiling_stats['total_time'] += $one_result['Duration'];
 
@@ -892,11 +894,11 @@ class Sql
     /**
      * Function to store the query as a bookmark
      *
-     * @param string       $db                     the current database
-     * @param string       $bkm_user               the bookmarking user
-     * @param string       $sql_query_for_bookmark the query to be stored in bookmark
-     * @param string       $bkm_label              bookmark label
-     * @param boolean|null $bkm_replace            whether to replace existing bookmarks
+     * @param string $db                     the current database
+     * @param string $bkm_user               the bookmarking user
+     * @param string $sql_query_for_bookmark the query to be stored in bookmark
+     * @param string $bkm_label              bookmark label
+     * @param bool   $bkm_replace            whether to replace existing bookmarks
      *
      * @return void
      */
@@ -905,7 +907,7 @@ class Sql
         $bkm_user,
         $sql_query_for_bookmark,
         $bkm_label,
-        ?bool $bkm_replace
+        bool $bkm_replace
     ) {
         $bfields = [
             'bkm_database' => $db,
@@ -915,7 +917,7 @@ class Sql
         ];
 
         // Should we replace bookmark?
-        if (isset($bkm_replace)) {
+        if ($bkm_replace) {
             $bookmarks = Bookmark::getList(
                 $GLOBALS['dbi'],
                 $GLOBALS['cfg']['Server']['user'],
@@ -1193,7 +1195,7 @@ class Sql
                     $cfgBookmark['user'],
                     $sql_query_for_bookmark,
                     $_POST['bkm_label'],
-                    isset($_POST['bkm_replace']) ? $_POST['bkm_replace'] : null
+                    isset($_POST['bkm_replace'])
                 );
             } // end store bookmarks
 
@@ -1471,6 +1473,7 @@ class Sql
                 if (is_array($profiling_results)) {
                     $header   = $response->getHeader();
                     $scripts  = $header->getScripts();
+                    $scripts->addFile('vendor/stickyfill.min.js');
                     $scripts->addFile('sql.js');
                     $html_output .= $this->getHtmlForProfilingChart(
                         $url_query,
@@ -1793,7 +1796,7 @@ class Sql
      * @param array               $analyzed_sql_results analysed sql results
      * @param string              $db                   current database
      * @param string              $table                current table
-     * @param string|null         $message              message to show
+     * @param Message|string|null $message              message to show
      * @param array|null          $sql_data             sql data
      * @param DisplayResults      $displayResultsObject Instance of DisplayResults
      * @param string              $pmaThemeImage        uri of the theme image
@@ -1818,7 +1821,7 @@ class Sql
         array $analyzed_sql_results,
         $db,
         $table,
-        ?string $message,
+        $message,
         ?array $sql_data,
         $displayResultsObject,
         $pmaThemeImage,
@@ -1931,9 +1934,10 @@ class Sql
         $tableMaintenanceHtml = '';
         if (isset($_POST['table_maintenance'])) {
             $scripts->addFile('makegrid.js');
+            $scripts->addFile('vendor/stickyfill.min.js');
             $scripts->addFile('sql.js');
             if (isset($message)) {
-                $message = Message::success($message);
+                $message = is_string($message) ? Message::success($message) : $message;
                 $tableMaintenanceHtml = Util::getMessage(
                     $message,
                     $GLOBALS['sql_query'],
@@ -1952,7 +1956,7 @@ class Sql
                 $result,
                 $analyzed_sql_results
             );
-            if (empty($sql_data) || ($sql_data['valid_queries'] = 1)) {
+            if (empty($sql_data) || ($sql_data['valid_queries'] <= 1)) {
                 $response->addHTML($tableMaintenanceHtml);
                 exit;
             }
@@ -1960,6 +1964,7 @@ class Sql
 
         if (! isset($_POST['printview']) || $_POST['printview'] != '1') {
             $scripts->addFile('makegrid.js');
+            $scripts->addFile('vendor/stickyfill.min.js');
             $scripts->addFile('sql.js');
             unset($GLOBALS['message']);
             //we don't need to buffer the output in getMessage here.

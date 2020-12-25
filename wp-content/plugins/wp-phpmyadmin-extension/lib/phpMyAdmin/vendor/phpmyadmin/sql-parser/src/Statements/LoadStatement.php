@@ -2,6 +2,7 @@
 /**
  * `LOAD` statement.
  */
+
 declare(strict_types=1);
 
 namespace PhpMyAdmin\SqlParser\Statements;
@@ -15,6 +16,9 @@ use PhpMyAdmin\SqlParser\Parser;
 use PhpMyAdmin\SqlParser\Statement;
 use PhpMyAdmin\SqlParser\Token;
 use PhpMyAdmin\SqlParser\TokensList;
+use function count;
+use function strlen;
+use function trim;
 
 /**
  * `LOAD` statement.
@@ -358,19 +362,19 @@ class LoadStatement extends Statement
                 if ($token->keyword === 'PARTITION') {
                     ++$list->idx;
                     $this->partition = ArrayObj::parse($parser, $list);
-                    $state = 4;
 
-                    return $state;
+                    return 4;
                 }
+
                 // no break
             case 4:
                 if ($token->keyword === 'CHARACTER SET') {
                     ++$list->idx;
                     $this->charset_name = Expression::parse($parser, $list);
-                    $state = 5;
 
-                    return $state;
+                    return 5;
                 }
+
                 // no break
             case 5:
                 if ($token->keyword === 'FIELDS'
@@ -378,10 +382,10 @@ class LoadStatement extends Statement
                     || $token->keyword === 'LINES'
                 ) {
                     $this->parseFileOptions($parser, $list, $token->value);
-                    $state = 6;
 
-                    return $state;
+                    return 6;
                 }
+
                 // no break
             case 6:
                 if ($token->keyword === 'IGNORE') {
@@ -396,19 +400,19 @@ class LoadStatement extends Statement
                     ) {
                         $this->lines_rows = $nextToken->token;
                     }
-                    $state = 7;
 
-                    return $state;
+                    return 7;
                 }
+
                 // no break
             case 7:
                 if ($token->keyword === 'SET') {
                     ++$list->idx;
                     $this->set = SetOperation::parse($parser, $list);
-                    $state = 8;
 
-                    return $state;
+                    return 8;
                 }
+
                 // no break
             default:
         }

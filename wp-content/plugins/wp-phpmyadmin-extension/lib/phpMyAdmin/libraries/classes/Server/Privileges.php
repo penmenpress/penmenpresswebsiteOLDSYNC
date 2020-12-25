@@ -269,7 +269,8 @@ class Privileges
             && (! isset($_POST['grant_count']) || count($privs) == $_POST['grant_count'])
         ) {
             if ($enableHTML) {
-                $privs = ['<dfn title="'
+                $privs = [
+                    '<dfn title="'
                     . __('Includes all privileges except GRANT.')
                     . '">ALL PRIVILEGES</dfn>',
                 ];
@@ -1937,8 +1938,11 @@ class Privileges
             && $mode == 'change'
         ) {
             $row = $this->dbi->fetchSingleRow(
-                'SELECT `plugin` FROM `mysql`.`user` WHERE '
-                . '`User` = "' . $username . '" AND `Host` = "' . $hostname . '" LIMIT 1'
+                'SELECT `plugin` FROM `mysql`.`user` WHERE `User` = "'
+                . $GLOBALS['dbi']->escapeString($username)
+                . '" AND `Host` = "'
+                . $GLOBALS['dbi']->escapeString($hostname)
+                . '" LIMIT 1'
             );
             // Table 'mysql'.'user' may not exist for some previous
             // versions of MySQL - in that case consider fallback value
@@ -1949,8 +1953,11 @@ class Privileges
             list($username, $hostname) = $this->dbi->getCurrentUserAndHost();
 
             $row = $this->dbi->fetchSingleRow(
-                'SELECT `plugin` FROM `mysql`.`user` WHERE '
-                . '`User` = "' . $username . '" AND `Host` = "' . $hostname . '"'
+                'SELECT `plugin` FROM `mysql`.`user` WHERE `User` = "'
+                . $GLOBALS['dbi']->escapeString($username)
+                . '" AND `Host` = "'
+                . $GLOBALS['dbi']->escapeString($hostname)
+                . '"'
             );
             if (is_array($row) && isset($row['plugin'])) {
                 $authentication_plugin = $row['plugin'];
@@ -2089,8 +2096,8 @@ class Privileges
                     . " `authentication_string` = '" . $hashedPassword
                     . "', `Password` = '', "
                     . " `plugin` = '" . $authentication_plugin . "'"
-                    . " WHERE `User` = '" . $username . "' AND Host = '"
-                    . $hostname . "';";
+                    . " WHERE `User` = '" . $GLOBALS['dbi']->escapeString($username)
+                    . "' AND Host = '" . $GLOBALS['dbi']->escapeString($hostname) . "';";
             } else {
                 // USE 'SET PASSWORD ...' syntax for rest of the versions
                 // Backup the old value, to be reset later
@@ -2100,8 +2107,8 @@ class Privileges
                 $orig_value = $row['@@old_passwords'];
                 $update_plugin_query = "UPDATE `mysql`.`user` SET"
                     . " `plugin` = '" . $authentication_plugin . "'"
-                    . " WHERE `User` = '" . $username . "' AND Host = '"
-                    . $hostname . "';";
+                    . " WHERE `User` = '" . $GLOBALS['dbi']->escapeString($username)
+                    . "' AND Host = '" . $GLOBALS['dbi']->escapeString($hostname) . "';";
 
                 // Update the plugin for the user
                 if (! $this->dbi->tryQuery($update_plugin_query)) {
@@ -2209,7 +2216,7 @@ class Privileges
     }
 
     /**
-     * Get REQUIRE cluase
+     * Get REQUIRE clause
      *
      * @return string REQUIRE clause
      */
@@ -2681,8 +2688,8 @@ class Privileges
     public function mergePrivMapFromResult(array &$privMap, $result)
     {
         while ($row = $this->dbi->fetchAssoc($result)) {
-            $user = $row['User'];
-            $host = $row['Host'];
+            $user = (string) $row['User'];
+            $host = (string) $row['Host'];
             if (! isset($privMap[$user])) {
                 $privMap[$user] = [];
             }
@@ -2774,7 +2781,7 @@ class Privileges
                     $html_output .= '<span style="color: #FF0000">'
                         . __('Any') . '</span>';
                 } else {
-                    $html_output .= htmlspecialchars($current_user);
+                    $html_output .= htmlspecialchars((string) $current_user);
                 }
                 $html_output .= '</td>';
 
@@ -4067,6 +4074,8 @@ class Privileges
             $sql_query1 = '';
         }
 
+        $alterUserQuery = null;
+
         // Should not do a GRANT USAGE for a table-specific privilege, it
         // causes problems later (cannot revoke it)
         if (! (strlen($tablename) > 0
@@ -4077,9 +4086,21 @@ class Privileges
                 . ' TO \'' . $this->dbi->escapeString($username) . '\'@\''
                 . $this->dbi->escapeString($hostname) . '\'';
 
+            $isMySqlOrPercona = Util::getServerType() == 'MySQL' || Util::getServerType() == 'Percona Server';
+            $needsToUseAlter = $isMySqlOrPercona && $this->dbi->getVersion() >= 80011;
+
+            if ($needsToUseAlter) {
+                $alterUserQuery = 'ALTER USER \'' . $this->dbi->escapeString($username) . '\'@\''
+                . $this->dbi->escapeString($hostname) . '\' ';
+            }
+
             if (strlen($dbname) === 0) {
                 // add REQUIRE clause
-                $sql_query2 .= $this->getRequireClause();
+                if ($needsToUseAlter) {
+                    $alterUserQuery .= $this->getRequireClause();
+                } else {
+                    $sql_query2 .= $this->getRequireClause();
+                }
             }
 
             if ((isset($_POST['Grant_priv']) && $_POST['Grant_priv'] == 'Y')
@@ -4088,9 +4109,17 @@ class Privileges
                 || isset($_POST['max_updates'])
                 || isset($_POST['max_user_connections'])))
             ) {
-                $sql_query2 .= $this->getWithClauseForAddUserAndUpdatePrivs();
+                if ($needsToUseAlter) {
+                    $alterUserQuery .= $this->getWithClauseForAddUserAndUpdatePrivs();
+                } else {
+                    $sql_query2 .= $this->getWithClauseForAddUserAndUpdatePrivs();
+                }
             }
             $sql_query2 .= ';';
+
+            if ($needsToUseAlter) {
+                $alterUserQuery .= ';';
+            }
         }
         if (! $this->dbi->tryQuery($sql_query0)) {
             // This might fail when the executing user does not have
@@ -4107,7 +4136,14 @@ class Privileges
         } else {
             $sql_query2 = '';
         }
-        $sql_query = $sql_query0 . ' ' . $sql_query1 . ' ' . $sql_query2;
+
+        if ($alterUserQuery !== null) {
+            $this->dbi->query($alterUserQuery);
+        } else {
+            $alterUserQuery = '';
+        }
+
+        $sql_query = $sql_query0 . ' ' . $sql_query1 . ' ' . $sql_query2 . ' ' . $alterUserQuery;
         $message = Message::success(__('You have updated the privileges for %s.'));
         $message->addParam('\'' . $username . '\'@\'' . $hostname . '\'');
 
@@ -4423,7 +4459,7 @@ class Privileges
             isset($_POST['old_usergroup']) ? $_POST['old_usergroup'] : null;
         $this->setUserGroup($_POST['username'], $old_usergroup);
 
-        if ($create_user_real === null) {
+        if ($create_user_real !== null) {
             $queries[] = $create_user_real;
         }
         $queries[] = $real_sql_query;
@@ -4497,10 +4533,10 @@ class Privileges
         $dbname_is_wildcard = null;
 
         if (isset($_REQUEST['username'])) {
-            $username = $_REQUEST['username'];
+            $username = (string) $_REQUEST['username'];
         }
         if (isset($_REQUEST['hostname'])) {
-            $hostname = $_REQUEST['hostname'];
+            $hostname = (string) $_REQUEST['hostname'];
         }
         /**
          * Checks if a dropdown box has been used for selecting a database / table
@@ -5480,7 +5516,12 @@ class Privileges
             } elseif ($serverType == 'MariaDB') {
                 $create_user_stmt .= ' IDENTIFIED BY \'%s\'';
             } elseif (($serverType == 'MySQL' || $serverType == 'Percona Server') && $serverVersion >= 80011) {
-                $create_user_stmt .= ' BY \'%s\'';
+                if (mb_strpos($create_user_stmt, 'IDENTIFIED') === false) {
+                    // Maybe the authentication_plugin was not posted and then a part is missing
+                    $create_user_stmt .= ' IDENTIFIED BY \'%s\'';
+                } else {
+                    $create_user_stmt .= ' BY \'%s\'';
+                }
             } else {
                 $create_user_stmt .= ' AS \'%s\'';
             }

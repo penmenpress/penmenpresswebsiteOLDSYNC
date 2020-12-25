@@ -45,7 +45,7 @@ $options_array = [
 $relation = $containerBuilder->get('relation');
 $cfgRelation = $relation->getRelationsParam();
 $tbl_storage_engine = mb_strtoupper(
-    $dbi->getTable($db, $table)->getStatusInfo('Engine')
+    $dbi->getTable($db, $table)->getStatusInfo('Engine') ?? ''
 );
 $upd_query = new Table($table, $db, $dbi);
 
@@ -77,9 +77,10 @@ if (Util::isForeignKeySupported($tbl_storage_engine)) {
 
 /** @var Definition $definition */
 $definition = $containerBuilder->getDefinition(RelationController::class);
+$parameterBag = $containerBuilder->getParameterBag();
 array_map(
-    static function (string $parameterName, $value) use ($definition) {
-        $definition->replaceArgument($parameterName, $value);
+    static function (string $parameterName, $value) use ($definition, $parameterBag) {
+        $definition->replaceArgument($parameterName, $parameterBag->escapeValue($value));
     },
     array_keys($dependency_definitions),
     $dependency_definitions

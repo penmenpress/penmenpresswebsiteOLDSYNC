@@ -1420,7 +1420,7 @@ class Results
 
             $display_params['emptypre'] = $emptyPreCondition ? 4 : 0;
 
-            $button_html .= '<th class="column_action print_ignore" ' . $colspan
+            $button_html .= '<th class="column_action sticky print_ignore" ' . $colspan
                 . '>' . $full_or_partial_text_link . '</th>';
         } elseif ($leftOrBoth
             && (($displayParts['edit_lnk'] != self::NO_EDIT_OR_DELETE)
@@ -1434,7 +1434,7 @@ class Results
         } elseif ($GLOBALS['cfg']['RowActionLinks'] == self::POSITION_NONE) {
             // ... elseif display an empty column if the actions links are
             //  disabled to match the rest of the table
-            $button_html .= '<th class="column_action"></th>';
+            $button_html .= '<th class="column_action sticky"></th>';
         }
 
         $this->__set('display_params', $display_params);
@@ -1801,7 +1801,7 @@ class Results
                 );
             $sort_direction[$special_index] = preg_match(
                 '@time|date@i',
-                $fields_meta->type
+                $fields_meta->type ?? ''
             ) ? self::DESCENDING_SORT_DIR : self::ASCENDING_SORT_DIR;
         }
 
@@ -2127,6 +2127,7 @@ class Results
         }
 
         $th_class[] = 'column_heading';
+        $th_class[] = 'sticky';
         if ($GLOBALS['cfg']['BrowsePointerEnable'] == true) {
             $th_class[] = 'pointer';
         }
@@ -2170,6 +2171,7 @@ class Results
         $draggable_html = '<th';
         $th_class = [];
         $th_class[] = 'draggable';
+        $th_class[] = 'sticky';
         $this->_getClassForNumericColumnType($fields_meta, $th_class);
         if ($col_visib && ! $col_visib_j) {
             $th_class[] = 'hide';
@@ -2784,7 +2786,7 @@ class Results
 
             $not_null_class = $meta->not_null ? 'not_null' : '';
             $relation_class = isset($map[$meta->name]) ? 'relation' : '';
-            $hide_class = $col_visib && ! $col_visib[$currentColumn]
+            $hide_class = $col_visib && isset($col_visib[$currentColumn]) && ! $col_visib[$currentColumn]
                 ? 'hide'
                 : '';
             $grid_edit = $meta->orgtable != '' ? $grid_edit_class : '';
@@ -2861,6 +2863,7 @@ class Results
             $tblLower = mb_strtolower($meta->orgtable);
             $nameLower = mb_strtolower($meta->orgname);
             if (! empty($this->transformation_info[$dbLower][$tblLower][$nameLower])
+                && isset($row[$i])
                 && (trim($row[$i]) != '')
                 && ! $_SESSION['tmpval']['hide_transformation']
             ) {
@@ -2927,6 +2930,7 @@ class Results
             $_url_params = [
                 'db'            => $this->__get('db'),
                 'table'         => $meta->orgtable,
+                'where_clause_sign' => Core::signSqlQuery($whereClauseMap[$row_no][$meta->orgtable]),
                 'where_clause'  => $whereClauseMap[$row_no][$meta->orgtable],
                 'transform_key' => $meta->orgname,
             ];
@@ -3965,14 +3969,17 @@ class Results
             $query['repeat_cells'] = $GLOBALS['cfg']['RepeatCells'];
         }
 
+        // The value can also be from _GET as described on issue #16146 when sorting results
+        $sessionMaxRows = $_GET['session_max_rows'] ?? $_POST['session_max_rows'] ?? '';
+
         // as this is a form value, the type is always string so we cannot
         // use Core::isValid($_POST['session_max_rows'], 'integer')
-        if (Core::isValid($_POST['session_max_rows'], 'numeric')) {
-            $query['max_rows'] = (int) $_POST['session_max_rows'];
-            unset($_POST['session_max_rows']);
-        } elseif ($_POST['session_max_rows'] == self::ALL_ROWS) {
+        if (Core::isValid($sessionMaxRows, 'numeric')) {
+            $query['max_rows'] = (int) $sessionMaxRows;
+            unset($_GET['session_max_rows'], $_POST['session_max_rows']);
+        } elseif ($sessionMaxRows === self::ALL_ROWS) {
             $query['max_rows'] = self::ALL_ROWS;
-            unset($_POST['session_max_rows']);
+            unset($_GET['session_max_rows'], $_POST['session_max_rows']);
         } elseif (empty($query['max_rows'])) {
             $query['max_rows'] = intval($GLOBALS['cfg']['MaxRows']);
         }
@@ -4442,7 +4449,7 @@ class Results
                 $meta
             );
         } else {
-            $column_for_first_row = $row[$sorted_column_index];
+            $column_for_first_row = ($row !== null) ? $row[$sorted_column_index] : '';
         }
 
         $column_for_first_row = mb_strtoupper(
@@ -4471,7 +4478,7 @@ class Results
                 $meta
             );
         } else {
-            $column_for_last_row = $row[$sorted_column_index];
+            $column_for_last_row = ($row !== null) ? $row[$sorted_column_index] : '';
         }
 
         $column_for_last_row = mb_strtoupper(
@@ -4795,7 +4802,7 @@ class Results
                         __('Create view'),
                         true
                     ),
-                    ['class' => 'create_view ajax']
+                    ['class' => 'create_view ajax btn']
                 )
                 . '</span>' . "\n";
         }
@@ -4841,7 +4848,10 @@ class Results
                 __('Copy to clipboard'),
                 true
             ),
-            ['id' => 'copyToClipBoard']
+            [
+                'id' => 'copyToClipBoard' ,
+                'class' => 'btn',
+            ]
         );
     }
 
@@ -4861,7 +4871,10 @@ class Results
                 __('Print'),
                 true
             ),
-            ['id' => 'printView'],
+            [
+                'id' => 'printView' ,
+                'class' => 'btn',
+            ],
             'print_view'
         );
     }
@@ -4968,9 +4981,9 @@ class Results
                     'b_tblexport',
                     __('Export'),
                     true
-                )
-            )
-            . "\n";
+                ),
+                ['class' => 'btn']
+            );
 
             // prepare chart
             $results_operations_html .= Util::linkOrButton(
@@ -4979,9 +4992,9 @@ class Results
                     'b_chart',
                     __('Display chart'),
                     true
-                )
-            )
-            . "\n";
+                ),
+                ['class' => 'btn']
+            );
 
             // prepare GIS chart
             $geometry_found = false;
@@ -5002,9 +5015,9 @@ class Results
                             'b_globe',
                             __('Visualize GIS data'),
                             true
-                        )
-                    )
-                    . "\n";
+                        ),
+                        ['class' => 'btn']
+                    );
             }
         }
 
@@ -5071,13 +5084,14 @@ class Results
         $is_truncated = false;
         $result = '[' . $category;
 
-        if (isset($content)) {
+        if ($content !== null) {
             $size = strlen($content);
             $display_size = Util::formatByteDown($size, 3, 1);
             $result .= ' - ' . $display_size[0] . ' ' . $display_size[1];
         } else {
             $result .= ' - NULL';
             $size = 0;
+            $content = '';
         }
 
         $result .= ']';
@@ -5140,6 +5154,8 @@ class Results
         if (count($url_params) > 0
             && (! empty($tmpdb) && ! empty($meta->orgtable))
         ) {
+            $url_params['where_clause_sign'] = Core::signSqlQuery($url_params['where_clause']);
+
             $result = '<a href="tbl_get_field.php'
                 . Url::getCommon($url_params)
                 . '" class="disableAjax">'
@@ -5156,7 +5172,7 @@ class Results
      * @param stdClass $meta             the meta-information about the field
      * @param string   $where_comparison data for the where clause
      *
-     * @return string  formatted data
+     * @return string|null  formatted data
      *
      * @access  private
      *
@@ -5336,7 +5352,7 @@ class Results
                     ) {
                         // user chose "relational display field" in the
                         // display options, so show display field in the cell
-                        $displayedData = $default_function($dispval);
+                        $displayedData = $dispval === null ? '<em>NULL</em>' : $default_function($dispval);
                     } else {
                         // otherwise display data in the cell
                         $displayedData = $default_function($displayedData);

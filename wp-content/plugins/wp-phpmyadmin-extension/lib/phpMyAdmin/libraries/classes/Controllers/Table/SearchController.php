@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin\Controllers\Table;
 
+use PhpMyAdmin\Core;
 use PhpMyAdmin\DatabaseInterface;
 use PhpMyAdmin\Relation;
 use PhpMyAdmin\Response;
@@ -44,6 +45,13 @@ class SearchController extends AbstractController
      * @var array
      */
     private $_columnTypes;
+    /**
+     * Types of columns without any replacement
+     *
+     * @access private
+     * @var array
+     */
+    private $_originalColumnTypes;
     /**
      * Collations of columns
      *
@@ -116,6 +124,7 @@ class SearchController extends AbstractController
         $this->_columnNames = [];
         $this->_columnNullFlags = [];
         $this->_columnTypes = [];
+        $this->_originalColumnTypes = [];
         $this->_columnCollations = [];
         $this->_geomColumnFlag = false;
         $this->_foreigners = [];
@@ -150,6 +159,8 @@ class SearchController extends AbstractController
             $this->_columnNames[] = $row['Field'];
 
             $type = $row['Type'];
+            // before any replacement
+            $this->_originalColumnTypes[] = mb_strtolower($type);
             // check whether table contains geometric columns
             if (in_array($type, $geom_types)) {
                 $this->_geomColumnFlag = true;
@@ -218,6 +229,7 @@ class SearchController extends AbstractController
                 ->addFiles(
                     [
                         'makegrid.js',
+                        'vendor/stickyfill.min.js',
                         'sql.js',
                         'table/select.js',
                         'table/change.js',
@@ -250,6 +262,7 @@ class SearchController extends AbstractController
                 ->addFiles(
                     [
                         'makegrid.js',
+                        'vendor/stickyfill.min.js',
                         'sql.js',
                         'vendor/jqplot/jquery.jqplot.js',
                         'vendor/jqplot/plugins/jqplot.canvasTextRenderer.js',
@@ -360,6 +373,7 @@ class SearchController extends AbstractController
             );
             //Append it to row array as where_clause
             $row['where_clause'] = $uniqueCondition[0];
+            $row['where_clause_sign'] = Core::signSqlQuery($uniqueCondition[0]);
 
             $tmpData = [
                 $_POST['criteriaColumnNames'][0] =>
@@ -367,8 +381,9 @@ class SearchController extends AbstractController
                 $_POST['criteriaColumnNames'][1] =>
                     $row[$_POST['criteriaColumnNames'][1]],
                 'where_clause' => $uniqueCondition[0],
+                'where_clause_sign' => Core::signSqlQuery($uniqueCondition[0])
             ];
-            $tmpData[$dataLabel] = $dataLabel ? $row[$dataLabel] : '';
+            $tmpData[$dataLabel] = ($dataLabel) ? $row[$dataLabel] : '';
             $data[] = $tmpData;
         }
         unset($tmpData);
@@ -442,9 +457,13 @@ class SearchController extends AbstractController
      */
     public function getDataRowAction()
     {
+        if (! Core::checkSqlQuerySignature($_POST['where_clause'], $_POST['where_clause_sign'])) {
+            return;
+        }
+
         $extra_data = [];
-        $row_info_query = 'SELECT * FROM `' . $_POST['db'] . '`.`'
-            . $_POST['table'] . '` WHERE ' . $_POST['where_clause'];
+        $row_info_query = 'SELECT * FROM ' . Util::backquote($_POST['db']) . '.'
+            . Util::backquote($_POST['table']) . ' WHERE ' . $_POST['where_clause'];
         $result = $this->dbi->query(
             $row_info_query . ";",
             DatabaseInterface::CONNECT_USER,
@@ -935,9 +954,10 @@ class SearchController extends AbstractController
         //Gets column's type and collation
         $type = $this->_columnTypes[$column_index];
         $collation = $this->_columnCollations[$column_index];
+        $cleanType = preg_replace('@\(.*@s', '', $type);
         //Gets column's comparison operators depending on column type
         $typeOperators = $this->dbi->types->getTypeOperatorsHtml(
-            preg_replace('@\(.*@s', '', $this->_columnTypes[$column_index]),
+            $cleanType,
             $this->_columnNullFlags[$column_index],
             $selected_operator
         );
@@ -953,9 +973,29 @@ class SearchController extends AbstractController
             '',
             ''
         );
+        $html_attributes = '';
+        if (in_array($cleanType, $this->dbi->types->getIntegerTypes())) {
+            $extracted_columnspec = Util::extractColumnSpec(
+                $this->_originalColumnTypes[$column_index]
+            );
+            $is_unsigned = $extracted_columnspec['unsigned'];
+            $min_max_values = $this->dbi->types->getIntegerRange(
+                $cleanType,
+                ! $is_unsigned
+            );
+            $html_attributes = 'data-min="' . $min_max_values[0] . '" '
+                            . 'data-max="' . $min_max_values[1] . '"';
+        }
+
+        $searchFormId = $this->_searchType === 'zoom' ? '#zoom_search_form' : '#tbl_search_form';
+
+        $html_attributes .= ' onchange="return verifyAfterSearchFieldChange(' . $column_index . ', \'' . $searchFormId . '\')"';
+
         $value = $this->template->render('table/search/input_box', [
             'str' => '',
             'column_type' => (string) $type,
+            'column_data_type' => strtoupper($cleanType),
+            'html_attributes' => $html_attributes,
             'column_id' => 'fieldID_',
             'in_zoom_search_edit' => false,
             'foreigners' => $this->_foreigners,

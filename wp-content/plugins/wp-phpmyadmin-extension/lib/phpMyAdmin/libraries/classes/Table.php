@@ -245,10 +245,10 @@ class Table
 
         // query information_schema
         $result = $this->_dbi->fetchResult(
-            "SELECT TABLE_NAME
-            FROM information_schema.VIEWS
-            WHERE TABLE_SCHEMA = '" . $this->_dbi->escapeString((string) $db) . "'
-                AND TABLE_NAME = '" . $this->_dbi->escapeString((string) $table) . "'"
+            'SELECT TABLE_NAME'
+            . ' FROM information_schema.VIEWS'
+            . ' WHERE TABLE_SCHEMA = \'' . $this->_dbi->escapeString((string) $db) . '\''
+            . ' AND TABLE_NAME = \'' . $this->_dbi->escapeString((string) $table) . '\''
         );
         return $result ? true : false;
     }
@@ -265,11 +265,11 @@ class Table
         }
 
         $result = $this->_dbi->fetchResult(
-            "SELECT TABLE_NAME
-            FROM information_schema.VIEWS
-            WHERE TABLE_SCHEMA = '" . $this->_dbi->escapeString($this->_db_name) . "'
-                AND TABLE_NAME = '" . $this->_dbi->escapeString($this->_name) . "'
-                AND IS_UPDATABLE = 'YES'"
+            'SELECT TABLE_NAME'
+            . ' FROM information_schema.VIEWS'
+            . ' WHERE TABLE_SCHEMA = \'' . $this->_dbi->escapeString($this->_db_name) . '\''
+            . ' AND TABLE_NAME = \'' . $this->_dbi->escapeString($this->_name) . '\''
+            . ' AND IS_UPDATABLE = \'YES\''
         );
         return $result ? true : false;
     }
@@ -1810,7 +1810,7 @@ class Table
                 if ((
                     strpos($column['Extra'], 'GENERATED') === false
                     && strpos($column['Extra'], 'VIRTUAL') === false
-                    ) || $column['Extra'] === 'DEFAULT_GENERATED') {
+                    ) || strpos($column['Extra'], 'DEFAULT_GENERATED') !== false) {
                     $ret[] = $value;
                 }
             }
@@ -2582,8 +2582,8 @@ class Table
                     $existrel_foreign[$master_field_md5]['ref_table_name'],
                     $existrel_foreign[$master_field_md5]['ref_index_list'],
                     $existrel_foreign[$master_field_md5]['constraint'],
-                    $options_array[$existrel_foreign[$master_field_md5]['on_delete']],
-                    $options_array[$existrel_foreign[$master_field_md5]['on_update']]
+                    $options_array[$existrel_foreign[$master_field_md5]['on_delete'] ?? ''] ?? null,
+                    $options_array[$existrel_foreign[$master_field_md5]['on_update'] ?? ''] ?? null
                 );
                 if (! isset($_POST['preview_sql'])) {
                     $display_query .= $sql_query_recreate . "\n";
