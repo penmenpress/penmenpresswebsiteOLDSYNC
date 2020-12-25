@@ -21,7 +21,7 @@ class WP_Optimizer {
 	
 		$optimizations = array();
 		
-		$optimizations_dir = WPO_PLUGIN_MAIN_PATH.'/optimizations';
+		$optimizations_dir = WPO_PLUGIN_MAIN_PATH.'optimizations';
 		
 		if ($dh = opendir($optimizations_dir)) {
 			while (($file = readdir($dh)) !== false) {
@@ -43,7 +43,7 @@ class WP_Optimizer {
 	 * @param  string $sort_rule     Sort Rule.
 	 * @return array
 	 */
-	public function sort_optimizations($optimizations, $sort_on = 'ui_sort_order', $sort_rule = 'traditional') {
+	public function sort_optimizations($optimizations, $sort_on = 'ui_sort_order', $sort_rule = 'traditional') {// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		if ('run_sort_order' == $sort_on) {
 			uasort($optimizations, array($this, 'sort_optimizations_run_traditional'));
 		} else {
@@ -79,7 +79,7 @@ class WP_Optimizer {
 	 * Each array key is an optimization ID, and the value is an object,
 	 * as returned by get_optimization()
 	 *
-	 * @return [array] array of optimizations
+	 * @return [array] array of optimizations or WP_Error objects
 	 */
 	public function get_optimizations() {
 	
@@ -106,10 +106,10 @@ class WP_Optimizer {
 
 		$optimization_class = apply_filters('wp_optimize_optimization_class', 'WP_Optimization_'.$which_optimization);
 		
-		if (!class_exists('WP_Optimization')) include_once(WPO_PLUGIN_MAIN_PATH.'/includes/class-wp-optimization.php');
+		if (!class_exists('WP_Optimization')) include_once(WPO_PLUGIN_MAIN_PATH.'includes/class-wp-optimization.php');
 	
 		if (!class_exists($optimization_class)) {
-			$optimization_file = WPO_PLUGIN_MAIN_PATH.'/optimizations/'.$which_optimization.'.php';
+			$optimization_file = WPO_PLUGIN_MAIN_PATH.'optimizations/'.$which_optimization.'.php';
 			$class_file = apply_filters('wp_optimize_optimization_class_file', $optimization_file);
 			if (!preg_match('/^[a-z]+$/', $which_optimization) || !file_exists($class_file)) {
 				return new WP_Error('no_such_optimization', __('No such optimization', 'wp-optimize'), $which_optimization);
@@ -441,12 +441,12 @@ class WP_Optimizer {
 		switch ($type) {
 			case "trackbacks":
 			$thissql = "UPDATE `".$wpdb->posts."` SET ping_status='".$new_status."' WHERE post_status = 'publish' AND post_type = 'post';";
-			$trackbacks = $wpdb->query($thissql);
+			$wpdb->query($thissql);
 				break;
 
 			case "comments":
 			$thissql = "UPDATE `".$wpdb->posts."` SET comment_status='".$new_status."' WHERE post_status = 'publish' AND post_type = 'post';";
-			$comments = $wpdb->query($thissql);
+			$wpdb->query($thissql);
 				break;
 
 			default:
@@ -458,16 +458,19 @@ class WP_Optimizer {
 	/**
 	 * This function will return total database size and a possible gain of db in KB.
 	 *
+	 * @param boolean $update - Wether to update the values or not
 	 * @return string total db size gained.
 	 */
-	public function get_current_db_size() {
+	public function get_current_db_size($update = false) {
+		
+		if (!$update && $db_size = get_transient('wpo_get_current_db_size')) {
+			return $db_size;
+		}
 
 		$wp_optimize = WP_Optimize();
 
-		$wpdb = $GLOBALS['wpdb'];
 		$total_gain = 0;
 		$total_size = 0;
-		$no = 0;
 		$row_usage = 0;
 		$data_usage = 0;
 		$index_usage = 0;
@@ -487,7 +490,9 @@ class WP_Optimizer {
 		}
 
 		$total_size = ($data_usage + $index_usage);
-		return array($wp_optimize->format_size($total_size), $wp_optimize->format_size($total_gain));
+		$db_size = array($wp_optimize->format_size($total_size), $wp_optimize->format_size($total_gain));
+		set_transient('wpo_get_current_db_size', $db_size, 3600);
+		return $db_size;
 	}
 
 	/**
@@ -536,5 +541,15 @@ class WP_Optimizer {
 		}
 		
 		return array('output' => $output);
+	}
+
+	/**
+	 * Wether InnoDB tables require confirmation to be optimized
+	 *
+	 * @return boolean
+	 */
+	public function show_innodb_force_optimize() {
+		$tablesstatus = $this->get_table_information();
+		return false === $tablesstatus['is_optimizable'] && $tablesstatus['inno_db_tables'] > 0;
 	}
 }
