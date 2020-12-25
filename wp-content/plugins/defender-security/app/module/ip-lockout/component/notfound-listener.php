@@ -22,7 +22,7 @@ class Notfound_Listener extends Controller {
 		if ( ! is_404() ) {
 			return;
 		}
-		
+
 		if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
 			//only track subscriber
 			return;
@@ -74,7 +74,11 @@ class Notfound_Listener extends Controller {
 		if ( in_array( '.' . $ext, $settings->getDetect404FiletypesBlacklist() ) ) {
 			//block it
 			$this->lock( $model, 'blacklist', $uri );
-			$this->log( $uri, Log_Model::LOCKOUT_404, sprintf( __( "Lockout occurred:  Too many 404 requests for %s" ) ) );
+			$this->log(
+				$uri,
+				Log_Model::LOCKOUT_404,
+				sprintf( __( 'Lockout occurred:  Too many 404 requests for %s', "defender-security" ), $uri )
+			);
 			
 			return;
 		}
@@ -83,12 +87,21 @@ class Notfound_Listener extends Controller {
 			$pattern = preg_quote( $pattern, '/' );
 			if ( preg_match( '/' . $pattern . '$/', $uri ) ) {
 				$this->lock( $model, 'blacklist', $uri );
-				$this->log( $uri, Log_Model::LOCKOUT_404, sprintf( __( "Lockout occurred:  Too many 404 requests for %s" ) ) );
+				$this->log(
+					$uri,
+					Log_Model::LOCKOUT_404,
+					sprintf( __( 'Lockout occurred:  Too many 404 requests for %s', "defender-security" ), $uri )
+				);
 				
 				return;
 			}
 		}
-		$this->log( $uri, Log_Model::ERROR_404, sprintf( __( "Request for file %s which doesn't exist", "defender-security" ), $uri ) );
+
+		$this->log(
+			$uri,
+			Log_Model::ERROR_404,
+			sprintf( __( "Request for file %s which doesn't exist", "defender-security" ), $uri )
+		);
 		//now we need to count the attempt
 		$window = strtotime( '- ' . $settings->detect_404_timeframe . ' seconds', time() );
 		if ( $window < $model->lock_time ) {
@@ -99,11 +112,15 @@ class Notfound_Listener extends Controller {
 			'type' => Log_Model::ERROR_404,
 			'date' => [ 'compare' => '>', 'value' => $window ]
 		] );
-		
-		if ( $attempts > $settings->detect_404_threshold ) {
+
+		if ( $attempts >= $settings->detect_404_threshold ) {
 			//lock it
 			$this->lock( $model, 'normal', $uri );
-			$this->log( $uri, Log_Model::LOCKOUT_404, sprintf( __( "Lockout occurred:  Too many 404 requests for %s" ), $uri ) );
+			$this->log(
+				$uri,
+				Log_Model::LOCKOUT_404,
+				sprintf( __( 'Lockout occurred:  Too many 404 requests for %s' ), $uri )
+			);
 		}
 	}
 	
@@ -127,12 +144,15 @@ class Notfound_Listener extends Controller {
 		$model->lockout_message = $settings->detect_404_lockout_message;
 		$model->save();
 		if ( $scenario == 'blacklist' ) {
-			$settings->addIpToList( $model->ip, 'blacklist' );
+			$settings->addIpToList( $model->ip, 'blocklist' );
 		}
 		$model->lock_time = time();
-		
+
 		do_action( 'wd_404_lockout', $model, $scenario );
-		$this->email( $model, $uri );
+		//Only ip_lockout_notification is enabled
+		if ( isset( $settings->ip_lockout_notification ) && $settings->ip_lockout_notification ) {
+			$this->email($model, $uri);
+		}
 	}
 	
 	/**

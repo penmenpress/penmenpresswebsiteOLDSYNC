@@ -44,10 +44,11 @@ class Main extends Controller {
 	 */
 	public function adminMenu() {
 		$cap = is_multisite() ? 'manage_network_options' : 'manage_options';
-		add_submenu_page( 'wp-defender', esc_html__( "Settings", "defender-security" ), esc_html__( "Settings", "defender-security" ), $cap, $this->slug, array(
-			&$this,
-			'actionIndex'
-		) );
+		add_submenu_page( 'wp-defender', esc_html__( "Settings", "defender-security" ),
+			esc_html__( "Settings", "defender-security" ), $cap, $this->slug, array(
+				&$this,
+				'actionIndex'
+			) );
 	}
 
 	public function actionIndex() {
@@ -63,7 +64,7 @@ class Main extends Controller {
 
 			wp_enqueue_script( 'defender' );
 			wp_register_script( 'defender-settings', wp_defender()->getPluginUrl() . 'assets/app/settings.js', [
-				'vue',
+				'def-vue',
 				'defender',
 				'wp-i18n'
 			], wp_defender()->version, true );
@@ -84,8 +85,16 @@ class Main extends Controller {
 			return [];
 		}
 		$settings = Settings::instance();
+		Setting\Component\Backup_Settings::maybeCreateDefaultConfig();
+		$configs = Setting\Component\Backup_Settings::getConfigs();
+
+		foreach ( $configs as &$config ) {
+			//unset the data as we dont need it
+			unset( $config['configs'] );
+		}
 
 		return [
+			'configs'   => $configs,
 			'model'     => [
 				'general'       => $settings->exportByKeys( [
 					'translate',
@@ -101,7 +110,13 @@ class Main extends Controller {
 			],
 			'nonces'    => [
 				'updateSettings' => wp_create_nonce( 'updateSettings' ),
-				'resetSettings'  => wp_create_nonce( 'resetSettings' )
+				'resetSettings'  => wp_create_nonce( 'resetSettings' ),
+				'newConfig'      => wp_create_nonce( 'newConfig' ),
+				'updateConfig'   => wp_create_nonce( 'updateConfig' ),
+				'applyConfig'    => wp_create_nonce( 'applyConfig' ),
+				'deleteConfig'   => wp_create_nonce( 'deleteConfig' ),
+				'downloadConfig' => wp_create_nonce( 'downloadConfig' ),
+				'importConfig'   => wp_create_nonce( 'importConfig' ),
 			],
 			'endpoints' => $this->getAllAvailableEndpoints( Setting::getClassName() ),
 			'misc'      => [

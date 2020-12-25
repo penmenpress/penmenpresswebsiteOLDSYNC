@@ -18,7 +18,7 @@ class Component extends HObject {
 	 */
 	private $_behaviors = array();
 	private $_events = array();
-
+	
 	/**
 	 * Defined a list of events and handler
 	 * @return array
@@ -26,7 +26,7 @@ class Component extends HObject {
 	public function events() {
 		return array();
 	}
-
+	
 	/**
 	 * Define a list of behaviors
 	 *
@@ -35,7 +35,7 @@ class Component extends HObject {
 	public function behaviors() {
 		return array();
 	}
-
+	
 	/**
 	 * @param $name
 	 *
@@ -45,10 +45,10 @@ class Component extends HObject {
 		if ( isset( $this->_events[ $name ] ) && count( $this->_events[ $name ] ) ) {
 			return true;
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Queue an event
 	 *
@@ -59,7 +59,7 @@ class Component extends HObject {
 	public function on( $name, $handler, $data = null ) {
 		$this->_events[ $name ][] = array( $handler, $data );
 	}
-
+	
 	/**
 	 * Dequeue an event
 	 *
@@ -72,30 +72,30 @@ class Component extends HObject {
 		if ( empty( $this->_events ) ) {
 			return false;
 		}
-
+		
 		if ( $handler == null ) {
 			unset( $this->_events[ $name ] );
-
+			
 			return true;
 		}
-
+		
 		$removed = false;
-
+		
 		foreach ( $this->_events[ $name ] as $i => $event ) {
 			if ( $event[0] === $handler ) {
 				unset( $this->_events[ $name ][ $i ] );
 				$removed = true;
 			}
 		}
-
+		
 		if ( $removed == true ) {
 			//reset order
 			$this->_events[ $name ] = array_values( $this->_events[ $name ] );
 		}
-
+		
 		return $removed;
 	}
-
+	
 	/**
 	 * Trigger an event
 	 *
@@ -107,15 +107,15 @@ class Component extends HObject {
 	public function trigger( $name, $event = null ) {
 		//merge with the info we get from events() function
 		$events = array_merge( $this->_events, $this->events() );
-
+		
 		if ( empty( $events[ $name ] ) ) {
 			return false;
 		}
-
+		
 		if ( $event == null ) {
 			$event = new Event();
 		}
-
+		
 		$event->sender  = $this;
 		$event->name    = $name;
 		$event->handled = false;
@@ -128,10 +128,10 @@ class Component extends HObject {
 				return $event->result;
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * @param $name
 	 * @param Behavior $behavior
@@ -145,7 +145,7 @@ class Component extends HObject {
 			$this->_behaviors[ $name ] = $behavior;
 		}
 	}
-
+	
 	/**
 	 * @param $name
 	 *
@@ -155,10 +155,10 @@ class Component extends HObject {
 		$behavior        = $this->_behaviors[ $name ];
 		$behavior->owner = null;
 		unset( $this->_behaviors[ $name ] );
-
+		
 		return $behavior;
 	}
-
+	
 	/**
 	 * @param $name
 	 *
@@ -167,7 +167,7 @@ class Component extends HObject {
 	public function hasBehavior( $name ) {
 		return isset( $this->_behaviors[ $name ] );
 	}
-
+	
 	/**
 	 * @param $name
 	 *
@@ -180,7 +180,7 @@ class Component extends HObject {
 		if ( $refClass->hasProperty( $name ) ) {
 			return $refClass->getProperty( $name )->getValue();
 		}
-
+		
 		//check if behaviors already have
 		foreach ( $this->_behaviors as $key => $behavior ) {
 			$refClass = new \ReflectionClass( $behavior );
@@ -188,10 +188,10 @@ class Component extends HObject {
 				return $refClass->getProperty( $name )->getValue();
 			}
 		}
-
+		
 		throw new \Exception( 'Getting unknown property: ' . get_class( $this ) . '::' . $name );
 	}
-
+	
 	/**
 	 * @param $name
 	 * @param $arguments
@@ -203,23 +203,23 @@ class Component extends HObject {
 		$refClass = new \ReflectionClass( $this );
 		if ( $refClass->hasMethod( $name ) ) {
 			$refMethod = new \ReflectionMethod( $this, $name );
-
+			
 			return $refMethod->invokeArgs( $this, $arguments );
 		}
-
+		
 		$this->ensureBehaviors();
 		foreach ( $this->_behaviors as $key => $behavior ) {
 			$refClass = new \ReflectionClass( $behavior );
 			if ( $refClass->hasMethod( $name ) ) {
 				$refMethod = new \ReflectionMethod( $behavior, $name );
-
+				
 				return $refMethod->invokeArgs( $behavior, $arguments );
 			}
 		}
-
+		
 		throw new \Exception( 'Getting unknown property: ' . get_class( $this ) . '::' . $name );
 	}
-
+	
 	/**
 	 * make sure all behavior get init
 	 */
@@ -229,7 +229,7 @@ class Component extends HObject {
 				$this->attachBehavior( $name, new $class() );
 			}
 		}
-
+		
 		foreach ( $this->behaviors() as $name => $class ) {
 			//this is built in behaviors, if a name already defined, then we do nothing
 			if ( isset( $this->_behaviors[ $name ] ) ) {
@@ -245,7 +245,7 @@ class Component extends HObject {
 			$this->attachBehavior( $name, $behavior, true );
 		}
 	}
-
+	
 	/**
 	 * @param $property
 	 *
@@ -253,7 +253,7 @@ class Component extends HObject {
 	 */
 	public function hasProperty( $property ) {
 		$ref = new \ReflectionClass( $this );
-
+		
 		if ( $ref->hasProperty( $property ) ) {
 			return true;
 		} else {
@@ -264,11 +264,11 @@ class Component extends HObject {
 					return true;
 				}
 			}
-
+			
 			return false;
 		}
 	}
-
+	
 	/**
 	 * @param $method
 	 *
@@ -276,23 +276,23 @@ class Component extends HObject {
 	 */
 	public function hasMethod( $method ) {
 		$ref = new \ReflectionClass( $this );
-
+		
 		if ( $ref->hasMethod( $method ) ) {
 			return true;
 		} else {
 			$this->ensureBehaviors();
 			foreach ( $this->_behaviors as $key => $behavior ) {
 				$ref = new \ReflectionClass( $behavior );
-
+				
 				if ( $ref->hasMethod( $method ) ) {
 					return true;
 				}
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Do not call this directly, magic method for assign value to property, if property is not exist for this component, we will
 	 * check its behavior
@@ -305,20 +305,23 @@ class Component extends HObject {
 	public function __set( $name, $value ) {
 		$refClass = new \ReflectionClass( $this );
 		if ( $refClass->hasProperty( $name ) ) {
-			$refClass->getProperty( $name )->setValue( $value );
-
+			$prop = $refClass->getProperty( $name );
+			if ( $prop->isPublic() ) {
+				$prop->setValue( $value );
+			}
+			
 			return;
 		}
-
+		
 		foreach ( $this->_behaviors as $key => $behavior ) {
 			$refClass = new \ReflectionClass( $behavior );
 			if ( $refClass->hasProperty( $name ) ) {
 				$refClass->getProperty( $name )->setValue( $value );
-
+				
 				return;
 			}
 		}
-
+		
 		throw new \Exception( 'Setting unknown property: ' . get_class( $this ) . '::' . $name );
 	}
 }

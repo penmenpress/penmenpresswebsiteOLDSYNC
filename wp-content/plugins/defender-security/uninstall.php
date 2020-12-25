@@ -20,10 +20,10 @@ $path = dirname( __FILE__ );
 include_once $path . DIRECTORY_SEPARATOR . 'wp-defender.php';
 
 $settings = \WP_Defender\Module\Setting\Model\Settings::instance();
-if ( is_multisite() ) {
-	$data = get_site_option( 'wd_main_settings', array(), false );
-	$settings->import( $data );
-}
+//if ( is_multisite() ) {
+//	$data = get_site_option( 'wd_main_settings', array(), false );
+//	$settings->import( $data );
+//}
 
 if ( $settings->uninstall_data == 'remove' ) {
 	$scan = \WP_Defender\Module\Scan\Model\Scan::findAll();
@@ -42,6 +42,7 @@ if ( $settings->uninstall_data == 'remove' ) {
 	$wpdb->query( $sql );
 
 	\WP_Defender\Behavior\Utils::instance()->removeDir( \WP_Defender\Behavior\Utils::instance()->getDefUploadDir() );
+	\WP_Defender\Module\Setting\Component\Backup_Settings::clearConfigs();
 }
 
 if ( $settings->uninstall_settings == 'reset' ) {
@@ -50,7 +51,7 @@ if ( $settings->uninstall_settings == 'reset' ) {
 	foreach ( $tweakFixed as $rule ) {
 		$rule->getService()->revert();
 	}
-
+	
 	( new \WP_Defender\Module\Scan\Component\Scanning() )->flushCache();
 
 	$cache = \Hammer\Helper\WP_Helper::getCache();
@@ -62,8 +63,9 @@ if ( $settings->uninstall_settings == 'reset' ) {
 	\WP_Defender\Module\Scan\Model\Settings::instance()->delete();
 	\WP_Defender\Module\Hardener\Model\Settings::instance()->delete();
 	\WP_Defender\Module\IP_Lockout\Model\Settings::instance()->delete();
+	\WP_Defender\Module\Two_Factor\Model\Auth_Settings::instance()->delete();
 	\WP_Defender\Module\Advanced_Tools\Model\Mask_Settings::instance()->delete();
-	\WP_Defender\Module\Advanced_Tools\Model\Auth_Settings::instance()->delete();
+	\WP_Defender\Module\Two_Factor\Model\Auth_Settings::instance()->delete();
 	\WP_Defender\Module\Setting\Model\Settings::instance()->delete();
 	//clear old stuff
 	delete_site_option( 'wp_defender' );

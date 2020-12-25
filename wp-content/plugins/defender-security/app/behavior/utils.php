@@ -10,7 +10,7 @@ use Hammer\Helper\Log_Helper;
 use Hammer\Helper\WP_Helper;
 use WP_Defender\Component\Error_Code;
 use WP_Defender\Component\Jed;
-use WP_Defender\Module\Advanced_Tools\Model\Auth_Settings;
+use WP_Defender\Module\Two_Factor\Model\Auth_Settings;
 use WP_Defender\Module\Hardener\Model\Settings;
 use WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api;
 use WP_Defender\Module\Scan\Component\Scan_Api;
@@ -45,13 +45,11 @@ class Utils extends Behavior {
 			$post_vars['timeout']        = 30;
 			$post_vars['httpversion']    = '1.1';
 
-			$headers = isset( $post_vars['headers'] ) ? $post_vars['headers'] : array();
-
+			$post_vars            = array_merge( $post_vars, $requestArgs );
+			$headers              = isset( $post_vars['headers'] ) ? $post_vars['headers'] : array();
 			$post_vars['headers'] = array_merge( $headers, array(
 				'Authorization' => 'Basic ' . $api_key
 			) );
-
-			$post_vars = array_merge( $post_vars, $requestArgs );
 
 			$response = wp_remote_request( $endPoint,
 				apply_filters( 'wd_wpmudev_call_request_args',
@@ -67,9 +65,10 @@ class Utils extends Behavior {
 
 			if (
 				'OK' !== wp_remote_retrieve_response_message( $response )
-				OR 200 !== wp_remote_retrieve_response_code( $response )
+				or 200 !== wp_remote_retrieve_response_code( $response )
 			) {
-				return new \WP_Error( wp_remote_retrieve_response_code( $response ), wp_remote_retrieve_response_message( $response ) );
+				return new \WP_Error( wp_remote_retrieve_response_code( $response ),
+					wp_remote_retrieve_response_message( $response ) );
 			} else {
 				$data = wp_remote_retrieve_body( $response );
 
@@ -77,7 +76,8 @@ class Utils extends Behavior {
 			}
 		} else {
 			return new \WP_Error( 'dashboard_required',
-				sprintf( esc_html__( "WPMU DEV Dashboard will be required for this action. Please visit <a href=\"%s\">here</a> and install the WPMU DEV Dashboard", "defender-security" )
+				sprintf( esc_html__( "WPMU DEV Dashboard will be required for this action. Please visit <a href=\"%s\">here</a> and install the WPMU DEV Dashboard",
+						"defender-security" )
 					, 'https://premium.wpmudev.org/project/wpmu-dev-dashboard/' ) );
 		}
 	}
@@ -172,6 +172,8 @@ class Utils extends Behavior {
 	}
 
 	/**
+	 * Get user display name if logged in, or Guest instead
+	 *
 	 * @param null $user_id
 	 *
 	 * @return string
@@ -196,30 +198,6 @@ class Utils extends Behavior {
 		}
 
 		return $fullname;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function allowedHtml() {
-		return array(
-			'p'      => array(),
-			'i'      => array(
-				'class' => 'wd-text-warning wdv-icon wdv-icon-fw wdv-icon-exclamation-sign'
-			),
-			'strong' => array(),
-			'span'   => array(
-				'class' => array(
-					'wd-suspicious-strong',
-					'wd-suspicious-light',
-					'wd-suspicious-medium'
-				)
-			),
-			'img'    => array(
-				'class' => 'text-warning',
-				'src'   => wp_defender()->getPluginUrl() . 'assets/img/robot.png'
-			)
-		);
 	}
 
 	/**
@@ -530,7 +508,8 @@ class Utils extends Behavior {
 		for ( $i = 0; $i < 24; $i ++ ) {
 			foreach ( apply_filters( 'wd_scan_get_times_interval', array( '00', '30' ) ) as $min ) {
 				$time          = $i . ':' . $min;
-				$data[ $time ] = apply_filters( 'wd_scan_get_times_hour_min', $time );
+				$data[ $time ] = apply_filters( 'wd_scan_get_times_hour_min',
+					strftime( '%I:%M %p', strtotime( $time ) ) );
 			}
 		}
 
@@ -553,7 +532,7 @@ class Utils extends Behavior {
 	 */
 	public function determineServer( $useStaticPath = false ) {
 		$url         = ( $useStaticPath ) ? wp_defender()->getPluginUrl() . 'changelog.txt' : home_url();
-		$server_type = get_site_transient( 'wd_util_server' );
+		$server_type = get_site_option( 'wd_util_server' );
 		if ( ! is_array( $server_type ) ) {
 			$server_type = array();
 		}
@@ -566,7 +545,8 @@ class Utils extends Behavior {
 		global $is_apache, $is_nginx, $is_IIS, $is_iis7;
 
 		$server     = null;
-		$ssl_verify = apply_filters( 'defender_ssl_verify', true ); //most hosts dont really have valid ssl or ssl still pending
+		$ssl_verify = apply_filters( 'defender_ssl_verify',
+			true ); //most hosts dont really have valid ssl or ssl still pending
 
 		if ( $is_nginx ) {
 			$server = 'nginx';
@@ -577,7 +557,7 @@ class Utils extends Behavior {
 			} else {
 				//so the server software is apache, let see what the header return
 				$request = wp_remote_head( $url, array(
-					'user-agent' => $_SERVER['HTTP_USER_AGENT'],
+					'user-agent' => 'WP Defender self ping - determine server type',
 					'sslverify'  => $ssl_verify
 				) );
 				$server  = wp_remote_retrieve_header( $request, 'server' );
@@ -593,10 +573,11 @@ class Utils extends Behavior {
 			$server = 'iis';
 		}
 
-		if ( is_null( $server ) ) {
+		if ( is_null( $server ) && ( php_sapi_name() !== 'cli' ) ) {
 			//if fall in here, means there is st unknowed.
+			//we need to check there is not cli evn
 			$request = wp_remote_head( $url, array(
-				'user-agent' => $_SERVER['HTTP_USER_AGENT'],
+				'user-agent' => 'WP Defender self ping - determine server type',
 				'sslverify'  => $ssl_verify
 			) );
 			$server  = wp_remote_retrieve_header( $request, 'server' );
@@ -605,8 +586,7 @@ class Utils extends Behavior {
 		}
 
 		$server_type[ $url ] = $server;
-		//cache for an hour
-		set_site_transient( 'wd_util_server', $server_type, 3600 );
+		update_site_option( 'wd_util_server', $server_type );
 
 		return $server;
 	}
@@ -654,7 +634,19 @@ class Utils extends Behavior {
 		return $version;
 	}
 
+	public function format_frequency_for_hub( $frequency, $day, $time ) {
+		$time = strftime( '%I:%M %p', strtotime( $time ) );
+		if ( 1 == $frequency ) {
+			return 'Daily at ' . $time;
+		} elseif ( 7 == $frequency ) {
+			return 'Weekly on ' . $day . ' at ' . $time;
+		} elseif ( 30 == $frequency ) {
+			return 'Monthly on ';
+		}
+	}
+
 	/**
+	 * Return /wp-content/uploads/wp-defender dir, and create if not any
 	 * @return string
 	 */
 	public function getDefUploadDir() {
@@ -672,40 +664,21 @@ class Utils extends Behavior {
 		return $defDir;
 	}
 
+	public function recipientsToString( $recipients ) {
+		$strings = [];
+		foreach ( $recipients as $recipient ) {
+			$strings[] = $recipient['email'];
+		}
+
+		return implode( ', ', $strings );
+	}
+
+
 	/**
 	 * @return array|void
 	 */
 	public function submitStatsToDev() {
 		return false;
-	}
-
-	/**
-	 * We will need to convert mo translate into json for frontend can read
-	 *
-	 * @param $handle
-	 */
-	public function createTranslationJson( $handle ) {
-		$locale    = determine_locale();
-		$mo_file   = "wpdef-{$locale}.mo";
-		$mo_path   = wp_defender()->getPluginPath() . 'languages/' . $mo_file;
-		$json_path = wp_defender()->getPluginPath() . 'languages/' . "wpdef-{$locale}-{$handle}.json";
-		if ( file_exists( $json_path ) ) {
-			$data = json_decode( $json_path, true );
-			if ( isset( $data['version'] ) ) {
-				return;
-			}
-		}
-		if ( ! file_exists( $mo_path ) ) {
-			//no translation found
-			return;
-		}
-		//import from mo
-		$translations = new \Gettext\Translations();
-		\Gettext\Extractors\Mo::fromFile( $mo_path, $translations );
-		$translations->setDomain( 'messages' );
-		$translations->setLanguage( get_locale() );
-		//export to json
-		Jed::toFile( $translations, $json_path );
 	}
 
 	/**
@@ -756,7 +729,6 @@ class Utils extends Behavior {
 
 		return $text;
 	}
-
 
 	/**
 	 * List server types
@@ -813,6 +785,37 @@ class Utils extends Behavior {
 		$url = "https://premium.wpmudev.org/project/wp-defender/?utm_source=defender&utm_medium=plugin&utm_campaign=" . $campaign;
 
 		return $url;
+	}
+
+	/**
+	 * We will need to convert mo translate into json for frontend can read
+	 *
+	 * @param $handle
+	 */
+	public function createTranslationJson( $handle ) {
+		$locale    = determine_locale();
+		$mo_file   = "wpdef-{$locale}.mo";
+		$mo_path   = wp_defender()->getPluginPath() . 'languages/' . $mo_file;
+		$json_path = wp_defender()->getPluginPath() . 'languages/' . "wpdef-{$locale}-{$handle}.json";
+		if ( file_exists( $json_path ) ) {
+			$data = json_decode( file_get_contents( $json_path ), true );
+			if ( isset( $data['version'] ) ) {
+				return;
+			}
+			@unlink( $json_path );
+		}
+
+		if ( ! file_exists( $mo_path ) ) {
+			//no translation found
+			return;
+		}
+		//import from mo
+		$translations = new \Gettext\Translations();
+		\Gettext\Extractors\Mo::fromFile( $mo_path, $translations );
+		$translations->setDomain( 'messages' );
+		$translations->setLanguage( get_locale() );
+		//export to json
+		Jed::toFile( $translations, $json_path );
 	}
 
 	/**
@@ -1097,7 +1100,12 @@ class Utils extends Behavior {
 
 		return $country_array;
 	}
-	
+
+	/**
+	 * @param $dir
+	 *
+	 * @return bool|void|\WP_Error
+	 */
 	public function removeDir( $dir ) {
 		if ( ! is_dir( $dir ) ) {
 			return;
@@ -1112,25 +1120,31 @@ class Utils extends Behavior {
 				$res = @unlink( $file->getRealPath() );
 			}
 			if ( $res == false ) {
-				return new \WP_Error( Error_Code::NOT_WRITEABLE, __( "Defender doesn't have enough permission to remove this file", "defender-security" ) );
+				return new \WP_Error( Error_Code::NOT_WRITEABLE,
+					__( "Defender doesn't have enough permission to remove this file", "defender-security" ) );
 			}
 		}
 		$res = @rmdir( $dir );
 		if ( $res == false ) {
-			return new \WP_Error( Error_Code::NOT_WRITEABLE, __( "Defender doesn't have enough permission to remove this file", "defender-security" ) );
+			return new \WP_Error( Error_Code::NOT_WRITEABLE,
+				__( "Defender doesn't have enough permission to remove this file", "defender-security" ) );
 		}
-		
+
 		return true;
 	}
-	
+
 	public function parseDomain( $domain ) {
-		if ( ! filter_var( $domain, FILTER_VALIDATE_DOMAIN ) ) {
+		//FILTER_VALIDATE_DOMAIN filter will be added in PHP 7
+		$filter_domain = version_compare( PHP_VERSION, '7.0', '>=' ) ? FILTER_VALIDATE_DOMAIN : FILTER_VALIDATE_URL;
+		if ( ! filter_var( $domain, $filter_domain ) ) {
 			return false;
 		}
 		$suffix = $this->getDomainSuffix( $domain );
 		if ( $suffix == false ) {
 			return false;
 		}
+		//exclude 'www.'
+		$domain           = str_replace( 'www.', '', $domain );
 		$host             = parse_url( $domain, PHP_URL_HOST );
 		$host_without_tld = str_replace( $suffix, '', $host );
 		//remove righter . if any
@@ -1144,14 +1158,14 @@ class Utils extends Behavior {
 		}
 		//parse to get the root & subdomain
 		$domain = array_pop( $parts );
-		
+
 		return [
 			'host'      => $host,
 			'tld'       => $suffix,
 			'subdomain' => str_replace( $domain, '', $host_without_tld ),
 		];
 	}
-	
+
 	private function getDomainSuffix( $domain ) {
 		$tlds = include dirname( __DIR__ ) . '/component/public-suffix.php';
 		//whitelist development
@@ -1180,41 +1194,44 @@ class Utils extends Behavior {
 		if ( empty( $list ) ) {
 			return false;
 		}
-		
+
 		//the lenghter will be use
 		return $list[0];
 	}
-	
-	public function log( $log ) {
+
+	public function log( $log, $group = null ) {
 		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
 			return;
 		}
 		$log_path = self::getDefUploadDir();
-		$log_name = hash( 'sha256', network_home_url() . SECURE_AUTH_SALT );
+		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
 		$log_path = $log_path . '/' . $log_name;
-		
+
 		$log = sprintf( '%s - %s' . PHP_EOL, date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ), $log );
 		file_put_contents( $log_path, $log, FILE_APPEND );
 	}
-	
-	public function read_log() {
+
+	public function read_log( $group = null ) {
 		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
 			return;
 		}
 		$log_path = self::getDefUploadDir();
-		$log_name = hash( 'sha256', network_home_url() . SECURE_AUTH_SALT );
+		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
 		$log_path = $log_path . '/' . $log_name;
-		$text     = file( $log_path );
-		
+		if ( ! file_exists( $log_path ) ) {
+			return;
+		}
+		$text = file( $log_path );
+
 		return implode( array_reverse( $text ), PHP_EOL );
 	}
-	
-	public function clear_log() {
+
+	public function clear_log( $group = null ) {
 		if ( ! defined( 'DEFENDER_DEBUG' ) ) {
 			return;
 		}
 		$log_path = self::getDefUploadDir();
-		$log_name = hash( 'sha256', network_home_url() . SECURE_AUTH_SALT );
+		$log_name = hash( 'sha256', network_home_url() . $group . SECURE_AUTH_SALT );
 		$log_path = $log_path . '/' . $log_name;
 		@unlink( $log_path );
 	}

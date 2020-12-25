@@ -1,22 +1,21 @@
-=== Defender WordPress Security, Malware Detection, and Firewall ===
-Plugin Name: Defender WordPress Security, Malware Detection, and Firewall
-Version: 2.2.6
+=== Defender Security - Malware Scanner, Login Security & Firewall ===
+Plugin Name: Defender Security - Malware Scanner, Login Security & Firewall
+Version: 2.3.2
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
-Contributors: WPMUDEV
-Tags: wordpress security plugin, security, firewall, vulnerability, brute force attacks, sql injections, XSS, malware, malware scanner, two-factor authentication, scheduled malware scans, audit logs
+Contributors: WPMUDEV, WebFactory
+Tags: security plugin, security, firewall, malware, malware scanner, antivirus, ip blocking, login security, brute force attacks, two-factor authentication, activity log, audit logs, block hackers, 2fa, hack
 Requires at least: 5.0
-Tested up to: 5.3
-Stable tag: 2.2.6
+Tested up to: 5.5
+Stable tag: 2.3.2
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
-WordPress security plugin with malware scans, IP blocking, audit logs, firewall, login security & more.
-
+Security plugin with malware scanner, IP blocking, audit logs, activity logs, firewall, login security & more.
 
 
 == Description ==
 
-**Defender adds the best in WordPress security to your website with just a few clicks. Stop brute force attacks, SQL injections, cross-site scripting XSS, and other WordPress vulnerabilities with Defender malware scans, firewall, and two-factor authentication login security.**
+**Defender adds the best in WordPress security plugin to your website with just a few clicks. Stop brute force attacks, SQL injections, cross-site scripting XSS, and other WordPress vulnerabilities and hacks with Defender malware scans, antivirus scans, IP blocking, firewall, activity log, security log, and two-factor authentication login security.**
 
 No longer do you have to go through hideously complex settings and get a virtual PhD in security. Defender adds all the hardening and security tweaks you need.
 
@@ -30,7 +29,7 @@ Defender starts with a list of one-click hardening techniques that will instantl
 * Login masking – change the location of WordPress’s default login area
 * Login lockout – failed login attempts lockout
 * 404 Detection – automated block of bot IPs 
-* Geolocation IP lockout – block users based on location
+* Geolocation IP lockout – block users based on location and country (IP blocking)
 * WordPress Security Firewall – block or whitelist IPs
 * Disable trackbacks and pingbacks – spam prevention
 * Core and server update recommendations – stay on top of your system
@@ -41,9 +40,15 @@ Defender starts with a list of one-click hardening techniques that will instantl
 * Prevent information disclosure – why tell them what you have
 * Prevent PHP execution – because it’s daaaangerous
 
+### Learn The Ropes With These Hands-On Defender Tutorials
+
+* [How to Get the Most Out of Defender Security](https://premium.wpmudev.org/blog/how-to-get-the-most-out-of-defender-security/)
+* [How to Stop Hackers in Their Tracks with Defender](https://premium.wpmudev.org/blog/stop-hackers-with-defender-wordpress-security-plugin/)
+* [Find Out if You’re Hacked: How to Find and Delete Suspicious Code with Defender](https://premium.wpmudev.org/blog/delete-suspicious-code-defender/)
+* [How to Create a Powerful and Secure Customized Firewall with Defender](https://premium.wpmudev.org/blog/defender-ip-address-lockout-firewall/)
 
 ### WordPress Security Scans
-Run free malware scans that check WordPress for suspicious code. The Defender scan tool compares your WordPress install with the directory, reports changes and lets you restore the original file with a click.
+Run free malware scans that check WordPress for suspicious code and malware. The Defender scan tool compares your WordPress install with the master copy in WP directory, reports changes and lets you restore the original file with a click.
 
 ### Google 2-step Verification
 Now you can easily join the millions of users that make their accounts safer with Google 2-Step Verification. Activate two-factor authentication and protect your account with both your password and your phone.
@@ -51,7 +56,7 @@ Now you can easily join the millions of users that make their accounts safer wit
 [youtube https://www.youtube.com/watch?v=w9pfRCuT36Q]
  
 ### Firewall and IP Manager
-Keep your site safe with Defender’s IP manager. Manually block specific IPs, import a list of banned IPs and set automated timed and permanent lockouts. Defender makes it easy to block and unblock specific locations quickly.
+Keep your site safe with Defender’s IP manager and firewall. Manually block specific IPs, import a list of banned IPs and set automated timed and permanent lockouts. Defender makes it easy to block and unblock specific locations quickly thanks to its advanced firewall (WAF).
 
 ### Login Protection
 
@@ -69,16 +74,16 @@ Defender runs surveillance and sends notifications with information that matters
 
 ### What Do People Say About Defender?
 
-★★★★★ <br>
+★★★★★
 “I found other pro security plugins a bit too fiddly for my taste...I’m delighted with Defender” - <a href="https://profiles.wordpress.org/keithadv">KeithADV</a>
 
-★★★★★ <br>
+★★★★★
 “Thank you for bringing back a free and easy to use 2-Factor Authentication after Clef! Defender helps keep me aware of my sites security.” - <a href="https://wordpress.org/support/users/awijasa/">awijasa</a>
 
-★★★★★ <br>
+★★★★★
 “Defender's interface is very intuitive with warnings that are very helpful” - <a href="https://premium.wpmudev.org/profile/djohns">djohns</a>
 
-★★★★★ <br>
+★★★★★
 “Defender Recently blocked over 3000 attacks in one week without any noticeable impact on the website. WPMUDEV knocking it out of the park on this one.” - <a href="https://premium.wpmudev.org/profile/davidoswald/">David Oswald</a>
 
 ### Secure Websites, More Trust, Better Profit
@@ -157,6 +162,58 @@ WPMU DEV's expert support will restore and clean up your site after it’s been 
 
 
 == Changelog ==
+
+= 2.3.2 =
+- New: Add a separate Tutorials sub-menu and X-icon to remove it from the Dashboard
+- Improvement: Change mention of blacklist and whitelist to blocklist and allowlist on Defender pages
+- Improvement: Change Documentation links for Firewall and Malware Scanning
+- Improvement: Config Improvements
+- Fix: Display custom login forms if the Defender Masking URL is enabled
+- Fix: Receive email from Defender security tweaks daily
+- Fix: Activate 'Mask Login Area' through the Defender dashboard
+- Fix: Correct display of the Audit log for a new registered user - except for a Subscriber role - in MU
+- Fix: Masked login alters ajaxurl in MU in sites table page
+- Fix: Remove 'ambient-light-sensor', 'picture-in-picture', 'speaker' and 'vr' directives from Feature-Policy header
+- Fix: Compatibility with HUB
+- Other minor enhancements and fixes
+
+= 2.3.1 =
+- New: Feature to save presets configurations of the Defender's settings, and make them available to download and apply to your other sites.
+- New: Add tutorials section in the Defender dashboard.
+- Improvement: Allow to bulk delete suspicious files
+- Improvement: Improve the logic of how "Include sub-domains" option should be shown on the Strict Transport Security header
+- Fix: Prevent wp-signup.php to access when Mask Login is enabled.
+- Fix: 2FA login does not redirect correctly after login via the my-account page of Woocommerce
+- Remove: Change default database prefix, as this can be bypass.
+- Other minor enhancements and fixes
+
+= 2.3 =
+- Improvement: Change the description for X-Content-Type-Options security header
+- Fix: The WAF widget and WAF page will be hidden when white label activated
+- Fix: Include Subdomain option for Strict Transport security header
+- Fix: Cron for Audit logs
+- Other minor enhancements and fixes
+
+= 2.2.9 =
+- New:  WPMU DEV’s Hosted Web Application Firewall (WAF) is a first layer of protection to block hackers and bot attacks before they ever reach your site. Websites hosted with WPMU DEV can now use this advanced WAF by enabling it via your site’s Security or Hosting tab in The Hub.
+- Improvement: Moved the security headers out of Security Tweaks and into their own section inside Advanced Tools.
+- Improvement: Relocated Two-Factor Authentication to it’s own menu item and area.
+- Improvement: Renamed a couple of modules to more accurately reflect what they do.
+- Fix - Minor bugs and improvements
+
+= 2.2.8 =
+- Improvement: Add plugin configuration import/export option for Hub
+- Improvement: HSTS Maximum age of Strict Transport Security header added 30 days, 2 years
+- Improvement: Update copy for MaxMind license key
+- Fix: Separate email subjects of templates for scan notifications
+- Fix: Warning open_basedir restriction in effect
+- Fix: 2FA required even if the role is unchecked
+- Fix: Preview for Lockout Custom Message doesn't work
+- Fix: Sending lockout emails even though they are disabled
+- Other minor enhancements and fixes
+
+= 2.2.7 =
+- Fix: Audit Logging sometime triggers a fatal error on some setups.
 
 = 2.2.6 =
 - Improvement: Frequency of Security Tweak notifications reduced to 7 days

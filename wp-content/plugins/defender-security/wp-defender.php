@@ -1,9 +1,8 @@
 <?php
-
 /**
  * Plugin Name: Defender
  * Plugin URI: https://premium.wpmudev.org/project/wp-defender/
- * Version:     2.2.6
+ * Version:     2.3.2
  * Description: Get regular security scans, vulnerability reports, safety recommendations and customized hardening for your site in just a few clicks. Defender is the analyst and enforcer who never sleeps.
  * Author:      WPMU DEV
  * Author URI:  http://premium.wpmudev.org/
@@ -50,12 +49,17 @@ class WP_Defender_Free {
 	/**
 	 * @var string
 	 */
-	public $version = "1.5";
+	public $version = "2.3.2";
 
 	/**
 	 * @var string
 	 */
 	public $isFree = false;
+
+	/**
+	 * @var bool
+	 */
+	public $is_membership = false;
 	/**
 	 * @var array
 	 */
@@ -65,7 +69,7 @@ class WP_Defender_Free {
 	 */
 	public $plugin_slug = 'defender-security/wp-defender.php';
 
-	public $db_version = "2.1.1";
+	public $db_version = "2.3.2";
 
 	public $whiteLabel = 0;
 
@@ -181,13 +185,17 @@ class WP_Defender_Free {
 			'wdf-logging',
 			'wdf-ip-lockout',
 			'wdf-advanced-tools',
-			'wdf-setting'
+			'wdf-setting',
+			'wdf-debug',
+			'wdf-2fa',
+			'wdf-waf',
+			'wdf-tutorial'
 		];
 		$page  = isset( $_GET['page'] ) ? $_GET['page'] : null;
 		if ( ! in_array( $page, $pages, true ) ) {
 			return $classes;
 		}
-		$classes .= ' sui-2-4-1 ';
+		$classes .= ' sui-2-9-6 ';
 
 		return $classes;
 	}
@@ -206,19 +214,19 @@ class WP_Defender_Free {
 			wp_register_style( $slug, $file, array(), $this->version );
 		}
 
-		$is_min   = !defined( 'SCRIPT_DEBUG' ) ? '.min' : '';
+		$is_min   = ! defined( 'SCRIPT_DEBUG' ) ? '.min' : '';
 		$js_files = array(
 			'wpmudev-sui' => $this->plugin_url . 'assets/js/shared-ui.js',
 			'defender'    => $this->plugin_url . 'assets/js/scripts.js',
-			'vue'         => $this->plugin_url . 'assets/js/vendor/vue.runtime' . $is_min . '.js',
+			'def-vue'     => $this->plugin_url . 'assets/js/vendor/vue.runtime' . $is_min . '.js',
 		);
 
 		foreach ( $js_files as $slug => $file ) {
-			wp_register_script( $slug, $file, array(), $this->version, true );
+			wp_register_script( $slug, $file, array( 'jquery', 'clipboard' ), $this->version, true );
 		}
 
 
-		wp_localize_script( 'vue', 'defender', array(
+		wp_localize_script( 'def-vue', 'defender', array(
 			'whitelabel'   => \WP_Defender\Behavior\WPMUDEV::instance()->whiteLabelStatus(),
 			'misc'         => [
 				'high_contrast' => \WP_Defender\Behavior\WPMUDEV::instance()->maybeHighContrast(),

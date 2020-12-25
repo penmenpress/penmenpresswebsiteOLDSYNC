@@ -13,7 +13,7 @@ use WP_Defender\Module\IP_Lockout\Component\IP_API;
 
 class Settings extends \Hammer\WP\Settings {
 	private static $_instance;
-	
+
 	public $login_protection = false;
 	public $login_protection_login_attempt = 5;
 	public $login_protection_lockout_timeframe = 300;
@@ -23,7 +23,7 @@ class Settings extends \Hammer\WP\Settings {
 	public $login_protection_ban_admin_brute = false;
 	public $login_protection_lockout_ban = false;
 	public $username_blacklist = '';
-	
+
 	public $detect_404 = false;
 	public $detect_404_threshold = 20;
 	public $detect_404_timeframe = 300;
@@ -36,36 +36,36 @@ class Settings extends \Hammer\WP\Settings {
 	public $detect_404_lockout_message = "You have been locked out due to too many attempts to access a file that doesn't exist.";
 	public $detect_404_lockout_ban = false;
 	public $detect_404_logged = true;
-	
+
 	public $ip_blacklist = array();
 	public $ip_whitelist = array();
 	public $ip_lockout_message = 'The administrator has blocked your IP from accessing this website.';
-	
+
 	public $country_blacklist = [];
 	public $country_whitelist = [];
-	
+
 	public $login_lockout_notification = true;
 	public $ip_lockout_notification = true;
-	
+
 	public $report = true;
 	public $report_frequency = '7';
 	public $report_day = 'sunday';
 	public $report_time = '0:00';
-	
+
 	public $geoIP_db = null;
-	
+
 	public $storage_days = 30;
-	
+
 	public $receipts = array();
 	public $report_receipts = array();
 	public $lastReportSent;
-	
+
 	public $cooldown_enabled = false;
 	public $cooldown_number_lockout = '3';
 	public $cooldown_period = '24';
-	
+
 	public $cache = array();
-	
+
 	public function __construct( $id, $isMulti ) {
 		if ( ( is_admin() || is_network_admin() ) && current_user_can( 'manage_options' ) ) {
 			$user = wp_get_current_user();
@@ -79,7 +79,7 @@ class Settings extends \Hammer\WP\Settings {
 					'email'      => $user->user_email
 				);
 			}
-			
+
 			$this->ip_whitelist = $this->getUserIp() . PHP_EOL;
 			//default is weekly
 			$this->report_day  = strtolower( date( 'l' ) );
@@ -95,7 +95,7 @@ class Settings extends \Hammer\WP\Settings {
 		$this->detect_404_lockout_ban       = ! ! $this->detect_404_lockout_ban;
 		$this->report                       = ! ! $this->report;
 		$this->detect_404_logged            = ! ! $this->detect_404_logged;
-		
+
 		$times = Utils::instance()->getTimes();
 		if ( ! isset( $times[ $this->report_time ] ) ) {
 			$this->report_time = '4:00';
@@ -117,7 +117,7 @@ class Settings extends \Hammer\WP\Settings {
 			$this->country_blacklist = ( array_values( array_filter( $this->country_blacklist ) ) );
 		}
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -126,7 +126,7 @@ class Settings extends \Hammer\WP\Settings {
 			'utils' => '\WP_Defender\Behavior\Utils'
 		);
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -146,7 +146,7 @@ class Settings extends \Hammer\WP\Settings {
 			],
 		);
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -165,17 +165,17 @@ class Settings extends \Hammer\WP\Settings {
 			'ip_lockout_message',
 		];
 	}
-	
+
 	/**
 	 * @return array
 	 */
 	public function get404Whitelist() {
-		$arr = array_filter( explode( PHP_EOL, $this->detect_404_whitelist ) );;
+		$arr = array_filter( explode( PHP_EOL, $this->detect_404_whitelist ) );
 		$arr = array_map( 'trim', $arr );
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -183,30 +183,30 @@ class Settings extends \Hammer\WP\Settings {
 		$arr = array_filter( explode( PHP_EOL, $this->detect_404_ignored_filetypes ) );
 		$arr = array_map( 'trim', $arr );
 		$arr = array_map( 'strtolower', $arr );
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 * @return mixed
 	 */
 	public function getDetect404Whitelist() {
 		$arr = array_filter( explode( PHP_EOL, $this->detect_404_whitelist ) );
 		$arr = array_map( 'trim', $arr );
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 * @return mixed
 	 */
 	public function getDetect404Blacklist() {
 		$arr = array_filter( explode( PHP_EOL, $this->detect_404_blacklist ) );
 		$arr = array_map( 'trim', $arr );
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -217,10 +217,10 @@ class Settings extends \Hammer\WP\Settings {
 			$arr = array_filter( explode( PHP_EOL, $this->ip_blacklist ) );
 		}
 		$arr = array_map( 'trim', $arr );
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -228,10 +228,10 @@ class Settings extends \Hammer\WP\Settings {
 		$exts = explode( PHP_EOL, $this->detect_404_ignored_filetypes );
 		$exts = array_map( 'trim', $exts );
 		$exts = array_map( 'strtolower', $exts );
-		
+
 		return $exts;
 	}
-	
+
 	/**
 	 * @return mixed
 	 */
@@ -239,10 +239,10 @@ class Settings extends \Hammer\WP\Settings {
 		$exts = explode( PHP_EOL, $this->detect_404_filetypes_blacklist );
 		$exts = array_map( 'trim', $exts );
 		$exts = array_map( 'strtolower', $exts );
-		
+
 		return $exts;
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -254,10 +254,10 @@ class Settings extends \Hammer\WP\Settings {
 			$arr = array_filter( explode( PHP_EOL, $this->ip_whitelist ) );
 		}
 		$arr = array_map( 'trim', $arr );
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -268,10 +268,10 @@ class Settings extends \Hammer\WP\Settings {
 		//fallback to older version than 2.2
 		$arr = array_filter( explode( ',', $this->country_blacklist ) );
 		$arr = array_map( 'trim', $arr );
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -282,10 +282,10 @@ class Settings extends \Hammer\WP\Settings {
 		//fallback to older version than 2.2
 		$arr = array_filter( explode( ',', $this->country_whitelist ) );
 		$arr = array_map( 'trim', $arr );
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 * @param $ip
 	 *
@@ -307,10 +307,10 @@ class Settings extends \Hammer\WP\Settings {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * @param $ip
 	 *
@@ -330,52 +330,58 @@ class Settings extends \Hammer\WP\Settings {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
+	 * Add IP to list
+	 *
 	 * @param $ip
-	 * @param $list
+	 * @param string $list blocklist|allowlist
+	 * @since 2.3.2
 	 */
 	public function addIpToList( $ip, $list ) {
 		$ips  = array();
 		$type = '';
-		if ( $list == 'blacklist' ) {
+		if ( 'blocklist' === $list ) {
 			$ips  = $this->getIpBlacklist();
 			$type = 'ip_blacklist';
-		} else if ( $list == 'whitelist' ) {
+		} elseif ( 'allowlist' === $list ) {
 			$ips  = $this->getIpWhitelist();
 			$type = 'ip_whitelist';
 		}
 		if ( empty( $type ) ) {
 			return;
 		}
-		
+
 		$ips[]       = $ip;
 		$ips         = array_unique( $ips );
 		$this->$type = implode( PHP_EOL, $ips );
 		$this->save();
 	}
-	
+
 	/**
+	 * Remove IP from list
+	 *
 	 * @param $ip
-	 * @param $list
+	 * @param string $list blocklist|allowlist
+	 * @since 2.3.2
 	 */
 	public function removeIpFromList( $ip, $list ) {
 		$ips  = array();
 		$type = '';
-		if ( $list == 'blacklist' ) {
+		if ( 'blocklist' === $list ) {
 			$ips  = $this->getIpBlacklist();
 			$type = 'ip_blacklist';
-		} else if ( $list == 'whitelist' ) {
+		} elseif ( 'allowlist' === $list ) {
 			$ips  = $this->getIpWhitelist();
 			$type = 'ip_whitelist';
 		}
 		if ( empty( $type ) ) {
 			return;
 		}
-		
+
 		$key = array_search( $ip, $ips );
 		if ( $key !== false ) {
 			unset( $ips[ $key ] );
@@ -384,7 +390,7 @@ class Settings extends \Hammer\WP\Settings {
 			$this->save();
 		}
 	}
-	
+
 	/**
 	 * @param $ip
 	 * @param $range
@@ -398,10 +404,10 @@ class Settings extends \Hammer\WP\Settings {
 		$subnet = ip2long( $subnet );
 		$mask   = - 1 << ( 32 - $bits );
 		$subnet &= $mask; # nb: in case the supplied subnet wasn't correctly aligned
-		
+
 		return ( $ip & $mask ) == $subnet;
 	}
-	
+
 	public function before_update() {
 		//validate ips
 		$remove_ips = array();
@@ -420,7 +426,7 @@ class Settings extends \Hammer\WP\Settings {
 			}
 			$this->ip_blacklist = implode( PHP_EOL, $blacklist );
 		}
-		
+
 		if ( isset( $_POST['ip_whitelist'] ) ) {
 			$whitelist = Http_Helper::retrievePost( 'ip_whitelist' );
 			$whitelist = explode( PHP_EOL, $whitelist );
@@ -434,13 +440,13 @@ class Settings extends \Hammer\WP\Settings {
 			$this->ip_whitelist = implode( PHP_EOL, $whitelist );
 		}
 		$remove_ips = array_filter( $remove_ips );
-		
+
 		if ( ! empty( $remove_ips ) && count( $remove_ips ) ) {
 			WP_Helper::getArrayCache()->set( 'faultIps', $remove_ips );
 			WP_Helper::getArrayCache()->set( 'isBlacklistSelf', $isSelf );
 		}
 	}
-	
+
 	/**
 	 * $ip an be single ip, or a range like xxx.xxx.xxx.xxx - xxx.xxx.xxx.xxx or CIDR
 	 *
@@ -475,23 +481,23 @@ class Settings extends \Hammer\WP\Settings {
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public function beforeValidate() {
 		$emails = [];
 		foreach ( $this->receipts as $receipt ) {
 			if ( in_array( $receipt['email'], $emails ) ) {
 				$this->addError( 'recipients', __( "Recipients' emails can't be duplicate", "defender-security" ) );
-				
+
 				return false;
 			} else {
 				$emails[] = $receipt['email'];
 			}
 		}
 	}
-	
+
 	/**
 	 * @param $ip
 	 *
@@ -500,7 +506,7 @@ class Settings extends \Hammer\WP\Settings {
 	private function isIPV4( $ip ) {
 		return filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 );
 	}
-	
+
 	/**
 	 * @param $ip
 	 *
@@ -509,33 +515,33 @@ class Settings extends \Hammer\WP\Settings {
 	private function isIPV6( $ip ) {
 		return filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 );
 	}
-	
+
 	/**
 	 * @return array
 	 */
 	public function events() {
 		$that = $this;
-		
+
 		return array(
 			self::EVENT_BEFORE_SAVE => array(
 				array(
 					function () use ( $that ) {
 						$that->before_update();
-						
+
 						foreach ( $this->receipts as $k => &$receipt ) {
 							$receipt = array_map( 'sanitize_text_field', $receipt );
 							if ( ! filter_var( $receipt['email'], FILTER_VALIDATE_EMAIL ) ) {
 								unset( $this->receipts[ $k ] );
 							}
 						}
-						
+
 						foreach ( $this->report_receipts as $k => &$receipt ) {
 							$receipt = array_map( 'sanitize_text_field', $receipt );
 							if ( ! filter_var( $receipt['email'], FILTER_VALIDATE_EMAIL ) ) {
 								unset( $this->report_receipts[ $k ] );
 							}
 						}
-						
+
 						//need to turn off notification or report off if no recipients
 						$this->receipts = array_filter( $this->receipts );
 						if ( count( $this->receipts ) == 0 ) {
@@ -551,7 +557,7 @@ class Settings extends \Hammer\WP\Settings {
 			)
 		);
 	}
-	
+
 	/**
 	 * @return array|string
 	 */
@@ -561,10 +567,10 @@ class Settings extends \Hammer\WP\Settings {
 		$usernames = array_map( 'trim', $usernames );
 		$usernames = array_map( 'strtolower', $usernames );
 		$usernames = array_filter( $usernames );
-		
+
 		return $usernames;
 	}
-	
+
 	/**
 	 * @return bool
 	 */
@@ -572,10 +578,10 @@ class Settings extends \Hammer\WP\Settings {
 		if ( is_null( $this->geoIP_db ) || ! is_file( $this->geoIP_db ) ) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * @return bool
 	 */
@@ -592,7 +598,7 @@ class Settings extends \Hammer\WP\Settings {
 		if ( $this->isCountryWhitelist() ) {
 			return false;
 		}
-		
+
 		$blacklisted = $this->getCountryBlacklist();
 		if ( empty( $blacklisted ) ) {
 			return false;
@@ -603,10 +609,10 @@ class Settings extends \Hammer\WP\Settings {
 		if ( in_array( strtoupper( $country['iso'] ), $blacklisted ) ) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * @return bool
 	 */
@@ -616,79 +622,146 @@ class Settings extends \Hammer\WP\Settings {
 		if ( empty( $whitelist ) ) {
 			return false;
 		}
-		
+
 		if ( in_array( strtoupper( $country['iso'] ), $whitelist ) ) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * @return Settings
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
-			$class           = new Settings( 'wd_lockdown_settings', WP_Helper::is_network_activate( wp_defender()->plugin_slug ) );
+			$class           = new Settings( 'wd_lockdown_settings',
+				WP_Helper::is_network_activate( wp_defender()->plugin_slug ) );
 			self::$_instance = $class;
 		}
-		
+
 		return self::$_instance;
 	}
-	
-	
+
+
 	/**
 	 * Define labels for settings key, we will use it for HUB
 	 *
-	 * @param null $key
+	 * @param  null  $key
 	 *
 	 * @return array|mixed
 	 */
 	public function labels( $key = null ) {
 		$labels = [
-			'login_protection'                       => __( "Login Protection", "defender-security" ),
-			'login_protection_login_attempt'         => __( "Threshold: Failed logins", "defender-security" ),
-			'login_protection_lockout_timeframe'     => __( "Threshold: Timeframe", "defender-security" ),
-			'login_protection_lockout_ban'           => __( "Duration", "defender-security" ),
-			'login_protection_lockout_duration'      => __( "Duration", "defender-security" ),
-			'login_protection_lockout_duration_unit' => __( "Duration unit", "defender-security" ),
-			'login_protection_lockout_message'       => __( "Message", "defender-security" ),
-			'username_blacklist'                     => __( "Banned usernames", "defender-security" ),
-			'detect_404'                             => __( "404 Detection", "defender-security" ),
-			'detect_404_threshold'                   => __( "Threshold: 404 hits", "defender-security" ),
-			'detect_404_timeframe'                   => __( "Threshold: Timeframe", "defender-security" ),
-			'detect_404_lockout_ban'                 => __( "Duration", "defender-security" ),
-			'detect_404_lockout_duration'            => __( "Duration", "defender-security" ),
-			'detect_404_lockout_duration_unit'       => __( "Duration unit", "defender-security" ),
-			'detect_404_lockout_message'             => __( "Message", "defender-security" ),
-			'detect_404_blacklist'                   => __( "Files & Folders: Blacklist", "defender-security" ),
-			'detect_404_whitelist'                   => __( "Files & Folders: Whitelist", "defender-security" ),
-			'detect_404_filetypes_blacklist'         => __( "Filetypes & Extensions: Blacklist", "defender-security" ),
-			'detect_404_ignored_filetypes'           => __( "Filetypes & Extensions: Whitelist", "defender-security" ),
-			'detect_404_logged'                      => __( "Monitor 404s from logged in users", "defender-security" ),
-			'ip_blacklist'                           => __( "IP Addresses: Blacklist", "defender-security" ),
-			'ip_whitelist'                           => __( "IP Addresses: Whitelist", "defender-security" ),
-			'country_blacklist'                      => __( "Country: Blacklist", "defender-security" ),
-			'country_whitelist'                      => __( "Country: Whitelist", "defender-security" ),
-			'ip_lockout_message'                     => __( "Lockout message", "defender-security" ),
-			'login_lockout_notification'             => __( "Email Notifications: Login Protection Lockout", "defender-security" ),
-			'ip_lockout_notification'                => __( "Email Notifications: 404 Protection Lockout", "defender-security" ),
-			'receipts'                               => __( "Recipients for notification", "defender-security" ),
-			'cooldown_enabled'                       => __( "Repeat Lockouts", "defender-security" ),
-			'cooldown_number_lockout'                => __( "Threshold", "defender-security" ),
-			'cooldown_period'                        => __( "Cool Off Period", "defender-security" ),
-			'storage_days'                           => __( "Storage", "defender-security" ),
-			'report'                                 => __( "Report", "defender-security" ),
-			'report_receipts'                        => __( "Recipients for report", "defender-security" ),
-			'report_frequency'                       => __( "Frequency", "defender-security" ),
-			'report_day'                             => __( "Day of the week", "defender-security" ),
-			'report_time'                            => __( "Time of day", "defender-security" )
+			'login_protection'                  => __( "Login Protection", "defender-security" ),
+			'login_protection_login_attempt'    => __( "Login Protection - Threshold", "defender-security" ),
+			'login_protection_lockout_duration' => __( "Login Protection - Duration", "defender-security" ),
+			'login_protection_lockout_message'  => __( "Login Protection - Lockout Message", "defender-security" ),
+			'username_blacklist'                => __( "Login Protection - Banned Usernames", "defender-security" ),
+			'detect_404'                        => __( "404 Detection", "defender-security" ),
+			'detect_404_threshold'              => __( "404 Detection - Threshold", "defender-security" ),
+			'detect_404_lockout_duration'       => __( "404 Detection - Duration", "defender-security" ),
+			'detect_404_lockout_message'        => __( "404 Detection - Lockout Message", "defender-security" ),
+			'detect_404_blacklist'              => __( "404 Detection - Files & Folders Blacklist",
+				"defender-security" ),
+			'detect_404_whitelist'              => __( "404 Detection - Files & Folders Whitelist",
+				"defender-security" ),
+			'detect_404_filetypes_blacklist'    => __( "404 Detection - Filetypes & Extensions Whitelist",
+				"defender-security" ),
+			'detect_404_ignored_filetypes'      => __( "404 Detection - Filetypes & Extensions Blacklist",
+				"defender-security" ),
+			'detect_404_logged'                 => __( "404 Detection - Monitor logged in users",
+				"defender-security" ),
+			'ip_blacklist'                      => __( "IP Banning - IP Address Blacklist", "defender-security" ),
+			'ip_whitelist'                      => __( "IP Banning - IP Address Whitelist", "defender-security" ),
+			'country_blacklist'                 => __( "IP Banning - Country Whitelist", "defender-security" ),
+			'country_whitelist'                 => __( "IP Banning - Country Blacklist", "defender-security" ),
+			'ip_lockout_message'                => __( "IP Banning - Lockout Message", "defender-security" ),
+			'login_lockout_notification'        => __( "Emails - Login Protection Lockout", "defender-security" ),
+			'ip_lockout_notification'           => __( "Emails - 404 Detection Lockout", "defender-security" ),
+			'receipts'                          => __( "Emails - Lockout Recipients", "defender-security" ),
+			'cooldown_enabled'                  => __( "Emails - Repeat Lockouts", "defender-security" ),
+			'cooldown_number_lockout'           => __( "Emails - Repeat Lockouts Threshold", "defender-security" ),
+			'report'                            => __( "Reports - Scheduled Lockout Report", "defender-security" ),
+			'report_frequency'                  => __( "Reports - Frequency", "defender-security" ),
+			'report_receipts'                   => __( "Reports - Recipients", "defender-security" ),
+			'storage_days'                      => __( "Days to keep logs", "defender-security" ),
 		];
-		
+
 		if ( $key != null ) {
 			return isset( $labels[ $key ] ) ? $labels[ $key ] : null;
 		}
-		
+
 		return $labels;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function export_strings( $configs ) {
+		
+		return [
+			__( 'Active', "defender-security" )
+		];
+	}
+
+	public function format_hub_data() {
+		return [
+			'login_protection'                  => $this->login_protection ? __( 'Activate',
+				"defender-security" ) : __( 'Inactivate',
+				"defender-security" ),
+			'login_protection_login_attempt'    => sprintf( __( '%d logins in %d seconds',
+				"defender-security" ),
+				$this->login_protection_login_attempt, $this->login_protection_lockout_timeframe ),
+			'login_protection_lockout_duration' => $this->login_protection_lockout_ban ? __( 'Permanent',
+				"defender-security" ) : $this->login_protection_lockout_timeframe . ' ' . $this->login_protection_lockout_duration_unit,
+			'login_protection_lockout_message'  => $this->login_protection_lockout_message,
+			'username_blacklist'                => empty( $this->username_blacklist ) ? __( 'None',
+				"defender-security" ) : $this->username_blacklist,
+			'detect_404'                        => $this->detect_404 ? __( 'Activate',
+				"defender-security" ) : __( 'Inactivate',
+				"defender-security" ),
+			'detect_404_threshold'              => sprintf( __( '%d hits in %d seconds',
+				"defender-security" ),
+				$this->detect_404_threshold, $this->detect_404_timeframe ),
+			'detect_404_lockout_duration'       => $this->detect_404_lockout_ban ? __( 'Permanent',
+				"defender-security" ) : $this->detect_404_lockout_duration . ' ' . $this->detect_404_lockout_duration_unit,
+			'detect_404_lockout_message'        => $this->detect_404_lockout_message,
+			'detect_404_blacklist'              => empty( $this->detect_404_blacklist ) ? __( 'None',
+				"defender-security" ) : $this->detect_404_blacklist,
+			'detect_404_whitelist'              => empty( $this->detect_404_whitelist ) ? __( 'None',
+				"defender-security" ) : $this->detect_404_whitelist,
+			'detect_404_filetypes_blacklist'    => empty( $this->detect_404_filetypes_blacklist ) ? __( 'None',
+				"defender-security" ) : $this->detect_404_filetypes_blacklist,
+			'detect_404_ignored_filetypes'      => empty( $this->detect_404_ignored_filetypes ) ? __( 'None',
+				"defender-security" ) : $this->detect_404_ignored_filetypes,
+			'detect_404_logged'                 => $this->detect_404_logged ? __( 'Yes',
+				"defender-security" ) : __( 'No', "defender-security" ),
+			'ip_blacklist'                      => empty( $this->ip_blacklist ) ? __( 'None',
+				"defender-security" ) : $this->ip_blacklist,
+			'country_blacklist'                 => empty( $this->country_blacklist ) ? __( 'None',
+				"defender-security" ) : $this->country_blacklist,
+			'ip_lockout_message'                => empty( $this->ip_lockout_message ) ? __( 'None',
+				"defender-security" ) : $this->ip_lockout_message,
+			'login_lockout_notification'        => $this->login_lockout_notification ? __( 'Activate',
+				"defender-security" ) : __( 'Inactivate',
+				"defender-security" ),
+			'ip_lockout_notification'           => $this->ip_lockout_notification ? __( 'Activate',
+				"defender-security" ) : __( 'Inactivate',
+				"defender-security" ),
+			'receipts'                          => empty( $this->receipts ) ? __( 'None',
+				"defender-security" ) : Utils::instance()->recipientsToString( $this->receipts ),
+			'cooldown_enabled'                  => $this->cooldown_enabled ? __( 'Yes',
+				"defender-security" ) : __( 'No', "defender-security" ),
+			'cooldown_number_lockout'           => $this->cooldown_number_lockout ? __( 'None',
+				"defender-security" ) : $this->cooldown_number_lockout,
+			'report'                            => $this->report ? __( 'Activate',
+				"defender-security" ) : __( 'Inactivate', "defender-security" ),
+			'report_frequency'                  => Utils::instance()->format_frequency_for_hub( $this->report_frequency,
+				$this->report_day, $this->report_time ),
+			'report_receipts'                   => Utils::instance()->recipientsToString( $this->report_receipts ),
+			'storage_days'                      => sprintf( __( '%d days', "defender-security" ),
+				$this->storage_days )
+		];
 	}
 }

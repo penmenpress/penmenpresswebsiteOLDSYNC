@@ -14,15 +14,25 @@ class WD_Main_Activator {
 		add_action( 'wp_loaded', array( &$this, 'upgradeHook' ), 5 );
 		//add_action( 'activated_plugin', array( &$this, 'redirectToDefender' ) );
 	}
-	
+
 	public function upgradeHook() {
 		$db_ver = get_site_option( 'wd_db_version' );
-		if ( $db_ver != false && version_compare( $db_ver, '2.2.1', '>=' ) ) {
+		if ( false != $db_ver && version_compare( $db_ver, '2.3.2', '>=' ) ) {
 			return;
 		}
-		
+		if ( false != $db_ver && version_compare( $db_ver, '2.3.2', '<' ) ) {
+			//add a flag to show tutorials
+			update_site_option( 'wp_defender_show_tutorials', true );
+		}
+		if ( false != $db_ver && version_compare( $db_ver, '2.2.9', '<' ) ) {
+			// Migrate security headers into Advanced Tools from Security Tweaks
+			$this->migrateSecurityHeaders();
+			//add a flag for showing new feature
+			update_site_option( 'waf_show_new_feature', true );
+		}
+
 		\WP_Defender\Module\Setting\Component\Backup_Settings::backupData();
-		if ( $db_ver != false && version_compare( $db_ver, '2.2', '<' ) ) {
+		if ( false != $db_ver && version_compare( $db_ver, '2.2', '<' ) ) {
 			$scan_settings = get_site_option( 'wd_scan_settings' );
 			$settings      = \WP_Defender\Module\Scan\Model\Settings::instance();
 			if ( isset( $scan_settings['receiptsNotification'] ) ) {
@@ -43,10 +53,10 @@ class WD_Main_Activator {
 				$ret                          = $settings->save();
 			}
 		}
-		if ( $db_ver != false && version_compare( $db_ver, '2.2.1', '<' ) ) {
+		if ( false != $db_ver && version_compare( $db_ver, '2.2.1', '<' ) ) {
 			$mask_url_settings = get_site_option( 'wd_masking_login_settings' );
 			$model             = \WP_Defender\Module\Advanced_Tools\Model\Mask_Settings::instance();
-			
+
 			if ( isset( $mask_url_settings['maskUrl'] ) ) {
 				$model->mask_url = $mask_url_settings['maskUrl'];
 			}
@@ -59,7 +69,7 @@ class WD_Main_Activator {
 			//delete cache to force update
 			$ret              = $model->save();
 			$factors_settings = get_site_option( 'wd_2auth_settings' );
-			$settings         = \WP_Defender\Module\Advanced_Tools\Model\Auth_Settings::instance();
+			$settings         = \WP_Defender\Module\Two_Factor\Model\Auth_Settings::instance();
 			if ( isset( $factors_settings['lostPhone'] ) ) {
 				$settings->lost_phone = $factors_settings['lostPhone'];
 			}
@@ -85,7 +95,111 @@ class WD_Main_Activator {
 		}
 		update_site_option( 'wd_db_version', wp_defender()->db_version );
 	}
-	
+
+	public function migrateSecurityHeaders() {
+		$sh_settings = get_site_option( 'wd_security_headers_settings' );
+		if ( empty( $sh_settings ) ) {
+			$model = \WP_Defender\Module\Advanced_Tools\Model\Security_Headers_Settings::instance();
+			//Part of Security tweaks data
+			$old_settings = get_site_option( 'wd_hardener_settings' );
+			if ( ! is_array( $old_settings ) ) {
+				$old_settings = json_decode( $old_settings, true );
+				if ( is_array( $old_settings ) && isset( $old_settings['data'] ) && ! empty( $old_settings['data'] ) ) {
+					//Exists 'X-Frame-Options'
+					if ( isset( $old_settings['data']['sh_xframe'] ) && ! empty( $old_settings['data']['sh_xframe'] ) ) {
+						$header_data = $old_settings['data']['sh_xframe'];
+
+						$mode = ( isset( $header_data['mode'] ) && ! empty( $header_data['mode'] ) )
+							? strtolower( $header_data['mode'] )
+							: false;
+						if ( 'allow-from' === $mode ) {
+							$model->sh_xframe_mode = 'allow-from';
+							if ( isset( $header_data['values'] ) && ! empty( $header_data['values'] ) ) {
+								$urls                  = explode( ' ', $header_data['values'] );
+								$model->sh_xframe_urls = implode( PHP_EOL, $urls );
+							}
+						} elseif ( in_array( $mode, array( 'sameorigin', 'deny' ), true ) ) {
+							$model->sh_xframe_mode = $mode;
+						}
+						$model->sh_xframe = true;
+					}
+
+					//Exists 'X-XSS-Protection'
+					if ( isset( $old_settings['data']['sh_xss_protection'] ) && ! empty( $old_settings['data']['sh_xss_protection'] ) ) {
+						$header_data = $old_settings['data']['sh_xss_protection'];
+
+						if ( isset( $header_data['mode'] )
+							&& ! empty( $header_data['mode'] )
+							&& in_array( $header_data['mode'], array( 'sanitize', 'block' ), true )
+						) {
+							$model->sh_xss_protection_mode = $header_data['mode'];
+							$model->sh_xss_protection      = true;
+						}
+					}
+
+					//Exists 'X-Content-Type-Options'
+					if ( isset( $old_settings['data']['sh_content_type_options'] ) && ! empty( $old_settings['data']['sh_content_type_options'] ) ) {
+						$header_data = $old_settings['data']['sh_content_type_options'];
+
+						if ( isset( $header_data['mode'] ) && ! empty( $header_data['mode'] ) ) {
+							$model->sh_content_type_options_mode = $header_data['mode'];
+							$model->sh_content_type_options      = true;
+						}
+					}
+
+					//Exists 'Strict Transport'
+					if ( isset( $old_settings['data']['sh_strict_transport'] ) && ! empty( $old_settings['data']['sh_strict_transport'] ) ) {
+						$header_data = $old_settings['data']['sh_strict_transport'];
+
+						if ( isset( $header_data['hsts_preload'] ) && ! empty( $header_data['hsts_preload'] ) ) {
+							$model->hsts_preload = (int) $header_data['hsts_preload'];
+						}
+						if ( isset( $header_data['include_subdomain'] ) && ! empty( $header_data['include_subdomain'] ) ) {
+							$model->include_subdomain = in_array( $header_data['include_subdomain'], array( 'true', '1', 1 ), true ) ? 1 : 0;
+						}
+						if ( isset( $header_data['hsts_cache_duration'] ) && ! empty( $header_data['hsts_cache_duration'] ) ) {
+							$model->hsts_cache_duration = $header_data['hsts_cache_duration'];
+						}
+						$model->sh_strict_transport = true;
+					}
+
+					//Exists 'Referrer Policy'
+					if ( isset( $old_settings['data']['sh_referrer_policy'] ) && ! empty( $old_settings['data']['sh_referrer_policy'] ) ) {
+						$header_data = $old_settings['data']['sh_referrer_policy'];
+
+						if ( isset( $header_data['mode'] ) && ! empty( $header_data['mode'] ) ) {
+							$model->sh_referrer_policy_mode = $header_data['mode'];
+							$model->sh_referrer_policy      = true;
+						}
+					}
+
+					//Exists 'Feature-Policy'
+					if ( isset( $old_settings['data']['sh_feature_policy'] ) && ! empty( $old_settings['data']['sh_feature_policy'] ) ) {
+						$header_data = $old_settings['data']['sh_feature_policy'];
+
+						if ( isset( $header_data['mode'] ) && ! empty( $header_data['mode'] ) ) {
+							$mode                          = strtolower( $header_data['mode'] );
+							$model->sh_feature_policy_mode = $mode;
+							if ( 'origins' === $mode && isset( $header_data['values'] ) && ! empty( $header_data['values'] ) ) {
+								//The values differ from the values of the 'X-Frame-Options' key, because they may be array.
+								if ( is_array( $header_data['values'] ) ) {
+									$model->sh_feature_policy_urls = implode( PHP_EOL, $header_data['values'] );
+									//otherwise
+								} elseif ( is_string( $header_data['values'] ) ) {
+									$urls                          = explode( ' ', $header_data['values'] );
+									$model->sh_feature_policy_urls = implode( PHP_EOL, $urls );
+								}
+							}
+							$model->sh_feature_policy = true;
+						}
+					}
+					//Save
+					$model->save();
+				}
+			}
+		}
+	}
+
 	/**
 	 * redirect to defender dahsboard after plugin activated
 	 */
@@ -116,9 +230,12 @@ class WD_Main_Activator {
 			\Hammer\Base\Container::instance()->set( 'scan', new \WP_Defender\Module\Scan() );
 			\Hammer\Base\Container::instance()->set( 'audit', new \WP_Defender\Module\Audit() );
 			\Hammer\Base\Container::instance()->set( 'lockout', new \WP_Defender\Module\IP_Lockout() );
+			\Hammer\Base\Container::instance()->set( 'waf', new \WP_Defender\Controller\Waf() );
+			\Hammer\Base\Container::instance()->set( 'two_fa', new \WP_Defender\Module\Two_Factor() );
 			\Hammer\Base\Container::instance()->set( 'advanced_tool', new \WP_Defender\Module\Advanced_Tools() );
 			\Hammer\Base\Container::instance()->set( 'gdpr', new \WP_Defender\Controller\GDPR() );
 			\Hammer\Base\Container::instance()->set( 'setting', new \WP_Defender\Module\Setting() );
+			\Hammer\Base\Container::instance()->set( 'tutorial', new \WP_Defender\Controller\Tutorial() );
 			//no need to set debug
 			require_once $this->wp_defender->getPluginPath() . 'free-dashboard/module.php';
 			add_filter( 'wdev-email-message-' . plugin_basename( __FILE__ ), array( &$this, 'defenderAdsMessage' ) );
@@ -144,7 +261,7 @@ class WD_Main_Activator {
 				if ( is_object( $user ) ) {
 					$temp[] = array(
 						'first_name' => $user->display_name,
-						'email'      => $user->user_email
+						'email'      => $user->user_email,
 					);
 				}
 			}
@@ -176,9 +293,9 @@ class WD_Main_Activator {
 		}
 
 		if ( $utils->checkPermission()
-		     && ( is_admin() || is_network_admin() )
-		     && class_exists( 'WPMUDEV_Dashboard' )
-		     && $utils->getAPIKey() != false
+			&& ( is_admin() || is_network_admin() )
+			&& class_exists( 'WPMUDEV_Dashboard' )
+			&& $utils->getAPIKey() != false
 		) {
 			if ( \WP_Defender\Behavior\Utils::instance()->isActivatedSingle() ) {
 				add_action( 'admin_notices', array( &$this, 'showUpgradeNotification' ) );
@@ -196,9 +313,10 @@ class WD_Main_Activator {
 
 	public function showUpgradeNotification() {
 		$class   = 'notice notice-info is-dismissible wp-defender-notice';
-		$message = sprintf( __( "%s, you now have access to Defender's pro features but you still have the free version installed. Let's upgrade Defender and unlock all those juicy features! &nbsp; %s", "defender-security" ),
+		$message = sprintf(
+			__( "%1\$s, you now have access to Defender's pro features but you still have the free version installed. Let's upgrade Defender and unlock all those juicy features! &nbsp; %2\$s", "defender-security" ),
 			\WP_Defender\Behavior\Utils::instance()->getDisplayName(),
-			'<button id="install-defender-pro" type="button" data-id="1081723" data-nonce="' . wp_create_nonce( 'installDefenderPro' ) . '" class="button button-small">' . __( "Upgrade", "defender-security" ) . '</button>'
+			'<button id="install-defender-pro" type="button" data-id="1081723" data-nonce="' . wp_create_nonce( 'installDefenderPro' ) . '" class="button button-small">' . __( 'Upgrade', "defender-security" ) . '</button>'
 		);
 		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
 	}
@@ -221,13 +339,17 @@ class WD_Main_Activator {
 		if ( file_exists( dirname( __DIR__ ) . '/wp-defender/wp-defender.php' ) || $upgrader->install( '1081723' ) ) {
 			//activate this
 			activate_plugin( 'wp-defender/wp-defender.php' );
-			wp_send_json_success( array(
-				'url' => network_admin_url( 'admin.php?page=wp-defender' )
-			) );
+			wp_send_json_success(
+				array(
+					'url' => network_admin_url( 'admin.php?page=wp-defender' ),
+				)
+			);
 		} else {
-			wp_send_json_error( array(
-				'message' => __( "<br/>Something went wrong. Please try again later!", "defender-security" )
-			) );
+			wp_send_json_error(
+				array(
+					'message' => __( '<br/>Something went wrong. Please try again later!', "defender-security" ),
+				)
+			);
 		}
 	}
 
@@ -237,14 +359,17 @@ class WD_Main_Activator {
 	 */
 	public function addSettingsLink( $links ) {
 		$mylinks = array(
-			'<a href="' . admin_url( 'admin.php?page=wp-defender' ) . '">' . __( "Settings", "defender-security" ) . '</a>',
+			'<a href="' . admin_url( 'admin.php?page=wp-defender' ) . '">' . __( 'Settings', "defender-security" ) . '</a>',
 		);
 
 		$mylinks = array_merge( $mylinks, $links );
-		$mylinks = array_merge( $mylinks, array(
-			'<a target="_blank" href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/defender/">' . __( "Docs", "defender-security" ) . '</a>',
-			'<a style="color: #1ABC9C" target="_blank" href="'.\WP_Defender\Behavior\Utils::instance()->campaignURL('defender_wppluginslist_upgrade').'">' . __( "Upgrade", "defender-security" ) . '</a>',
-		) );
+		$mylinks = array_merge(
+			$mylinks,
+			array(
+				'<a target="_blank" href="https://premium.wpmudev.org/docs/wpmu-dev-plugins/defender/">' . __( 'Docs', "defender-security" ) . '</a>',
+				'<a style="color: #1ABC9C" target="_blank" href="' . \WP_Defender\Behavior\Utils::instance()->campaignURL( 'defender_wppluginslist_upgrade' ) . '">' . __( 'Upgrade', "defender-security" ) . '</a>',
+			)
+		);
 		return $mylinks;
 	}
 
@@ -255,7 +380,7 @@ class WD_Main_Activator {
 		wp_enqueue_style( 'defender-menu', wp_defender()->getPluginUrl() . 'assets/css/defender-icon.css' );
 
 		$css_files = array(
-			'defender' => wp_defender()->getPluginUrl() . 'assets/css/styles.css'
+			'defender' => wp_defender()->getPluginUrl() . 'assets/css/styles.css',
 		);
 
 		foreach ( $css_files as $slug => $file ) {
@@ -263,7 +388,7 @@ class WD_Main_Activator {
 		}
 
 		$js_files = array(
-			'defender' => wp_defender()->getPluginUrl() . 'assets/js/scripts.js'
+			'defender' => wp_defender()->getPluginUrl() . 'assets/js/scripts.js',
 		);
 
 		foreach ( $js_files as $slug => $file ) {
@@ -275,31 +400,44 @@ class WD_Main_Activator {
 
 	public function activationHook() {
 		$db_ver = get_site_option( 'wd_db_version' );
-		if ( version_compare( $db_ver, '1.7', '<' ) ) {
-			if ( ! \WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::checkIfTableExists() ) {
-				add_site_option( 'defenderLockoutNeedUpdateLog', 1 );
-				\WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::createTables();
-				update_site_option( 'wd_db_version', "1.7" );
-			}
-		}
-		if ( version_compare( $db_ver, '1.7.1', '<' ) ) {
+		\WP_Defender\Module\Setting\Component\Backup_Settings::backupData();
+		if ( ! \WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::checkIfTableExists() ) {
+			\WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::createTables();
+		} else {
 			\WP_Defender\Module\IP_Lockout\Component\Login_Protection_Api::alterTableFor171();
+		}
+		if ( $db_ver != false && version_compare( $db_ver, '1.7.1', '<' ) ) {
 			update_site_option( 'wd_db_version', "1.7.1" );
 		}
 
 		if ( $db_ver != false && version_compare( $db_ver, '2.1.1', '<' ) ) {
-			//convert scan notification
+			//4 scan notification
 			$settings                          = \WP_Defender\Module\Scan\Model\Settings::instance();
 			$settings->recipients              = $this->convertOldToNewRecipients( $settings->recipients );
 			$settings->recipients_notification = $this->convertOldToNewRecipients( $settings->recipients_notification );
+			$settings->save();
+			//audit
+			$settings           = \WP_Defender\Module\Audit\Model\Settings::instance();
+			$settings->receipts = $this->convertOldToNewRecipients( $settings->receipts );
 			$settings->save();
 			//lockout
 			$settings                  = \WP_Defender\Module\IP_Lockout\Model\Settings::instance();
 			$settings->receipts        = $this->convertOldToNewRecipients( $settings->receipts );
 			$settings->report_receipts = $this->convertOldToNewRecipients( $settings->report_receipts );
 			$settings->save();
-
 		}
-		update_site_option( 'wd_db_version', wp_defender()->db_version );
+		$this->upgradeHook();
+		//init report cron
+		$settings = \WP_Defender\Module\Scan\Model\Settings::instance();
+		if ( $settings->notification ) {
+			$cronTime = \WP_Defender\Behavior\Utils::instance()->reportCronTimestamp( $settings->time, 'scanReportCron' );
+			wp_schedule_event( $cronTime, 'daily', 'scanReportCron' );
+		}
+
+		$settings = \WP_Defender\Module\IP_Lockout\Model\Settings::instance();
+		if ( $settings->report ) {
+			$cronTime = \WP_Defender\Behavior\Utils::instance()->reportCronTimestamp( $settings->report_time, 'lockoutReportCron' );
+			wp_schedule_event( $cronTime, 'daily', 'lockoutReportCron' );
+		}
 	}
 }

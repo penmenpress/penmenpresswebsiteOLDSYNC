@@ -12,7 +12,7 @@ use WP_Defender\Module\Hardener;
 
 class Main extends Controller {
 	protected $slug = 'wdf-hardener';
-	
+
 	/**
 	 * @return array
 	 */
@@ -22,10 +22,10 @@ class Main extends Controller {
 			'endpoints' => '\WP_Defender\Behavior\Endpoint',
 			'wpmudev'   => '\WP_Defender\Behavior\WPMUDEV'
 		];
-		
+
 		return $behaviors;
 	}
-	
+
 	/**
 	 * Main constructor.
 	 */
@@ -35,24 +35,24 @@ class Main extends Controller {
 		} else {
 			$this->addAction( 'admin_menu', 'adminMenu' );
 		}
-		
+
 		if ( $this->isInPage() ) {
 			$this->addAction( 'defender_enqueue_assets', 'scripts', 11 );
 		}
-		
+
 		if ( ! wp_next_scheduled( 'tweaksSendNotification' ) ) {
 			wp_schedule_event( time(), 'twicedaily', 'tweaksSendNotification' );
 		}
-		
+
 		$this->addAction( 'tweaksSendNotification', 'tweaksSendNotification' );
 		$this->addAction( 'wp_loaded', 'maybeUnsubscribe' );
 	}
-	
+
 	public function maybeUnsubscribe() {
 		if ( ! is_user_logged_in() ) {
 			return;
 		}
-		
+
 		$action = HTTP_Helper::retrieveGet( 'action' );
 		if ( $action == 'unsubscribe_notification' ) {
 			$user = get_user_by( 'id', get_current_user_id() );
@@ -76,60 +76,60 @@ class Main extends Controller {
 			exit;
 		}
 	}
-	
+
 	public function tweaksSendNotification() {
 		$settings = Hardener\Model\Settings::instance();
-		$canSend  = false;
-		if ( $settings->last_sent ) {
-			if (
-				$settings->notification_repeat == true
-				&& strtotime( apply_filters( 'wd_tweaks_notification_interval', '+24 hours' ), apply_filters( 'wd_tweaks_last_notification_sent', $settings->last_sent ) ) < time() ) {
-				$canSend = true;
-			}
-		} else {
-			//this only happen one
-			if ( ! $settings->last_seen ) {
-				//should not in here
-				$settings->last_seen = time();
-				$settings->save();
-			}
-			
-			if ( strtotime( apply_filters( 'wd_tweaks_notification_interval', '+7 days' ), apply_filters( 'wd_tweaks_last_action_time', $settings->last_seen ) ) > time() ) {
+
+		$lastAction = $settings->last_sent
+			? apply_filters( 'wd_tweaks_last_notification_sent', $settings->last_sent )
+			: apply_filters( 'wd_tweaks_last_action_time', $settings->last_seen );
+
+		if ( ! $lastAction ) {
+			//should not in here
+			$lastAction = $settings->last_seen = time();
+			$settings->save();
+		}
+
+		//Daily
+		if ( true === $settings->notification_repeat ) {
+			if ( strtotime( apply_filters( 'wd_tweaks_notification_interval', '+24 hours' ), $lastAction ) > time() ) {
 				return;
 			}
-			
-			$canSend = true;
+		//or weekly
+		} else {
+			if ( strtotime( apply_filters( 'wd_tweaks_notification_interval', '+7 days' ), $lastAction ) > time() ) {
+				return;
+			}
 		}
-		
-		if ( ! $canSend ) {
-			return;
-		}
-		
+
+		//notification can send
 		$settings->refreshStatus();
 		$tweaks = $settings->getIssues();
-		
+
 		if ( ! count( $tweaks ) ) {
 			return;
 		}
-		
+
 		$no_reply_email = "noreply@" . parse_url( get_site_url(), PHP_URL_HOST );
 		$no_reply_email = apply_filters( 'wd_scan_noreply_email', $no_reply_email );
 		$headers        = array(
 			'From: Defender <' . $no_reply_email . '>',
 			'Content-Type: text/html; charset=UTF-8'
 		);
-		
-		$subject = _n( 'Security Tweak Report for %s. %s tweak needs attention.', 'Security Tweak Report for %s. %s tweaks needs attention.', count( $tweaks ), "defender-security" );
+
+		$subject = _n( 'Security Tweak Report for %s. %s tweak needs attention.',
+			'Security Tweak Report for %s. %s tweaks needs attention.', count( $tweaks ), "defender-security" );
 		$subject = sprintf( $subject, network_site_url(), count( $tweaks ) );
-		
+
 		foreach ( $settings->receipts as $receipt ) {
 			$email = $receipt['email'];
-			$ret   = wp_mail( $email, $subject, $this->prepareEmailContent( $receipt['first_name'], $email ), $headers );
+			$ret   = wp_mail( $email, $subject, $this->prepareEmailContent( $receipt['first_name'], $email ),
+				$headers );
 		}
 		$settings->last_sent = time();
 		$settings->save();
 	}
-	
+
 	private function prepareEmailContent( $firstName, $email = null ) {
 		$issues = "";
 		foreach ( Hardener\Model\Settings::instance()->getIssues() as $issue ) {
@@ -154,25 +154,27 @@ class Main extends Controller {
 		$contents = $this->renderPartial( 'email/notification', array(
 			'userName' => $firstName,
 			'siteUrl'  => network_site_url(),
-			'viewUrl'  => apply_filters( 'report_email_logs_link', network_admin_url( 'admin.php?page=wdf-hardener' ), $email ),
+			'viewUrl'  => apply_filters( 'report_email_logs_link', network_admin_url( 'admin.php?page=wdf-hardener' ),
+				$email ),
 			'issues'   => $issues,
 			'count'    => count( Hardener\Model\Settings::instance()->getIssues() )
 		), false );
-		
+
 		return $contents;
 	}
-	
+
 	/**
 	 * Add submit admin page
 	 */
 	public function adminMenu() {
 		$cap = is_multisite() ? 'manage_network_options' : 'manage_options';
-		add_submenu_page( 'wp-defender', esc_html__( "Security Tweaks", "defender-security" ), esc_html__( "Security Tweaks", "defender-security" ), $cap, $this->slug, array(
-			&$this,
-			'actionIndex'
-		) );
+		add_submenu_page( 'wp-defender', esc_html__( "Security Tweaks", "defender-security" ),
+			esc_html__( "Security Tweaks", "defender-security" ), $cap, $this->slug, array(
+				&$this,
+				'actionIndex'
+			) );
 	}
-	
+
 	/**
 	 * Main screen
 	 */
@@ -181,21 +183,22 @@ class Main extends Controller {
 		$settings            = Hardener\Model\Settings::instance();
 		$settings->last_seen = time();
 		$settings->save();
-		
+
 		return $this->render( 'main' );
 	}
-	
+
 	/**
 	 * Enqueue scripts & styles
 	 */
 	public function scripts() {
 		if ( $this->isInPage() ) {
 			wp_enqueue_style( 'defender' );
-			wp_register_script( 'defender-hardener', wp_defender()->getPluginUrl() . 'assets/app/security-tweaks.js', array(
-				'vue',
-				'defender',
-				'wp-i18n'
-			), false, true );
+			wp_register_script( 'defender-hardener', wp_defender()->getPluginUrl() . 'assets/app/security-tweaks.js',
+				array(
+					'def-vue',
+					'defender',
+					'wp-i18n'
+				), false, true );
 			wp_localize_script( 'defender-hardener', 'security_tweaks', $this->_scriptsData() );
 			Utils::instance()->createTranslationJson( 'defender-hardener' );
 			wp_set_script_translations( 'defender-hardener', 'wpdef', wp_defender()->getPluginPath() . 'languages' );
@@ -203,7 +206,7 @@ class Main extends Controller {
 			wp_enqueue_script( 'wpmudev-sui' );
 		}
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -213,7 +216,7 @@ class Main extends Controller {
 		}
 		global $wp_version;
 		$settings = Hardener\Model\Settings::instance();
-		
+
 		return [
 			'summary'   => [
 				'issues_count' => $this->getCount( 'issues' ),
@@ -241,7 +244,7 @@ class Main extends Controller {
 			]
 		];
 	}
-	
+
 	/**
 	 *
 	 * @param $type
@@ -250,15 +253,16 @@ class Main extends Controller {
 	 */
 	public function getCount( $type ) {
 		$settings = Hardener\Model\Settings::instance();
+
 		switch ( $type ) {
 			case 'issues':
-				return count( $settings->issues );
+				return count( (array) array_filter( $settings->issues ) );
 				break;
 			case 'fixed':
-				return count( $settings->fixed );
+				return count( (array) array_filter( $settings->fixed ) );
 				break;
 			case 'ignore':
-				return count( $settings->ignore );
+				return count( (array) array_filter( $settings->ignore ) );
 				break;
 			default:
 				//param not from the button on frontend, log it

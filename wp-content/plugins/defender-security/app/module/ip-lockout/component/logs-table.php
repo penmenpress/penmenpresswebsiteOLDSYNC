@@ -441,7 +441,7 @@ class Logs_Table extends \WP_List_Table {
                         <select name="type" class="sui-select-sm">
                             <option value=""><?php _e( "Bulk action", "defender-security" ) ?></option>
                             <option value="ban"><?php _e( "Ban", "defender-security" ) ?></option>
-                            <option value="whitelist"><?php _e( "Whitelist", "defender-security" ) ?></option>
+                            <option value="whitelist"><?php _e( "Allowlist", "defender-security" ) ?></option>
                             <option value="delete"><?php _e( "Delete", "defender-security" ) ?></option>
                         </select>
                         <input type="hidden" name="ids" class="ids"/>

@@ -30,11 +30,12 @@ class Rest extends Controller {
 			$namespace . '/emptyLogs'      => 'emptyLogs',
 			$namespace . '/queryLockedIps' => 'queryLockedIps',
 			$namespace . '/ipAction'       => 'ipAction',
+			$namespace . '/exportAsCsv'    => 'exportAsCsv'
 		];
-		
+
 		$this->registerEndpoints( $routes, IP_Lockout::getClassName() );
 	}
-	
+
 	/**
 	 * Endpoint for toggle IP status, use in IP Banning->ban IPs
 	 */
@@ -42,17 +43,17 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'ipAction' ) ) {
 			return;
 		}
-		
+
 		$ip     = HTTP_Helper::retrievePost( 'ip' );
 		$action = HTTP_Helper::retrievePost( 'behavior' );
 		$model  = IP_Lockout\Model\IP_Model::findOne( [
 			'ip' => $ip
 		] );
-		
+
 		if ( is_object( $model ) ) {
 			if ( $action === 'unban' ) {
 				$model->status = IP_Lockout\Model\IP_Model::STATUS_NORMAL;
@@ -64,7 +65,7 @@ class Rest extends Controller {
 			wp_send_json_success( [ 'data' => '' ] );
 		}
 	}
-	
+
 	/**
 	 * Endpoint to query locked IPs, use in IP Banning->ban IPs
 	 */
@@ -72,18 +73,18 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'queryLockedIps' ) ) {
 			return;
 		}
-		
+
 		$results = IP_Lockout\Model\IP_Model::queryLockedIp();
-		
+
 		wp_send_json_success( [
 			'ips_locked' => $results,
 		] );
 	}
-	
+
 	/**
 	 * Endpoint for toggle IP blacklist or whitelist, use on logs item content
 	 */
@@ -91,45 +92,51 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'toggleIpAction' ) ) {
 			return;
 		}
-		
+
 		$ip   = HTTP_Helper::retrievePost( 'ip', false );
 		$type = HTTP_Helper::retrievePost( 'type' );
 		$type = sanitize_key( $type );
-		
+
 		if ( $ip && filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-			if ( $type == 'unwhitelist' || $type == 'unblacklist' ) {
+			if ( 'unwhitelist' === $type || 'unblacklist' === $type ) {
 				$type = substr( $type, 2 );
+				$type = 'whitelist' === $type ? 'allowlist' : 'blocklist';
 				Settings::instance()->removeIpFromList( $ip, $type );
 				wp_send_json_success( array(
-					'message' => sprintf( __( "IP %s has been removed from your %s. You can control your %s in <a href=\"%s\">IP Lockouts.</a>", "defender-security" ), $ip, $type, $type, network_admin_url( 'admin.php?page=wdf-ip-lockout&view=blacklist' ) ),
+					'message' => sprintf( __( "IP %s has been removed from your %s. You can control your %s in <a href=\"%s\">IP Lockouts.</a>",
+						"defender-security" ), $ip, $type, $type,
+						network_admin_url( 'admin.php?page=wdf-ip-lockout&view=blocklist' ) ),
 				) );
 			} else {
+				$type = 'whitelist' === $type ? 'allowlist' : 'blocklist';
 				Settings::instance()->addIpToList( $ip, $type );
 				wp_send_json_success( array(
-					'message' => sprintf( __( "IP %s has been added to your %s You can control your %s in <a href=\"%s\">IP Lockouts.</a>", "defender-security" ), $ip, $type, $type, network_admin_url( 'admin.php?page=wdf-ip-lockout&view=blacklist' ) ),
+					'message' => sprintf( __( "IP %s has been added to your %s You can control your %s in <a href=\"%s\">IP Lockouts.</a>",
+						"defender-security" ), $ip, $type, $type,
+						network_admin_url( 'admin.php?page=wdf-ip-lockout&view=blocklist' ) ),
 				) );
 			}
-			
+
 		} else {
 			wp_send_json_error( array(
 				'message' => __( "No record found", "defender-security" )
 			) );
 		}
 	}
-	
+
 	public function emptyLogs() {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'emptyLogs' ) ) {
 			return;
 		}
-		
+
 		$perPage = 500;
 		$count   = Log_Model::deleteAll( array(), '0,' . $perPage );
 		if ( $count == 0 ) {
@@ -137,10 +144,10 @@ class Rest extends Controller {
 				'message' => __( "Your logs have been successfully deleted.", "defender-security" )
 			) );
 		}
-		
+
 		wp_send_json_error( array() );
 	}
-	
+
 	/**
 	 *
 	 */
@@ -148,11 +155,11 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'bulkAction' ) ) {
 			return;
 		}
-		
+
 		$ids      = HTTP_Helper::retrievePost( 'ids', [] );
 		$type     = HTTP_Helper::retrievePost( 'type' );
 		$messages = '';
@@ -164,17 +171,21 @@ class Rest extends Controller {
 					foreach ( $ids as $id ) {
 						$model = Log_Model::findByID( $id );
 						$ips[] = $model->ip;
-						$settings->addIpToList( $model->ip, 'whitelist' );
+						$settings->addIpToList( $model->ip, 'allowlist' );
 					}
-					$messages = sprintf( __( "IP %s has been added to your whitelist. You can control your whitelist in <a href=\"%s\">IP Lockouts.</a>", "defender-security" ), implode( ',', $ips ), network_admin_url( 'admin.php?page=wdf-ip-lockout&view=blacklist' ) );
+					$messages = sprintf( __( "IP %s has been added to your allowlist. You can control your allowlist in <a href=\"%s\">IP Lockouts.</a>",
+						"defender-security" ), implode( ',', $ips ),
+						network_admin_url( 'admin.php?page=wdf-ip-lockout&view=blocklist' ) );
 					break;
 				case 'ban':
 					foreach ( $ids as $id ) {
 						$model = Log_Model::findByID( $id );
 						$ips[] = $model->ip;
-						$settings->addIpToList( $model->ip, 'blacklist' );
+						$settings->addIpToList( $model->ip, 'blocklist' );
 					}
-					$messages = sprintf( __( "IP %s has been added to your blacklist You can control your blacklist in <a href=\"%s\">IP Lockouts.</a>", "defender-security" ), implode( ',', $ips ), network_admin_url( 'admin.php?page=wdf-ip-lockout&view=blacklist' ) );
+					$messages = sprintf( __( "IP %s has been added to your blocklist You can control your blocklist in <a href=\"%s\">IP Lockouts.</a>",
+						"defender-security" ), implode( ',', $ips ),
+						network_admin_url( 'admin.php?page=wdf-ip-lockout&view=blocklist' ) );
 					break;
 				case 'delete':
 					foreach ( $ids as $id ) {
@@ -189,14 +200,14 @@ class Rest extends Controller {
 					//error_log( sprintf( 'Unexpected value %s from IP %s', $type, Utils::instance()->getUserIp() ) );
 					break;
 			}
-			
+
 			wp_send_json_success( array(
 				'reload'  => 1,
 				'message' => $messages
 			) );
 		}
 	}
-	
+
 	/**
 	 * Query the data
 	 */
@@ -204,7 +215,7 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'queryLogs' ) ) {
 			return;
 		}
@@ -215,13 +226,13 @@ class Rest extends Controller {
 			'type'     => Array_Helper::getValue( $data, 'type', false ),
 			'ip'       => Array_Helper::getValue( $data, 'ip', false )
 		];
-		
+
 		$paged   = Array_Helper::getValue( $data, 'paged', 1 );
 		$orderBy = Array_Helper::getValue( $data, 'orderBy', 'id' );
 		$order   = Array_Helper::getValue( $data, 'order', 'DESC' );
-		
+
 		$pageSize = 20;
-		
+
 		list( $logs, $countAllLogs ) = Log_Model::queryLogs( $filters, $paged, $orderBy, $order, $pageSize );
 		$ids = [];
 		foreach ( $logs as $log ) {
@@ -238,7 +249,7 @@ class Rest extends Controller {
 			'totalPages' => $totalPages
 		) );
 	}
-	
+
 	/**
 	 * Importing IPs from our exporter
 	 */
@@ -246,7 +257,7 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		$id = HTTP_Helper::retrievePost( 'id' );
 		if ( ! is_object( get_post( $id ) ) ) {
 			wp_send_json_error( array(
@@ -254,30 +265,33 @@ class Rest extends Controller {
 			) );
 		}
 		$file = get_attached_file( $id );
-		
+
 		if ( ! is_file( $file ) ) {
 			wp_send_json_error( array(
 				'message' => __( "Your file is invalid!", "defender-security" )
 			) );
 		}
-		
+
 		if ( ! ( $data = Login_Protection_Api::verifyImportFile( $file ) ) ) {
 			wp_send_json_error( array(
 				'message' => __( "Your file content is invalid!", "defender-security" )
 			) );
 		}
-		
+
 		$settings = Settings::instance();
 		//all good, start to import
+
 		foreach ( $data as $line ) {
 			$settings->addIpToList( $line[0], $line[1] );
 		}
 		wp_send_json_success( array(
-			'message' => __( "Your whitelist/blacklist has been successfully imported.", "defender-security" ),
-			'reload'  => 1
+			'message'   => __( "Your allowlist/blocklist has been successfully imported.", "defender-security" ),
+			'reload'    => 1,
+			'blacklist' => $settings->getIpBlacklist(),
+			'whitelist' => $settings->getIpWhitelist()
 		) );
 	}
-	
+
 	/**
 	 * Downloading GeoDB from maxmind
 	 */
@@ -285,11 +299,11 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'downloadGeoDB' ) ) {
 			return;
 		}
-		
+
 		$license_key = HTTP_Helper::retrievePost( 'api_key' );
 		$license_key = sanitize_text_field( $license_key );
 		$url         = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=$license_key&suffix=tar.gz";
@@ -314,7 +328,7 @@ class Rest extends Controller {
 			] );
 		}
 	}
-	
+
 	/**
 	 * Update IP lockout settings, parameters sent via an ajax _POST request
 	 */
@@ -322,7 +336,7 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'updateSettings' ) ) {
 			return;
 		}
@@ -330,16 +344,17 @@ class Rest extends Controller {
 		$lastSettings = clone $settings;
 		$data         = stripslashes( $_POST['data'] );
 		$data         = json_decode( $data, true );
-		
+
 		$settings->import( $data );
-		
+
 		if ( $settings->validate() ) {
 			$settings->save();
 			$faultIps = WP_Helper::getArrayCache()->get( 'faultIps', array() );
 			$isBLSelf = WP_Helper::getArrayCache()->get( 'isBlacklistSelf', false );
 			if ( $faultIps || $isBLSelf ) {
 				$res = array(
-					'message' => sprintf( __( "Your settings have been updated, however some IPs were removed because invalid format, or you blacklist yourself", "defender-security" ), implode( ',', $faultIps ) ),
+					'message' => sprintf( __( "Your settings have been updated, however some IPs were removed because invalid format, or you blocklist yourself",
+						"defender-security" ), implode( ',', $faultIps ) ),
 					'reload'  => 1
 				);
 			} else {
@@ -380,7 +395,48 @@ class Rest extends Controller {
 			) );
 		}
 	}
-	
+
+	/**
+	 * Csv exporter
+	 */
+	public function exportAsCsv() {
+		if ( ! $this->checkPermission() ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'exportAsCsv' ) ) {
+			return;
+		}
+		$logs    = Log_Model::findAll();
+		$fp      = fopen( 'php://memory', 'w' );
+		$headers = array(
+			__( 'Log', "defender-security" ),
+			__( 'Date / Time', "defender-security" ),
+			__( 'Type', "defender-security" ),
+			__( 'IP address', "defender-security" ),
+			__( 'Status', "defender-security" )
+		);
+		fputcsv( $fp, $headers );
+		foreach ( $logs as $log ) {
+			$item = array(
+				$log->log,
+				$log->get_date(),
+				$log->get_type(),
+				$log->ip,
+				Login_Protection_Api::getIPStatusText( $log->ip )
+			);
+			fputcsv( $fp, $item );
+		}
+
+		$filename = 'wdf-lockout-logs-export-' . date( 'ymdHis' ) . '.csv';
+		fseek( $fp, 0 );
+		header( 'Content-Type: text/csv' );
+		header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
+		// make php send the generated csv lines to the browser
+		fpassthru( $fp );
+		exit();
+	}
+
 	public function behaviors() {
 		$behaviors = array(
 			'utils' => '\WP_Defender\Behavior\Utils',
@@ -388,7 +444,7 @@ class Rest extends Controller {
 		if ( class_exists( 'WP_Defender\Module\IP_Lockout\Behavior\Pro\Reporting' ) ) {
 			$behaviors['report'] = 'WP_Defender\Module\IP_Lockout\Behavior\Pro\Reporting';
 		}
-		
+
 		return $behaviors;
 	}
 }

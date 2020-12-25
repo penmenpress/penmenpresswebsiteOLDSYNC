@@ -32,7 +32,7 @@ class Rest extends Controller {
 		];
 		$this->registerEndpoints( $routes, Scan::getClassName() );
 	}
-	
+
 	public function bulkAction() {
 		if ( ! $this->checkPermission() ) {
 			return;
@@ -40,7 +40,7 @@ class Rest extends Controller {
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'bulkAction' ) ) {
 			return;
 		}
-		
+
 		$items = HTTP_Helper::retrievePost( 'items' );
 		if ( ! is_array( $items ) ) {
 			$items = array();
@@ -77,24 +77,44 @@ class Rest extends Controller {
 						"defender-security" )
 				) ) );
 				break;
-			
+			case 'delete':
+				foreach ( $items as $id ) {
+					$item = Result_Item::findByID( $id );
+					if ( is_object( $item ) ) {
+						$ret = $item->purge();
+						if ( is_wp_error( $ret ) ) {
+							break;
+							wp_send_json_error( array(
+								'message' => $ret->get_error_message()
+							) );
+						}
+					}
+				}
+				$this->submitStatsToDev();
+				wp_send_json_success( array_merge( Scan\Component\Data_Factory::buildData(), array(
+					'message' => _n( "The suspicious file has been successfully deleted.",
+						"The suspicious files have been successfully deleted.",
+						count( $items ),
+						"defender-security" )
+				) ) );
+				break;
 			default:
 				//param not from the button on frontend, log it
 				error_log( sprintf( 'Unexpected value %s from IP %s', $bulk, Utils::instance()->getUserIp() ) );
 				break;
 		}
 	}
-	
+
 	public function solveIssue() {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'solveIssue' ) ) {
 			return;
 		}
 		$id = HTTP_Helper::retrievePost( 'id', false );
-		
+
 		$model = Result_Item::findByID( $id );
 		if ( is_object( $model ) ) {
 			$ret = $model->resolve();
@@ -124,7 +144,7 @@ class Rest extends Controller {
 			) );
 		}
 	}
-	
+
 	/**
 	 * Delete an issue
 	 */
@@ -132,11 +152,11 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'deleteIssue' ) ) {
 			return;
 		}
-		
+
 		$id    = HTTP_Helper::retrievePost( 'id', false );
 		$model = Result_Item::findByID( $id );
 		if ( is_object( $model ) ) {
@@ -146,7 +166,7 @@ class Rest extends Controller {
 				wp_send_json_error( array(
 					'message' => $ret->get_error_message()
 				) );
-				
+
 			} else {
 				wp_send_json_success( array_merge( Scan\Component\Data_Factory::buildData(),
 					[ 'message' => __( "This item has been permanently removed", "defender-security" ), ] ) );
@@ -157,7 +177,7 @@ class Rest extends Controller {
 			) );
 		}
 	}
-	
+
 	/**
 	 * Get source code of an issue
 	 */
@@ -165,7 +185,7 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'getFileSrcCode' ) ) {
 			return;
 		}
@@ -174,13 +194,13 @@ class Rest extends Controller {
 		if ( ! is_object( $model ) ) {
 			wp_send_json_error();
 		}
-		
+
 		wp_send_json_success( array(
 			'code' => $model->getSrcCode()
 		) );
-		
+
 	}
-	
+
 	/**
 	 * Ignore an issue
 	 */
@@ -188,11 +208,11 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'ignoreIssue' ) ) {
 			return;
 		}
-		
+
 		$id    = HTTP_Helper::retrievePost( 'id', false );
 		$model = Result_Item::findByID( $id );
 		if ( is_object( $model ) ) {
@@ -206,7 +226,7 @@ class Rest extends Controller {
 			) );
 		}
 	}
-	
+
 	/**
 	 * Unignore an issue
 	 */
@@ -214,25 +234,27 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'unignoreIssue' ) ) {
 			return;
 		}
-		
+
 		$id    = HTTP_Helper::retrievePost( 'id', false );
 		$model = Result_Item::findByID( $id );
 		if ( is_object( $model ) ) {
 			$model->unignore();
 			$this->submitStatsToDev();
 			wp_send_json_success( array_merge( Scan\Component\Data_Factory::buildData(),
-				[ 'message' => __( "The suspicious file has been successfully restored.", "defender-security" ), ] ) );
+				[
+					'message' => __( "The suspicious file has been successfully restored.", "defender-security" ),
+				] ) );
 		} else {
 			wp_send_json_error( array(
 				'message' => __( "The item doesn't exist!", "defender-security" )
 			) );
 		}
 	}
-	
+
 	/**
 	 * Create a new scan
 	 */
@@ -240,7 +262,7 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'newScan' ) ) {
 			return;
 		}
@@ -252,12 +274,12 @@ class Rest extends Controller {
 				'percent'     => 0
 			] );
 		}
-		
+
 		wp_send_json_error( array(
 			'message' => $ret->get_error_message(),
 		) );
 	}
-	
+
 	/**
 	 * Request to cancel current scan
 	 */
@@ -265,21 +287,21 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'cancelScan' ) ) {
 			return;
 		}
-		
+
 		$activeScan = Scan\Component\Scan_Api::getActiveScan();
 		if ( is_object( $activeScan ) ) {
 			$activeScan->delete();
-			(new Scan\Component\Scanning())->flushCache();
+			( new Scan\Component\Scanning() )->flushCache();
 		}
 		$data = Scan\Component\Data_Factory::buildData();
-		
+
 		wp_send_json_success( $data );
 	}
-	
+
 	/**
 	 * Processing the scan
 	 */
@@ -287,25 +309,25 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'processScan' ) ) {
 			return;
 		}
-		
+
 		/**
 		 * When we processing the scan by ajax, clear all the which does the same job
 		 */
 		wp_clear_scheduled_hook( 'processScanCron' );
-		
+
 		//$ret = Scan\Component\Scan_Api::processActiveScan();
 		$scanning = new Scan\Component\Scanning();
-		$ret      = $scanning->do();
+		$ret      = $scanning->run();
 		if ( $ret == true ) {
 			do_action( 'sendScanEmail' );
-			
+
 			$this->submitStatsToDev();
 			$data = Scan\Component\Data_Factory::buildData();
-			
+
 			wp_send_json_success( $data );
 		} else {
 			$model = Scan\Component\Scan_Api::getActiveScan();
@@ -320,7 +342,7 @@ class Rest extends Controller {
 			wp_send_json_error( $data );
 		}
 	}
-	
+
 	/**
 	 * Update settings
 	 */
@@ -328,11 +350,11 @@ class Rest extends Controller {
 		if ( ! $this->checkPermission() ) {
 			return;
 		}
-		
+
 		if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'updateSettings' ) ) {
 			return;
 		}
-		
+
 		$data     = stripslashes( $_POST['data'] );
 		$data     = json_decode( $data, true );
 		$settings = Scan\Model\Settings::instance();
@@ -343,12 +365,16 @@ class Rest extends Controller {
 				$data[ $key ] = sanitize_text_field( $val );
 			}
 		}
-		
+
 		$settings->import( $data );
 		$settings->email_all_ok    = stripslashes( $settings->email_all_ok );
 		$settings->email_has_issue = stripslashes( $settings->email_has_issue );
 		$settings->save();
 		if ( $this->hasMethod( 'scheduleReportTime' ) ) {
+			if ( $settings->last_report_sent == null ) {
+				$settings->last_report_sent = current_time( 'timestamp' );
+				$settings->save();
+			}
 			$this->scheduleReportTime( $settings );
 			$this->submitStatsToDev();
 		}
@@ -356,7 +382,7 @@ class Rest extends Controller {
 			'message' => __( "Your settings have been updated.", "defender-security" )
 		) );
 	}
-	
+
 	/**
 	 * Declaring behaviors
 	 * @return array
@@ -370,11 +396,11 @@ class Rest extends Controller {
 			'endpoints' => '\WP_Defender\Behavior\Endpoint',
 			'wpmudev'   => '\WP_Defender\Behavior\WPMUDEV'
 		];
-		
+
 		if ( wp_defender()->isFree == false ) {
 			$behaviors['pro'] = Scan\Behavior\Pro\Reporting::class;
 		}
-		
+
 		return $behaviors;
 	}
 }

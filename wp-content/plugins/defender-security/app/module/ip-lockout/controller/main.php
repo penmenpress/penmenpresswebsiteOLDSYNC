@@ -48,11 +48,9 @@ class Main extends Controller {
 		if ( $this->isInPage() || $this->isDashboard() ) {
 			$this->addAction( 'defender_enqueue_assets', 'scripts', 11 );
 		}
-		
+
 		$this->maybeExport();
-		
-		$this->addAjaxAction( 'lockoutExportAsCsv', 'exportAsCsv' );
-		
+
 		if ( ! Login_Protection_Api::checkIfTableExists() ) {
 			//no table logs, omething happen
 			return;
@@ -106,44 +104,7 @@ class Main extends Controller {
 			array_key_exists( 'SERVER_ADDR', $_SERVER ) ? $_SERVER['SERVER_ADDR'] : ( isset( $_SERVER['LOCAL_ADDR'] ) ? $_SERVER['LOCAL_ADDR'] : null )
 		) );
 	}
-	
-	/**
-	 *
-	 */
-	public function exportAsCsv() {
-		if ( ! $this->checkPermission() ) {
-			return;
-		}
-		$logs    = Log_Model::findAll();
-		$fp      = fopen( 'php://memory', 'w' );
-		$headers = array(
-			__( "Log", "defender-security" ),
-			__( "Date / Time", "defender-security" ),
-			__( "Type", "defender-security" ),
-			__( "IP address", "defender-security" ),
-			__( "Status", "defender-security" )
-		);
-		fputcsv( $fp, $headers );
-		foreach ( $logs as $log ) {
-			$item = array(
-				$log->log,
-				$log->get_date(),
-				$log->get_type(),
-				$log->ip,
-				Login_Protection_Api::getIPStatusText( $log->ip )
-			);
-			fputcsv( $fp, $item );
-		}
-		
-		$filename = 'wdf-lockout-logs-export-' . date( 'ymdHis' ) . '.csv';
-		fseek( $fp, 0 );
-		header( 'Content-Type: text/csv' );
-		header( 'Content-Disposition: attachment; filename="' . $filename . '";' );
-		// make php send the generated csv lines to the browser
-		fpassthru( $fp );
-		exit();
-	}
-	
+
 	/**
 	 * Determine if an ip get lockout or not
 	 */
@@ -161,7 +122,7 @@ class Main extends Controller {
 				case '404':
 					$message = $settings->detect_404_lockout_message;
 					break;
-				case 'blacklist':
+				case 'blocklist':
 					$message = $settings->ip_lockout_message;
 					break;
 				default:
@@ -183,7 +144,7 @@ class Main extends Controller {
 			$temp_whitelist   = array_unique( $temp_whitelist );
 			$temp_whitelist   = array_filter( $temp_whitelist );
 			$cache->set( 'staff_ips', $temp_whitelist, DAY_IN_SECONDS );
-			Utils::instance()->log( sprintf( 'Temporary whitelist ip %s', $ip ), 'lockout' );
+			Utils::instance()->log( sprintf( 'Temporary allowlist ip %s', $ip ), 'lockout' );
 		}
 		$arr = array_merge( $arr, $temp_whitelist );
 		
@@ -214,8 +175,12 @@ class Main extends Controller {
 			) );
 			die;
 		} else {
-			if ( is_user_logged_in() ) {
-				//if current user can logged in, and no blacklisted we don't need to check the ip
+			if ( $settings->detect_404_logged == false && is_user_logged_in() ) {
+				/**
+				 * We don't need to check the IP if:
+				 * the current user can logged in and no blacklisted,
+				 * the option detect_404_logged is disabled
+				 */
 				return;
 			}
 			
@@ -286,7 +251,7 @@ class Main extends Controller {
 				return;
 			}
 			
-			if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'exportIps' ) ) {
+			if ( ! wp_verify_nonce( HTTP_Helper::retrieveGet( '_wpnonce' ), 'exportIPs' ) ) {
 				return;
 			}
 			$setting = Settings::instance();
@@ -294,13 +259,13 @@ class Main extends Controller {
 			foreach ( $setting->getIpBlacklist() as $ip ) {
 				$data[] = array(
 					'ip'   => $ip,
-					'type' => 'blacklist'
+					'type' => 'blocklist'
 				);
 			}
 			foreach ( $setting->getIpWhitelist() as $ip ) {
 				$data[] = array(
 					'ip'   => $ip,
-					'type' => 'whitelist'
+					'type' => 'allowlist'
 				);
 			}
 			$fp = fopen( 'php://memory', 'w' );
@@ -323,7 +288,7 @@ class Main extends Controller {
 	public function adminMenu() {
 		$cap    = is_multisite() ? 'manage_network_options' : 'manage_options';
 		$action = "actionIndex";
-		add_submenu_page( 'wp-defender', esc_html__( "IP Lockouts", "defender-security" ), esc_html__( "IP Lockouts", "defender-security" ), $cap, $this->slug, array(
+		add_submenu_page( 'wp-defender', esc_html__( "Firewall", "defender-security" ), esc_html__( "Firewall", "defender-security" ), $cap, $this->slug, array(
 			&$this,
 			$action
 		) );
@@ -337,7 +302,7 @@ class Main extends Controller {
 			wp_enqueue_style( 'wpmudev-sui' );
 			wp_enqueue_style( 'defender' );
 			wp_register_script( 'defender-iplockout', wp_defender()->getPluginUrl() . 'assets/app/ip-lockout.js', array(
-				'vue',
+				'def-vue',
 				'defender',
 				'wp-i18n'
 			), wp_defender()->version, true );
@@ -349,7 +314,7 @@ class Main extends Controller {
 			
 			wp_enqueue_media();
 			wp_enqueue_script( 'def-momentjs', wp_defender()->getPluginUrl() . 'assets/js/vendor/moment/moment.min.js' );
-			wp_enqueue_style( 'def-daterangepicker', wp_defender()->getPluginUrl() . 'assets/js/vendor/daterangepicker/daterangepicker.css' );
+//			wp_enqueue_style( 'def-daterangepicker', wp_defender()->getPluginUrl() . 'assets/js/vendor/daterangepicker/daterangepicker.css' );
 			wp_enqueue_script( 'def-daterangepicker', wp_defender()->getPluginUrl() . 'assets/js/vendor/daterangepicker/daterangepicker.js' );
 			wp_enqueue_script( 'defender-iplockout' );
 			wp_enqueue_script( 'wpmudev-sui' );
@@ -399,7 +364,7 @@ class Main extends Controller {
 				'emptyLogs'      => wp_create_nonce( 'emptyLogs' ),
 				'queryLockedIps' => wp_create_nonce( 'queryLockedIps' ),
 				'ipAction'       => wp_create_nonce( 'ipAction' ),
-				'exportIps'      => wp_create_nonce( 'exportIps' )
+				'exportAsCsv'    => wp_create_nonce( 'exportAsCsv' )
 			],
 			'endpoints'    => $this->getAllAvailableEndpoints( \WP_Defender\Module\IP_Lockout::getClassName() ),
 			'whitelabel'   => $this->whiteLabelStatus(),
@@ -479,7 +444,7 @@ class Main extends Controller {
 				'times_of_days'       => Utils::instance()->getTimes(),
 				'host'                => $host,
 				'user_ip'             => Utils::instance()->getUserIp(),
-				'geo_requirement'     => version_compare( phpversion(), '5.4', '<' ),
+				'geo_requirement'     => version_compare( phpversion(), '5.4', '>=' ),
 				'tz'                  => $tz,
 				'current_time'        => \WP_Defender\Behavior\Utils::instance()->formatDateTime( current_time( 'timestamp' ), false )
 			],

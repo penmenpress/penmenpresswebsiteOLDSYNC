@@ -14,7 +14,7 @@ use WP_Defender\Module\Hardener\Model\Settings;
 
 class Hardener extends Module {
 	const Settings = 'hardener_settings';
-	
+
 	public function __construct() {
 		//init dependency
 		$this->initRulesStats();
@@ -22,7 +22,7 @@ class Hardener extends Module {
 		new Main();
 		new Rest();
 	}
-	
+
 	/**
 	 * Init rules status
 	 */
@@ -35,13 +35,14 @@ class Hardener extends Module {
 			//only init when page load
 			$interval = '+0 seconds';
 			//only refresh if on admin, if not we just do the listening
-			
+
 			if ( ( ( is_admin() || is_network_admin() )
-			     ) && ( HTTP_Helper::retrieveGet( 'page' ) == 'wdf-hardener' || HTTP_Helper::retrieveGet( 'page' ) == 'wp-defender' )
+			     ) && ( HTTP_Helper::retrieveGet( 'page' ) == 'wdf-hardener'
+			            || HTTP_Helper::retrieveGet( 'page' ) == 'wp-defender'
+			            || HTTP_Helper::retrieveGet( 'page' ) == 'wdf-setting' )
 			) {
 				//this mean we dont have any data, or data is overdue need to refresh
 				//refetch those list
-				
 				$settings->refreshStatus();
 			} elseif ( defined( 'DOING_CRON' ) ) {
 				//if this is in cronjob, we refresh it too
@@ -49,11 +50,11 @@ class Hardener extends Module {
 			}
 			$settings->save();
 		}
-		
+
 		//we will need to add every hooks needed
 		foreach ( $settings->getDefinedRules( true ) as $rule ) {
 			$rule->addHooks();
 		}
 	}
-	
+
 }

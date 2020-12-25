@@ -12,7 +12,7 @@
         </div>
         <div class="well well-blank with-cap">
             <i class="def-icon icon-tick fill-blue" aria-hidden="true"></i>
-            <strong><?php _e( "Advanced File Scanning", "defender-security" ) ?></strong>
+            <strong><?php _e( "Advanced Malware Scanning", "defender-security" ) ?></strong>
             <p class="sub">
 				<?php _e( "Defender will go beyond just plugins and themes and scan your entire file system for suspicious code.", "defender-security" ) ?>
             </p>
