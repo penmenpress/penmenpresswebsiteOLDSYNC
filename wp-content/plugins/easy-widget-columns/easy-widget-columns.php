@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The plugin bootstrap file
  *
@@ -14,9 +13,9 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Easy Widget Columns
- * Plugin URI:        http://www.alexisvillegas.com/plugins/easy-widget-columns
+ * Plugin URI:        https://github.com/ajvillegas/easy-widget-columns
  * Description:       Easily display widgets in rows of columns.
- * Version:           1.2.3
+ * Version:           1.2.4
  * Author:            Alexis J. Villegas
  * Author URI:        http://www.alexisvillegas.com
  * License:           GPL-2.0+
@@ -43,7 +42,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-easy-widget-columns.php';
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  *
- * @since    1.0.0
+ * @since 1.0.0
  */
 function run_easy_widget_columns() {
 
@@ -51,4 +50,5 @@ function run_easy_widget_columns() {
 	$plugin->run();
 
 }
+
 run_easy_widget_columns();
