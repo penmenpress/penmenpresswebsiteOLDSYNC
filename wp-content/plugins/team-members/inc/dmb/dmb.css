@@ -499,15 +499,6 @@
   left: 0;
   right: 0;}
 
-
-  #tmm_pro .hndle {
-    padding: 8px 12px;
-    background:#81c240;
-    color:white;
-  }
-
   #tmm_pro strong {
      color:black;
   }
-
-  #tmm_pro .toggle-indicator{   color:white !important; }

@@ -50,7 +50,7 @@ add_action('admin_init', 'dmb_tmm_add_settings', 1);
 function dmb_tmm_add_settings() {
 	add_meta_box( 
 		'tmm_settings', 
-		'<span class="dashicons dashicons-admin-generic"></span> '.__('Settings', TMM_TXTDM), 
+		'Settings', 
 		'dmb_tmm_settings_display', 
 		'tmm', 
 		'side', 

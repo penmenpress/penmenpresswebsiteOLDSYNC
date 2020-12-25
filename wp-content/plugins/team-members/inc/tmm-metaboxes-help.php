@@ -5,7 +5,7 @@ add_action('admin_init', 'dmb_tmm_add_help', 1);
 function dmb_tmm_add_help() {
 	add_meta_box( 
 		'tmm_help', 
-		'<span class="dashicons dashicons-editor-code"></span> '.__('Shortcode', TMM_TXTDM ), 
+		'Shortcode', 
 		'dmb_tmm_help_display', // Below
 		'tmm', 
 		'side', 

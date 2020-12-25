@@ -71,7 +71,7 @@ function dmb_tmm_plan_meta_box_save($post_id) {
 				(isset($member_firstname) && $member_firstname) ? $new_team[$i]['_tmm_firstname'] = stripslashes( wp_kses_post( $member_firstname ) ) : $new_team[$i]['_tmm_firstname'] = __('Untitled', TMM_TXTDM );
 				(isset($member_lastname) && $member_lastname) ? $new_team[$i]['_tmm_lastname'] = stripslashes( wp_kses_post( $member_lastname ) ) : $new_team[$i]['_tmm_lastname'] = '';
 				(isset($member_job) && $member_job) ? $new_team[$i]['_tmm_job'] = stripslashes( wp_kses_post( $member_job ) ) : $new_team[$i]['_tmm_job'] = '';
-				(isset($member_bio) && $member_bio) ? $new_team[$i]['_tmm_desc'] = balanceTags( $member_bio ) : $new_team[$i]['_tmm_desc'] = '';
+				(isset($member_bio) && $member_bio) ? $new_team[$i]['_tmm_desc'] = wp_kses_post(balanceTags( $member_bio )) : $new_team[$i]['_tmm_desc'] = '';
 				(isset($member_photo) && $member_photo) ? $new_team[$i]['_tmm_photo'] = stripslashes( strip_tags( sanitize_text_field( $member_photo ) ) ) : $new_team[$i]['_tmm_photo'] = '';
 				(isset($member_photo_url) && $member_photo_url) ? $new_team[$i]['_tmm_photo_url'] = stripslashes( strip_tags( sanitize_text_field( $member_photo_url ) ) ) : $new_team[$i]['_tmm_photo_url'] = '';
 	

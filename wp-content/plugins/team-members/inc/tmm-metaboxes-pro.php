@@ -5,7 +5,7 @@ add_action('admin_init', 'dmb_tmm_add_pro', 1);
 function dmb_tmm_add_pro() {
 	add_meta_box( 
 		'tmm_pro', 
-		'<span class="dashicons dashicons-star-filled"></span> Upgrade to PRO', 
+		'Upgrade to PRO', 
 		'dmb_tmm_pro_display', // Below
 		'tmm', 
 		'side', 

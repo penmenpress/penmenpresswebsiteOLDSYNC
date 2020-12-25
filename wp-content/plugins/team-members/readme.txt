@@ -2,7 +2,7 @@
 Contributors: spwebguy
 Tags: team, teams, meet the team, shortcode, responsive, members, staff, people
 Requires at least: 3.6
-Tested up to: 5.3
+Tested up to: 5.6
 Stable tag: trunk
 License: GPL2
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -11,6 +11,8 @@ A responsive and clean way to display your team. Create members, add their posit
 
 == Description ==
 This plugin adds a “Teams” section to the admin panel which allows you to showcase your staff/employees/people on your website the easy way. You can quickly add members to your team(s), add their picture, position, bios, social links, re-order them at anytime and display them anywhere with a simple shortcode. What you see is what you get, and it’s totally free.
+
+\[Compatible with PHP 8.\]
 
 = No limitation for the Free version =
 The free version of the Team Members plugin is **not limited**.
@@ -91,6 +93,15 @@ Find help on [our support platform](https://wpdarko.com/support) for this plugin
 6. Finding the shortcode (admin view)
 
 == Changelog ==
+= 5.0.8 =
+* Fixed styling issue with WP5.5
+
+= 5.0.7 =
+*  Updated Instagram icon
+
+= 5.0.4 =
+* Fixed (authenticated) vulnerability issue
+
 = 5.0.3 =
 * Various styling fixes
 
