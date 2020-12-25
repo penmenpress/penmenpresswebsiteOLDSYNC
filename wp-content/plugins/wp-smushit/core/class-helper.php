@@ -13,7 +13,7 @@
 namespace Smush\Core;
 
 use finfo;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -34,6 +34,11 @@ class Helper {
 	 * @return bool|string
 	 */
 	public static function get_mime_type( $path ) {
+		// These mime functions only work on local files/streams.
+		if ( ! stream_is_local( $path ) ) {
+			return false;
+		}
+
 		// Get the File mime.
 		if ( class_exists( 'finfo' ) ) {
 			$finfo = new finfo( FILEINFO_MIME_TYPE );
@@ -86,6 +91,8 @@ class Helper {
 		if ( empty( $attachment_id ) ) {
 			return false;
 		}
+
+		do_action( 'smush_s3_integration_fetch_file' );
 
 		$file_path = get_attached_file( $attachment_id );
 		if ( ! empty( $file_path ) && strpos( $file_path, 's3' ) !== false ) {
@@ -195,11 +202,8 @@ class Helper {
 	 * @return string
 	 */
 	public static function get_user_name() {
-		// Get username.
 		$current_user = wp_get_current_user();
-		$name         = ! empty( $current_user->first_name ) ? $current_user->first_name : $current_user->display_name;
-
-		return $name;
+		return ! empty( $current_user->first_name ) ? $current_user->first_name : $current_user->display_name;
 	}
 
 	/**
@@ -325,6 +329,20 @@ class Helper {
 		if ( $count > 1 ) {
 			update_post_meta( $id, WP_SMUSH_PREFIX . 'animated', true );
 		}
+	}
+
+	/**
+	 * Original File path
+	 *
+	 * @param string $original_file  Original file.
+	 *
+	 * @return string File Path
+	 */
+	public static function original_file( $original_file = '' ) {
+		$uploads     = wp_get_upload_dir();
+		$upload_path = $uploads['basedir'];
+
+		return path_join( $upload_path, $original_file );
 	}
 
 }

@@ -17,7 +17,7 @@ use Exception;
 use Imagick;
 use ImagickPixel;
 use Smush\Core\Helper;
-use Smush\WP_Smush;
+use WP_Smush;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -485,6 +485,9 @@ class Png2jpg extends Abstract_Module {
 
 			WP_Smush::get_instance()->core()->mod->backup->add_to_image_backup_sizes( $id, $o_file, 'smush_png_path' );
 
+			// Remove webp images created from the png version, if any.
+			WP_Smush::get_instance()->core()->mod->webp->delete_images( $id, true, $o_file );
+
 			/**
 			 * Do action, if the PNG to JPG conversion was successful
 			 */
@@ -618,12 +621,11 @@ class Png2jpg extends Abstract_Module {
 		$editor = wp_get_image_editor( $file );
 
 		if ( ! is_wp_error( $editor ) ) {
-
 			$quality = $editor->get_quality();
 		}
 
-		// Choose the default quaity if we didn't get it.
-		if ( ! $quality || $quality < 1 || $quality > 100 ) {
+		// Choose the default quality if we didn't get it.
+		if ( ! isset( $quality ) || $quality < 1 || $quality > 100 ) {
 			// The default quality.
 			$quality = 82;
 		}
