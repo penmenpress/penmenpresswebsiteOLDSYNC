@@ -2,16 +2,242 @@
 # This file is distributed under the same license as the Plugins - Admin Columns - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-02-24 21:17:25+0000\n"
+"PO-Revision-Date: 2020-09-11 22:11:27+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
-"X-Generator: GlotPress/2.4.0-alpha\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: GlotPress/3.0.0-alpha.2\n"
 "Language: ro\n"
 "Project-Id-Version: Plugins - Admin Columns - Stable (latest release)\n"
 
-#: templates/admin/modal-pro.php:25
+#: templates/admin/edit-actions.php:40
+msgid "Key"
+msgstr ""
+
+#: templates/admin/side-banner.php:47
+msgid "Export table contents to CSV"
+msgstr ""
+
+#: templates/tooltip/export.php:25 templates/tooltip/export-disabled.php:17
+#: templates/tooltip/smart-filtering.php:28 templates/tooltip/sorting.php:29
+#: templates/tooltip/bulk-editing.php:25
+#: templates/tooltip/inline-editing.php:25
+msgid "Learn more &raquo;"
+msgstr ""
+
+#: classes/Integration/YoastSeo.php:16
+msgid "Enrich the Yoast SEO columns with amazing pro features!"
+msgstr ""
+
+#: classes/Column/User/Login.php:24
+msgid "Super Admin"
+msgstr ""
+
+#: classes/Column/User/Nicename.php:11
+msgid "Author Slug"
+msgstr ""
+
+#: classes/Admin/ScreenOption/ColumnId.php:32
+msgid "Column Name"
+msgstr ""
+
+#: classes/Admin/ScreenOption/ListScreenType.php:32
+msgid "List Screen Key"
+msgstr ""
+
+#: classes/Admin/ScreenOption/ListScreenId.php:32
+msgid "List Screen ID"
+msgstr ""
+
+#: classes/Settings/Column/User.php:78 classes/Column/User/FullName.php:11
+msgid "Full Name"
+msgstr ""
+
+#: templates/tooltip/export-disabled.php:13
+msgid "Third-party columns and some custom columns cannot be exported unless there is build-in support for that specific column."
+msgstr ""
+
+#: templates/tooltip/export-disabled.php:10
+msgid "Unfortunately not every column can be exported."
+msgstr ""
+
+#: templates/tooltip/export-disabled.php:7
+msgid "Export Unavailable"
+msgstr ""
+
+#: templates/tooltip/bulk-editing.php:19
+msgid "Bulk Edit"
+msgstr ""
+
+#: templates/tooltip/bulk-editing.php:18
+msgid "Clicking the %s button will display a popup that allows you to add or change the current value of all selected items."
+msgstr ""
+
+#: templates/tooltip/bulk-editing.php:13
+msgid "Select more than one row from the list table to show the bulk edit buttons."
+msgstr ""
+
+#: templates/tooltip/bulk-editing.php:10
+msgid "Bulk Edit allows you to update multiple values at once."
+msgstr ""
+
+#: templates/tooltip/sorting.php:25
+msgid "You can change the default sorted column in the optional settings below."
+msgstr ""
+
+#: templates/tooltip/sorting.php:20
+msgid "Reset Sorting"
+msgstr ""
+
+#: templates/tooltip/sorting.php:19
+msgid "Reset the sorting by clicking the %s button."
+msgstr ""
+
+#: templates/tooltip/sorting.php:15
+msgid "When you come back the content is sorted just the way you left it."
+msgstr ""
+
+#: templates/tooltip/sorting.php:14
+msgid "The sorted column is saved as your personal preference."
+msgstr ""
+
+#: templates/tooltip/sorting.php:10
+msgid "Sort by clicking the column header on the list table. Click the column header again to switch between <em>ascending</em> and <em>descending</em>."
+msgstr ""
+
+#: templates/tooltip/filtering.php:19
+msgid "Smart Filters"
+msgstr ""
+
+#: templates/tooltip/filtering.php:19
+msgid "We recommend using %s"
+msgstr ""
+
+#: templates/tooltip/filtering.php:16
+msgid "%s also has better support for all the different types of fields, such as text, numbers and dates."
+msgstr ""
+
+#: templates/tooltip/filtering.php:14
+msgid "Finding the right content will be much easier with the use of conditionals, such as %s."
+msgstr ""
+
+#: templates/tooltip/filtering.php:13
+msgid "%s is an improved version of %s."
+msgstr ""
+
+#: templates/tooltip/filtering.php:10
+msgid "Filters vs Smart Filters"
+msgstr ""
+
+#: templates/tooltip/filtering.php:6
+msgid "You can filter the contents by selecting the column value from the filter dropdown menu."
+msgstr ""
+
+#: templates/tooltip/filtering.php:5
+msgid "This will allow the column to be filtered."
+msgstr ""
+
+#: templates/tooltip/smart-filtering.php:23
+msgctxt "smart filtering help"
+msgid "When you return to your list table you can easily select them again from the menu."
+msgstr ""
+
+#: templates/tooltip/smart-filtering.php:22
+msgctxt "smart filtering help"
+msgid "You can save your filters for later use."
+msgstr ""
+
+#: templates/tooltip/smart-filtering.php:14
+msgid "Add Filter"
+msgstr ""
+
+#: templates/tooltip/smart-filtering.php:8
+msgctxt "smart filtering help"
+msgid "Smart filtering allows you to segment your data by different criteria."
+msgstr ""
+
+#: templates/tooltip/export.php:21
+msgid "You can use filters to segment your list before exporting."
+msgstr ""
+
+#: templates/tooltip/export.php:17
+msgid "The result is a CSV file."
+msgstr ""
+
+#: templates/tooltip/export.php:13
+msgid "Click the export button and all items will be exported to CSV."
+msgstr ""
+
+#: templates/tooltip/export.php:10
+msgid "Export for Admin Columns Pro, allows you to export the contents of your columns to CSV."
+msgstr ""
+
+#: templates/tooltip/inline-editing.php:21
+msgid "It is possible to undo and redo all changes made with Inline Editing, so using it is without risk."
+msgstr ""
+
+#: templates/tooltip/inline-editing.php:17
+msgid "Click on the pencil icon to start editing the value of a field."
+msgstr ""
+
+#: templates/tooltip/inline-editing.php:13
+msgid "To start inline editing, toggle the “Inline Edit” button on top of the list table."
+msgstr ""
+
+#: templates/tooltip/inline-editing.php:10
+msgid "With Inline Edit, you can update your content quick and easy, without having to open each %s one at the time."
+msgstr ""
+
+#: templates/admin/modal-pro.php:26
+msgid "Create multiple list table views with different columns."
+msgstr ""
+
+#: templates/admin/modal-pro.php:24
+msgid "Quick edit any content with Inline Editing, including custom fields."
+msgstr ""
+
+#: templates/admin/modal-pro.php:22
+msgid "Search the contents of your columns."
+msgstr ""
+
+#: classes/Integration/MetaBox.php:16
+msgid "Instantly generate columns for your Meta Box custom fields!"
+msgstr ""
+
+#: classes/Integration/MetaBox.php:14
+msgid "Meta Box"
+msgstr ""
+
+#: classes/Admin/ScreenOption/ColumnType.php:32
+msgid "Column Type"
+msgstr ""
+
+#: classes/Admin/Page/Help.php:155
+msgid "No deprecated hooks or filters found."
+msgstr ""
+
+#: classes/Settings/Column/Pro/SmartFiltering.php:11
+#: templates/tooltip/filtering.php:13 templates/tooltip/filtering.php:16
+#: templates/tooltip/smart-filtering.php:6
+msgid "Smart Filtering"
+msgstr ""
+
+#: classes/Settings/Column/Pro/BulkEditing.php:11
+#: templates/tooltip/bulk-editing.php:7
+msgid "Bulk Editing"
+msgstr ""
+
+#: classes/Settings/Column/Pro/InlineEditing.php:11
+#: templates/tooltip/inline-editing.php:7
+msgid "Inline Editing"
+msgstr ""
+
+#: classes/Settings/Column/PostType.php:35
+msgid "All Post Types"
+msgstr ""
+
+#: templates/admin/modal-pro.php:23
 msgid "Bulk edit any content, including custom fields."
 msgstr ""
 
@@ -23,13 +249,13 @@ msgstr ""
 msgid "Column Sets"
 msgstr ""
 
-#: classes/AdminColumns.php:290
+#: classes/PluginActionLinks.php:48
 msgid "Go Pro"
 msgstr ""
 
 #: classes/Plugin/Update/V4000.php:547
 msgid "Original"
-msgstr ""
+msgstr "Original"
 
 #: classes/Column/Post/EstimatedReadingTime.php:15
 msgid "Read Time"
@@ -37,11 +263,11 @@ msgstr ""
 
 #: classes/Column/Post/PasswordProtected.php:11
 msgid "Password Protected"
-msgstr ""
+msgstr "Protejat cu parolă"
 
 #: classes/Settings/Column/NumberFormat.php:100
 msgid "Number Format"
-msgstr ""
+msgstr "Format număr"
 
 #: classes/Settings/Column/NumberFormat.php:89
 msgid "Formatted"
@@ -67,7 +293,7 @@ msgstr ""
 msgid "Filter by Term"
 msgstr ""
 
-#: classes/Admin/Promo/BlackFriday.php:13
+#: classes/Promo/BlackFriday.php:13
 msgid "30% Off from Black Friday until Cyber Monday"
 msgstr ""
 
@@ -75,59 +301,51 @@ msgstr ""
 msgid "Get %s now"
 msgstr ""
 
-#: classes/Helper/Html.php:407
+#: classes/Helper/Html.php:428
 msgid "%s more"
 msgstr ""
 
-#: classes/Settings/Column/CommentLink.php:62
+#: classes/Settings/Column/CommentLink.php:66
 msgid "View Comment"
 msgstr ""
 
-#: classes/Admin/Page/Columns.php:89
+#: classes/Admin/Asset/Columns.php:66
 msgid "The column could not be loaded because of an unknown error"
 msgstr ""
 
-#: classes/Admin/Page/Columns.php:88
+#: classes/Admin/Asset/Columns.php:65
 msgid "There was an error during saving the column settings."
 msgstr ""
 
-#: classes/Table/Screen.php:64
-msgid "The available columns are loaded. You can now return to %s."
-msgstr ""
-
-#: classes/Table/Screen.php:63
-msgid "the settings page"
-msgstr ""
-
-#: classes/Integration/ACF.php:15
+#: classes/Integration/ACF.php:16
 msgid "Display and edit ACF fields in the posts overview in seconds!"
 msgstr ""
 
-#: classes/Integration/Pods.php:15
+#: classes/Integration/Pods.php:16
 msgid "Display and edit Pods fields in the posts overview in seconds!"
 msgstr ""
 
-#: templates/admin/side-banner.php:55
+#: templates/admin/side-banner.php:60
 msgid "Includes special integrations for:"
 msgstr ""
 
-#: templates/admin/side-banner.php:40
+#: templates/admin/side-banner.php:42
 msgid "Inline Edit any content"
 msgstr ""
 
-#: templates/admin/side-banner.php:39
+#: templates/admin/side-banner.php:45
 msgid "Filter any content"
 msgstr ""
 
-#: templates/admin/side-banner.php:38
+#: templates/admin/side-banner.php:44
 msgid "Sort any content"
 msgstr ""
 
-#: templates/admin/side-banner.php:37
+#: templates/admin/side-banner.php:43
 msgid "Bulk Edit any content"
 msgstr ""
 
-#: templates/admin/side-banner.php:36
+#: templates/admin/side-banner.php:41
 msgid "Search any content"
 msgstr ""
 
@@ -143,121 +361,81 @@ msgstr ""
 msgid "Local Path"
 msgstr ""
 
-#: classes/Integration/EventsCalendar.php:15
+#: classes/Integration/EventsCalendar.php:16
 msgid "Events Calendar"
 msgstr ""
 
-#: classes/Admin/Page/Addons.php:92
-msgid "%s add-on"
-msgstr ""
-
-#: classes/Admin/Page/Addons.php:53
-msgid "%s needs to be installed and active for the add-on to work."
-msgstr ""
-
-#: classes/Admin/Page/Addons.php:36
-msgid "All add-ons require %s."
-msgstr ""
-
-#: classes/Settings/Column/CustomFieldType.php:76
+#: classes/Settings/Column/CustomFieldType.php:88
 msgid "Uses one or more %s IDs to display information about it."
 msgstr ""
 
-#: classes/Check/Review.php:160
+#: classes/Check/Review.php:181
 msgid "You can also use your admincolumns.com account to access support through %s!"
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:75
+#: templates/admin/help-tab/custom-fields.php:59
 msgid "Value: Should contain one or more User IDs, separated by commas."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:71
+#: templates/admin/help-tab/custom-fields.php:55
 msgid "Value: Should contain a URL."
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:110
-#: classes/Admin/HelpTab/CustomField.php:70
+#: classes/Settings/Column/CustomFieldType.php:122
+#: templates/admin/help-tab/custom-fields.php:54
 msgid "URL"
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:63
+#: templates/admin/help-tab/custom-fields.php:47
 msgid "Value: Should contain one or more Post IDs, separated by commas."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:51
+#: templates/admin/help-tab/custom-fields.php:35
 msgid "Value: Should contain one or more Attachment IDs, separated by commas."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:47
+#: templates/admin/help-tab/custom-fields.php:31
 msgid "Value: Should contain one or more Image URLs or Attachment IDs, separated by commas."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:43
+#: templates/admin/help-tab/custom-fields.php:27
 msgid "Value: This will show if the field has content or not."
 msgstr ""
 
-#: classes/Integration/NinjaForms.php:17
+#: classes/Integration/NinjaForms.php:18
 msgid "Add Ninja Forms columns that can be sorted, filtered and directly edited!"
 msgstr ""
 
-#: classes/Integration/EventsCalendar.php:17
+#: classes/Integration/EventsCalendar.php:18
 msgid "Manage columns for your event, organizer or venue overviews."
 msgstr ""
 
-#: classes/Settings/Column/Pro/Sorting.php:14
-msgid "This will make the column sortable."
-msgstr ""
-
-#: classes/Settings/Column/Pro/Sorting.php:10
+#: classes/Settings/Column/Pro/Sorting.php:11 templates/tooltip/sorting.php:7
 msgid "Sorting"
 msgstr ""
 
-#: classes/Settings/Column/Pro/Filtering.php:14
-msgid "This will make the column filterable."
-msgstr ""
-
-#: classes/Settings/Column/Pro/Filtering.php:10
+#: templates/tooltip/filtering.php:2 templates/tooltip/filtering.php:13
 msgid "Filtering"
 msgstr ""
 
-#: classes/Settings/Column/Pro/Export.php:14
-msgid "Export your column data to CSV."
-msgstr ""
-
-#: classes/Settings/Column/Pro/Export.php:10
+#: classes/Settings/Column/Pro/Export.php:11 templates/tooltip/export.php:7
 msgid "Export"
 msgstr ""
 
-#: classes/Settings/Column/Pro/Editing.php:14
-msgid "Edit your content directly from the overview."
-msgstr ""
-
-#: classes/Settings/Column/Pro/Editing.php:10
-msgid "Editing"
-msgstr ""
-
-#: templates/admin/modal-pro.php:32
+#: templates/admin/modal-pro.php:33
 msgid "Only %s for 1 site"
 msgstr ""
 
-#: templates/admin/modal-pro.php:26
+#: templates/admin/modal-pro.php:27
 msgid "Get add-ons for ACF, WooCommerce and many more"
 msgstr ""
 
-#: templates/admin/modal-pro.php:24
-msgid "Create multiple column groups per overview"
-msgstr ""
-
-#: templates/admin/modal-pro.php:23
-msgid "Export all column data to CSV"
-msgstr ""
-
-#: templates/admin/modal-pro.php:22
-msgid "Directly edit your content from the overview"
+#: templates/admin/modal-pro.php:25
+msgid "Export all column data to CSV."
 msgstr ""
 
 #: templates/admin/modal-pro.php:21
-msgid "Sort & Filter on all your content"
+msgid "Sort & Filter on all your content."
 msgstr ""
 
 #: templates/admin/modal-pro.php:18
@@ -296,8 +474,9 @@ msgstr ""
 msgid "Text Limit"
 msgstr ""
 
-#: classes/Settings/Column/MediaLink.php:64 classes/Table/Screen.php:151
-#: classes/Table/Screen.php:153
+#: classes/Settings/Column/MediaLink.php:64
+#: classes/Column/Media/Download.php:11 classes/Table/Screen.php:134
+#: classes/Table/Screen.php:136
 msgid "Download"
 msgstr ""
 
@@ -325,16 +504,16 @@ msgstr ""
 msgid "Use an icon instead of text for displaying."
 msgstr ""
 
-#: classes/Settings/Column/Post.php:87
+#: classes/Settings/Column/Post.php:94
 msgctxt "post"
 msgid "Featured Image"
 msgstr ""
 
-#: classes/Settings/Column/NumberOfItems.php:31
+#: classes/Settings/Column/NumberOfItems.php:33
 msgid "Maximum number of items"
 msgstr ""
 
-#: classes/Settings/Column/NumberOfItems.php:30
+#: classes/Settings/Column/NumberOfItems.php:32
 msgid "Number of Items"
 msgstr ""
 
@@ -368,15 +547,15 @@ msgstr ""
 msgid "Public"
 msgstr ""
 
-#: classes/Settings/Column/ExifData.php:81
+#: classes/Settings/Column/ExifData.php:83
 msgid "Keywords"
 msgstr ""
 
-#: classes/Settings/Column/ExifData.php:80
+#: classes/Settings/Column/ExifData.php:82
 msgid "Orientation"
 msgstr ""
 
-#: classes/Settings/Column/ExifData.php:75
+#: classes/Settings/Column/ExifData.php:77
 msgid "Copyright"
 msgstr ""
 
@@ -388,11 +567,11 @@ msgstr ""
 msgid "Thumbnails"
 msgstr ""
 
-#: classes/Helper/Post.php:145
+#: classes/Helper/Post.php:144
 msgid "Missed schedule"
 msgstr ""
 
-#: classes/Helper/Post.php:141
+#: classes/Helper/Post.php:140
 msgid "Scheduled"
 msgstr ""
 
@@ -432,11 +611,7 @@ msgstr ""
 msgid "Alternative Text"
 msgstr ""
 
-#: classes/Admin/Page/Addons.php:104
-msgid "Please visit the %s page."
-msgstr ""
-
-#: classes/Integration/NinjaForms.php:15
+#: classes/Integration/NinjaForms.php:16
 msgid "Ninja Forms"
 msgstr ""
 
@@ -444,19 +619,19 @@ msgstr ""
 msgid "Password protected"
 msgstr ""
 
-#: classes/Helper/Post.php:138
+#: classes/Helper/Post.php:137
 msgid "Pending for review"
 msgstr ""
 
-#: classes/Helper/Post.php:135
+#: classes/Helper/Post.php:134
 msgid "Draft"
 msgstr ""
 
-#: classes/Helper/Post.php:132
+#: classes/Helper/Post.php:131
 msgid "Published"
 msgstr ""
 
-#: classes/Helper/Post.php:129
+#: classes/Helper/Post.php:128
 msgid "Private"
 msgstr ""
 
@@ -469,7 +644,7 @@ msgstr ""
 msgid "Use an icon?"
 msgstr ""
 
-#: classes/Helper/Strings.php:115
+#: classes/Helper/Strings.php:142
 msgid "&hellip;"
 msgstr ""
 
@@ -481,39 +656,39 @@ msgstr ""
 msgid "Excerpt is missing."
 msgstr ""
 
-#: classes/Settings/Column/User.php:72
+#: classes/Settings/Column/User.php:85
 msgid "User Nicename"
 msgstr ""
 
-#: templates/admin/side-banner.php:112
+#: templates/admin/side-banner.php:115
 msgid "Send me the discount"
 msgstr ""
 
-#: templates/admin/side-banner.php:75
+#: templates/admin/side-banner.php:80
 msgid "Prices starting from %s"
 msgstr ""
 
-#: classes/Integration/BuddyPress.php:16
+#: classes/Integration/BuddyPress.php:17
 msgid "Display any of your Profile Fields for BuddyPress on your users overview."
 msgstr ""
 
-#: classes/Integration/BuddyPress.php:14
+#: classes/Integration/BuddyPress.php:15
 msgid "BuddyPress"
 msgstr ""
 
-#: classes/AdminColumns.php:210
+#: classes/Controller/AjaxColumnValue.php:58
 msgid "Invalid method."
 msgstr "Metodă invalidă."
 
-#: classes/AdminColumns.php:206
+#: classes/Controller/AjaxColumnValue.php:54
 msgid "Invalid column."
 msgstr "Coloană invalidă."
 
-#: classes/AdminColumns.php:200
+#: classes/Controller/AjaxColumnValue.php:48
 msgid "Invalid list screen."
 msgstr ""
 
-#: classes/AdminColumns.php:194
+#: classes/Controller/AjaxColumnValue.php:42
 msgid "Invalid item ID."
 msgstr "ID element invalid."
 
@@ -534,14 +709,14 @@ msgstr ""
 msgid "Auto"
 msgstr ""
 
-#: classes/Settings/Column/User.php:42
+#: classes/Admin.php:150 classes/Settings/Column/User.php:54
 #: classes/Settings/Column/AttachmentDisplay.php:42
-#: classes/Settings/Column/Term.php:34 classes/Settings/Column/Comment.php:107
-#: classes/Settings/Column/Post.php:75
+#: classes/Settings/Column/Term.php:36 classes/Settings/Column/Comment.php:115
+#: classes/Settings/Column/Post.php:82
 msgid "Display"
 msgstr ""
 
-#: classes/Settings/Column/Taxonomy.php:24
+#: classes/Settings/Column/Taxonomy.php:44
 msgid "No taxonomies available."
 msgstr "Nicio taxonomie disponibilă."
 
@@ -606,19 +781,19 @@ msgstr "în %s"
 msgid "%s ago"
 msgstr "acum %s"
 
-#: classes/Settings/Column/DateTimeFormat.php:125
+#: classes/Settings/Column/DateTimeFormat.php:116
 msgid "date and time formatting"
 msgstr ""
 
-#: classes/Settings/Column/DateTimeFormat.php:125
+#: classes/Settings/Column/DateTimeFormat.php:116
 msgid "Learn more about %s."
 msgstr "Află mai mult despre %s."
 
-#: classes/Settings/Column/DateTimeFormat.php:123
+#: classes/Settings/Column/DateTimeFormat.php:114
 msgid "Custom:"
 msgstr "Personalizat:"
 
-#: classes/Settings/Column/DateTimeFormat.php:41
+#: classes/Settings/Column/DateTimeFormat.php:43
 msgid "The %s can be changed in %s."
 msgstr ""
 
@@ -642,56 +817,56 @@ msgstr ""
 msgid "Time Difference"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:158
+#: classes/Settings/Column/CustomFieldType.php:170
 msgid "Multiple"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:157
+#: classes/Settings/Column/CustomFieldType.php:169
 msgid "Choice"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:156
+#: classes/Settings/Column/CustomFieldType.php:168
 msgid "Relational"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:155
+#: classes/Settings/Column/CustomFieldType.php:167
 msgid "Basic"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:123
+#: classes/Settings/Column/CustomFieldType.php:135
 msgid "Number of Fields"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:115
-#: classes/Admin/HelpTab/CustomField.php:66
+#: classes/Settings/Column/CustomFieldType.php:127
+#: templates/admin/help-tab/custom-fields.php:50
 msgid "True / False"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:114
-#: classes/Admin/HelpTab/CustomField.php:42
+#: classes/Settings/Column/CustomFieldType.php:126
+#: templates/admin/help-tab/custom-fields.php:26
 msgid "Has Content"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:111
-#: classes/Admin/HelpTab/CustomField.php:58
+#: classes/Settings/Column/CustomFieldType.php:123
+#: templates/admin/help-tab/custom-fields.php:42
 msgid "Number"
 msgstr "Număr"
 
-#: classes/Settings/Column/CustomFieldType.php:108
+#: classes/Settings/Column/CustomFieldType.php:120
 msgid "Text"
 msgstr "Text"
 
-#: classes/Settings/Column/CustomFieldType.php:77
+#: classes/Settings/Column/CustomFieldType.php:89
 msgid "Multiple IDs should be separated by commas."
 msgstr ""
 
-#: classes/Settings/Column/CustomField.php:25
+#: classes/Settings/Column/CustomField.php:27
 #: classes/Settings/Column/Meta.php:73
 msgid "Field"
 msgstr "Câmp"
 
 #: classes/Settings/Column/CharacterLimit.php:29
-#: classes/Settings/Column/NumberOfItems.php:31
+#: classes/Settings/Column/NumberOfItems.php:33
 #: classes/Settings/Column/WordLimit.php:35
 msgid "Leave empty for no limit"
 msgstr "Lasă gol pentru nicio limită"
@@ -705,19 +880,19 @@ msgstr "Număr maxim de caractere"
 msgid "Character Limit"
 msgstr "Limită de caractere"
 
-#: classes/Settings/Column/BeforeAfter.php:78
+#: classes/Settings/Column/BeforeAfter.php:80
 msgid "Display Options"
 msgstr ""
 
-#: classes/Settings/Column/BeforeAfter.php:72
+#: classes/Settings/Column/BeforeAfter.php:74
 msgid "This text will appear after the column value."
 msgstr ""
 
-#: classes/Helper/Strings.php:309
+#: classes/Helper/Strings.php:332
 msgid " or "
 msgstr "sau"
 
-#: classes/Helper/Html.php:407
+#: classes/Helper/Html.php:428
 msgid "Hide"
 msgstr "Ascunde"
 
@@ -733,9 +908,9 @@ msgstr "Arată bară de unelte"
 msgid "Shortlink"
 msgstr "Legătură scurtă"
 
-#: classes/Settings/Column/CustomFieldType.php:207
-#: classes/Settings/Column/CustomFieldType.php:209
-#: classes/Settings/Column/CustomFieldType.php:293
+#: classes/Settings/Column/CustomFieldType.php:219
+#: classes/Settings/Column/CustomFieldType.php:221
+#: classes/Settings/Column/CustomFieldType.php:305
 msgid ", "
 msgstr ", "
 
@@ -747,19 +922,19 @@ msgstr "Standard"
 msgid "Full Path"
 msgstr ""
 
-#: templates/admin/side-banner.php:91
+#: templates/admin/side-banner.php:96
 msgid "Discount is valid until %s"
 msgstr ""
 
-#: classes/Settings/Admin/General/ShowEditButton.php:20
+#: classes/Admin/Section/Partial/ShowEditButton.php:25
 msgid "Show %s button on table screen."
 msgstr ""
 
-#: classes/Settings/Admin/General/ShowEditButton.php:21
+#: classes/Admin/Section/Partial/ShowEditButton.php:26
 msgid "Default is %s."
 msgstr "Implicit este %s."
 
-#: classes/Settings/Admin/General/ShowEditButton.php:21
+#: classes/Admin/Section/Partial/ShowEditButton.php:26
 msgid "on"
 msgstr ""
 
@@ -771,50 +946,50 @@ msgstr ""
 msgid "Instructions"
 msgstr "Instrucțiuni"
 
-#: classes/Admin/Page/Help.php:157
+#: classes/Admin/Page/Help.php:143
 msgid "our documentation"
 msgstr "documentația noastră"
 
-#: classes/Admin/Page/Help.php:157
+#: classes/Admin/Page/Help.php:140
 msgid "This site is using some actions or filters that have changed. Please read %s to resolve them."
 msgstr ""
 
-#: classes/Admin/Page/Help.php:155
+#: classes/Admin/Page/Help.php:136
 msgid "The Admin Columns plugin has undergone some major changes in version 4."
 msgstr ""
 
-#: classes/Admin/Page/Help.php:82
+#: classes/Admin/Page/Help.php:59
 msgid "The callback used is %s."
 msgid_plural "The callbacks used are %s."
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: classes/Admin/Page/Help.php:69
+#: classes/Admin/Page/Help.php:45
 msgid "View documentation"
 msgstr "Vezi documentația"
 
-#: classes/Admin/Page/Help.php:100
+#: classes/Admin/Page/Help.php:77
 msgid "The action %s used on this website is deprecated since %s."
 msgstr ""
 
-#: classes/Admin/Page/Help.php:129
+#: classes/Admin/Page/Help.php:106
 msgid "The filter %s used on this website is deprecated since %s."
 msgstr ""
 
-#: classes/Admin/Page/Help.php:96
+#: classes/Admin/Page/Help.php:73
 msgid "Deprecated Actions"
 msgstr "Acțiuni învechite"
 
-#: classes/Admin/Page/Help.php:125
+#: classes/Admin/Page/Help.php:102
 msgid "Deprecated Filters"
 msgstr "Filtre învechite"
 
-#: classes/Admin/Page/Help.php:27 classes/Admin/Page/Help.php:153
+#: classes/Admin/Page/Help.php:29 classes/Admin/Page/Help.php:134
 msgid "Help"
 msgstr "Ajutor"
 
-#: templates/admin/edit-column.php:52 templates/admin/edit-column.php:87
+#: templates/admin/edit-column.php:55 templates/admin/edit-column.php:90
 msgid "Close"
 msgstr "Închide"
 
@@ -826,95 +1001,83 @@ msgstr ""
 msgid "I'm using Admin Columns for WordPress!"
 msgstr ""
 
-#: templates/admin/side-banner.php:111
+#: templates/admin/side-banner.php:114
 msgid "Your First Name"
 msgstr ""
 
-#: templates/admin/side-banner.php:110
+#: templates/admin/side-banner.php:113
 msgid "Your Email"
 msgstr ""
 
-#: templates/admin/side-banner.php:103
+#: templates/admin/side-banner.php:108
 msgid "Submit your email and we'll send you a discount for %s off."
 msgstr ""
 
-#: templates/admin/side-banner.php:88 templates/admin/side-banner.php:99
+#: templates/admin/side-banner.php:93 templates/admin/side-banner.php:104
 msgid "Get %s Off!"
 msgstr ""
 
-#: templates/admin/side-banner.php:26
+#: templates/admin/side-banner.php:31
 msgid "Pro"
 msgstr "Pro"
 
-#: classes/Admin/Request/Column/Save.php:25
+#: classes/Controller/ListScreen/Save.php:25
 msgid "You need at least one column"
 msgstr ""
 
-#: classes/Admin/Page/Addons.php:167
+#: classes/Admin/Page/Addons.php:196
 msgid "Available"
 msgstr ""
 
-#: classes/Admin/Page/Addons.php:166
+#: classes/Admin/Page/Addons.php:180
 msgid "Recommended"
 msgstr ""
 
-#: classes/Admin/Page/Addons.php:104
-msgid "%s could not be activated."
-msgstr "%s n-a putut fi activat."
-
-#: classes/Admin/Page/Addons.php:96
-msgid "%s successfully activated."
-msgstr "%s activat cu succes."
-
-#: classes/Integration/Types.php:15
+#: classes/Integration/Types.php:16
 msgid "Display and edit Toolset Types fields in the posts overview in seconds!"
 msgstr ""
 
-#: classes/Integration/Types.php:13
+#: classes/Integration/Types.php:14
 msgid "Toolset Types"
 msgstr ""
 
-#: classes/Integration/Pods.php:13
+#: classes/Integration/Pods.php:14
 msgid "Pods"
 msgstr ""
 
-#: templates/admin/side-banner.php:42
-msgid "Import &amp; Export settings"
-msgstr "Setări import și export"
-
-#: templates/admin/side-banner.php:41
+#: templates/admin/side-banner.php:46
 msgid "Create multiple columns sets"
 msgstr ""
 
-#: templates/admin/side-banner.php:31
+#: templates/admin/side-banner.php:36
 msgid "Take Admin Columns to the next level:"
 msgstr ""
 
-#: templates/admin/side-banner.php:26
+#: templates/admin/side-banner.php:31
 msgid "Upgrade to"
 msgstr "Actualizează la"
 
-#: classes/Admin/Page/Columns.php:53
-msgid "The columns for %s are set up via PHP and can therefore not be edited."
+#: classes/Admin/Page/Columns.php:67
+msgid "The columns for %s are read only and can therefore not be edited."
 msgstr ""
 
-#: classes/Admin/Request/Column.php:30
+#: classes/Controller/ColumnRequest.php:30
 msgid "Please visit the %s screen once to load all available columns"
 msgstr ""
 
-#: templates/admin/edit-actions.php:35 templates/admin/edit-actions.php:38
+#: templates/admin/edit-actions.php:34 templates/admin/edit-actions.php:37
 msgid "Restore columns"
 msgstr "Restaurează coloane"
 
-#: classes/Controller/ListScreenRestoreColumns.php:42
+#: classes/Controller/ListScreenRestoreColumns.php:44
 msgid "Settings for %s restored successfully."
 msgstr "Setările pentru %s s-au restaurat cu succes."
 
-#: classes/Admin/Request/Column/Save.php:62
+#: classes/Controller/ListScreen/Save.php:64
 msgid "View %s screen"
 msgstr "Vezi ecranul %s"
 
-#: classes/Admin/Page/Columns.php:86
+#: classes/Admin/Asset/Columns.php:63
 msgid "Invalid response."
 msgstr "Răspuns invalid."
 
@@ -934,7 +1097,7 @@ msgstr "pagina suplimentelor"
 msgid "Did you know Admin Columns Pro has an integration addon for %s? With the proper Admin Columns Pro license, you can download them from %s!"
 msgstr ""
 
-#: classes/Settings/Column/Type.php:91 classes/Admin/HelpTab/CustomField.php:10
+#: classes/Admin/HelpTab/CustomField.php:11 classes/ColumnGroups.php:15
 msgid "Custom Fields"
 msgstr "Câmpuri personalizate"
 
@@ -951,16 +1114,16 @@ msgstr ""
 msgid "https://www.admincolumns.com"
 msgstr "https://www.admincolumns.com"
 
-#: classes/Settings/Admin/General/ShowEditButton.php:20
-#: classes/Table/Screen.php:220
+#: classes/Admin/Section/Partial/ShowEditButton.php:25
+#: classes/Table/Screen.php:203
 msgid "Edit columns"
 msgstr "Editează coloane"
 
-#: templates/admin/modal-pro.php:30
+#: templates/admin/modal-pro.php:31
 msgid "Upgrade"
 msgstr "Actualizează"
 
-#: classes/Admin/Request/Column/Save.php:66
+#: classes/Controller/ListScreen/Save.php:61
 msgid "Settings for %s updated successfully."
 msgstr ""
 
@@ -968,9 +1131,9 @@ msgstr ""
 msgid "Users"
 msgstr "Utilizatori"
 
-#: classes/Settings/Column/CustomFieldType.php:118
-#: classes/Admin/HelpTab/CustomField.php:50 classes/ListScreenGroups.php:15
-#: classes/ListScreen/Media.php:18
+#: classes/Settings/Column/CustomFieldType.php:130
+#: classes/ListScreenGroups.php:15 classes/ListScreen/Media.php:18
+#: templates/admin/help-tab/custom-fields.php:34
 msgid "Media"
 msgstr "Media"
 
@@ -978,35 +1141,32 @@ msgstr "Media"
 msgid "Links"
 msgstr "Legături"
 
-#: classes/Settings/Column/Comment.php:116 classes/ListScreen/Comment.php:18
+#: classes/Settings/Column/Comment.php:124 classes/ListScreen/Comment.php:18
 msgid "Comment"
 msgstr "Comentariu"
 
-#: classes/ListScreenGroups.php:16 classes/ListScreen/Comment.php:17
+#: classes/ListScreenGroups.php:16 classes/Column/User/CommentCount.php:14
+#: classes/ListScreen/Comment.php:17
 msgid "Comments"
 msgstr "Comentarii"
 
-#: classes/Admin/Page/Addons.php:322
+#: classes/Admin/Page/Addons.php:105
 msgid "Get this add-on"
 msgstr "Obține acest supliment"
 
-#: classes/Admin/Page/Addons.php:319
+#: classes/Admin/Page/Addons.php:102
 msgid "Download & Install"
 msgstr "Descarcă și instalează"
 
-#: classes/Admin/Page/Addons.php:312
+#: classes/Admin/Page/Addons.php:96
 msgid "Activate"
 msgstr "Activează"
 
-#: classes/Admin/Page/Addons.php:165
-msgid "Installed"
-msgstr "Instalat"
-
-#: classes/Admin/Page/Addons.php:308
+#: classes/Admin/Page/Addons.php:92
 msgid "Deactivate"
 msgstr "Dezactivare"
 
-#: classes/Admin/Page/Addons.php:305
+#: classes/Admin/Page/Addons.php:89 classes/Admin/Page/Addons.php:188
 msgid "Active"
 msgstr "Activ"
 
@@ -1052,7 +1212,7 @@ msgstr "Forumuri"
 
 #: templates/admin/side-feedback.php:28
 msgid "Docs"
-msgstr "Documente"
+msgstr "Documentație"
 
 #: templates/admin/side-feedback.php:23
 msgid "Check out our extensive documentation, or you can open a support topic on WordPress.org!"
@@ -1066,11 +1226,11 @@ msgstr ""
 msgid "Are you happy with Admin Columns?"
 msgstr ""
 
-#: templates/admin/side-banner.php:69
+#: templates/admin/side-banner.php:74
 msgid "Get Admin Columns Pro"
 msgstr ""
 
-#: classes/Admin/Page/Columns.php:179
+#: classes/Admin/Page/Columns.php:180
 msgid "Warning! The %s columns data will be deleted. This cannot be undone. 'OK' to delete, 'Cancel' to stop"
 msgstr ""
 
@@ -1078,15 +1238,15 @@ msgstr ""
 msgid "Update"
 msgstr "Actualizează"
 
-#: classes/Admin/Page/Columns.php:170
+#: classes/Admin/Page/Columns.php:171
 msgid "Store settings"
 msgstr ""
 
-#: classes/Admin/Page/Addons.php:14
+#: classes/Admin/Page/Addons.php:29
 msgid "Add-ons"
 msgstr "Suplimente"
 
-#: classes/Admin/Page/Settings.php:20 classes/AdminColumns.php:274
+#: classes/Admin/Page/Settings.php:22 classes/PluginActionLinks.php:40
 msgid "Settings"
 msgstr "Setări"
 
@@ -1094,171 +1254,172 @@ msgstr "Setări"
 msgid "Others"
 msgstr "Altele"
 
-#: classes/Admin/Section/Restore.php:48
+#: templates/admin/page/settings-section-restore.php:4
 msgid "Warning! ALL saved admin columns data will be deleted. This cannot be undone. 'OK' to delete, 'Cancel' to stop"
 msgstr ""
 
-#: classes/Admin/Section/Restore.php:48
+#: templates/admin/page/settings-section-restore.php:4
 msgid "Restore default settings"
 msgstr "Restaurează setările implicite"
 
-#: classes/Admin/Section/Restore.php:16
+#: classes/Admin/Section/Restore.php:21
 msgid "This will delete all column settings and restore the default settings."
 msgstr ""
 
-#: classes/Admin/Section/Restore.php:15
+#: classes/Admin/Section/Restore.php:20
 msgid "Restore Settings"
 msgstr "Restaurează setările"
 
-#: classes/Admin/Section/General.php:44 templates/admin/edit-columns.php:39
+#: templates/admin/edit-columns.php:39
+#: templates/admin/page/settings-section-general.php:10
 #: templates/admin/edit-actions.php:24
 msgid "Save"
 msgstr "Salvează"
 
-#: classes/Admin/Section/General.php:14
+#: classes/Admin/Section/General.php:37
 msgid "Customize your Admin Columns settings."
 msgstr ""
 
-#: classes/Settings/Column/DateTimeFormat.php:43
-#: classes/Admin/Section/General.php:14
+#: classes/Settings/Column/DateTimeFormat.php:45
+#: classes/Admin/Section/General.php:36
 msgid "General Settings"
 msgstr "Setări generale"
 
-#: classes/Admin/HelpTab/CustomField.php:31
+#: templates/admin/help-tab/custom-fields.php:15
 msgid "Value: Can be either a string or array. This will display a count of the number of times the meta key is used by the item."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:27
+#: templates/admin/help-tab/custom-fields.php:11
 msgid "Value: Hex value color, such as #808080."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:67
+#: templates/admin/help-tab/custom-fields.php:51
 msgid "Value: Should be a 1 (one) or 0 (zero)."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:35
+#: classes/Column/User/Login.php:11
+msgid "Username"
+msgstr "Nume utilizator"
+
+#: templates/admin/help-tab/custom-fields.php:19
 msgid "Value: Can be unix time stamp or a date format as described in the <a href='%s'>Codex</a>. You can change the outputted date format at the <a href='%s'>general settings</a> page."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:59
+#: templates/admin/help-tab/custom-fields.php:43
 msgid "Value: Integers only.<br/>If you have the 'sorting addon' this will be used for sorting, so you can sort your posts on numeric (custom field) values."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:55
+#: templates/admin/help-tab/custom-fields.php:39
 msgid "Value: Should be an array. This will flatten any ( multi dimensional ) array."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:39
+#: templates/admin/help-tab/custom-fields.php:23
 msgid "Value: This will show the first 20 words of the Post content."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:23
+#: templates/admin/help-tab/custom-fields.php:7
 msgid "Value: Can be either a string or array. Arrays will be flattened and values are seperated by commas."
 msgstr ""
 
-#: classes/Admin/HelpTab/CustomField.php:18
+#: templates/admin/help-tab/custom-fields.php:2
 msgid "The custom field column uses the custom fields from posts and users. There are 14 types which you can set."
 msgstr ""
 
-#: classes/Admin/HelpTab/Basics.php:29
+#: templates/admin/help-tab/basics.php:13
 msgid "By clicking on the triangle you will see the column options. By using the draggable slider you can set the width of the columns in percentages."
 msgstr ""
 
-#: classes/Admin/HelpTab/Basics.php:27
+#: templates/admin/help-tab/basics.php:11
 msgid "Change column width"
 msgstr "Modifică lățimea coloanei"
 
-#: classes/Admin/HelpTab/Basics.php:24
+#: templates/admin/help-tab/basics.php:8
 msgid "By clicking on the triangle you will see the column options. Here you can change each label of the columns heading."
 msgstr ""
 
-#: classes/Admin/HelpTab/Basics.php:22
+#: templates/admin/help-tab/basics.php:6
 msgid "Change label"
 msgstr "Schimbă eticheta"
 
-#: classes/Admin/HelpTab/Basics.php:19
+#: templates/admin/help-tab/basics.php:3
 msgid "By dragging the columns you can change the order which they will appear in."
 msgstr ""
 
-#: classes/Admin/HelpTab/Basics.php:17
+#: templates/admin/help-tab/basics.php:1
 msgid "Change order"
 msgstr "Schimbă ordinea"
 
-#: classes/Admin/HelpTab/Basics.php:10
+#: classes/Admin/HelpTab/Basics.php:11
 msgid "Basics"
 msgstr ""
 
-#: classes/Admin/HelpTab/Introduction.php:18
+#: templates/admin/help-tab/introduction.php:2
 msgid "This plugin is for adding and removing additional columns to the administration screens for post(types), pages, media library, comments, links and users. Change the column's label and reorder them."
 msgstr ""
 
-#: classes/Admin/HelpTab/Introduction.php:10
+#: classes/Admin/HelpTab/Introduction.php:11
 msgid "Overview"
 msgstr "Prezentare generală"
 
-#: classes/Admin/Section/Restore.php:35
+#: classes/Controller/RestoreSettingsRequest.php:37
 msgid "Default settings successfully restored."
 msgstr "Setări implicite restaurate cu succes."
 
-#: classes/Admin/Page/Columns.php:85 classes/Admin/Request/Column.php:41
+#: classes/Admin/Asset/Columns.php:62 classes/Controller/ColumnRequest.php:41
 msgid "%s column is already present and can not be duplicated."
 msgstr ""
 
-#: classes/Admin.php:68
+#: classes/Admin.php:125
 msgid "Admin Columns Settings"
 msgstr ""
 
-#: classes/Admin/Page/Addons.php:127
-msgid "%s successfully deactivated."
-msgstr "%s dezactivat cu succes."
-
-#: classes/Check/Review.php:167
+#: classes/Check/Review.php:188
 msgid "find answers to frequently asked questions"
 msgstr ""
 
-#: classes/Check/Review.php:166
+#: classes/Check/Review.php:187
 msgid "Admin Columns forum on WordPress.org"
 msgstr ""
 
-#: classes/Check/Review.php:165
+#: classes/Check/Review.php:186
 msgid "You can also find help on the %s, and %s."
 msgstr ""
 
-#: classes/Check/Review.php:161
+#: classes/Check/Review.php:182
 msgid "our forum"
 msgstr "forumul nostru"
 
-#: classes/Check/Review.php:155
+#: classes/Check/Review.php:176
 msgid "documentation page"
 msgstr "pagină documentație"
 
-#: classes/Check/Review.php:153
+#: classes/Check/Review.php:174
 msgid "We're sorry to hear that; maybe we can help! If you're having problems properly setting up %s or if you would like help with some more advanced features, please visit our %s."
 msgstr ""
 
-#: classes/Check/Review.php:144
+#: classes/Check/Review.php:165
 msgid "Permanently hide notice"
 msgstr "Ascunde notificarea definitiv"
 
-#: classes/Check/Review.php:143
+#: classes/Check/Review.php:164
 msgid "Leave a review!"
 msgstr "Trimite o recenzie!"
 
-#: classes/Check/Review.php:139
+#: classes/Check/Review.php:160
 msgid "click here"
 msgstr "dă clic aici"
 
-#: classes/Check/Review.php:135
+#: classes/Check/Review.php:156
 msgid "We don't mean to bug you, but you've been using %s for some time now, and we were wondering if you're happy with the plugin. If so, could you please leave a review at wordpress.org? If you're not happy with %s, please %s."
 msgstr ""
 
-#: classes/Admin/Page/Addons.php:33 classes/Check/Review.php:126
+#: classes/Check/Review.php:147
 msgid "Admin Columns Pro"
 msgstr ""
 
 #. Plugin Name of the plugin
-#: classes/Admin.php:69 classes/Admin/Page/Columns.php:36
-#: classes/Check/Review.php:127
+#: classes/Admin.php:126 classes/Admin/Page/Columns.php:57
+#: classes/Check/Review.php:148 classes/Table/Screen.php:449
 msgid "Admin Columns"
 msgstr ""
 
@@ -1302,7 +1463,7 @@ msgstr ""
 msgid "Label"
 msgstr "Etichetă"
 
-#: classes/Settings/Column/Type.php:36
+#: classes/Settings/Column/Type.php:36 templates/admin/edit-column.php:52
 msgid "Name"
 msgstr "Nume"
 
@@ -1310,7 +1471,7 @@ msgstr "Nume"
 msgid "Choose a column type."
 msgstr "Alege un tip de coloană."
 
-#: templates/admin/edit-column.php:54 templates/admin/edit-column.php:89
+#: templates/admin/edit-column.php:57 templates/admin/edit-column.php:92
 msgid "Clone"
 msgstr "Clonare"
 
@@ -1318,39 +1479,35 @@ msgstr "Clonare"
 msgid "Display format"
 msgstr "Format de afișare"
 
-#: classes/Settings/Column/User.php:71
-msgid "First and Last Name"
-msgstr "Prenume și nume"
-
-#: classes/Settings/Column/UserLink.php:70 classes/Settings/Column/User.php:69
+#: classes/Settings/Column/UserLink.php:70 classes/Settings/Column/User.php:83
 msgid "User Email"
 msgstr "Email utilizator"
 
-#: classes/Settings/Column/User.php:68
+#: classes/Settings/Column/User.php:82
 msgid "User Login"
 msgstr "Autentificare utilizator"
 
-#: classes/Settings/Column/User.php:66 classes/Column/User/LastName.php:14
+#: classes/Settings/Column/User.php:79 classes/Column/User/LastName.php:14
 msgid "Last Name"
 msgstr "Nume"
 
-#: classes/Settings/Column/User.php:65 classes/Column/User/FirstName.php:14
+#: classes/Settings/Column/User.php:77 classes/Column/User/FirstName.php:14
 msgid "First Name"
 msgstr "Prenume"
 
-#: classes/Settings/Column/User.php:64 classes/Column/User/DisplayName.php:14
+#: classes/Settings/Column/User.php:76 classes/Column/User/DisplayName.php:14
 msgid "Display Name"
 msgstr "Nume de afișat"
 
-#: classes/Settings/Column/BeforeAfter.php:71
+#: classes/Settings/Column/BeforeAfter.php:73
 msgid "After"
 msgstr "După"
 
-#: classes/Settings/Column/BeforeAfter.php:63
+#: classes/Settings/Column/BeforeAfter.php:65
 msgid "This text will appear before the column value."
 msgstr ""
 
-#: classes/Settings/Column/BeforeAfter.php:62
+#: classes/Settings/Column/BeforeAfter.php:64
 msgid "Before"
 msgstr "Înainte"
 
@@ -1359,16 +1516,15 @@ msgid "width"
 msgstr "lățime"
 
 #: classes/Settings/Column/Image.php:112
-#: classes/Settings/Column/CustomFieldType.php:159
-#: classes/Settings/Column/Type.php:92
+#: classes/Settings/Column/CustomFieldType.php:171 classes/ColumnGroups.php:16
 msgid "Custom"
 msgstr "Personalizat"
 
-#: classes/Settings/Column/DateTimeFormat.php:60
+#: classes/Settings/Column/DateTimeFormat.php:62
 msgid "This will determine how the date will be displayed."
 msgstr ""
 
-#: classes/Settings/Column/DateTimeFormat.php:59
+#: classes/Settings/Column/DateTimeFormat.php:61
 msgid "Date Format"
 msgstr "Format dată"
 
@@ -1392,8 +1548,8 @@ msgstr "Editor vizual"
 msgid "Registered"
 msgstr "Înregistrat"
 
-#: classes/Settings/Column/CustomFieldType.php:87
-#: classes/Settings/Column/PostType.php:25 classes/ListScreenGroups.php:13
+#: classes/Settings/Column/CustomFieldType.php:99
+#: classes/Settings/Column/PostType.php:43 classes/ListScreenGroups.php:13
 msgid "Post Type"
 msgstr "Tip de articol"
 
@@ -1401,20 +1557,19 @@ msgstr "Tip de articol"
 msgid "Post Count"
 msgstr ""
 
-#: classes/Settings/Column/User.php:67 classes/Column/User/Nickname.php:14
+#: classes/Settings/Column/User.php:80 classes/Column/User/Nickname.php:14
 msgid "Nickname"
 msgstr "Poreclă"
 
 #: classes/Column/Post/CommentCount.php:17
-#: classes/Column/User/CommentCount.php:14
 msgid "Comment Count"
 msgstr "Număr de comentarii"
 
-#: templates/admin/edit-column.php:56 templates/admin/edit-column.php:91
+#: templates/admin/edit-column.php:59 templates/admin/edit-column.php:94
 msgid "Remove"
 msgstr "Înlătură"
 
-#: classes/Settings/Column/User.php:70 classes/Column/User/ID.php:14
+#: classes/Settings/Column/User.php:84 classes/Column/User/ID.php:14
 msgid "User ID"
 msgstr "ID utilizator"
 
@@ -1426,7 +1581,7 @@ msgstr ""
 msgid "Link to menu"
 msgstr "Legătură la meniu"
 
-#: classes/Settings/Column/Taxonomy.php:31 classes/Column/Taxonomy.php:18
+#: classes/Settings/Column/Taxonomy.php:51 classes/Column/Taxonomy.php:18
 msgid "Taxonomy"
 msgstr "Taxonomie"
 
@@ -1438,7 +1593,7 @@ msgstr "Reprezentativ"
 msgid "Status"
 msgstr "Stare"
 
-#: classes/Settings/Column/Term.php:29 classes/Column/Post/Slug.php:14
+#: classes/Settings/Column/Term.php:31 classes/Column/Post/Slug.php:14
 msgid "Slug"
 msgstr "Descriptor"
 
@@ -1446,7 +1601,7 @@ msgstr "Descriptor"
 msgid "Shortcodes"
 msgstr "Scurtcoduri"
 
-#: classes/Settings/Column/User.php:73
+#: classes/Settings/Column/User.php:81
 msgid "Roles"
 msgstr "Roluri"
 
@@ -1478,7 +1633,7 @@ msgstr "Ordinea"
 msgid "Last Modified"
 msgstr "Ultima modificare"
 
-#: classes/Column/Post/LastModifiedAuthor.php:17
+#: classes/Column/Post/LastModifiedAuthor.php:18
 msgid "Last Modified Author"
 msgstr ""
 
@@ -1512,7 +1667,7 @@ msgstr[0] "secundă"
 msgstr[1] "secunde"
 msgstr[2] "de secunde"
 
-#: classes/Column/Post/Depth.php:15
+#: classes/Column/Post/Depth.php:14
 msgid "Depth"
 msgstr "Adâncime"
 
@@ -1520,25 +1675,25 @@ msgstr "Adâncime"
 msgid "Date Published"
 msgstr "Dată publicată"
 
-#: classes/Settings/Column/CommentCount.php:35
+#: classes/Settings/Column/CommentCount.php:44
 msgid "Select which comment status you like to display."
 msgstr ""
 
-#: classes/Settings/Column/CommentCount.php:34
+#: classes/Settings/Column/CommentCount.php:43
 msgid "Comment status"
 msgstr "Stare comentariu"
 
-#: classes/Settings/Column/CommentCount.php:49
+#: classes/Settings/Column/CommentCount.php:58
 #: classes/Column/Comment/Status.php:33
 msgid "Spam"
 msgstr "Spam"
 
-#: classes/Settings/Column/CommentCount.php:48
+#: classes/Settings/Column/CommentCount.php:57
 #: classes/Column/Comment/Status.php:35
 msgid "Pending"
 msgstr "În așteptare"
 
-#: classes/Settings/Column/CommentCount.php:56
+#: classes/Settings/Column/CommentCount.php:65
 msgid "Total"
 msgstr "Total"
 
@@ -1557,7 +1712,7 @@ msgstr "Editează profil utilizator"
 #: classes/Settings/Column/TermLink.php:36
 #: classes/Settings/Column/UserLink.php:78
 #: classes/Settings/Column/PostLink.php:68
-#: classes/Settings/Column/CommentLink.php:61
+#: classes/Settings/Column/CommentLink.php:65
 #: classes/Settings/Column/Separator.php:28
 #: classes/Settings/Column/MediaLink.php:62
 msgid "None"
@@ -1566,7 +1721,7 @@ msgstr "Niciunul"
 #: classes/Settings/Column/TermLink.php:27
 #: classes/Settings/Column/UserLink.php:60
 #: classes/Settings/Column/PostLink.php:58
-#: classes/Settings/Column/CommentLink.php:52
+#: classes/Settings/Column/CommentLink.php:56
 #: classes/Settings/Column/MediaLink.php:53
 msgid "Link To"
 msgstr "Legătură la"
@@ -1616,36 +1771,36 @@ msgstr "Dimensiune fișier"
 msgid "Filename"
 msgstr "Nume fișier"
 
-#: classes/Settings/Column/ExifData.php:79 classes/Settings/Column/Term.php:28
-#: classes/Settings/Column/Post.php:84
+#: classes/Settings/Column/ExifData.php:81 classes/Settings/Column/Term.php:30
+#: classes/Settings/Column/Post.php:91
 msgid "Title"
 msgstr "Titlu"
 
-#: classes/Settings/Column/ExifData.php:78
+#: classes/Settings/Column/ExifData.php:80
 msgid "Shutter Speed"
 msgstr "Viteză de declanșare"
 
-#: classes/Settings/Column/ExifData.php:77
+#: classes/Settings/Column/ExifData.php:79
 msgid "ISO"
 msgstr "ISO"
 
-#: classes/Settings/Column/ExifData.php:76
+#: classes/Settings/Column/ExifData.php:78
 msgid "Focal Length"
 msgstr ""
 
-#: classes/Settings/Column/ExifData.php:74
+#: classes/Settings/Column/ExifData.php:76
 msgid "Timestamp"
 msgstr ""
 
-#: classes/Settings/Column/ExifData.php:72
+#: classes/Settings/Column/ExifData.php:74
 msgid "Camera"
 msgstr ""
 
-#: classes/Settings/Column/ExifData.php:71
+#: classes/Settings/Column/ExifData.php:73
 msgid "Credit"
 msgstr ""
 
-#: classes/Settings/Column/ExifData.php:70
+#: classes/Settings/Column/ExifData.php:72
 msgid "Aperture"
 msgstr "Deschidere"
 
@@ -1657,7 +1812,7 @@ msgstr "Date EXIF"
 msgid "Dimensions"
 msgstr "Dimensiuni"
 
-#: classes/Settings/Column/ExifData.php:73 classes/Column/Media/Caption.php:14
+#: classes/Settings/Column/ExifData.php:75 classes/Column/Media/Caption.php:14
 msgid "Caption"
 msgstr "Text asociat"
 
@@ -1669,7 +1824,7 @@ msgstr "Dimensiuni disponibile"
 msgid "View"
 msgstr "Vezi"
 
-#: classes/Settings/Column/CommentCount.php:50
+#: classes/Settings/Column/CommentCount.php:59
 #: classes/Column/Comment/Status.php:31 classes/Column/Comment/Status.php:32
 msgid "Trash"
 msgstr "Gunoi"
@@ -1679,43 +1834,44 @@ msgstr "Gunoi"
 msgid "Description"
 msgstr "Descriere"
 
-#: classes/Settings/Column/CustomFieldType.php:60
+#: classes/Settings/Column/CustomFieldType.php:74
 msgid "This will determine how the value will be displayed."
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:67
+#: classes/Settings/Column/CustomFieldType.php:81
 msgid "Field Type"
 msgstr "Tip de câmp"
 
-#: classes/Settings/Column/CustomFieldType.php:124
-#: classes/Admin/HelpTab/CustomField.php:54
+#: classes/Settings/Column/CustomFieldType.php:136
+#: templates/admin/help-tab/custom-fields.php:38
 msgid "Multiple Values"
 msgstr "Valori multiple"
 
-#: classes/Settings/Column/CustomFieldType.php:109
-#: classes/Admin/HelpTab/CustomField.php:46
+#: classes/Settings/Column/CustomFieldType.php:121
+#: templates/admin/help-tab/custom-fields.php:30
 msgid "Image"
 msgstr "Imagine"
 
-#: classes/Admin/HelpTab/CustomField.php:38 classes/Column/Post/Excerpt.php:15
+#: classes/Column/Post/Excerpt.php:15
+#: templates/admin/help-tab/custom-fields.php:22
 msgid "Excerpt"
 msgstr "Rezumat"
 
-#: classes/Admin/HelpTab/CustomField.php:30
+#: templates/admin/help-tab/custom-fields.php:14
 msgid "Counter"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:106
-#: classes/Admin/HelpTab/CustomField.php:26
+#: classes/Settings/Column/CustomFieldType.php:118
+#: templates/admin/help-tab/custom-fields.php:10
 msgid "Color"
 msgstr "Culoare"
 
 #: classes/Settings/Column/Image.php:72
-#: classes/Settings/Column/CustomFieldType.php:174
-#: classes/Settings/Column/Type.php:89 classes/Settings/Column/Separator.php:25
-#: classes/Settings/Column/NumberFormat.php:88
-#: classes/Admin/HelpTab/CustomField.php:22
+#: classes/Settings/Column/CustomFieldType.php:186
+#: classes/Settings/Column/Separator.php:25
+#: classes/Settings/Column/NumberFormat.php:88 classes/ColumnGroups.php:13
 #: classes/Helper/Select/Group/CustomField/MultiSite.php:53
+#: templates/admin/help-tab/custom-fields.php:6
 msgid "Default"
 msgstr "Implicit"
 
@@ -1727,16 +1883,16 @@ msgstr "Câmp personalizat"
 msgid "Word Count"
 msgstr ""
 
-#: classes/Settings/Column/CustomFieldType.php:91
-#: classes/Settings/Column/CustomFieldType.php:120
-#: classes/Admin/HelpTab/CustomField.php:74 classes/Column/Comment/User.php:15
-#: classes/ListScreen/User.php:15
+#: classes/Settings/Column/CustomFieldType.php:103
+#: classes/Settings/Column/CustomFieldType.php:132
+#: classes/Column/Comment/User.php:15 classes/ListScreen/User.php:15
+#: templates/admin/help-tab/custom-fields.php:58
 msgid "User"
 msgstr "Utilizator"
 
-#: classes/Settings/Column/CustomFieldType.php:63
+#: classes/Settings/Column/CustomFieldType.php:77
 #: classes/Settings/Column/Type.php:33 classes/Settings/Column/Type.php:42
-#: classes/Column/Comment/Type.php:14
+#: classes/Column/Comment/Type.php:14 templates/admin/edit-column.php:53
 msgid "Type"
 msgstr "Tip"
 
@@ -1744,8 +1900,9 @@ msgstr "Tip"
 msgid "In Reply To"
 msgstr "Ca răspuns la"
 
-#: classes/Settings/Column/CustomFieldType.php:119
-#: classes/Admin/HelpTab/CustomField.php:62 classes/Column/Comment/Post.php:15
+#: classes/Settings/Column/CustomFieldType.php:131
+#: classes/Column/Comment/Post.php:15
+#: templates/admin/help-tab/custom-fields.php:46
 msgid "Post"
 msgstr "Articol"
 
@@ -1753,9 +1910,9 @@ msgstr "Articol"
 msgid "Content"
 msgstr "Conținut"
 
-#: classes/Settings/Column/CustomFieldType.php:107
-#: classes/Settings/Column/Comment.php:120
-#: classes/Admin/HelpTab/CustomField.php:34
+#: classes/Settings/Column/CustomFieldType.php:119
+#: classes/Settings/Column/Comment.php:128
+#: templates/admin/help-tab/custom-fields.php:18
 msgid "Date"
 msgstr "Dată"
 
@@ -1767,7 +1924,7 @@ msgstr ""
 msgid "Date GMT"
 msgstr "Dată GMT"
 
-#: classes/Settings/Column/Comment.php:118 classes/Settings/Column/Post.php:86
+#: classes/Settings/Column/Comment.php:126 classes/Settings/Column/Post.php:93
 #: classes/Column/Post/AuthorName.php:18
 msgid "Author"
 msgstr "Autor"
@@ -1784,7 +1941,7 @@ msgstr "Nume autor"
 msgid "Author IP"
 msgstr "IP autor"
 
-#: classes/Settings/Column/Comment.php:119
+#: classes/Settings/Column/Comment.php:127
 #: classes/Column/Comment/AuthorEmail.php:14
 msgid "Author Email"
 msgstr "Email autor"
@@ -1793,7 +1950,7 @@ msgstr "Email autor"
 msgid "Avatar"
 msgstr "Avatar"
 
-#: classes/Settings/Column/CommentCount.php:47
+#: classes/Settings/Column/CommentCount.php:56
 #: classes/Column/Comment/Status.php:34 classes/Column/Comment/Approved.php:14
 msgid "Approved"
 msgstr "Aprobat"
@@ -1802,34 +1959,35 @@ msgstr "Aprobat"
 msgid "Agent"
 msgstr "Agent"
 
-#: templates/admin/edit-column.php:51
+#: templates/admin/edit-column.php:54
 msgid "Edit"
 msgstr "Editare"
 
-#: classes/Settings/Column/CommentLink.php:63
+#: classes/Settings/Column/CommentLink.php:67
 msgid "Edit Comment"
 msgstr "Editează comentariul"
 
-#: classes/Settings/Column/Term.php:30 classes/Settings/Column/Comment.php:117
-#: classes/Settings/Column/Post.php:85 classes/Column/Post/ID.php:15
+#: classes/Settings/Column/Term.php:32 classes/Settings/Column/Comment.php:125
+#: classes/Settings/Column/Post.php:92 classes/Column/Post/ID.php:15
 #: classes/Column/Media/ID.php:14 classes/Column/Comment/ID.php:14
+#: templates/admin/edit-actions.php:41
 msgid "ID"
 msgstr "ID"
 
 #: classes/Settings/Column/ActionIcons.php:23
 #: classes/Settings/Column/Toggle.php:15
-#: classes/Settings/Column/StatusIcon.php:25 classes/Settings/Column/Pro.php:18
+#: classes/Settings/Column/StatusIcon.php:25 classes/Settings/Column/Pro.php:24
 #: classes/Settings/Column/MissingImageSize.php:23
-#: classes/Settings/Column/PostFormatIcon.php:25 classes/Helper/Icon.php:64
+#: classes/Settings/Column/PostFormatIcon.php:25 classes/Helper/Icon.php:62
 #: templates/admin/side-feedback.php:14
 msgid "No"
 msgstr "Nu"
 
 #: classes/Settings/Column/ActionIcons.php:22
 #: classes/Settings/Column/Toggle.php:14
-#: classes/Settings/Column/StatusIcon.php:24 classes/Settings/Column/Pro.php:17
+#: classes/Settings/Column/StatusIcon.php:24 classes/Settings/Column/Pro.php:23
 #: classes/Settings/Column/MissingImageSize.php:22
-#: classes/Settings/Column/PostFormatIcon.php:24 classes/Helper/Icon.php:47
+#: classes/Settings/Column/PostFormatIcon.php:24 classes/Helper/Icon.php:46
 #: templates/admin/side-feedback.php:13
 msgid "Yes"
 msgstr "Da"
@@ -1846,18 +2004,18 @@ msgstr "Folosești iconuri?"
 msgid "Actions"
 msgstr "Acțiuni"
 
-#: classes/Integration/WooCommerce.php:17
+#: classes/Integration/WooCommerce.php:18
 msgid "Enhance the products, orders and coupons overviews with new columns and inline editing."
 msgstr ""
 
-#: classes/Integration/WooCommerce.php:15
+#: classes/Integration/WooCommerce.php:16
 msgid "WooCommerce"
 msgstr "WooCommerce"
 
-#: classes/Integration/ACF.php:13
+#: classes/Integration/ACF.php:14
 msgid "Advanced Custom Fields"
 msgstr "Câmpuri personalizate avansate"
 
-#: classes/Settings/Column/Type.php:90 classes/Admin/Page/Addons.php:113
+#: classes/ColumnGroups.php:14
 msgid "Plugins"
 msgstr "Module"

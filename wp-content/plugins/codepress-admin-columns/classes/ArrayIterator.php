@@ -4,8 +4,7 @@ namespace AC;
 
 use Iterator;
 
-class ArrayIterator
-	implements Iterator {
+class ArrayIterator implements Iterator {
 
 	/**
 	 * @var array
@@ -77,12 +76,12 @@ class ArrayIterator
 	}
 
 	/**
-	 * @param $value
+	 * @param mixed $value
 	 *
-	 * @return false|int|string
+	 * @return bool
 	 */
 	public function search( $value ) {
-		return array_search( $value, $this->array );
+		return false !== array_search( $value, $this->array, true );
 	}
 
 	/**

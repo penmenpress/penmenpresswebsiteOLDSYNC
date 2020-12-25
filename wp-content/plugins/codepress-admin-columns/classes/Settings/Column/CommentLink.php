@@ -17,9 +17,9 @@ class CommentLink extends Settings\Column
 	protected $comment_link_to;
 
 	protected function define_options() {
-		return array(
+		return [
 			'comment_link_to' => '',
-		);
+		];
 	}
 
 	public function format( $value, $original_value ) {
@@ -31,7 +31,11 @@ class CommentLink extends Settings\Column
 
 				break;
 			case 'edit_comment' :
-				$link = get_edit_comment_link( $id );
+				$comment = get_comment( $id );
+
+				$link = $comment
+					? get_edit_comment_link( $comment )
+					: false;
 
 				break;
 			default :
@@ -48,20 +52,20 @@ class CommentLink extends Settings\Column
 	public function create_view() {
 		$select = $this->create_element( 'select' )->set_options( $this->get_link_options() );
 
-		$view = new View( array(
+		$view = new View( [
 			'label'   => __( 'Link To', 'codepress-admin-columns' ),
 			'setting' => $select,
-		) );
+		] );
 
 		return $view;
 	}
 
 	protected function get_link_options() {
-		return array(
+		return [
 			''             => __( 'None' ),
 			'view_comment' => __( 'View Comment', 'codepress-admin-columns' ),
 			'edit_comment' => __( 'Edit Comment', 'codepress-admin-columns' ),
-		);
+		];
 	}
 
 	/**

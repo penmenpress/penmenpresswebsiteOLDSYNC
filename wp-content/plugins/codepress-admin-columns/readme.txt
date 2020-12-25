@@ -3,9 +3,9 @@ Contributors: codepress, tschutter, davidmosterd, engelen, dungengronovius
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZDZRSYLQ4Z76J
 Tags: plugins, wordpress, admin, column, columns, custom columns, custom fields, image, dashboard, sortable, filters, posts, media, users, pages, posttypes, manage columns, wp-admin
 Requires at least: 4.7
-Tested up to: 5.4
+Tested up to: 5.6
 Requires PHP: 5.6.20
-Stable tag: 4.0.3
+Stable tag: 4.2.5
 
 Customise columns on the administration screens for post(types), pages, media, comments, links and users with an easy to use drag-and-drop interface.
 
@@ -192,10 +192,6 @@ Great, we'd love to hear from you! Please leave your feature request in our [for
 
 You can select a custom size for your custom field option from the Column options.
 
-**my columns thumbnails still have the wrong size**
-
-If you want your already uploaded images to display the newly added size you will need to regenerate the thumbnail for them. You can use this plugin to generate the newly added sized thumbnails: http://wordpress.org/extend/plugins/regenerate-thumbnails/.
-
 = What filters and hooks can I use? =
 
 You can find a list of the available actions and filters (and examples on how to use them!) in the [Admin Columns documentation](https://www.admincolumns.com/documentation/?utm_source=wordpressorg&utm_medium=readme&utm_content=faq#filter-reference).
@@ -212,6 +208,106 @@ You can find a list of the available actions and filters (and examples on how to
 8. Posts Screen with custom fields.
 
 == Changelog ==
+
+= 4.2.5 =
+Release Date: December 15th, 2020
+
+* [Fixed] The updater could give a PHP warning when there were no updates
+* [Fixed] Display a correct message when an integration is not installed
+
+= 4.2.4 =
+Release Date: December 9th, 2020
+
+* [Fixed] WordPress 5.6 compatibility issues
+
+= 4.2.3 =
+Release Date: October 6th, 2020
+
+* [Added] Title only column added to Media list table
+* [Improved] Dashicons updates for icon picker in column settings
+* [Improved] New icons for action column added
+
+= 4.2.2 =
+Release Date: September 9th, 2020
+
+* [Fixed] Slug column now applies `urldecode()`
+* [Fixed] Links to documentation pages are updated
+
+= 4.2.1 =
+Release Date: August 21st, 2020
+
+* [Fixed] JS error on table pages
+
+= 4.2 =
+Release Date: August 18th, 2020
+
+* [Added] New api function `ac_get_columns` to retrieve the available columns for Listscreen ID
+* [Added] New api function `ac_get_column` to retrieve a single column from a Listscreen based on its ID
+* [Added] Screen Option to show the Listscreen ID and Listscreen Name on the Column settings page
+* [Fixed] Fixed User helper that gave some PHP warnings when using in the Author column
+
+= 4.1.9 =
+Release Date: July 28th, 2020
+
+* [Updated] Column label translation support for WPML was updated for the latest version of WPML
+
+= 4.1.8 =
+Release Date: July 21st, 2020
+
+* [Added] New columns for the Users table: Fullname, Author Slug and Username / Login.
+* [Fixed] CSS conflict on overview pages where post type is 'Modal'
+
+= 4.1.7 =
+Release Date: June 9th, 2020
+
+* [Improved] Better Table overview recognition to prevent wrong loaded list screens
+* [Improved] The comments column on the users page will now link to the (filtered) comments table
+* [Improved] The post count column on the users page now has the option to select all post types
+* [Fixed] Renamed the user display option 'First and Last Name' to 'Full name'
+* [Fixed] The comment count column for the users page will now only count 'approved' and 'pending' comments when selecting 'All comments'
+
+= 4.1.6 =
+Release Date: April 22nd, 2020
+
+* [Improved] You can now display the column ID and Type by opening the screen options in top right
+* [Improved] The meta column will now display a zero (when available) instead of a dash
+* [Improved] Improved right-to-left (RTL) support
+* [Improved] First time loading columns is faster
+
+= 4.1.5 =
+Release Date: April 17th, 2020
+
+* [Fixed] Model auto close issue
+
+= 4.1.4 =
+Release Date: April 15th, 2020
+
+* [Added] Javascript Improvements
+
+= 4.1.3 =
+Release Date: April 10th, 2020
+
+* [Added] New media column: Download. For easy downloading of files.
+
+= 4.1.2 =
+Release Date: April 8th, 2020
+
+* [Fixed] PHP5.6 error when loading the settings page from the menu
+
+= 4.1.1 =
+Release Date: April 7th, 2020
+
+* [Added] Meta Box integration support
+
+= 4.1.0 =
+Release Date: March 30th, 2020
+
+* [Improved] The column type selector now uses select2
+* [Improved] The current `list screen ID` has been added to the URL when filtering a list table, making it easier to bookmark
+* [Improved] Our buttons on the list table now have the same style and colors as the default WordPress buttons.
+* [Added] Tooltips added to each feature of the custom field column
+* [Updated] The `Admin` class has been refactored
+* [Updated] The `ListScreenRepository` class has been refactored
 
 = 4.0.3 =
 Release Date: March 11th, 2020

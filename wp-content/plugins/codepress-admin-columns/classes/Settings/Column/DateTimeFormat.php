@@ -8,10 +8,12 @@ use AC\View;
 abstract class DateTimeFormat extends Settings\Column
 	implements Settings\FormatValue {
 
+	const NAME = 'date';
+
 	private $date_format;
 
 	protected function set_name() {
-		$this->name = 'date';
+		$this->name = self::NAME;
 	}
 
 	protected function define_options() {
@@ -40,7 +42,7 @@ abstract class DateTimeFormat extends Settings\Column
 			$description = sprintf(
 				__( 'The %s can be changed in %s.', 'codepress-admin-columns' ),
 				$label,
-				ac_helper()->html->link( ac_get_admin_url() . '#date_format_custom_radio', strtolower( __( 'General Settings' ) ) )
+				ac_helper()->html->link( admin_url( 'options-general.php' ) . '#date_format_custom_radio', strtolower( __( 'General Settings' ) ) )
 			);
 		}
 

@@ -4,69 +4,46 @@ namespace AC\Admin\Page;
 
 use AC;
 use AC\Admin\Page;
-use AC\Deprecated\Counter;
+use AC\Asset\Assets;
+use AC\Asset\Location;
+use AC\Asset\Style;
 use AC\Deprecated\Hooks;
+use AC\Type\Url;
 
-class Help extends Page
-	implements AC\Registrable {
+class Help extends Page implements AC\Asset\Enqueueables {
 
 	const NAME = 'help';
-
-	/**
-	 * @var Counter
-	 */
-	private $counter;
 
 	/** @var Hooks */
 	private $hooks;
 
-	public function __construct() {
-		$this->counter = new Counter();
-		$this->hooks = new Hooks();
+	/**
+	 * @var Location\Absolute
+	 */
+	private $location;
 
-		$label = __( 'Help', 'codepress-admin-columns' );
+	public function __construct( Hooks $hooks, Location\Absolute $location ) {
+		$this->hooks = $hooks;
+		$this->location = $location;
 
-		if ( $this->show_in_menu() ) {
-			$label .= '<span class="ac-badge">' . $this->counter->get() . '</span>';
-		}
+		parent::__construct( self::NAME, sprintf( '%s %s', __( 'Help', 'codepress-admin-columns' ), '<span class="ac-badge">' . $hooks->get_count() . '</span>' ) );
+	}
 
-		parent::__construct( self::NAME, $label );
+	public function get_assets() {
+		return new Assets( [
+			new Style( 'ac-admin-page-help-css', $this->location->with_suffix( 'assets/css/admin-page-help.css' ) ),
+		] );
 	}
 
 	/**
-	 * Register Hooks
+	 * @return string
 	 */
-	public function register() {
-		$this->update_count();
-
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
-	}
-
-	public function update_count() {
-		$this->counter->update( $this->hooks->get_deprecated_count() );
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function show_in_menu() {
-		return absint( $this->counter->get() ) > 0;
-	}
-
-	/**
-	 * Admin scripts
-	 */
-	public function admin_scripts() {
-		wp_enqueue_style( 'ac-admin-page-help-css', AC()->get_url() . 'assets/css/admin-page-help.css', array(), AC()->get_version() );
-	}
-
-	/**
-	 * @param string $page Website page slug
-	 *
-	 * @return false|string
-	 */
-	private function get_documention_link( $page ) {
-		return ac_helper()->html->link( ac_get_site_utm_url( 'documentation/' . $page, 'documentation' ), __( 'View documentation', 'codepress-admin-columns' ) . ' &raquo;', array( 'target' => '_blank' ) );
+	private function get_documention_link() {
+		return sprintf(
+			'<a href="%s" target="_blank">%s &raquo;</a>',
+			( new Url\Documentation( Url\Documentation::ARTICLE_UPGRADE_V3_TO_V4 ) )->get_url(),
+			__( 'View documentation', 'codepress-admin-columns' )
+		);
 	}
 
 	/**
@@ -105,7 +82,7 @@ class Help extends Page
 				$message .= ' ' . $this->get_callback_message( $callbacks );
 			}
 
-			$message .= ' ' . $this->get_documention_link( $hook->get_slug() ? 'action-reference/' . $hook->get_slug() : '#action-reference' );
+			$message .= ' ' . $this->get_documention_link();
 
 			$this->render_message( $message );
 		}
@@ -134,7 +111,7 @@ class Help extends Page
 				$message .= ' ' . $this->get_callback_message( $callbacks );
 			}
 
-			$message .= ' ' . $this->get_documention_link( $hook->get_slug() ? 'filter-reference/' . $hook->get_slug() : '#filter-reference' );
+			$message .= ' ' . $this->get_documention_link();
 
 			$this->render_message( $message );
 		}
@@ -149,18 +126,36 @@ class Help extends Page
 	}
 
 	public function render() {
+		// Force cache refresh
+		$this->hooks->get_count( true );
+
+		ob_start();
 		?>
 		<h2><?php _e( 'Help', 'codepress-admin-columns' ); ?></h2>
 		<p>
 			<?php _e( 'The Admin Columns plugin has undergone some major changes in version 4.', 'codepress-admin-columns' ); ?> <br/>
 
-			<?php printf( __( 'This site is using some actions or filters that have changed. Please read %s to resolve them.', 'codepress-admin-columns' ), ac_helper()->html->link( ac_get_site_utm_url( 'documentation/faq/upgrading-from-v3-to-v4', 'help' ), __( 'our documentation', 'codepress-admin-columns' ) ) ); ?>
+			<?php
+			printf(
+				__( 'This site is using some actions or filters that have changed. Please read %s to resolve them.', 'codepress-admin-columns' ),
+				sprintf(
+					'<a href="%s" target="_blank">%s</a>', ( new Url\Documentation( Url\Documentation::ARTICLE_UPGRADE_V3_TO_V4 ) )->get_url(),
+					__( 'our documentation', 'codepress-admin-columns' )
+				)
+			);
+			?>
 		</p>
 
 		<?php
 
-		$this->render_actions();
-		$this->render_filters();
+		if ( $this->hooks->get_count() > 0 ) {
+			$this->render_actions();
+			$this->render_filters();
+		} else {
+			_e( 'No deprecated hooks or filters found.', 'codepress-admin-columns' );
+		}
+
+		return ob_get_clean();
 	}
 
 }

@@ -15,9 +15,9 @@ use AC\Settings;
 class CustomField extends Column\Meta {
 
 	public function __construct() {
-		$this->set_type( 'column-meta' );
-		$this->set_label( __( 'Custom Field', 'codepress-admin-columns' ) );
-		$this->set_group( 'custom_field' );
+		$this->set_type( 'column-meta' )
+		     ->set_label( __( 'Custom Field', 'codepress-admin-columns' ) )
+		     ->set_group( 'custom_field' );
 	}
 
 	public function get_meta_key() {
@@ -30,8 +30,9 @@ class CustomField extends Column\Meta {
 
 		if ( ! ac_is_pro_active() ) {
 			$this->add_setting( new Settings\Column\Pro\Sorting( $this ) )
-			     ->add_setting( new Settings\Column\Pro\Editing( $this ) )
-			     ->add_setting( new Settings\Column\Pro\Filtering( $this ) )
+			     ->add_setting( new Settings\Column\Pro\InlineEditing( $this ) )
+			     ->add_setting( new Settings\Column\Pro\BulkEditing( $this ) )
+			     ->add_setting( new Settings\Column\Pro\SmartFiltering( $this ) )
 			     ->add_setting( new Settings\Column\Pro\Export( $this ) );
 		}
 	}
