@@ -151,7 +151,7 @@ class WPMediaFoldersHelper
      *
      * @return boolean|WP_Error true on success or WP_ERROR
      */
-    public static function moveFile($post_id, $destination, $destination_with_filename = true, $delete_folder = false, $is_wpml_translation = false)
+    public static function moveFile($post_id, $destination, $destination_with_filename = true, $delete_folder = false, $update_database = true, $is_wpml_translation = false)
     {
         WP_Filesystem();
         global $wp_filesystem;
@@ -389,7 +389,7 @@ class WPMediaFoldersHelper
                     // This is not the same file but still it has to be in the same folder, lets move all of them (main file, thumbnails, backups)
                     $new_path = pathinfo($related_files['original']['new_path'], PATHINFO_DIRNAME);
 
-                    self::moveFile($translation['element_id'], $new_path, false, $delete_folder, true);
+                    self::moveFile($translation['element_id'], $new_path, false, $delete_folder, $update_database, true);
 
                     if ($destination_with_filename) {
                         // At this points backups have been moved but still it has to be renamed in the db
@@ -419,7 +419,7 @@ class WPMediaFoldersHelper
 
         if ($delete_folder) {
             $dir = pathinfo($wp_uploads['basedir'] . '/' . $related_files['original']['path'], PATHINFO_DIRNAME);
-            $wp_filesystem->rmdir($dir);
+            self::deleteDirectory($dir);
         }
 
         // Replace in database file url
@@ -429,6 +429,11 @@ class WPMediaFoldersHelper
             $tables = self::getDefaultDbColumns();
         } else {
             $tables = get_option('wp-media-folders-tables');
+        }
+
+        if (!$update_database) {
+            WP_Media_Folders_Debug::log('Info : Database update not required');
+            return true;
         }
 
         foreach ($done_files as $done_file) {
@@ -483,9 +488,10 @@ class WPMediaFoldersHelper
                     $columns_query = array();
 
                     foreach ($columns as $column => $column_value) {
-                        // Relative urls
-                        $columns_query[] = '`' . $column . '` = replace(`' . esc_sql($column) . '`, "' . esc_sql($done_file['url']) . '", "' . esc_sql($done_file['new_url']) . '")';
-
+                        if (isset($options['replace_relative_paths'])) {
+                            // Relative urls
+                            $columns_query[] = '`' . $column . '` = replace(`' . esc_sql($column) . '`, "' . esc_sql($done_file['url']) . '", "' . esc_sql($done_file['new_url']) . '")';
+                        }
                         $columns_query[] = '`' . $column . '` = replace(`' . esc_sql($column) . '`, "' . esc_sql($wp_uploads['baseurl'] .  $done_file['url']) . '", "' . esc_sql($wp_uploads['baseurl'] . $done_file['new_url']) . '")';
                     }
 
@@ -557,8 +563,8 @@ class WPMediaFoldersHelper
                 continue;
             }
 
-            // Remove all non matching caracters
-            $seg = preg_replace('/[^0-9a-zA-Z_-]/', '-', $seg);
+            // Remove all non matching characters
+            $seg = sanitize_file_name($seg);
 
             if (strlen($seg)) {
                 $stack[] = $seg;
@@ -684,11 +690,40 @@ class WPMediaFoldersHelper
         $folders_path_string = implode(DIRECTORY_SEPARATOR, $folders_path);
 
         $wp_uploads = wp_upload_dir();
-        $folder = $wp_uploads['basedir'] . DIRECTORY_SEPARATOR . self::sanitizePath($folders_path_string);
-        try {
-            rmdir($folder);
-        } catch (Exception $e) {
-            WP_Media_Folders_Debug::log('Error : directory doesn\'t exist or is not empty ');
+        $directory = $wp_uploads['basedir'] . DIRECTORY_SEPARATOR . self::sanitizePath($folders_path_string);
+        self::deleteDirectory($directory);
+    }
+
+    /**
+     * Delete an actual directory if it's empty
+     *
+     * @param $directory
+     */
+    public static function deleteDirectory($directory)
+    {
+        global $wp_filesystem;
+
+        if (!$wp_filesystem->exists($directory)) {
+            WP_Media_Folders_Debug::log('Info : Directory doesn\'t exist ' . $directory);
+            return;
+        }
+
+        $dir_files = $wp_filesystem->dirlist($directory, true, true);
+        $dir_has_files = false;
+        if (is_array($dir_files)) {
+            foreach ($dir_files as $dir_file) {
+                if ($dir_file['type'] === 'f') {
+                    $dir_has_files = true;
+                    break;
+                }
+            }
+        }
+
+        if ($dir_has_files) {
+            WP_Media_Folders_Debug::log('Info : Directory not empty ' . $directory);
+        } else {
+            WP_Media_Folders_Debug::log('Info : Removing empty directory ' . $directory);
+            $wp_filesystem->rmdir($directory);
         }
     }
 }

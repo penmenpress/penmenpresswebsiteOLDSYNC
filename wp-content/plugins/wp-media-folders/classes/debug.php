@@ -43,13 +43,32 @@ class WP_Media_Folders_Debug
             return;
         }
 
-        $dir = dirname(self::$debug_file);
-        if (!$dir) {
-            mkdir($dir, 0777, true);
+        global $wp_filesystem;
+        if ($wp_filesystem === null) {
+            // Initialize Wp_filesystem
+            include_once(ABSPATH .'/wp-admin/includes/file.php');
+            WP_Filesystem();
         }
 
-        if (!file_exists(self::$debug_file)) {
-            file_put_contents(self::$debug_file, '<?php die(); ?>'.PHP_EOL);
+        $dir = dirname(self::$debug_file);
+        if (!$wp_filesystem->exists($dir)) {
+            if (!$wp_filesystem->mkdir($dir)) {
+                error_log('WP Media Folders debug failed to create folder ' . $dir);
+                return;
+            }
+        }
+
+        if (!$wp_filesystem->exists(self::$debug_file)) {
+            if (!$wp_filesystem->put_contents(self::$debug_file, '<?php die(); ?>'.PHP_EOL)) {
+                error_log('WP Media Folders debug failed to create file ' . self::$debug_file);
+                return;
+            }
+        }
+
+        if (!$wp_filesystem->is_writable(self::$debug_file)) {
+            if ($wp_filesystem->chmod(self::$debug_file, 0644)) {
+                error_log('WP Media Folders debug failed to chmod file ' . self::$debug_file);
+            }
         }
 
         $arguments = array();
@@ -59,7 +78,12 @@ class WP_Media_Folders_Debug
         }
 
         $fp = fopen(self::$debug_file, 'a+');
-        fwrite($fp, vsprintf($args[0], $arguments).PHP_EOL);
+        $result = fwrite($fp, vsprintf($args[0], $arguments).PHP_EOL);
         fclose($fp);
+
+        if ($result === false) {
+            // Write failed, let'e error log it
+            error_log('WP Media Folders debug failed to write to file ' . self::$debug_file);
+        }
     }
 }

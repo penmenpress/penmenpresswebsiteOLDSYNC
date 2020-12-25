@@ -1,10 +1,10 @@
 === WP Media folders===
 Contributors: dbarrere
-Tags: media, folder, real media folders, media library, real media library
+Tags: media, folder, real media folders, media library, real media
 Requires at least: 3.5.1
 Requires PHP: 5.4
-Tested up to: 5.2
-Stable tag: 1.1.6
+Tested up to: 5.4
+Stable tag: 1.1.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,20 @@ Always make sure all the WP Media Folders tasks are finished before editing any 
 1. Start the WP Media Folder media import
 
 == Changelog ==
+
+= Version 1.1.10 =
+ * [fix] Default options not set on new install
+
+= Version 1.1.9 =
+ * [enhancement] Do not update database on file upload
+ * [enhancement] Add an option to replace or not relative path in database
+
+= Version 1.1.8 =
+ * [fix] Allow non ascii characters as filename
+ * [fix] Do not check for ssl for local requests
+
+= Version 1.1.7 =
+ * [feature] Enhance debug log
 
 = Version 1.1.6 =
  * [fix] Elementor 401 error (due to wrong usage of heartbeat filter)

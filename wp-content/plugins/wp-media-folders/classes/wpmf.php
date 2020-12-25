@@ -27,16 +27,21 @@ class WPMediaFoldersWPMF
          */
         add_action(
             'wpmf_attachment_set_folder',
-            function ($attachment_id, $folder) {
+            function ($attachment_id, $folder, $extra) {
+                $update_db = true;
+                if (is_array($extra) && !empty($extra['trigger']) && $extra['trigger'] === 'upload') {
+                    $update_db = false;
+                }
+
                 $folders = WPMediaFoldersHelper::getParentTerms($folder);
-                WPMediaFoldersQueue::addToQueue($attachment_id, implode(DIRECTORY_SEPARATOR, $folders), false);
+                WPMediaFoldersQueue::addToQueue($attachment_id, implode(DIRECTORY_SEPARATOR, $folders), false, false, $update_db);
                 // Move files at the end of the script to avoid thumbnails generation issues
                 add_action('shutdown', function () {
                     WPMediaFoldersQueue::proceedQueueAsync();
                 });
             },
             10,
-            2
+            3
         );
 
         /**

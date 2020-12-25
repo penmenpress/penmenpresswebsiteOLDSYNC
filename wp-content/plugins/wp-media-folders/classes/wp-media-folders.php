@@ -211,8 +211,9 @@ class WPMediaFolders
             return;
         }
 
+        global $wpdb;
+
         if (version_compare($version, '1.1.0') === -1) {
-            global $wpdb;
             $wpdb->query('CREATE TABLE `'.$wpdb->prefix.'wpmfs_queue` (
                       `id` int(11) NOT NULL,
                       `post_id` int(11) NOT NULL,
@@ -232,19 +233,39 @@ class WPMediaFolders
                           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;');
         }
 
+        if (version_compare($version, '1.1.8') === -1) {
+            $wpdb->query('ALTER TABLE `'.$wpdb->prefix.'wpmfs_queue` CONVERT TO CHARACTER SET '.$wpdb->charset.' COLLATE ' . $wpdb->collate);
+            $wpdb->query('ALTER TABLE `'.$wpdb->prefix.'wpmfs_queue` CHANGE `destination` `destination` LONGTEXT CHARACTER SET ' . $wpdb->charset . ' COLLATE ' . $wpdb->collate . ' NOT NULL;');
+            $wpdb->query('ALTER TABLE `'.$wpdb->prefix.'wpmfs_queue` CHANGE `date_added` `date_added` VARCHAR(14) CHARACTER SET ' . $wpdb->charset . ' COLLATE ' . $wpdb->collate . ' NOT NULL;');
+            $wpdb->query('ALTER TABLE `'.$wpdb->prefix.'wpmfs_queue` CHANGE `date_done` `date_done` VARCHAR(14) CHARACTER SET ' . $wpdb->charset . ' COLLATE ' . $wpdb->collate . ' DEFAULT NULL;');
+        }
+
+        if (version_compare($version, '1.1.9') === -1) {
+            $wpdb->query('ALTER TABLE `'.$wpdb->prefix.'wpmfs_queue` ADD `update_database` BOOLEAN NOT NULL AFTER `delete_folder`');
+
+            $option = get_option('wp-media-folders-options');
+            $option['replace_relative_paths'] = 'on';
+            update_option('wp-media-folders-options', $option);
+        }
+
         // Set version as nothing is already set
         if ($version === '0.0.0') {
-            add_option('wp-media-folders-version', WP_MEDIA_FOLDERS_VERSION);
             add_option('wp-media-folders-token', WPMediaFoldersHelper::getRandomString());
 
-            add_option(
-                'wp-media-folders-options',
-                array(
-                    'auto_detect_tables' => 'on',
-                    'status_menu_bar' => 'on'
-                )
+            $option_value = array(
+                'auto_detect_tables' => 'on',
+                'status_menu_bar' => 'on'
             );
+
+            if (get_option('uploads_use_yearmonth_folders')) {
+                $option_value['replace_relative_paths'] = 'on';
+            }
+
+            update_option('wp-media-folders-options', $option_value);
         }
+
+        // Update the wpmfs version
+        update_option('wp-media-folders-version', WP_MEDIA_FOLDERS_VERSION);
 
 
         // Set default options values

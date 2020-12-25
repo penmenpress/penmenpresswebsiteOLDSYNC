@@ -148,6 +148,21 @@ global $wpdb;
                     ?>
                 </p>
             </div>
+            <div class="container">
+                <input
+                        type="checkbox"
+                        name="wp-media-folders-options[replace_relative_paths]"
+                    <?php echo isset($this->options['replace_relative_paths'])?'checked':''; ?>
+                />
+                <strong><?php echo sprintf(esc_html('Replace relative paths in database', 'wp-media-folders')); ?></strong>
+                <p class="hint">
+                    <?php
+                    echo esc_html__('By default WordPress uses absolutes urls, but some plugins may use relative path.', 'wp-media-folders').'<br/>';
+                    echo esc_html__('If checked, the plugin will try to replace also relative path in database, instead of only absolute urls.', 'wp-media-folders').'<br/>';
+                    echo esc_html__('Replacements in database may fail in particular cases (files with the same name) if this option is used while you\'re not using the default year/month upload folders option in WordPress settings', 'wp-media-folders').'<br/>';
+                    ?>
+                </p>
+            </div>
         </div>
 
         <h2><?php esc_html_e('Debug', 'wp-media-folders'); ?></h2>

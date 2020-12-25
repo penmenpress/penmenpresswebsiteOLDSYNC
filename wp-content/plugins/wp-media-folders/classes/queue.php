@@ -15,10 +15,11 @@ class WPMediaFoldersQueue
      * @param string  $destination               Destination folder to move the file to
      * @param boolean $destination_with_filename Does the destination parameter contains also the file name (without extension)
      * @param boolean $delete_folder             Delete the folder containing this file after the process if it's empty
+     * @param boolean $update_database           Update content in database or not
      *
      * @return void
      */
-    public static function addToQueue($post_id, $destination, $destination_with_filename = true, $delete_folder = false)
+    public static function addToQueue($post_id, $destination, $destination_with_filename = true, $delete_folder = false, $update_database = true)
     {
         global $wpdb;
         $wpdb->insert(
@@ -28,6 +29,7 @@ class WPMediaFoldersQueue
                 'destination' => ltrim(str_replace('\\', '/', $destination), '/'),
                 'with_filename' => $destination_with_filename,
                 'delete_folder' => $delete_folder,
+                'update_database' => $update_database,
                 'date_added' => round(microtime(true) * 1000),
                 'date_done' => null,
                 'status' => 0
@@ -35,6 +37,7 @@ class WPMediaFoldersQueue
             array(
                 '%d',
                 '%s',
+                '%d',
                 '%d',
                 '%d',
                 '%d',
@@ -56,7 +59,10 @@ class WPMediaFoldersQueue
 
         // Check if queue is currently running for less than 30 seconds
         if ($queue_length && $queue_running + 30 < time()) {
-            wp_remote_head(admin_url('admin-ajax.php').'?action=wpmfs_proceed&wpmfs_token='.get_option('wp-media-folders-token'));
+            $result = wp_remote_head(admin_url('admin-ajax.php').'?action=wpmfs_proceed&wpmfs_token='.get_option('wp-media-folders-token'), array('sslverify' => false));
+            WP_Media_Folders_Debug::log('Info : Proceed queue asynchronously ' . (is_wp_error($result)?$result->get_error_message():'success'));
+        } else if ($queue_length) {
+            WP_Media_Folders_Debug::log('Info : Queue already running (queue_running: ' . $queue_running .', time: ' . time());
         }
     }
 
@@ -67,9 +73,12 @@ class WPMediaFoldersQueue
      */
     private static function proceedQueue()
     {
+        WP_Media_Folders_Debug::log('Info : Proceed queue synchronously');
         global $wpdb;
         $done = 0;
         $max_execution_time = self::getMaximumExecutionTime();
+
+        WP_Media_Folders_Debug::log('Info : Max execution time is ' . $max_execution_time);
 
         // Retrieve all elements in the queue
         do {
@@ -77,7 +86,7 @@ class WPMediaFoldersQueue
             foreach ($elements as $element) {
                 set_time_limit(0);
                 // Actually move the file
-                $result = WPMediaFoldersHelper::moveFile($element->post_id, $element->destination, (bool)$element->with_filename);
+                $result = WPMediaFoldersHelper::moveFile($element->post_id, $element->destination, (bool)$element->with_filename, $element->delete_folder, $element->update_database);
                 $wpdb->update(
                     $wpdb->prefix . 'wpmfs_queue',
                     array(
@@ -102,6 +111,8 @@ class WPMediaFoldersQueue
         // Remove last week elements
         $wpdb->query('DELETE FROM ' . $wpdb->prefix . 'wpmfs_queue WHERE date_done < (UNIX_TIMESTAMP()*1000 - 7 * 24 * 60 * 60 * 1000)');
 
+        WP_Media_Folders_Debug::log('Info : Synchronous queue finished');
+
         return $done;
     }
 
@@ -124,7 +135,7 @@ class WPMediaFoldersQueue
         if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
             $time = $_SERVER['REQUEST_TIME_FLOAT'];
         } else {
-            // Concider script started 3 seconds ago
+            // Consider script started 3 seconds ago
             $time = microtime(true) - 3 * 1000 * 1000;
         }
 
@@ -166,6 +177,8 @@ class WPMediaFoldersQueue
         add_action('wp_ajax_wpmfs_queue', function () {
             $queue_length = self::getQueueLength();
 
+            WP_Media_Folders_Debug::log('Info : Ajax queue proceed request (queue length: ' . $queue_length .')');
+
             echo json_encode(array(
                 'queue_length' => $queue_length,
                 'title' => sprintf(__('%s Attachments queued to be moved', 'wp-media-folders'), $queue_length)
@@ -179,8 +192,11 @@ class WPMediaFoldersQueue
         add_action('wp_ajax_nopriv_wpmfs_proceed', function () {
             // phpcs:ignore WordPress.CSRF.NonceVerification -- No action and a custom token is used
             if (!isset($_REQUEST['wpmfs_token']) || $_REQUEST['wpmfs_token'] !== get_option('wp-media-folders-token')) {
+                WP_Media_Folders_Debug::log('Info : Proceed queue ajax stopped, wrong token');
                 exit(0);
             }
+
+            WP_Media_Folders_Debug::log('Info : Proceed queue ajax');
 
             if (ob_get_length()) {
                 ob_end_clean();
@@ -211,7 +227,9 @@ class WPMediaFoldersQueue
     public static function initHeartbeat()
     {
         add_filter('heartbeat_received', function ($response) {
-            if (self::getQueueLength()) {
+            $queue_length = self::getQueueLength();
+            WP_Media_Folders_Debug::log('Info : Heartbeat received, queue length is ' . $queue_length);
+            if ($queue_length) {
                 self::proceedQueueAsync();
             }
             return $response;
