@@ -2,8 +2,9 @@
 Contributors: janwoostendorp
 Tags: media, image
 Requires at least: 3.5
-Tested up to: 4.9.6
-Stable tag: 1.6.1
+Tested up to: 5.5.1
+Requires PHP: 5.5
+Stable tag: 1.6.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +101,16 @@ yes you can with the filter `dfi_thumbnail_html`.
 2. The media manager will start with the current selected image
 
 == Changelog ==
+
+= 1.6.4 =
+* `get_post_meta($post_id)` without specifying the meta_key didn't find the DFI. It will now even use an even deeper level and set it in the core cache.
+
+= 1.6.3 =
+* Fixed plugin header which blocked installing it.
+
+= 1.6.2 =
+* Plugin now follows WP coding standard
+* Fixed a small bug where DFI overrides attachments featured images. mp3 has a music note by default, DFI should not override that.
 
 = 1.6.1 =
 * Small readme.txt update.
