@@ -73,6 +73,7 @@ $post_id = get_the_ID();
 								}
 							?>
 						</figure>
+						HI1
 					</div><!-- .single-post-image -->
 			<?php } ?>
 
