@@ -30,7 +30,7 @@ $post_id = get_the_ID();
 			}*/
 			
 			editorial_post_views_count();
-			editorial_pro_post_comment();
+	
 		?>
 		
 	</div><!-- .entry-meta -->
