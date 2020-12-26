@@ -52,7 +52,7 @@ function editorial_pro_posted_on() {
 	}
 */
 	if( $post_author_option == 'show' ) {
-		echo '<span class="byline"> ' . coauthors_posts_links() . '</span>';
+		echo '<span class="byline"> ' . coauthors_posts_links(null, null, null, null, false) . '</span>';
 	}
 	
 }
