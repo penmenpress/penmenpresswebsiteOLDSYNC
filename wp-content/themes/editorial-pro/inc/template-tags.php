@@ -46,11 +46,15 @@ function editorial_pro_posted_on() {
 	if( $post_date_option == 'show' ) {
 		echo '<span class="posted-on">' . $posted_on . '</span>';
 	}
-
+/*
 	if( $post_author_option == 'show' ) {
 		echo '<span class="byline"> ' . $byline . '</span>';
 	}
-
+*/
+	if( $post_author_option == 'show' ) {
+		echo '<span class="byline"> ' . coauthors_posts_links() . '</span>';
+	}
+	
 }
 endif;
 
