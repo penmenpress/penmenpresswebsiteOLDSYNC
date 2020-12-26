@@ -96,7 +96,9 @@ $post_id = get_the_ID();
 							}
 						?>
 					</figure>
-					<?php the_post_thumbnail_caption(); ?>
+					<H1>
+						<?php the_post_thumbnail_caption(); ?>
+					</H1>
 				</div><!-- .single-post-image -->
 		<?php } ?>
 
