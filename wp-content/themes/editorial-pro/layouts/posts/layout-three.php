@@ -96,7 +96,9 @@ $post_id = get_the_ID();
 							}
 						?>
 					</figure>
-					HI3
+					<?php  if (the_post_thumbnail_caption()) { 
+ the_post_thumbnail_caption(); 
+} ?>
 				</div><!-- .single-post-image -->
 		<?php } ?>
 
