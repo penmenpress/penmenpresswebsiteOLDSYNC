@@ -156,11 +156,11 @@ require get_template_directory() . '/inc/widgets/editorial-widgets-area.php';
 require get_template_directory() . '/inc/metaboxes/editorial-post-metabox.php';
 
 /**
- * Load theme about page
- */
-require get_template_directory(). '/inc/about-theme/editorial-about.php';
-
-/**
  * Load TGM
  */
 require get_template_directory() . '/inc/tgm/mt-recommend-plugins.php';
+
+/**
+ * Load theme settings page
+ */
+require get_template_directory(). '/inc/theme-settings/mt-theme-settings.php';

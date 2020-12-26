@@ -88,13 +88,12 @@
 /*=================================================
              Pro theme link
 =================================================*/
-#customize-controls .control-section-upsell .accordion-section-title:hover,
-#customize-controls .control-section-upsell .accordion-section-title:focus {
+#customize-controls .control-section-mt-upsell .accordion-section-title:hover,
+#customize-controls .control-section-mt-upsell .accordion-section-title:focus {
     background-color: #fff;
 }
 
-.control-section-upsell .accordion-section-title .button {
-    margin-top:  -4px;
+.control-section-mt-upsell .accordion-section-title .button {
     font-weight: 700;
     margin-left: 8px;
     border-color: #029FB2;
@@ -102,7 +101,7 @@
     color: #fff;
 }
 
-.control-section-upsell .accordion-section-title .button:hover {
+.control-section-mt-upsell .accordion-section-title .button:hover {
     background-color: #006d80;
 }
 

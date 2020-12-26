@@ -67,7 +67,8 @@ class Editorial_Block_Layout extends WP_widget {
      */
     public function widget( $args, $instance ) {
         extract( $args );
-        if( empty( $instance ) ) {
+        
+        if ( empty( $instance ) ) {
             return ;
         }
 
@@ -86,16 +87,16 @@ class Editorial_Block_Layout extends WP_widget {
                     $block_layout_query = new WP_Query( $block_layout_args );
                     $post_count = 0;
                     $total_posts_count = $block_layout_query->post_count;
-                    if( $block_layout_query->have_posts() ) {
+                    if ( $block_layout_query->have_posts() ) {
                         while( $block_layout_query->have_posts() ) {
                             $block_layout_query->the_post();
                             $post_count++;
                             $post_id = get_the_ID();
-                            if( $post_count == 1 ) {
+                            if ( $post_count == 1 ) {
                                 $post_class = 'primary-post';
                                 $image_path = get_the_post_thumbnail( $post_id, 'editorial-block-medium' );
                                 echo '<div class="left-column-wrapper block-posts-block grid-posts-block mt-column-2">';
-                            } elseif( $post_count == 2 ) {
+                            } elseif ( $post_count == 2 ) {
                                 $post_class = 'secondary-post';
                                 $image_path = get_the_post_thumbnail( $post_id, 'editorial-block-thumb' );
                                 echo '<div class="right-column-wrapper block-posts-block list-posts-block mt-column-2">';
@@ -111,7 +112,7 @@ class Editorial_Block_Layout extends WP_widget {
                                     </a>
                                 </div><!-- .post-thumb-wrapper -->
                                 <div class="post-content-wrapper">
-                                    <?php if( $post_count == 1 ) { do_action( 'editorial_post_categories' ); } ?>
+                                    <?php if ( $post_count == 1 ) { do_action( 'editorial_post_categories' ); } ?>
                                     <h3 class="post-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                                     <div class="post-meta-wrapper">
                                         <?php
@@ -119,11 +120,11 @@ class Editorial_Block_Layout extends WP_widget {
                                             editorial_post_comment();
                                         ?>
                                     </div>
-                                    <?php if( $post_count == 1 ) { the_excerpt(); } ?>
+                                    <?php if ( $post_count == 1 ) { the_excerpt(); } ?>
                                 </div><!-- .post-meta-wrapper -->
                             </div><!-- .single-post-wrapper -->
                 <?php
-                            if( $post_count == 1 || $post_count == $total_posts_count ) {
+                            if ( $post_count == 1 || $post_count == $total_posts_count ) {
                                 echo '</div>';
                             }
                         }

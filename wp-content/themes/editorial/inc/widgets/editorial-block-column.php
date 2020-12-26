@@ -66,7 +66,8 @@ class Editorial_Block_Column extends WP_Widget {
      */
     public function widget( $args, $instance ) {
         extract( $args );
-        if( empty( $instance ) ) {
+        
+        if ( empty( $instance ) ) {
             return ;
         }
 
@@ -84,12 +85,12 @@ class Editorial_Block_Column extends WP_Widget {
                     $block_column_args = editorial_query_args( $editorial_block_cat_id, $editorial_block_posts_count );
                     $block_column_query = new WP_Query( $block_column_args );
                     $post_count = 0;
-                    if( $block_column_query->have_posts() ) {
+                    if ( $block_column_query->have_posts() ) {
                         while ( $block_column_query->have_posts() ) {
                             $block_column_query->the_post();
                             $post_count++;
                             $post_id = get_the_ID();
-                            if( $post_count == 1 ) {
+                            if ( $post_count == 1 ) {
                                 $post_class = 'primary-post';
                                 $image_path = get_the_post_thumbnail( $post_id, 'editorial-block-medium' );
                             } else {
@@ -104,7 +105,7 @@ class Editorial_Block_Column extends WP_Widget {
                                     </a>
                                 </div><!-- .post-thumb-wrapper -->
                                 <div class="post-content-wrapper">
-                                    <?php if( $post_count == 1 ) { do_action( 'editorial_post_categories' ); } ?>
+                                    <?php if ( $post_count == 1 ) { do_action( 'editorial_post_categories' ); } ?>
                                     <h3 class="post-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                                     <div class="post-meta-wrapper">
                                         <?php
@@ -112,7 +113,7 @@ class Editorial_Block_Column extends WP_Widget {
                                             editorial_post_comment();
                                         ?>
                                     </div>
-                                    <?php  if( $post_count == 1 ) { the_excerpt(); } ?>
+                                    <?php  if ( $post_count == 1 ) { the_excerpt(); } ?>
                                 </div><!-- .post-meta-wrapper -->
                             </div><!-- .single-post-wrapper -->
                 <?php

@@ -75,7 +75,8 @@ class Editorial_Block_Grid extends WP_Widget {
      */
     public function widget( $args, $instance ) {
         extract( $args );
-        if( empty( $instance ) ) {
+        
+        if ( empty( $instance ) ) {
             return ;
         }
 
@@ -93,7 +94,7 @@ class Editorial_Block_Grid extends WP_Widget {
                 <?php
                     $block_grid_args = editorial_query_args( $editorial_block_cat_id, $editorial_block_posts_count );
                     $block_grid_query = new WP_Query( $block_grid_args );
-                    if( $block_grid_query->have_posts() ) {
+                    if ( $block_grid_query->have_posts() ) {
                         while ( $block_grid_query->have_posts() ) {
                             $block_grid_query->the_post();
                 ?>

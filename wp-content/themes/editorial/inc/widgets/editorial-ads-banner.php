@@ -87,7 +87,8 @@ class Editorial_Ads_Banner extends WP_widget {
      */
     public function widget( $args, $instance ) {
         extract( $args );
-        if( empty( $instance ) ) {
+        
+        if ( empty( $instance ) ) {
             return ;
         }
 
@@ -100,15 +101,15 @@ class Editorial_Ads_Banner extends WP_widget {
 
         echo $before_widget;
 
-        if( !empty( $editorial_banner_image ) ) {
+        if ( !empty( $editorial_banner_image ) ) {
     ?>
             <div class="ads-wrapper <?php echo esc_attr( $editorial_banner_size ); ?>">
-                <?php if( !empty( $editorial_banner_title ) ) { ?>
+                <?php if ( !empty( $editorial_banner_title ) ) { ?>
                     <h4 class="widget-title"><?php echo esc_html( $editorial_banner_title ); ?></h4>
                 <?php
                     }
 
-                    if( !empty( $editorial_banner_url ) ) {
+                    if ( !empty( $editorial_banner_url ) ) {
                 ?>
                     <a href="<?php echo esc_url( $editorial_banner_url ); ?>" target="<?php echo esc_attr( $editorial_banner_target ); ?>" rel="<?php echo esc_attr( $editorial_banner_rel ); ?>"><img src="<?php echo esc_url( $editorial_banner_image ); ?>" /></a>
                 <?php

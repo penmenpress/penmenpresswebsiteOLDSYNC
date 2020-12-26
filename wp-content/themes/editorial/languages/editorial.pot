@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: _s 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/tags/_s\n"
-"POT-Creation-Date: 2019-12-20 06:47+0000\n"
+"POT-Creation-Date: 2020-08-28 16:38+0000\n"
 "POT-Revision-Date: Thu Jul 28 2016 00:26:39 GMT+0545 (Nepal Standard Time)\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -47,7 +47,7 @@ msgstr ""
 msgid "One thought on &ldquo;%1$s&rdquo;"
 msgstr ""
 
-#. 1: number of comments, 2: post title
+#. 1: comment count number, 2: title.
 #: comments.php:42
 #, php-format
 msgctxt "comments title"
@@ -93,7 +93,7 @@ msgstr ""
 msgid "Footer Menu"
 msgstr ""
 
-#: header.php:36
+#: header.php:35
 msgid "Skip to content"
 msgstr ""
 
@@ -109,31 +109,31 @@ msgctxt "Titillium Web font: on or off"
 msgid "on"
 msgstr ""
 
-#: inc/editorial-functions.php:127 inc/customizer/header-panel.php:175
+#: inc/editorial-functions.php:128 inc/customizer/header-panel.php:175
 msgid "Latest"
 msgstr ""
 
-#: inc/editorial-functions.php:179
+#: inc/editorial-functions.php:181
 msgid "Select Category"
 msgstr ""
 
-#: inc/editorial-functions.php:190
+#: inc/editorial-functions.php:192
 msgid "Select No. of Columns"
 msgstr ""
 
-#: inc/editorial-functions.php:191
+#: inc/editorial-functions.php:193
 msgid "2 Columns"
 msgstr ""
 
-#: inc/editorial-functions.php:192
+#: inc/editorial-functions.php:194
 msgid "3 Columns"
 msgstr ""
 
-#: inc/editorial-functions.php:193
+#: inc/editorial-functions.php:195
 msgid "4 Columns"
 msgstr ""
 
-#: inc/editorial-functions.php:512 inc/customizer/design-panel.php:190
+#: inc/editorial-functions.php:528 inc/customizer/design-panel.php:190
 msgid "Related Articles"
 msgstr ""
 
@@ -149,7 +149,7 @@ msgstr ""
 msgid "Comments(%)"
 msgstr ""
 
-#. translators: used between list items, there is a space after the comma
+#. used between list items, there is a space after the comma
 #: inc/template-tags.php:61
 msgid ", "
 msgstr ""
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Tagged %1$s"
 msgstr ""
 
-#. translators: %s: Name of current post
+#. %s: Name of current post
 #: inc/template-tags.php:70 template-parts/content-page.php:35
 #, php-format
 msgid "Edit %s"
@@ -191,7 +191,7 @@ msgstr ""
 msgid "Pages:"
 msgstr ""
 
-#. translators: %s: Name of current post.
+#. %s: Name of current post.
 #: template-parts/content-single.php:34
 #, php-format
 msgid "Continue reading %s <span class=\"meta-nav\">&rarr;</span>"
@@ -199,319 +199,6 @@ msgstr ""
 
 #. Name of the template
 msgid "Magazine Page"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:41
-msgid "About"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:105
-#, php-format
-msgid "Welcome to %s"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:106
-#, php-format
-msgid ""
-"Welcome! Thank you for choosing %1$s! To fully take advantage of the best "
-"our theme can offer please make sure you visit our %2$s welcome page %3$s."
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:108
-#, php-format
-msgid "Get started with %1$s"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:132
-#, php-format
-msgid "Version: %1$s"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:145
-msgid "Theme Info"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:147
-msgid "View Demo"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:149
-#: inc/about-theme/editorial-about.php:226
-msgid "View PRO version"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:151
-msgid "Rate this theme"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:153
-msgid "More Tutorials"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:163
-msgid "Free Vs Pro"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:167
-msgid "More Themes"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:171
-msgid "Changelog"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:206
-msgid "Theme Customizer"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:207
-msgid "All Theme Options are available via Customize screen."
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:208
-#: inc/about-theme/editorial-about.php:295
-msgid "Customize"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:212
-#: inc/about-theme/editorial-about.php:214
-msgid "Documentation"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:213
-msgid "Please view our documentation page to setup the theme."
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:218
-#: inc/about-theme/editorial-about.php:621
-msgid "Got theme support question?"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:219
-msgid "Please put it in our dedicated support forum."
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:220
-msgid "Support"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:224
-msgid "Need more features?"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:225
-#: inc/about-theme/editorial-about.php:459
-msgid "Upgrade to PRO version for more exciting features."
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:230
-msgid "Have you need customization?"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:231
-msgid "Please send message with your requirement."
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:232
-msgid "Customization"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:236
-#: inc/about-theme/editorial-about.php:239
-#, php-format
-msgid "Translate %1$s"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:237
-msgid "Click below to translate this theme into your own language."
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:248
-msgid "Return to Updates"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:248
-msgid "Return to Dashboard &rarr; Updates"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:251
-msgid "Go to Dashboard &rarr; Home"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:251
-msgid "Go to Dashboard"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:293
-#: inc/tgm/class-tgm-plugin-activation.php:2321
-msgid "Active"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:332
-#: inc/tgm/class-tgm-plugin-activation.php:2726
-msgid "Activate"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:341
-#, php-format
-msgid "Downloaded %1$s times"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:341
-msgid "Install Now"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:344
-msgid "Live Preview"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:407
-msgid "View changelog below:"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:464
-msgid "Features"
-msgstr ""
-
-#. Name of the theme
-#: inc/about-theme/editorial-about.php:465
-msgid "Editorial"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:466 inc/customizer/customizer.php:37
-msgid "Editorial Pro"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:471
-msgid "Price"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:472
-msgid "Free"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:473
-msgid "$55"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:476
-msgid "Import Demo Data"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:481
-msgid "Pre Loaders"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:486
-msgid "Header Layouts"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:487
-#: inc/about-theme/editorial-about.php:492
-#: inc/about-theme/editorial-about.php:497
-#: inc/about-theme/editorial-about.php:507
-msgid "1"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:488
-msgid "3"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:491
-msgid "Archive Pages Layouts"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:493
-msgid "4"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:496
-msgid "Single Page Layouts"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:498
-msgid "5"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:501
-msgid "Post Review"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:506
-msgid "Related Articles Layouts"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:508
-msgid "2"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:511
-msgid "Breadcrumbs"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:516
-msgid "Image Hover"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:521
-msgid "Fallback Image"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:526
-msgid "Google Fonts"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:528
-msgid "600+"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:531
-msgid "Typography Options"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:536
-msgid "No. of Widgets"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:537
-msgid "7"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:538
-msgid "11"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:545
-msgid "View Pro"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:598
-#, php-format
-msgid ""
-"Howdy, %1$s! It seems that you have been using this theme for more than 15 "
-"days. We hope you are happy with everything that the theme has to offer. If "
-"you can spare a minute, please help us by leaving a 5-star review on "
-"WordPress.org.  By spreading the love, we can continue to develop new "
-"amazing features in the future, for free!"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:606
-msgid "Sure"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:611
-msgid "Maybe later"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:616
-msgid "I already did"
-msgstr ""
-
-#: inc/about-theme/editorial-about.php:702
-#, php-format
-msgid ""
-"If you like <strong>%1$s</strong> please leave us a %2$s rating. A huge "
-"thank you from <strong>Mystery Themes</strong> in advance!"
 msgstr ""
 
 #: inc/customizer/additional-panel.php:23
@@ -595,7 +282,29 @@ msgstr ""
 msgid "Your Instagram Account URL"
 msgstr ""
 
+#: inc/customizer/additional-panel.php:259
+msgid "Snapchat"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:260
+msgid "Your Snapchat Account URL"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:280
+msgid "Reddit"
+msgstr ""
+
+#: inc/customizer/additional-panel.php:281
+msgid "Your Reddit Account URL"
+msgstr ""
+
+#: inc/customizer/customizer.php:37
+#: inc/theme-settings/mt-theme-settings.php:502
+msgid "Editorial Pro"
+msgstr ""
+
 #: inc/customizer/customizer.php:38
+#: inc/theme-settings/mt-theme-settings.php:580
 msgid "Buy Pro"
 msgstr ""
 
@@ -1074,6 +783,10 @@ msgstr ""
 msgid "Installed But Not Activated"
 msgstr ""
 
+#: inc/tgm/class-tgm-plugin-activation.php:2321
+msgid "Active"
+msgstr ""
+
 #: inc/tgm/class-tgm-plugin-activation.php:2327
 msgid "Required Update not Available"
 msgstr ""
@@ -1197,6 +910,10 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
+#: inc/tgm/class-tgm-plugin-activation.php:2726
+msgid "Activate"
+msgstr ""
+
 #: inc/tgm/class-tgm-plugin-activation.php:2757
 msgid "No plugins were selected to be installed. No action taken."
 msgstr ""
@@ -1299,6 +1016,416 @@ msgstr ""
 
 #: inc/tgm/mt-recommend-plugins.php:64
 msgid "Contact Form, Drag and Drop Form Builder for WordPress – Everest Forms"
+msgstr ""
+
+#: inc/tgm/mt-recommend-plugins.php:73
+msgid "WP Blog Post Layouts"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:44
+#, php-format
+msgid "%1$s Settings"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:138
+msgid "Action failed. Please refresh the page and retry."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:142
+msgid "Cheat in &#8217; huh?"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:159
+msgid "Dismiss this notice."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:161
+#, php-format
+msgid "Welcome to %s"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:163
+#, php-format
+msgid ""
+"Welcome! Thank you for choosing %1$s ! To fully take advantage of the best "
+"our theme can offer please make sure you visit our %2$s theme settings page "
+"%3$s."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:166
+#, php-format
+msgid ""
+"Clicking get started will process to installation of %1$s Mystery Themes "
+"Demo Importer %2$s Plugin in your dashboard. After success it will redirect "
+"to the theme settings page."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:169
+msgid "Done!"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:169
+msgid "Processing"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:170
+#, php-format
+msgid "Get started with %1$s"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:195
+#, php-format
+msgid "Version: %1$s"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:202
+msgid "Upgrade to Premium Version"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:203
+msgid "Upgrade to pro version for additional features and better supports."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:205
+msgid "Unlock Features With Pro"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:212
+msgid "Get Started"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:216
+msgid "Demos"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:220
+msgid "Free Vs Pro"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:224
+msgid "Changelog"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:263
+msgid "Here are some useful links for you to get started"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:266
+msgid "Next Steps"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:269
+msgid "Set up your homepage"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:272
+msgid "Manage site layout"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:275
+msgid "Manage header section"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:278
+msgid "Single Post Layout"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:281
+msgid "Manage Social Icons"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:284
+msgid "Manage menus"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:287
+msgid "Manage widgets"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:293
+msgid "More Actions"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:296
+msgid "Documentation"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:299
+msgid "Premium version"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:302
+msgid "Need theme support?"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:305
+msgid "Review theme"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:308
+msgid "WP Tutorials"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:318
+msgid "Return to Updates"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:318
+msgid "Return to Dashboard &rarr; Updates"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:321
+msgid "Go to Dashboard &rarr; Home"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:321
+msgid "Go to Dashboard"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:356
+msgid ""
+"Demos file not configured, you may have not activated mysterythemes demo "
+"importer plugin yet!!"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:382
+#, php-format
+msgid "Imported %1$s"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:383
+msgid "Imported"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:391
+msgid "Purchase Now"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:392
+msgid "Buy Now"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:397
+msgid "Click to import demo"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:399
+msgid "Demo importer plugin is not installed or activated"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:402
+#, php-format
+msgid "Import %1$s"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:403
+msgid "Import"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:410
+msgid "View Demo"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:443
+msgid "View changelog below:"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:496
+msgid "Upgrade to PRO version for more exciting features."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:500
+msgid "Features"
+msgstr ""
+
+#. Name of the theme
+#: inc/theme-settings/mt-theme-settings.php:501
+msgid "Editorial"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:507
+msgid "Price"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:508
+msgid "Free"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:509
+msgid "$59.99"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:512
+msgid "Pre Loaders"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:517
+msgid "Header Layouts"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:518
+#: inc/theme-settings/mt-theme-settings.php:523
+#: inc/theme-settings/mt-theme-settings.php:528
+#: inc/theme-settings/mt-theme-settings.php:538
+#: inc/theme-settings/mt-theme-settings.php:558
+msgid "1"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:519
+msgid "3"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:522
+msgid "Archive Pages Layouts"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:524
+msgid "4"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:527
+msgid "Single Page Layouts"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:529
+msgid "5"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:532
+msgid "Post Review"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:537
+msgid "Related Articles Layouts"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:539
+msgid "2"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:542
+msgid "Breadcrumbs"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:547
+msgid "Image Hover"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:552
+msgid "Fallback Image"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:557
+msgid "Google Fonts"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:559
+msgid "600+"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:562
+msgid "Typography Options"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:567
+msgid "WooCommerce Compatible"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:572
+msgid "No. of Widgets"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:573
+msgid "7"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:574
+msgid "11"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:633
+#, php-format
+msgid ""
+"Howdy, %1$s! It seems that you have been using this theme for more than 15 "
+"days. We hope you are happy with everything that the theme has to offer. If "
+"you can spare a minute, please help us by leaving a 5-star review on "
+"WordPress.org.  By spreading the love, we can continue to develop new "
+"amazing features in the future, for free!"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:644
+msgid "Sure"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:649
+msgid "Maybe later"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:654
+msgid "I already did"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:659
+msgid "Got theme support question?"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:740
+#, php-format
+msgid ""
+"If you like <strong>%1$s</strong> please leave us a %2$s rating. A huge "
+"thank you from <strong>Mystery Themes</strong> in advance &#128515!"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:758
+msgid "You can import available demos now!"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:762
+msgid "Mystery Themes Demo Importer Plugin is not installed!"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:763
+msgid "Installing & Activating"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:763
+msgid "Installed & Activated"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:764
+msgid "Install and Activate"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:769
+msgid "Mystery Themes Demo Importer Plugin is installed but not activated!"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:770
+msgid "Activating"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:770
+msgid "Activated"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:771
+msgid "Activate Now"
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:805
+msgid "Plugin Successfully Activated."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:823
+msgid "Sorry, you are not allowed to install plugins on this site."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:868
+msgid "Unable to connect to the filesystem. Please confirm your credentials."
+msgstr ""
+
+#: inc/theme-settings/mt-theme-settings.php:886
+msgid "Plugin installed successfully"
 msgstr ""
 
 #: inc/widgets/editorial-ads-banner.php:20
@@ -1510,12 +1637,11 @@ msgid ""
 "customize most of the theme settings easily with live previews. It is fully "
 "widgetized theme so as to let users manage the website using the easy to use "
 "widgets. It is a flexible and powerful theme, which provides a lot of "
-"customization possibilities to the users. Get free support at https:"
-"//mysterythemes.com/support/forum/themes/free-themes/ and check the demo at "
-"https://demo.mysterythemes.com/editorial/"
+"customization possibilities to the users. Get the demo at https://demo."
+"mysterythemes.com/editorial-demos/"
 msgstr ""
 
-#. Theme URI of the theme
+#. URI of the theme
 msgid "https://mysterythemes.com/wp-themes/editorial/"
 msgstr ""
 

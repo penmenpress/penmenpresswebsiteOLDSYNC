@@ -70,7 +70,8 @@ class Editorial_Posts_List extends WP_widget {
      */
     public function widget( $args, $instance ) {
         extract( $args );
-        if( empty( $instance ) ) {
+        
+        if ( empty( $instance ) ) {
             return ;
         }
 
@@ -86,11 +87,11 @@ class Editorial_Posts_List extends WP_widget {
 	            <div class="posts-list-wrapper list-posts-block">
 	            	<?php
 	            		$posts_list_args = editorial_query_args( $cat_id = null, $editorial_block_posts_count );
-	            		if( $editorial_block_posts_type == 'random' ) {
+	            		if ( $editorial_block_posts_type == 'random' ) {
 	            			$posts_list_args['orderby'] = 'rand';
 	            		}
 	            		$posts_list_query = new WP_Query( $posts_list_args );
-	            		if( $posts_list_query->have_posts() ) {
+	            		if ( $posts_list_query->have_posts() ) {
 	            			while( $posts_list_query->have_posts() ) {
 	            				$posts_list_query->the_post();
 	                ?>

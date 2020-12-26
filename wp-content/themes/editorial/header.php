@@ -29,7 +29,6 @@
 	} else {
 		do_action( 'wp_body_open' );
 	}
-
 	do_action( 'editorial_before_page' );
 ?>
 <div id="page" class="site">
@@ -60,7 +59,7 @@
 					<?php } ?>
 					<?php 
 						$site_title_option = get_theme_mod( 'header_textcolor' );
-						if( $site_title_option != 'blank' ) {
+						if ( $site_title_option != 'blank' ) {
 					?>
 						<div class="site-title-wrapper">
 							<?php
@@ -95,7 +94,7 @@
 					<?php wp_nav_menu( array( 'theme_location' => 'primary', 'container_class' => 'menu', 'items_wrap' => '<ul>%3$s</ul>' ) ); ?>
 				</nav><!-- #site-navigation -->
 				<div class="header-search-wrapper">
-	                <span class="search-main"><i class="fa fa-search"></i></span>
+	                <span class="search-main"><a href="javascript:void(0)"><i class="fa fa-search"></i></a></span>
 	                <div class="search-form-main clearfix">
 		                <?php get_search_form(); ?>
 		            </div>

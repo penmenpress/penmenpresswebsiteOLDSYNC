@@ -24,3 +24,15 @@
 .theme-review-notice a.notice-dismiss {
 	text-decoration: none;
 }
+
+#mt-theme-message {
+	position: relative;
+}
+
+.editorial-message-close .notice-dismiss {
+	position: absolute;
+}
+
+a.notice-dismiss {
+    text-decoration: none;
+}

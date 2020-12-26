@@ -81,7 +81,8 @@ class Editorial_Featured_Slider extends WP_Widget {
      */
     public function widget( $args, $instance ) {
         extract( $args );
-        if( empty( $instance ) ) {
+        
+        if ( empty( $instance ) ) {
             return ;
         }
 
@@ -95,7 +96,7 @@ class Editorial_Featured_Slider extends WP_Widget {
                 <?php
                     $slider_args = editorial_query_args( $editorial_slider_category_id, $editorial_slide_count );
                     $slider_query = new WP_Query( $slider_args );
-                    if( $slider_query->have_posts() ) {
+                    if ( $slider_query->have_posts() ) {
                         echo '<ul class="editorialSlider cS-hidden">';
                         while( $slider_query->have_posts() ) {
                             $slider_query->the_post();
@@ -129,15 +130,15 @@ class Editorial_Featured_Slider extends WP_Widget {
                 $featured_args = editorial_query_args( $editorial_featured_category_id, 3 );
                 $featured_query = new WP_Query( $featured_args );
                 $total_post_count = $featured_query->post_count;
-                if( $featured_query->have_posts() ) {
+                if ( $featured_query->have_posts() ) {
                     $post_count = 1;
                     while ( $featured_query->have_posts() ) {
                         $featured_query->the_post();
                         $post_id = get_the_ID();
                         $image_path = get_the_post_thumbnail( $post_id, 'editorial-featured-medium' );
-                        if( $post_count == 1 ) {
+                        if ( $post_count == 1 ) {
                             echo '<div class="featured-left-section">';
-                        } elseif( $post_count == 3 ) {
+                        } elseif ( $post_count == 3 ) {
                             $image_path = get_the_post_thumbnail( $post_id, 'editorial-featured-long' );
                             echo '<div class="featured-right-section">';
                         }
@@ -153,7 +154,7 @@ class Editorial_Featured_Slider extends WP_Widget {
                         </div><!-- .post-meta-wrapper -->
                     </div><!-- .single-featured-wrap -->
             <?php
-                        if( $post_count == 2 || $post_count == $total_post_count ) {
+                        if ( $post_count == 2 || $post_count == $total_post_count ) {
                             echo '</div>';
                         }
                         $post_count++;

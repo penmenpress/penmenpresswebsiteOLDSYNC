@@ -1,10 +1,10 @@
 /**
  * Image upload functions
  */
-var selector;
-function upload_media_image(selector){
+var mtSelector;
+function upload_media_image(mtSelector){
 // ADD IMAGE LINK
-    jQuery('body').on( 'click', selector , function( event ){
+    jQuery('body').on( 'click', mtSelector , function( event ){
     event.preventDefault();
 
     var imgContainer = jQuery(this).closest('.attachment-media-view').find( '.thumbnail-image'),
@@ -38,9 +38,9 @@ function upload_media_image(selector){
     });
 }
 
-function delete_media_image(selector){
+function delete_media_image(mtSelector){
     // DELETE IMAGE LINK
-    jQuery('body').on( 'click', selector, function( event ){
+    jQuery('body').on( 'click', mtSelector, function( event ){
 
     event.preventDefault();
     var imgContainer = jQuery(this).closest('.attachment-media-view').find( '.thumbnail-image'),

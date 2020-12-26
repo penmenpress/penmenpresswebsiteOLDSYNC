@@ -60,7 +60,7 @@ function editorial_widgets_show_widget_field( $instance = '', $widget_field = ''
 
         // Radio fields
         case 'radio' :
-        	if( empty( $athm_field_value ) ) {
+        	if ( empty( $athm_field_value ) ) {
         		$athm_field_value = $editorial_widgets_default;
         	}
         ?>
@@ -84,7 +84,7 @@ function editorial_widgets_show_widget_field( $instance = '', $widget_field = ''
 
         // Select field
         case 'select' :
-            if( empty( $athm_field_value ) ) {
+            if ( empty( $athm_field_value ) ) {
                 $athm_field_value = $editorial_widgets_default;
             }
         ?>
@@ -105,7 +105,7 @@ function editorial_widgets_show_widget_field( $instance = '', $widget_field = ''
             break;
 
         case 'number' :
-        	if( empty( $athm_field_value ) ) {
+        	if ( empty( $athm_field_value ) ) {
         		$athm_field_value = $editorial_widgets_default;
         	}
         ?>
@@ -137,7 +137,7 @@ function editorial_widgets_show_widget_field( $instance = '', $widget_field = ''
          */
         case 'upload':
             $image = $image_class = "";
-            if( $athm_field_value ){ 
+            if ( $athm_field_value ){ 
                 $image = '<img src="'.esc_url( $athm_field_value ).'" style="max-width:100%;"/>';    
                 $image_class = ' hidden';
             }

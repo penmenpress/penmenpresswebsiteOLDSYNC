@@ -241,4 +241,46 @@ function editorial_additional_settings_register( $wp_customize ) {
         )
     );
 
+    //Add snapchat link
+    $wp_customize->add_setting(
+        'social_snap_chat_link',
+        array(
+            'default'       => '',
+            'capability'    => 'edit_theme_options',
+            'transport'     => 'postMessage',
+            'sanitize_callback' => 'esc_url_raw'
+        )
+    );
+    $wp_customize->add_control(
+        'social_snap_chat_link',
+        array(
+            'type'          => 'text',
+            'priority'      => 13,
+            'label'         => __( 'Snapchat', 'editorial' ),
+            'description'   => __( 'Your Snapchat Account URL', 'editorial' ),
+            'section'       => 'editorial_social_media_section'
+        )
+    );
+
+    //Add reddit link
+    $wp_customize->add_setting(
+        'social_reddit_link',
+        array(
+            'default'       => '',
+            'capability'    => 'edit_theme_options',
+            'transport'     => 'postMessage',
+            'sanitize_callback' => 'esc_url_raw'
+        )
+    );
+    $wp_customize->add_control(
+        'social_reddit_link',
+        array(
+            'type'          => 'text',
+            'priority'      => 14,
+            'label'         => __( 'Reddit', 'editorial' ),
+            'description'   => __( 'Your Reddit Account URL', 'editorial' ),
+            'section'       => 'editorial_social_media_section'
+        )
+    );
+
 }

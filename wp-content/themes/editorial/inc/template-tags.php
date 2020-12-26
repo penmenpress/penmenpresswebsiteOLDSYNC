@@ -35,7 +35,7 @@ endif;
 
 /*----------------------------------------------------------------------------------------------------------------*/
 
-if( ! function_exists( 'editorial_post_comment' ) ) :
+if ( ! function_exists( 'editorial_post_comment' ) ) :
 	/**
 	 * Comment for homepage post
 	 */

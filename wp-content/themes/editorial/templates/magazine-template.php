@@ -17,7 +17,7 @@ get_header(); ?>
 
 	<div class="featured-slider-section clearfix">
 		<?php
-        	if( is_active_sidebar( 'editorial_home_slider_area' ) ) {
+        	if ( is_active_sidebar( 'editorial_home_slider_area' ) ) {
         		dynamic_sidebar( 'editorial_home_slider_area' );
          	}
         ?>
@@ -27,7 +27,7 @@ get_header(); ?>
 		
 		<div class="home-primary-wrapper">
 			<?php
-	        	if( is_active_sidebar( 'editorial_home_content_area' ) ) {
+	        	if ( is_active_sidebar( 'editorial_home_content_area' ) ) {
 					dynamic_sidebar( 'editorial_home_content_area' );
 	         	}
 	        ?>
@@ -35,7 +35,7 @@ get_header(); ?>
 		
 		<div class="home-secondary-wrapper">
 			<?php
-	        	if( is_active_sidebar( 'editorial_home_sidebar' ) ) {
+	        	if ( is_active_sidebar( 'editorial_home_sidebar' ) ) {
 	            	dynamic_sidebar( 'editorial_home_sidebar' );
 	         	}
 	        ?>

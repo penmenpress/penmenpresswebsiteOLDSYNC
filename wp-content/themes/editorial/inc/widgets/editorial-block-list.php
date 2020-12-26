@@ -66,7 +66,8 @@ class Editorial_Block_List extends WP_widget {
      */
     public function widget( $args, $instance ) {
         extract( $args );
-        if( empty( $instance ) ) {
+        
+        if ( empty( $instance ) ) {
             return ;
         }
 
@@ -83,7 +84,7 @@ class Editorial_Block_List extends WP_widget {
                     <?php
                         $block_list_args = editorial_query_args( $editorial_block_cat_id, $editorial_block_posts_count );
                         $block_list_query = new WP_Query( $block_list_args );
-                        if( $block_list_query->have_posts() ) {
+                        if ( $block_list_query->have_posts() ) {
                             while ( $block_list_query->have_posts() ) {
                                 $block_list_query->the_post();
                     ?>

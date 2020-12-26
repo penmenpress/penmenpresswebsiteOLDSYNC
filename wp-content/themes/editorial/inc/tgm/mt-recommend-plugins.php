@@ -66,6 +66,15 @@ function editorial_register_required_plugins() {
             'required'  => false,
             'force_activation'   => false,
             'force_deactivation' => false,
+        ),
+
+        // recommend wp blog post layout
+		array(
+            'name'      => __( 'WP Blog Post Layouts', 'editorial' ),
+            'slug'      => 'wp-blog-post-layouts',
+            'required'  => false,
+            'force_activation'   => false,
+            'force_deactivation' => false,
         )
 
 	);
