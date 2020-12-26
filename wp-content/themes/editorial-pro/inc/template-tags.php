@@ -31,15 +31,15 @@ function editorial_pro_posted_on() {
 		'<a href="' . esc_url( get_permalink() ) . '" rel="bookmark">' . $time_string . '</a>'
 	);
 
-/*	$byline = sprintf(
+	$byline = sprintf(
 		esc_html_x( '%s', 'post author', 'editorial-pro' ),
 		'<span class="author vcard"><a class="url fn n" href="' . esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ) . '">' . esc_html( get_the_author() ) . '</a></span>'
-	);*/
-	$byline = sprintf(
+	);
+	/*$byline = sprintf(
 			esc_html_x( '%s', 'post author', 'editorial-pro' ),
 			'<span class="author vcard">'. coauthors_posts_links(). '</a></span>'
 		);
-
+*/
 	$post_date_option = get_theme_mod( 'editorial_widget_post_date', 'show' );
 	$post_author_option = get_theme_mod( 'editorial_widget_post_author', 'show' );
 
