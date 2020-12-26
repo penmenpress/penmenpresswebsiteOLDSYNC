@@ -96,9 +96,11 @@ $post_id = get_the_ID();
 							}
 						?>
 					</figure>
+					<p style="text-align:center; font-style:italic;">
+						
 					<?php  if (the_post_thumbnail_caption()) { 
  the_post_thumbnail_caption(); 
-} ?>
+} ?> </p>
 				</div><!-- .single-post-image -->
 		<?php } ?>
 
