@@ -69,6 +69,7 @@ editorial_breadcrumbs();
 						}
 					?>
 				</figure>
+				HI4
 			</div><!-- .single-post-image -->
 	<?php } ?>
 		
