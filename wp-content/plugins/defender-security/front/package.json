@@ -20,7 +20,7 @@
     "fast-deep-equal": "^2.0.1",
     "highlight.js": "^9.15.9",
     "js-cookie": "^2.2.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment-locales-webpack-plugin": "^1.0.7",
     "tailwindcss": "^1.4.6",
     "vue": "^2.5.11",
