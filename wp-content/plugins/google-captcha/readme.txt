@@ -3,8 +3,8 @@ Contributors: bestwebsoft
 Donate link: https://bestwebsoft.com/donate/
 Tags: anti-spam security, antispam, recaptcha, captcha, captha, Invisible reCaptcha, Invisible captcha, Invisibl reCaptcha, comment, cpatcha, google catcha, Invisible re captcha, recaptcha version3
 Requires at least: 4.5
-Tested up to: 5.5.3
-Stable tag: 1.59
+Tested up to: 5.8.2
+Stable tag: 1.66
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -61,6 +61,10 @@ http://www.youtube.com/watch?v=L2BziEOL3Fg
 > 	* Fast Secure Contact Form
 > 	* MailChimp for WordPress
 > 	* Ninja Forms
+> 	* Gravity Forms
+> 	* WPForms
+> 	* Caldera Forms
+> 	* Elementor Pro Contact Forms
 > * Compatible with WooCommerce:
 > 	* Login form
 > 	* Register form
@@ -82,6 +86,10 @@ http://www.youtube.com/watch?v=L2BziEOL3Fg
 > 	* Registration form
 > 	* New Topic form
 > 	* Reply form
+> * Compatible with Ultimate Member:
+> 	* Login form
+> 	* Registration form
+> 	* Profile form
 > * Select reCaptcha language manually
 > * Change size: normal or compact (for version 2)
 > * Configure all subsites on the network
@@ -93,9 +101,9 @@ If you have a feature suggestion or idea you'd like to see in the plugin, we'd l
 
 = Documentation & Videos =
 
-* [[Doc] User Guide](https://docs.google.com/document/d/1yTDdMSLqvgATbo5lPzuNn4QRF0EyEPFuLoFB15beMww/)
-* [[Doc] Installation](https://docs.google.com/document/d/1-hvn6WRvWnOqj5v5pLUk7Awyu87lq5B_dO-Tv-MC9JQ/)
-* [[Doc] Purchase](https://docs.google.com/document/d/1EUdBVvnm7IHZ6y0DNyldZypUQKpB8UVPToSc_LdOYQI/)
+* [[Doc] User Guide](https://bestwebsoft.com/documentation/recaptcha/recaptcha-user-guide/)
+* [[Doc] Installation](https://bestwebsoft.com/documentation/how-to-install-a-wordpress-product/how-to-install-a-wordpress-plugin/)
+* [[Doc] Purchase](https://bestwebsoft.com/documentation/how-to-purchase-a-wordpress-plugin/how-to-purchase-wordpress-plugin-from-bestwebsoft/)
 * [[Video] Installation Instruction](http://www.youtube.com/watch?v=RUJ9VwZLFSY)
 * [[Video] Purchase, Installation & Configuration](https://www.youtube.com/watch?v=X-ccRdEFcM0)
 * [[Video] User Guide](https://www.youtube.com/watch?v=ZFv6txtic0Y)
@@ -104,9 +112,14 @@ If you have a feature suggestion or idea you'd like to see in the plugin, we'd l
 
 Visit our Help Center if you have any questions, our friendly Support Team is happy to help - <https://support.bestwebsoft.com/>
 
+= Affiliate Program =
+
+Earn 20% commission by selling the premium WordPress plugins and themes by BestWebSoft - <https://bestwebsoft.com/affiliate/>
+
 = Translation =
 
 * Czech (cs_CZ) (thanks to [Michal Kučera](mailto:kucerami@gmail.com), www.n0lim.it, [PaMaDeSSoft](mailto:info@pamadessoft.cz), www.pamadessoft.cz)
+* French (fr_FR)
 * Romanian (ro_RO)
 * Russian (ru_RU)
 * Spanish (es_ES)
@@ -133,7 +146,7 @@ Some of these translations are not complete. We are constantly adding new featur
 3. Plugin settings are located in reCaptcha menu.
 4. Create a form in post and insert the shortcode [bws_google_captcha] into the form.
 
-[View a Step-by-step Instruction on reCaptcha Installation](https://docs.google.com/document/d/1-hvn6WRvWnOqj5v5pLUk7Awyu87lq5B_dO-Tv-MC9JQ/)
+[View a Step-by-step Instruction on reCaptcha Installation](https://bestwebsoft.com/documentation/how-to-install-a-wordpress-product/how-to-install-a-wordpress-plugin/)
 
 http://www.youtube.com/watch?v=RUJ9VwZLFSY
 
@@ -248,7 +261,7 @@ Please make sure that the problem hasn't been discussed yet on our forum (<https
 - The link to the page where the problem occurs
 - The name of the plugin and its version. If you are using a pro version - your order number.
 - The version of your WordPress installation
-- Copy and paste into the message your system status report. Please read more here: [Instruction on System Status](https://docs.google.com/document/d/1Wi2X8RdRGXk9kMszQy1xItJrpN0ncXgioH935MaBKtc/)
+- Copy and paste into the message your system status report. Please read more here: [Instruction on System Status](https://bestwebsoft.com/documentation/admin-panel-issues/system-status/)
 
 == Screenshots ==
 
@@ -262,6 +275,44 @@ Please make sure that the problem hasn't been discussed yet on our forum (<https
 8. reCaptcha Allow List page.
 
 == Changelog ==
+
+= V1.66 - 22.11.2021 =
+* NEW : The French language file was added.
+* Update : BWS Panel section was updated.
+* Pro : The issue with Elementor Pro 3.5.0 has been fixed.
+
+= V1.65 - 01.10.2021 =
+* Update : All functionality was updated for WordPress 5.8.1
+* Update : BWS Panel section was updated.
+* Pro : The compatibility with Elementor Pro Contact Form has been added.
+
+= V1.64 - 18.08.2021 =
+* Bugfix : 'use strict' was added.
+* Pro : The compatibility with Caldera Member has been added.
+
+= V1.63 - 21.07.2021 =
+* Update : All functionality was updated for WordPress 5.8.
+* Update : BWS Panel section was updated.
+* Bugfix : The compatibility issue with Limit Attempts by BestWebSoft has been fixed.
+* Pro : The issue with Ninja Forms on plugin-information tab has been fixed.
+* Pro : The compatibility with Ultimate Member has been added.
+
+= V1.62 - 14.05.2021 =
+* Update : All functionality was updated for WordPress 5.7.2.
+* Bugfix : The issue of sending a password reset link on the user edit page has been fixed.
+* Pro : The issue with submitting Contact 7 form with empty recaptcha has been fixed.
+* Pro : The issue with displaying recaptcha in the form of creating a new topic and in the reply form has been fixed.
+* Pro : The compatibility with WPForms has been added.
+
+= V1.61 - 06.04.2021 =
+* Update : Settings page has been changed for better usability.
+* Update : BWS Panel section was updated.
+* Update : All functionality was updated for WordPress 5.7.
+
+= V1.60 - 15.01.2021 =
+* Pro : The compatibility with Gravity Forms has been added.
+* Pro : The compatibility with WooCommerce has been improved.
+* Update : All functionality was updated for WordPress 5.6.
 
 = V1.59 - 02.12.2020 =
 * NEW : The Turkish language file was added.
@@ -523,6 +574,37 @@ Please make sure that the problem hasn't been discussed yet on our forum (<https
 * NEW : Ability to add Google Captcha (reCAPTCHA) into standard forms was added.
 
 == Upgrade Notice ==
+
+= V1.66 =
+* Bugs fixed.
+* Plugin optimization completed.
+
+= V1.65 =
+* The compatibility with new WordPress version updated.
+* Plugin optimization completed.
+* New features added.
+
+= V1.64 =
+* New features added.
+
+= V1.63 =
+* Usability improved.
+* Bugs fixed.
+* New features added.
+
+= V1.62 =
+* The compatibility with new WordPress version updated.
+* Bugs fixed.
+* New features added.
+
+= V1.61 =
+* Usability improved.
+* Plugin optimization completed.
+* The compatibility with new WordPress version updated.
+
+= V1.60 =
+* New features added.
+* Functionality improved.
 
 = V1.59 =
 * Bugs fixed.

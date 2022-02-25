@@ -6,12 +6,12 @@ Description: Protect WordPress website forms from spam entries with Google Captc
 Author: BestWebSoft
 Text Domain: google-captcha
 Domain Path: /languages
-Version: 1.59
+Version: 1.66
 Author URI: https://bestwebsoft.com/
 License: GPLv3 or later
 */
 
-/*  © Copyright 2020  BestWebSoft  ( https://support.bestwebsoft.com )
+/*  © Copyright 2021  BestWebSoft  ( https://support.bestwebsoft.com )
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License, version 2, as
@@ -70,14 +70,14 @@ if ( ! function_exists( 'gglcptch_admin_menu' ) ) {
                 'gglcptch-bws-panel',
                 'bws_add_menu_render'
             );
-
-			if ( isset( $submenu['google-captcha.php'] ) ) {
-				$submenu['google-captcha.php'][] = array(
-					'<span style="color:#d86463"> ' . __('Upgrade to Pro', 'google-captcha' ) . '</span>',
-					'manage_options',
-					'https://bestwebsoft.com/products/wordpress/plugins/google-captcha/?k=b850d949ccc1239cab0da315c3c822ab&pn=109&v=' . $gglcptch_plugin_info["Version"] . '&wp_v=' . $wp_version );
-			}
-
+            /*pls */
+            if ( isset( $submenu['google-captcha.php'] ) ) {
+                $submenu['google-captcha.php'][] = array(
+                    '<span style="color:#d86463"> ' . __('Upgrade to Pro', 'google-captcha' ) . '</span>',
+                    'manage_options',
+                    'https://bestwebsoft.com/products/wordpress/plugins/google-captcha/?k=b850d949ccc1239cab0da315c3c822ab&pn=109&v=' . $gglcptch_plugin_info["Version"] . '&wp_v=' . $wp_version );
+            }
+            /* pls*/
 			add_action( "load-{$settings_page}", 'gglcptch_add_tabs' );
 			add_action( "load-{$allowlist_page}", 'gglcptch_add_tabs' );
 		}
@@ -93,7 +93,7 @@ if ( ! function_exists( 'gglcptch_plugins_loaded' ) ) {
 
 if ( ! function_exists( 'gglcptch_init' ) ) {
 	function gglcptch_init() {
-		global $gglcptch_plugin_info, $gglcptch_options;
+		global $gglcptch_plugin_info, $gglcptch_options, $pagenow;
 
 		require_once( dirname( __FILE__ ) . '/bws_menu/bws_include.php' );
 		bws_include_init( plugin_basename( __FILE__ ) );
@@ -108,7 +108,9 @@ if ( ! function_exists( 'gglcptch_init' ) ) {
 		/* Function check if plugin is compatible with current WP version */
 		bws_wp_min_version_check( plugin_basename( __FILE__ ), $gglcptch_plugin_info, '4.5' );
 
-		$is_admin = is_admin() && ! defined( 'DOING_AJAX' );
+		$is_user_edit_page = isset( $pagenow ) && 'user-edit.php' == $pagenow;
+		$is_admin = is_admin() && ( ! defined( 'DOING_AJAX' ) || ! $is_user_edit_page );
+		
 		/* Call register settings function */
 		if ( ! $is_admin || ( isset( $_GET['page'] ) && 'google-captcha.php' == $_GET['page'] ) ) {
 			register_gglcptch_settings();
@@ -145,13 +147,16 @@ if ( ! function_exists( 'gglcptch_admin_init' ) ) {
 			$bws_plugin_info = array( 'id' => '109', 'version' => $gglcptch_plugin_info["Version"] );
 		}
 
+        /*pls */
 		if ( 'plugins.php' == $pagenow ) {
-			if ( empty( $gglcptch_options ) ) {
+			if ( empty( $gglcptch_options ) )
 				register_gglcptch_settings();
-			}
-			if ( function_exists( 'bws_plugin_banner_go_pro' ) )
-				bws_plugin_banner_go_pro( $gglcptch_options, $gglcptch_plugin_info, 'gglcptch', 'google-captcha', '676d9558f9786ab41d7de35335cf5c4d', '109', 'google-captcha' );
+
+			if ( function_exists( 'bws_plugin_banner_go_pro' ) ) {
+                bws_plugin_banner_go_pro( $gglcptch_options, $gglcptch_plugin_info, 'gglcptch', 'google-captcha', '676d9558f9786ab41d7de35335cf5c4d', '109', 'google-captcha' );
+            }
 		}
+        /* pls*/
 	}
 }
 
@@ -275,6 +280,8 @@ if ( ! function_exists( 'gglcptch_add_scripts' ) ) {
 
 		wp_enqueue_script( 'gglcptch_script', plugins_url( 'js/script.js', __FILE__ ), array( 'jquery', 'gglcptch_api' ), $gglcptch_plugin_info["Version"], true );
 
+		do_action( 'gglcptch_custom_enqueue_script' );
+
 		$options = array(
 			'version'	=> $gglcptch_options['recaptcha_version'],
 			'sitekey'	=> $gglcptch_options['public_key'],			
@@ -364,7 +371,7 @@ if ( ! function_exists( 'register_gglcptch_settings' ) ) {
 			 * @deprecated since 1.59
 			 * @todo remove after 01.05.2021
 			 */
-			if ( isset( $gglcptch_options['plugin_option_version'] ) &&  version_compare( $gglcptch_options['plugin_option_version'] , '1.59', '<' ) )  {
+			if ( isset( $gglcptch_options['plugin_option_version'] ) && version_compare( $gglcptch_options['plugin_option_version'], '1.59', '<' ) ) {
 				$prefix = $wpdb->prefix . 'gglcptch_';
 				/* Renaming a table */
 				$wpdb->query( "RENAME TABLE `" . $prefix . "whitelist` TO `" . $prefix . "allowlist`" );
@@ -495,13 +502,21 @@ if ( ! function_exists( 'gglcptch_allowlisted_ip' ) ) {
 if ( ! function_exists( 'gglcptch_add_settings_page' ) ) {
 	function gglcptch_add_settings_page() {
 		global $gglcptch_plugin_info;
-		require_once( dirname( __FILE__ ) . '/includes/pro_banners.php' ); ?>
+		/*pls */
+		require_once( dirname( __FILE__ ) . '/includes/pro_banners.php' );
+		/* pls*/ 
+		if ( 'google-captcha.php' == $_GET['page'] ) {
+			if ( ! class_exists( 'Bws_Settings_Tabs' ) ) {
+				require_once( dirname( __FILE__ ) . '/bws_menu/class-bws-settings.php' );
+			}
+			require_once( dirname( __FILE__ ) . '/includes/class-gglcptch-settings-tabs.php' );
+			$page = new Gglcptch_Settings_Tabs( plugin_basename( __FILE__ ) );
+			if ( method_exists( $page, 'add_request_feature' ) ) {
+                $page->add_request_feature();
+			}
+		} ?>
 		<div class="wrap">
-			<?php if ( 'google-captcha.php' == $_GET['page'] ) {
-				if ( ! class_exists( 'Bws_Settings_Tabs' ) )
-					require_once( dirname( __FILE__ ) . '/bws_menu/class-bws-settings.php' );
-				require_once( dirname( __FILE__ ) . '/includes/class-gglcptch-settings-tabs.php' );
-				$page = new Gglcptch_Settings_Tabs( plugin_basename( __FILE__ ) ); ?>
+			<?php if ( 'google-captcha.php' == $_GET['page'] ) { ?>
 				<h1><?php _e( 'reCaptcha Settings', 'google-captcha' ); ?></h1>
                 <noscript><div class="error below-h2"><p><strong><?php _e( "Please enable JavaScript in your browser.", 'google-captcha' ); ?></strong></p></div></noscript>
 				<?php $page->display_content();
@@ -511,8 +526,9 @@ if ( ! function_exists( 'gglcptch_add_settings_page' ) ) {
 				if ( is_object( $page ) ) {
 					$page->display_content();
 				}
-
-				bws_plugin_reviews_block( $gglcptch_plugin_info['Name'], 'google-captcha' );
+				/*pls */
+                bws_plugin_reviews_block( $gglcptch_plugin_info['Name'], 'google-captcha' );
+				/* pls*/
 			} ?>
 		</div>
 	<?php }
@@ -766,7 +782,12 @@ if ( ! function_exists( 'gglcptch_check' ) ) {
 				);
 			} else {
 				$response = gglcptch_get_response( $gglcptch_options['private_key'], $gglcptch_remote_addr );
-				if ( isset( $response['success'] ) && !! $response['success'] ) {
+				if ( empty( $response ) ) {
+					$result = array(
+							'response' => false,
+							'reason' => $debug ? __( 'Response is empty', 'google-captcha' ) : 'VERIFICATION_FAILED'
+						);
+				} elseif ( isset( $response['success'] ) && !! $response['success'] ) {
 					if ( 'v3' ==  $gglcptch_options['recaptcha_version'] && $response['score'] <  $gglcptch_options['score_v3'] ) {
                         $result = array(
                             'response' => false,
@@ -922,7 +943,7 @@ if ( ! function_exists( 'gglcptch_handle_by_limit_attempts' ) ) {
 			$gglcptch_forms = gglcptch_get_forms();
 		}
 
-		$la_form_slug = "{$form_slug}_recaptcha_check";
+		$la_form_slug = "{$form_slug}_captcha_check";
 
 		/* if reCAPTCHA answer is right */
 		if ( true == $check_result ) {
@@ -933,7 +954,10 @@ if ( ! function_exists( 'gglcptch_handle_by_limit_attempts' ) ) {
 			/* if reCAPTCHA answer is wrong */
 			$form_data = array( 'form_name' => $gglcptch_forms[ $form_slug ]['form_name'] );
 
-			$la_error = apply_filters( 'lmtttmpts_form_fail', $la_form_slug, '', $form_data );
+			if ( 'login_form_captcha_check' != $form_slug ) {
+				$la_error = apply_filters( 'lmtttmpts_form_fail', $la_form_slug, '', $form_data );
+			}
+
 			if ( ! empty( $la_error ) && $la_form_slug != $la_error ) {
 				if ( is_wp_error( $check_result ) ) {
 					$check_result->add( "gglcptch_error_lmttmpts", $la_error );
