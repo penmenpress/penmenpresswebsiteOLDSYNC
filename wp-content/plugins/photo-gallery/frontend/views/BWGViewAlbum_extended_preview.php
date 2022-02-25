@@ -41,7 +41,7 @@ class BWGViewAlbum_extended_preview extends BWGViewSite {
     );
 
     $breadcrumb = WDWLibrary::get('bwg_album_breadcrumb_' . $bwg);
-	$breadcrumb = !empty($breadcrumb) ? $breadcrumb : json_encode($breadcrumb_arr);
+	  $breadcrumb = !empty($breadcrumb) ? $breadcrumb : json_encode($breadcrumb_arr);
     $params['breadcrumb_arr'] = json_decode($breadcrumb);
 
     /* Set theme parameters for Gallery/Gallery group title/description.*/
@@ -62,30 +62,25 @@ class BWGViewAlbum_extended_preview extends BWGViewSite {
           wp_add_inline_style('bwg_frontend', $inline_style);
         }
         else {
-          echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
+          echo '<style id="bwg-style-' . sanitize_html_class($bwg) . '">' . $inline_style . '</style>';
         }
       }
     }
     else {
-      echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
-      echo '<script id="bwg-script-' . $bwg .'">
-        jQuery(function() {
-          bwg_main_ready();
-        });
-      </script>';
+      echo '<style id="bwg-style-' . sanitize_html_class($bwg) . '">' . $inline_style . '</style>';
     }
 
     ob_start();
 
     if ( $params['album_view_type'] != 'gallery' ) {
       ?>
-      <div data-max-count="<?php echo $params['extended_album_column_number']; ?>"
-           data-thumbnail-width="<?php echo $params['extended_album_thumb_width']; ?>"
-           data-global-spacing="<?php echo $theme_row->album_extended_div_margin; ?>"
-           data-spacing="<?php echo $theme_row->album_extended_div_padding; ?>"
-           data-bwg="<?php echo $bwg; ?>"
-           id="<?php echo $params['container_id']; ?>"
-           class="bwg-album-extended bwg-border-box bwg-thumbnails bwg-container bwg-container-<?php echo $bwg; ?> bwg-album-thumbnails bwg_album_extended_thumbnails_<?php echo $bwg; ?>">
+      <div data-max-count="<?php echo esc_attr($params['extended_album_column_number']); ?>"
+           data-thumbnail-width="<?php echo esc_attr($params['extended_album_thumb_width']); ?>"
+           data-global-spacing="<?php echo esc_attr($theme_row->album_extended_div_margin); ?>"
+           data-spacing="<?php echo esc_attr($theme_row->album_extended_div_padding); ?>"
+           data-bwg="<?php echo esc_attr($bwg); ?>"
+           id="<?php echo sanitize_html_class($params['container_id']); ?>"
+           class="bwg-album-extended bwg-border-box bwg-thumbnails bwg-container bwg-container-<?php echo sanitize_html_class($bwg); ?> bwg-album-thumbnails bwg_album_extended_thumbnails_<?php echo sanitize_html_class($bwg); ?>">
         <?php
         if ( !$params['album_gallery_rows']['page_nav']['total'] ) {
           echo WDWLibrary::message(__('No results found.', BWG()->prefix), 'wd_error');
@@ -110,23 +105,23 @@ class BWGViewAlbum_extended_preview extends BWGViewSite {
           ?>
           <div class="bwg-extended-item">
             <div class="bwg-extended-item0">
-              <a class="bwg-a bwg-album bwg_album_<?php echo $bwg; ?>"
+              <a class="bwg-a bwg-album bwg_album_<?php echo sanitize_html_class($bwg); ?>"
                 <?php echo ( ($enable_seo || $enable_dynamic_url ) ? "href='" . esc_url($href) . "'" : ""); ?>
                  style="font-size: 0;"
-                 data-bwg="<?php echo $bwg; ?>"
-                 data-container_id="<?php echo $params['container_id']; ?>"
-                 data-alb_gal_id="<?php echo (($params['album_gallery_id'] != 0) ? $row->alb_gal_id : $row->id); ?>"
-                 data-def_type="<?php echo $row->def_type; ?>"
+                 data-bwg="<?php echo esc_attr($bwg); ?>"
+                 data-container_id="<?php echo esc_attr($params['container_id']); ?>"
+                 data-alb_gal_id="<?php echo (($params['album_gallery_id'] != 0) ? esc_attr($row->alb_gal_id) : esc_attr($row->id)); ?>"
+                 data-def_type="<?php echo esc_attr($row->def_type); ?>"
                  data-title="<?php echo htmlspecialchars(addslashes($row->name)); ?>">
-                <div class="bwg-item0 bwg_album_thumb_<?php echo $bwg; ?> lazy_loader">
-                  <div class="bwg-item1 bwg_album_thumb_spun1_<?php echo $bwg; ?>">
+                <div class="bwg-item0 bwg_album_thumb_<?php echo sanitize_html_class($bwg); ?> <?php echo ($lazyload) ? 'lazy_loader' : ''; ?>">
+                  <div class="bwg-item1 bwg_album_thumb_spun1_<?php echo sanitize_html_class($bwg); ?>">
                     <div class="bwg-item2">
                       <img class="skip-lazy <?php if( $lazyload ) { ?> bwg_lazyload <?php } ?>"
-                           data-width="<?php echo $image_thumb_width; ?>"
-                           data-height="<?php echo $image_thumb_height; ?>"
-                           data-original="<?php echo $row->preview_image; ?>"
-                           src="<?php if( !$lazyload ) { echo $row->preview_image; } else { echo BWG()->plugin_url."/images/lazy_placeholder.gif"; } ?>"
-                           alt="<?php echo $row->name; ?>" />
+                           data-width="<?php echo esc_attr($image_thumb_width); ?>"
+                           data-height="<?php echo esc_attr($image_thumb_height); ?>"
+                           data-src="<?php echo esc_url($row->preview_image); ?>"
+                           src="<?php if( !$lazyload ) { echo esc_url($row->preview_image); } else { echo esc_url(BWG()->plugin_url."/images/lazy_placeholder.gif"); } ?>"
+                           alt="<?php echo esc_attr($row->name); ?>" />
                     </div>
                   </div>
                 </div>
@@ -136,14 +131,14 @@ class BWGViewAlbum_extended_preview extends BWGViewSite {
               <?php
               if ( $row->name ) {
                 ?>
-                <a class="bwg-album bwg_album_<?php echo $bwg; ?>"
+                <a class="bwg-album bwg_album_<?php echo sanitize_html_class($bwg); ?>"
                    <?php echo ( ($enable_seo || $enable_dynamic_url) ? "href='" . esc_url($href) . "'" : "" ); ?>
-                   data-bwg="<?php echo $bwg; ?>"
-                   data-container_id="<?php echo $params['container_id']; ?>"
-                   data-alb_gal_id="<?php echo(($params['album_gallery_id'] != 0) ? $row->alb_gal_id : $row->id); ?>"
-                   data-def_type="<?php echo $row->def_type; ?>"
+                   data-bwg="<?php echo esc_attr($bwg); ?>"
+                   data-container_id="<?php echo esc_attr($params['container_id']); ?>"
+                   data-alb_gal_id="<?php echo(($params['album_gallery_id'] != 0) ? esc_attr($row->alb_gal_id) : esc_attr($row->id)); ?>"
+                   data-def_type="<?php echo esc_attr($row->def_type); ?>"
                    data-title="<?php echo htmlspecialchars(addslashes($row->name)); ?>">
-                  <span class="bwg_title_spun_<?php echo $bwg; ?>"><?php echo $row->name; ?></span>
+                  <span class="bwg_title_spun_<?php echo sanitize_html_class($bwg); ?>"><?php echo esc_html($row->name); ?></span>
                 </a>
                 <?php
               }
@@ -153,18 +148,18 @@ class BWGViewAlbum_extended_preview extends BWGViewSite {
                   $description_short = $description_array[0];
                   $description_full = $description_array[1];
                   ?>
-                <span class="bwg_description_spun1_<?php echo $bwg; ?>">
-                  <span class="bwg_description_spun2_<?php echo $bwg; ?>">
-                    <span class="bwg_description_short_<?php echo $bwg; ?>">
-                      <?php echo $description_short; ?>
+                <span class="bwg_description_spun1_<?php echo sanitize_html_class($bwg); ?>">
+                  <span class="bwg_description_spun2_<?php echo sanitize_html_class($bwg); ?>">
+                    <span class="bwg_description_short_<?php echo sanitize_html_class($bwg); ?>">
+                      <?php WDWLibrary::strip_tags(stripslashes($row->description)); ?>
                     </span>
                     <span class="bwg_description_full">
-                      <?php echo $description_full; ?>
+                      <?php echo WDWLibrary::strip_tags(stripslashes($description_full)); ?>
                     </span>
                   </span>
                   <span data-more-msg="<?php _e('More', BWG()->prefix); ?>"
                         data-hide-msg="<?php _e('Hide', BWG()->prefix); ?>"
-                        class="bwg_description_more bwg_description_more_<?php echo $bwg; ?> bwg_more">
+                        class="bwg_description_more bwg_description_more_<?php echo sanitize_html_class($bwg); ?> bwg_more">
                     <?php _e('More', BWG()->prefix); ?>
                   </span>
                 </span>
@@ -172,9 +167,9 @@ class BWGViewAlbum_extended_preview extends BWGViewSite {
                 }
                 else {
                   ?>
-                  <span class="bwg_description_spun1_<?php echo $bwg; ?>">
-                <span class="bwg_description_short_<?php echo $bwg; ?>">
-                  <?php echo $row->description; ?>
+                  <span class="bwg_description_spun1_<?php echo sanitize_html_class($bwg); ?>">
+                <span class="bwg_description_short_<?php echo sanitize_html_class($bwg); ?>">
+                  <?php echo WDWLibrary::strip_tags(stripslashes($row->description)); ?>
                 </span>
               </span>
                   <?php
@@ -196,7 +191,7 @@ class BWGViewAlbum_extended_preview extends BWGViewSite {
       }
     }
     ?>
-    <input type="hidden" id="bwg_album_breadcrumb_<?php echo $bwg; ?>" name="bwg_album_breadcrumb_<?php echo $bwg; ?>" value='<?php echo $breadcrumb; ?>' />
+    <input type="hidden" id="bwg_album_breadcrumb_<?php echo sanitize_html_class($bwg); ?>" name="bwg_album_breadcrumb_<?php echo esc_attr($bwg); ?>" value='<?php echo esc_attr($breadcrumb); ?>' />
     <?php
 
     $content = ob_get_clean();

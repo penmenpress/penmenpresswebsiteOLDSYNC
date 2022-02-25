@@ -112,7 +112,12 @@ class ThemesView_bwg extends AdminView_bwg {
                 'heading' => 'Alignment',
                 'description' => 'Set custom alignment of images, titles, descriptions, and more',
               ),
-              'flex-empty-item' => array(),
+              'flex-empty-item' => array(
+								 'picture_url' => '',
+								 'class' => '',
+								 'heading' => '',
+								 'description' => '',
+							),
             );
             ?>
             <div class="gallery_upgrade-content">
@@ -260,8 +265,12 @@ class ThemesView_bwg extends AdminView_bwg {
   }
 
   /**
-   *
    * Generate row for font styles google fonts
+   *
+   * @param $saved_style
+   * @param $font_style
+   * @param $label_text
+   * @param $radio_name
    */
   public function font_style_row( $saved_style, $font_style, $label_text, $radio_name) {
     $google_fonts = WDWLibrary::get_google_fonts();
@@ -414,7 +423,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="thumb_border_color"><?php echo __('Border color:', BWG()->prefix); ?></label></td>
 								  <td>
-									<input type="text" name="thumb_border_color" id="thumb_border_color" value="<?php echo $row->thumb_border_color; ?>" class="color"/>
+									<input type="text" name="thumb_border_color" id="thumb_border_color" value="<?php echo $row->thumb_border_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -473,10 +482,10 @@ class ThemesView_bwg extends AdminView_bwg {
 							  <tbody>
 								<tr>
 								  <td class="spider_label">
-									<label for="thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label>
+									  <label for="thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label>
 								  </td>
 								  <td>
-									<input type="text" name="thumb_bg_color" id="thumb_bg_color" value="<?php echo $row->thumb_bg_color; ?>" class="color"/>
+                    <input type="text" name="thumb_bg_color" id="thumb_bg_color" value="<?php echo $row->thumb_bg_color; ?>" class="jscolor" />
 								  </td>
 								</tr>
                 <tr>
@@ -496,7 +505,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="thumbs_bg_color"><?php echo __('Full background color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="thumbs_bg_color" id="thumbs_bg_color" value="<?php echo $row->thumbs_bg_color; ?>" class="color"/>
+									<input type="text" name="thumbs_bg_color" id="thumbs_bg_color" value="<?php echo $row->thumbs_bg_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -548,13 +557,13 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="thumb_title_font_color"><?php echo __('Title font color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="thumb_title_font_color" id="thumb_title_font_color" value="<?php echo $row->thumb_title_font_color; ?>" class="color" />
+											<input type="text" name="thumb_title_font_color" id="thumb_title_font_color" value="<?php echo $row->thumb_title_font_color; ?>" class="jscolor" />
 										  </td>
 										</tr>
 										<tr>
 										  <td class="spider_label"><label for="thumb_title_font_color_hover"><?php echo __('Title font color (Show on hover):', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="thumb_title_font_color_hover" id="thumb_title_font_color_hover" value="<?php echo $row->thumb_title_font_color_hover; ?>" class="color" />
+											<input type="text" name="thumb_title_font_color_hover" id="thumb_title_font_color_hover" value="<?php echo $row->thumb_title_font_color_hover; ?>" class="jscolor" />
 										  </td>
 										</tr>
                     <tr>
@@ -599,7 +608,7 @@ class ThemesView_bwg extends AdminView_bwg {
                     <tr>
                       <td class="spider_label"><label for="thumb_description_font_color"><?php echo __('Thumb description font color:', BWG()->prefix); ?> </label></td>
                       <td>
-                        <input type="text" name="thumb_description_font_color" id="thumb_description_font_color" value="<?php echo $row->thumb_description_font_color; ?>" class="color" />
+                        <input type="text" name="thumb_description_font_color" id="thumb_description_font_color" value="<?php echo $row->thumb_description_font_color; ?>" class="jscolor" />
                       </td>
                     </tr>
                     <tr>
@@ -616,7 +625,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="thumb_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="thumb_gal_title_font_color" id="thumb_gal_title_font_color" value="<?php echo $row->thumb_gal_title_font_color; ?>" class="color" />
+											<input type="text" name="thumb_gal_title_font_color" id="thumb_gal_title_font_color" value="<?php echo $row->thumb_gal_title_font_color; ?>" class="jscolor" />
 										  </td>
 										</tr>
                     <tr>
@@ -718,7 +727,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="masonry_thumb_border_color"><?php echo __('Border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="masonry_thumb_border_color" id="masonry_thumb_border_color" value="<?php echo $row->masonry_thumb_border_color; ?>" class="color" />
+										<input type="text" name="masonry_thumb_border_color" id="masonry_thumb_border_color" value="<?php echo $row->masonry_thumb_border_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -773,7 +782,7 @@ class ThemesView_bwg extends AdminView_bwg {
 											<label for="masonry_thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label>
 										</td>
 										<td>
-											<input type="text" name="masonry_thumb_bg_color" id="masonry_thumb_bg_color" value="<?php echo $row->masonry_thumb_bg_color; ?>" class="color" />
+											<input type="text" name="masonry_thumb_bg_color" id="masonry_thumb_bg_color" value="<?php echo $row->masonry_thumb_bg_color; ?>" class="jscolor" />
 										</td>
 									</tr>
                   <tr>
@@ -793,7 +802,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 										<td class="spider_label"><label for="masonry_thumbs_bg_color"><?php echo __('Full Background color:', BWG()->prefix); ?> </label></td>
 										<td>
-											<input type="text" name="masonry_thumbs_bg_color" id="masonry_thumbs_bg_color" value="<?php echo $row->masonry_thumbs_bg_color; ?>" class="color" />
+											<input type="text" name="masonry_thumbs_bg_color" id="masonry_thumbs_bg_color" value="<?php echo $row->masonry_thumbs_bg_color; ?>" class="jscolor" />
 										</td>
 									</tr>
 									<tr>
@@ -832,13 +841,13 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="masonry_thumb_title_font_color"><?php echo __('Title font color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="masonry_thumb_title_font_color" id="masonry_thumb_title_font_color" value="<?php echo $row->masonry_thumb_title_font_color; ?>" class="color" />
+											<input type="text" name="masonry_thumb_title_font_color" id="masonry_thumb_title_font_color" value="<?php echo $row->masonry_thumb_title_font_color; ?>" class="jscolor" />
 										  </td>
 										</tr>
 										<tr>
 										  <td class="spider_label"><label for="masonry_thumb_title_font_color_hover"><?php echo __('Title font color (Show on hover):', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="masonry_thumb_title_font_color_hover" id="masonry_thumb_title_font_color_hover" value="<?php echo $row->masonry_thumb_title_font_color_hover; ?>" class="color" />
+											<input type="text" name="masonry_thumb_title_font_color_hover" id="masonry_thumb_title_font_color_hover" value="<?php echo $row->masonry_thumb_title_font_color_hover; ?>" class="jscolor" />
 										  </td>
 										</tr>
                     <tr>
@@ -875,7 +884,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="masonry_description_color"><?php echo __('Description font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="masonry_description_color" id="masonry_description_color" value="<?php echo $row->masonry_description_color; ?>" class="color" />
+										<input type="text" name="masonry_description_color" id="masonry_description_color" value="<?php echo $row->masonry_description_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -891,7 +900,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="masonry_thumb_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="masonry_thumb_gal_title_font_color" id="masonry_thumb_gal_title_font_color" value="<?php echo $row->masonry_thumb_gal_title_font_color; ?>" class="color" />
+										<input type="text" name="masonry_thumb_gal_title_font_color" id="masonry_thumb_gal_title_font_color" value="<?php echo $row->masonry_thumb_gal_title_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -993,7 +1002,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="mosaic_thumb_border_color"><?php echo __('Border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="mosaic_thumb_border_color" id="mosaic_thumb_border_color" value="<?php echo $row->mosaic_thumb_border_color; ?>" class="color" />
+										<input type="text" name="mosaic_thumb_border_color" id="mosaic_thumb_border_color" value="<?php echo $row->mosaic_thumb_border_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -1046,7 +1055,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="mosaic_thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="mosaic_thumb_bg_color" id="mosaic_thumb_bg_color" value="<?php echo $row->mosaic_thumb_bg_color; ?>" class="color" />
+										<input type="text" name="mosaic_thumb_bg_color" id="mosaic_thumb_bg_color" value="<?php echo $row->mosaic_thumb_bg_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -1066,7 +1075,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="mosaic_thumbs_bg_color"><?php echo __('Full Background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="mosaic_thumbs_bg_color" id="mosaic_thumbs_bg_color" value="<?php echo $row->mosaic_thumbs_bg_color; ?>" class="color" />
+										<input type="text" name="mosaic_thumbs_bg_color" id="mosaic_thumbs_bg_color" value="<?php echo $row->mosaic_thumbs_bg_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -1109,13 +1118,13 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="mosaic_thumb_title_font_color"><?php echo __('Title font color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="mosaic_thumb_title_font_color" id="mosaic_thumb_title_font_color" value="<?php echo $row->mosaic_thumb_title_font_color; ?>" class="color" />
+											<input type="text" name="mosaic_thumb_title_font_color" id="mosaic_thumb_title_font_color" value="<?php echo $row->mosaic_thumb_title_font_color; ?>" class="jscolor" />
 										  </td>
 										</tr>
                     <tr>
                       <td class="spider_label"><label for="mosaic_thumb_title_font_color_hover"><?php echo __('Title font color (Show on hover):', BWG()->prefix); ?> </label></td>
                       <td>
-                        <input type="text" name="mosaic_thumb_title_font_color_hover" id="mosaic_thumb_title_font_color_hover" value="<?php echo $row->mosaic_thumb_title_font_color_hover; ?>" class="color" />
+                        <input type="text" name="mosaic_thumb_title_font_color_hover" id="mosaic_thumb_title_font_color_hover" value="<?php echo $row->mosaic_thumb_title_font_color_hover; ?>" class="jscolor" />
                       </td>
                     </tr>
                     <tr>
@@ -1159,7 +1168,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="mosaic_thumb_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="mosaic_thumb_gal_title_font_color" id="mosaic_thumb_gal_title_font_color" value="<?php echo $row->mosaic_thumb_gal_title_font_color; ?>" class="color" />
+											<input type="text" name="mosaic_thumb_gal_title_font_color" id="mosaic_thumb_gal_title_font_color" value="<?php echo $row->mosaic_thumb_gal_title_font_color; ?>" class="jscolor" />
 										  </td>
 										</tr>
                     <tr>
@@ -1225,7 +1234,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_cont_bg_color"><?php echo __('Background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_cont_bg_color" id="slideshow_cont_bg_color" value="<?php echo $row->slideshow_cont_bg_color; ?>" class="color"/>
+										<input type="text" name="slideshow_cont_bg_color" id="slideshow_cont_bg_color" value="<?php echo $row->slideshow_cont_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1243,7 +1252,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_rl_btn_color"><?php echo __('Buttons color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_rl_btn_color" id="slideshow_rl_btn_color" value="<?php echo $row->slideshow_rl_btn_color; ?>" class="color"/>
+										<input type="text" name="slideshow_rl_btn_color" id="slideshow_rl_btn_color" value="<?php echo $row->slideshow_rl_btn_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1256,7 +1265,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_close_rl_btn_hover_color"><?php echo __('Buttons hover color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_close_rl_btn_hover_color" id="slideshow_close_rl_btn_hover_color" value="<?php echo $row->slideshow_close_rl_btn_hover_color; ?>" class="color"/>
+										<input type="text" name="slideshow_close_rl_btn_hover_color" id="slideshow_close_rl_btn_hover_color" value="<?php echo $row->slideshow_close_rl_btn_hover_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1274,7 +1283,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_rl_btn_bg_color"><?php echo __('Right, left buttons background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_rl_btn_bg_color" id="slideshow_rl_btn_bg_color" value="<?php echo $row->slideshow_rl_btn_bg_color; ?>" class="color"/>
+										<input type="text" name="slideshow_rl_btn_bg_color" id="slideshow_rl_btn_bg_color" value="<?php echo $row->slideshow_rl_btn_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1300,7 +1309,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_rl_btn_border_color"><?php echo __('Right, left buttons border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_rl_btn_border_color" id="slideshow_rl_btn_border_color" value="<?php echo $row->slideshow_rl_btn_border_color; ?>" class="color"/>
+										<input type="text" name="slideshow_rl_btn_border_color" id="slideshow_rl_btn_border_color" value="<?php echo $row->slideshow_rl_btn_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1383,7 +1392,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_filmstrip_thumb_border_color"><?php echo __('Filmstrip border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_filmstrip_thumb_border_color" id="slideshow_filmstrip_thumb_border_color" value="<?php echo $row->slideshow_filmstrip_thumb_border_color; ?>" class="color"/>
+										<input type="text" name="slideshow_filmstrip_thumb_border_color" id="slideshow_filmstrip_thumb_border_color" value="<?php echo $row->slideshow_filmstrip_thumb_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1402,7 +1411,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_filmstrip_thumb_active_border_color"><?php echo __('Filmstrip active border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_filmstrip_thumb_active_border_color" id="slideshow_filmstrip_thumb_active_border_color" value="<?php echo $row->slideshow_filmstrip_thumb_active_border_color; ?>" class="color"/>
+										<input type="text" name="slideshow_filmstrip_thumb_active_border_color" id="slideshow_filmstrip_thumb_active_border_color" value="<?php echo $row->slideshow_filmstrip_thumb_active_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="tr_appWidth">
@@ -1415,13 +1424,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_filmstrip_rl_bg_color"><?php echo __('Filmstrip right, left buttons background color: ', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="slideshow_filmstrip_rl_bg_color" id="slideshow_filmstrip_rl_bg_color" value="<?php echo $row->slideshow_filmstrip_rl_bg_color; ?>" class="color"/>
+										<input type="text" name="slideshow_filmstrip_rl_bg_color" id="slideshow_filmstrip_rl_bg_color" value="<?php echo $row->slideshow_filmstrip_rl_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
 									  <td class="spider_label"><label for="slideshow_filmstrip_rl_btn_color"><?php echo __('Filmstrip right, left buttons color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_filmstrip_rl_btn_color" id="slideshow_filmstrip_rl_btn_color" value="<?php echo $row->slideshow_filmstrip_rl_btn_color; ?>" class="color"/>
+										<input type="text" name="slideshow_filmstrip_rl_btn_color" id="slideshow_filmstrip_rl_btn_color" value="<?php echo $row->slideshow_filmstrip_rl_btn_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1452,7 +1461,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_dots_background_color"><?php echo __('Slider bullet background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_dots_background_color" id="slideshow_dots_background_color" value="<?php echo $row->slideshow_dots_background_color; ?>" class="color"/>
+										<input type="text" name="slideshow_dots_background_color" id="slideshow_dots_background_color" value="<?php echo $row->slideshow_dots_background_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1464,7 +1473,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_dots_active_background_color"><?php echo __('Slider bullet active background color: ', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="slideshow_dots_active_background_color" id="slideshow_dots_active_background_color" value="<?php echo $row->slideshow_dots_active_background_color; ?>" class="color"/>
+										<input type="text" name="slideshow_dots_active_background_color" id="slideshow_dots_active_background_color" value="<?php echo $row->slideshow_dots_active_background_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1476,7 +1485,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_dots_active_border_color"><?php echo __('Slider bullet active border color: ', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="slideshow_dots_active_border_color" id="slideshow_dots_active_border_color" value="<?php echo $row->slideshow_dots_active_border_color; ?>" class="color"/>
+										<input type="text" name="slideshow_dots_active_border_color" id="slideshow_dots_active_border_color" value="<?php echo $row->slideshow_dots_active_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 								  </tbody>
@@ -1492,7 +1501,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_title_background_color"><?php echo __('Title background color: ', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="slideshow_title_background_color" id="slideshow_title_background_color" value="<?php echo $row->slideshow_title_background_color; ?>" class="color"/>
+										<input type="text" name="slideshow_title_background_color" id="slideshow_title_background_color" value="<?php echo $row->slideshow_title_background_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1525,7 +1534,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_title_color"><?php echo __('Title color: ', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="slideshow_title_color" id="slideshow_title_color" value="<?php echo $row->slideshow_title_color; ?>" class="color"/>
+										<input type="text" name="slideshow_title_color" id="slideshow_title_color" value="<?php echo $row->slideshow_title_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
                   <tr>
@@ -1535,7 +1544,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_description_background_color"><?php echo __('Description background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_description_background_color" id="slideshow_description_background_color" value="<?php echo $row->slideshow_description_background_color; ?>" class="color"/>
+										<input type="text" name="slideshow_description_background_color" id="slideshow_description_background_color" value="<?php echo $row->slideshow_description_background_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -1568,7 +1577,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="slideshow_description_color"><?php echo __('Description color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="slideshow_description_color" id="slideshow_description_color" value="<?php echo $row->slideshow_description_color; ?>" class="color"/>
+										<input type="text" name="slideshow_description_color" id="slideshow_description_color" value="<?php echo $row->slideshow_description_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
                   <tr>
@@ -1599,7 +1608,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="image_browser_full_bg_color"><?php echo __('Full background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="image_browser_full_bg_color" id="image_browser_full_bg_color" value="<?php echo $row->image_browser_full_bg_color; ?>" class="color" />
+										<input type="text" name="image_browser_full_bg_color" id="image_browser_full_bg_color" value="<?php echo $row->image_browser_full_bg_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -1639,7 +1648,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="image_browser_full_border_color"><?php echo __('Full border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="image_browser_full_border_color" id="image_browser_full_border_color" value="<?php echo $row->image_browser_full_border_color; ?>" class="color" />
+										<input type="text" name="image_browser_full_border_color" id="image_browser_full_border_color" value="<?php echo $row->image_browser_full_border_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 								  </tbody>
@@ -1703,7 +1712,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="image_browser_border_color"><?php echo __('Border color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="image_browser_border_color" id="image_browser_border_color" value="<?php echo $row->image_browser_border_color; ?>" class="color" />
+											<input type="text" name="image_browser_border_color" id="image_browser_border_color" value="<?php echo $row->image_browser_border_color; ?>" class="jscolor" />
 										  </td>
 										</tr>
 										<tr>
@@ -1716,7 +1725,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="image_browser_bg_color"><?php echo __('Background color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="image_browser_bg_color" id="image_browser_bg_color" value="<?php echo $row->image_browser_bg_color; ?>" class="color" />
+											<input type="text" name="image_browser_bg_color" id="image_browser_bg_color" value="<?php echo $row->image_browser_bg_color; ?>" class="jscolor" />
 										  </td>
 										</tr>
 										<tr>
@@ -1775,7 +1784,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="image_browser_img_font_color"><?php echo __('Font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="image_browser_img_font_color" id="image_browser_img_font_color" value="<?php echo $row->image_browser_img_font_color; ?>" class="color" />
+										<input type="text" name="image_browser_img_font_color" id="image_browser_img_font_color" value="<?php echo $row->image_browser_img_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -1819,7 +1828,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="image_browser_image_description_border_color"><?php echo __('Description border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="image_browser_image_description_border_color" id="image_browser_image_description_border_color" value="<?php echo $row->image_browser_image_description_border_color; ?>" class="color" />
+										<input type="text" name="image_browser_image_description_border_color" id="image_browser_image_description_border_color" value="<?php echo $row->image_browser_image_description_border_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -1832,7 +1841,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="image_browser_image_description_bg_color"><?php echo __('Description background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="image_browser_image_description_bg_color" id="image_browser_image_description_bg_color" value="<?php echo $row->image_browser_image_description_bg_color; ?>" class="color" />
+										<input type="text" name="image_browser_image_description_bg_color" id="image_browser_image_description_bg_color" value="<?php echo $row->image_browser_image_description_bg_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -1845,7 +1854,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="image_browser_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="image_browser_gal_title_font_color" id="image_browser_gal_title_font_color" value="<?php echo $row->image_browser_gal_title_font_color; ?>" class="color" />
+										<input type="text" name="image_browser_gal_title_font_color" id="image_browser_gal_title_font_color" value="<?php echo $row->image_browser_gal_title_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -1954,7 +1963,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="album_compact_thumb_border_color"><?php echo __('Border color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="album_compact_thumb_border_color" id="album_compact_thumb_border_color" value="<?php echo $row->album_compact_thumb_border_color; ?>" class="color" />
+											<input type="text" name="album_compact_thumb_border_color" id="album_compact_thumb_border_color" value="<?php echo $row->album_compact_thumb_border_color; ?>" class="jscolor" />
 										  </td>
 										</tr>
 										<tr>
@@ -2014,7 +2023,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_compact_thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_compact_thumb_bg_color" id="album_compact_thumb_bg_color" value="<?php echo $row->album_compact_thumb_bg_color; ?>" class="color" />
+										<input type="text" name="album_compact_thumb_bg_color" id="album_compact_thumb_bg_color" value="<?php echo $row->album_compact_thumb_bg_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -2034,7 +2043,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_compact_thumbs_bg_color"><?php echo __('Full background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_compact_thumbs_bg_color" id="album_compact_thumbs_bg_color" value="<?php echo $row->album_compact_thumbs_bg_color; ?>" class="color" />
+										<input type="text" name="album_compact_thumbs_bg_color" id="album_compact_thumbs_bg_color" value="<?php echo $row->album_compact_thumbs_bg_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -2086,13 +2095,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_compact_title_font_color"><?php echo __('Title font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_compact_title_font_color" id="album_compact_title_font_color" value="<?php echo $row->album_compact_title_font_color; ?>" class="color" />
+										<input type="text" name="album_compact_title_font_color" id="album_compact_title_font_color" value="<?php echo $row->album_compact_title_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
                     <td class="spider_label"><label for="album_compact_title_font_color_hover"><?php echo __('Title font color (Show on hover):', BWG()->prefix); ?> </label></td>
                     <td>
-                      <input type="text" name="album_compact_title_font_color_hover" id="album_compact_title_font_color_hover" value="<?php echo $row->album_compact_title_font_color_hover; ?>" class="color" />
+                      <input type="text" name="album_compact_title_font_color_hover" id="album_compact_title_font_color_hover" value="<?php echo $row->album_compact_title_font_color_hover; ?>" class="jscolor" />
                     </td>
                   </tr>
                   <tr>
@@ -2136,7 +2145,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_compact_back_font_color"><?php echo __('Back Font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_compact_back_font_color" id="album_compact_back_font_color" value="<?php echo $row->album_compact_back_font_color; ?>" class="color" />
+										<input type="text" name="album_compact_back_font_color" id="album_compact_back_font_color" value="<?php echo $row->album_compact_back_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -2173,7 +2182,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_compact_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_compact_gal_title_font_color" id="album_compact_gal_title_font_color" value="<?php echo $row->album_compact_gal_title_font_color; ?>" class="color" />
+										<input type="text" name="album_compact_gal_title_font_color" id="album_compact_gal_title_font_color" value="<?php echo $row->album_compact_gal_title_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -2271,7 +2280,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_extended_thumb_border_color"><?php echo __('Thumbnail border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_extended_thumb_border_color" id="album_extended_thumb_border_color" value="<?php echo $row->album_extended_thumb_border_color; ?>" class="color"/>
+										<input type="text" name="album_extended_thumb_border_color" id="album_extended_thumb_border_color" value="<?php echo $row->album_extended_thumb_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -2342,13 +2351,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_extended_thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_extended_thumb_bg_color" id="album_extended_thumb_bg_color" value="<?php echo $row->album_extended_thumb_bg_color; ?>" class="color"/>
+										<input type="text" name="album_extended_thumb_bg_color" id="album_extended_thumb_bg_color" value="<?php echo $row->album_extended_thumb_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
 									  <td class="spider_label"><label for="album_extended_thumbs_bg_color"><?php echo __('Thumbnails background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_extended_thumbs_bg_color" id="album_extended_thumbs_bg_color" value="<?php echo $row->album_extended_thumbs_bg_color; ?>" class="color"/>
+										<input type="text" name="album_extended_thumbs_bg_color" id="album_extended_thumbs_bg_color" value="<?php echo $row->album_extended_thumbs_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -2379,7 +2388,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="album_extended_thumb_div_bg_color"><?php echo __('Thumbnail div background color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="album_extended_thumb_div_bg_color" id="album_extended_thumb_div_bg_color" value="<?php echo $row->album_extended_thumb_div_bg_color; ?>" class="color"/>
+											<input type="text" name="album_extended_thumb_div_bg_color" id="album_extended_thumb_div_bg_color" value="<?php echo $row->album_extended_thumb_div_bg_color; ?>" class="jscolor"/>
 										  </td>
 										</tr>
 										<tr>
@@ -2406,7 +2415,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="album_extended_thumb_div_border_color"><?php echo __('Thumbnail div border color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="album_extended_thumb_div_border_color" id="album_extended_thumb_div_border_color" value="<?php echo $row->album_extended_thumb_div_border_color; ?>" class="color"/>
+											<input type="text" name="album_extended_thumb_div_border_color" id="album_extended_thumb_div_border_color" value="<?php echo $row->album_extended_thumb_div_border_color; ?>" class="jscolor"/>
 										  </td>
 										</tr>
 										<tr>
@@ -2432,7 +2441,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="album_extended_div_bg_color"><?php echo __('Background color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="album_extended_div_bg_color" id="album_extended_div_bg_color" value="<?php echo $row->album_extended_div_bg_color; ?>" class="color"/>
+											<input type="text" name="album_extended_div_bg_color" id="album_extended_div_bg_color" value="<?php echo $row->album_extended_div_bg_color; ?>" class="jscolor"/>
 										  </td>
 										</tr>
 										<tr>
@@ -2472,7 +2481,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="album_extended_div_separator_color"><?php echo __('Separator color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="album_extended_div_separator_color" id="album_extended_div_separator_color" value="<?php echo $row->album_extended_div_separator_color; ?>" class="color"/>
+											<input type="text" name="album_extended_div_separator_color" id="album_extended_div_separator_color" value="<?php echo $row->album_extended_div_separator_color; ?>" class="jscolor"/>
 										  </td>
 										</tr>
 										<tr>
@@ -2491,7 +2500,7 @@ class ThemesView_bwg extends AdminView_bwg {
 										<tr>
 										  <td class="spider_label"><label for="album_extended_back_font_color"><?php echo __('Back font color:', BWG()->prefix); ?> </label></td>
 										  <td>
-											<input type="text" name="album_extended_back_font_color" id="album_extended_back_font_color" value="<?php echo $row->album_extended_back_font_color; ?>" class="color"/>
+											<input type="text" name="album_extended_back_font_color" id="album_extended_back_font_color" value="<?php echo $row->album_extended_back_font_color; ?>" class="jscolor"/>
 										  </td>
 										</tr>
                     <tr>
@@ -2566,7 +2575,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="album_extended_text_div_border_color"><?php echo __('Text border color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="album_extended_text_div_border_color" id="album_extended_text_div_border_color" value="<?php echo $row->album_extended_text_div_border_color; ?>" class="color"/>
+									<input type="text" name="album_extended_text_div_border_color" id="album_extended_text_div_border_color" value="<?php echo $row->album_extended_text_div_border_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -2579,7 +2588,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="album_extended_text_div_bg_color"><?php echo __('Text background color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="album_extended_text_div_bg_color" id="album_extended_text_div_bg_color" value="<?php echo $row->album_extended_text_div_bg_color; ?>" class="color"/>
+									<input type="text" name="album_extended_text_div_bg_color" id="album_extended_text_div_bg_color" value="<?php echo $row->album_extended_text_div_bg_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -2618,7 +2627,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="album_extended_title_span_border_color"><?php echo __('Title border color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="album_extended_title_span_border_color" id="album_extended_title_span_border_color" value="<?php echo $row->album_extended_title_span_border_color; ?>" class="color"/>
+									<input type="text" name="album_extended_title_span_border_color" id="album_extended_title_span_border_color" value="<?php echo $row->album_extended_title_span_border_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -2630,7 +2639,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="album_extended_title_font_color"><?php echo __('Title font color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="album_extended_title_font_color" id="album_extended_title_font_color" value="<?php echo $row->album_extended_title_font_color; ?>" class="color"/>
+									<input type="text" name="album_extended_title_font_color" id="album_extended_title_font_color" value="<?php echo $row->album_extended_title_font_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
                 <tr>
@@ -2681,7 +2690,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="album_extended_desc_span_border_color"><?php echo __('Description border color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="album_extended_desc_span_border_color" id="album_extended_desc_span_border_color" value="<?php echo $row->album_extended_desc_span_border_color; ?>" class="color"/>
+									<input type="text" name="album_extended_desc_span_border_color" id="album_extended_desc_span_border_color" value="<?php echo $row->album_extended_desc_span_border_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -2693,7 +2702,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="album_extended_desc_font_color"><?php echo __('Description font color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="album_extended_desc_font_color" id="album_extended_desc_font_color" value="<?php echo $row->album_extended_desc_font_color; ?>" class="color"/>
+									<input type="text" name="album_extended_desc_font_color" id="album_extended_desc_font_color" value="<?php echo $row->album_extended_desc_font_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
                 <tr>
@@ -2723,7 +2732,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="album_extended_desc_more_color"><?php echo __('Description more color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="album_extended_desc_more_color" id="album_extended_desc_more_color" value="<?php echo $row->album_extended_desc_more_color; ?>" class="color"/>
+									<input type="text" name="album_extended_desc_more_color" id="album_extended_desc_more_color" value="<?php echo $row->album_extended_desc_more_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 												<tr>
@@ -2735,7 +2744,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="album_extended_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="album_extended_gal_title_font_color" id="album_extended_gal_title_font_color" value="<?php echo $row->album_extended_gal_title_font_color; ?>" class="color" />
+									<input type="text" name="album_extended_gal_title_font_color" id="album_extended_gal_title_font_color" value="<?php echo $row->album_extended_gal_title_font_color; ?>" class="jscolor" />
 								  </td>
 								</tr>
                 <tr>
@@ -2838,7 +2847,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_masonry_thumb_border_color"><?php echo __('Border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_masonry_thumb_border_color" id="album_masonry_thumb_border_color" value="<?php echo $row->album_masonry_thumb_border_color; ?>" class="color" />
+										<input type="text" name="album_masonry_thumb_border_color" id="album_masonry_thumb_border_color" value="<?php echo $row->album_masonry_thumb_border_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -2893,7 +2902,7 @@ class ThemesView_bwg extends AdminView_bwg {
                       <label for="album_masonry_thumb_bg_color"><?php echo __('Thumbnail background color:', BWG()->prefix); ?> </label>
                     </td>
                     <td>
-                      <input type="text" name="album_masonry_thumb_bg_color" id="album_masonry_thumb_bg_color" value="<?php echo $row->album_masonry_thumb_bg_color; ?>" class="color" />
+                      <input type="text" name="album_masonry_thumb_bg_color" id="album_masonry_thumb_bg_color" value="<?php echo $row->album_masonry_thumb_bg_color; ?>" class="jscolor" />
                     </td>
                   </tr>
 									<tr>
@@ -2906,7 +2915,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_masonry_thumbs_bg_color"><?php echo __('Full background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_masonry_thumbs_bg_color" id="album_masonry_thumbs_bg_color" value="<?php echo $row->album_masonry_thumbs_bg_color; ?>" class="color" />
+										<input type="text" name="album_masonry_thumbs_bg_color" id="album_masonry_thumbs_bg_color" value="<?php echo $row->album_masonry_thumbs_bg_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -2949,13 +2958,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_masonry_title_font_color"><?php echo __('Title font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_masonry_title_font_color" id="album_masonry_title_font_color" value="<?php echo $row->album_masonry_title_font_color; ?>" class="color" />
+										<input type="text" name="album_masonry_title_font_color" id="album_masonry_title_font_color" value="<?php echo $row->album_masonry_title_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
                     <td class="spider_label"><label for="album_masonry_thumb_title_font_color_hover"><?php echo __('Title font color (Show on hover):', BWG()->prefix); ?> </label></td>
                     <td>
-                      <input type="text" name="album_masonry_thumb_title_font_color_hover" id="album_masonry_thumb_title_font_color_hover" value="<?php echo $row->album_masonry_thumb_title_font_color_hover; ?>" class="color" />
+                      <input type="text" name="album_masonry_thumb_title_font_color_hover" id="album_masonry_thumb_title_font_color_hover" value="<?php echo $row->album_masonry_thumb_title_font_color_hover; ?>" class="jscolor" />
                     </td>
                   </tr>
                   <tr>
@@ -2992,7 +3001,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_masonry_back_font_color"><?php echo __('Back Font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_masonry_back_font_color" id="album_masonry_back_font_color" value="<?php echo $row->album_masonry_back_font_color; ?>" class="color" />
+										<input type="text" name="album_masonry_back_font_color" id="album_masonry_back_font_color" value="<?php echo $row->album_masonry_back_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -3029,7 +3038,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="album_masonry_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="album_masonry_gal_title_font_color" id="album_masonry_gal_title_font_color" value="<?php echo $row->album_masonry_gal_title_font_color; ?>" class="color" />
+										<input type="text" name="album_masonry_gal_title_font_color" id="album_masonry_gal_title_font_color" value="<?php echo $row->album_masonry_gal_title_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -3095,7 +3104,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="blog_style_bg_color"><?php echo __('Background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="blog_style_bg_color" id="blog_style_bg_color" value="<?php echo $row->blog_style_bg_color; ?>" class="color"/>
+										<input type="text" name="blog_style_bg_color" id="blog_style_bg_color" value="<?php echo $row->blog_style_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3163,7 +3172,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="blog_style_img_font_color"><?php echo __('Font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="blog_style_img_font_color" id="blog_style_img_font_color" value="<?php echo $row->blog_style_img_font_color; ?>" class="color"/>
+										<input type="text" name="blog_style_img_font_color" id="blog_style_img_font_color" value="<?php echo $row->blog_style_img_font_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3189,7 +3198,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="blog_style_border_color"><?php echo __('Border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="blog_style_border_color" id="blog_style_border_color" value="<?php echo $row->blog_style_border_color; ?>" class="color" />
+										<input type="text" name="blog_style_border_color" id="blog_style_border_color" value="<?php echo $row->blog_style_border_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -3225,7 +3234,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="blog_style_share_buttons_color"><?php echo __('Buttons color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="blog_style_share_buttons_color" id="blog_style_share_buttons_color" value="<?php echo $row->blog_style_share_buttons_color; ?>" class="color"/>
+										<input type="text" name="blog_style_share_buttons_color" id="blog_style_share_buttons_color" value="<?php echo $row->blog_style_share_buttons_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 								   <tr>
@@ -3251,7 +3260,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="blog_style_share_buttons_border_color"><?php echo __('Buttons and title border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="blog_style_share_buttons_border_color" id="blog_style_share_buttons_border_color" value="<?php echo $row->blog_style_share_buttons_border_color; ?>" class="color"/>
+										<input type="text" name="blog_style_share_buttons_border_color" id="blog_style_share_buttons_border_color" value="<?php echo $row->blog_style_share_buttons_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3264,7 +3273,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="blog_style_share_buttons_bg_color"><?php echo __('Buttons and title background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="blog_style_share_buttons_bg_color" id="blog_style_share_buttons_bg_color" value="<?php echo $row->blog_style_share_buttons_bg_color; ?>" class="color"/>
+										<input type="text" name="blog_style_share_buttons_bg_color" id="blog_style_share_buttons_bg_color" value="<?php echo $row->blog_style_share_buttons_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3298,7 +3307,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="blog_style_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="blog_style_gal_title_font_color" id="blog_style_gal_title_font_color" value="<?php echo $row->blog_style_gal_title_font_color; ?>" class="color" />
+										<input type="text" name="blog_style_gal_title_font_color" id="blog_style_gal_title_font_color" value="<?php echo $row->blog_style_gal_title_font_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
                   <tr>
@@ -3364,7 +3373,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_overlay_bg">
 									  <td class="spider_label"><label for="lightbox_overlay_bg_color"><?php echo __('Overlay background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_overlay_bg_color" id="lightbox_overlay_bg_color" value="<?php echo $row->lightbox_overlay_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_overlay_bg_color" id="lightbox_overlay_bg_color" value="<?php echo $row->lightbox_overlay_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_overlay">
@@ -3377,7 +3386,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_bg">
 									  <td class="spider_label"><label for="lightbox_bg_color"><?php echo __('Lightbox background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_bg_color" id="lightbox_bg_color" value="<?php echo $row->lightbox_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_bg_color" id="lightbox_bg_color" value="<?php echo $row->lightbox_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_transparency">
@@ -3417,7 +3426,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_cntrl8">
 									  <td class="spider_label"><label for="lightbox_ctrl_cont_bg_color"><?php echo __('Control buttons background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_ctrl_cont_bg_color" id="lightbox_ctrl_cont_bg_color" value="<?php echo $row->lightbox_ctrl_cont_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_ctrl_cont_bg_color" id="lightbox_ctrl_cont_bg_color" value="<?php echo $row->lightbox_ctrl_cont_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_cntrl5">
@@ -3451,7 +3460,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_cntrl7">
 									  <td class="spider_label"><label for="lightbox_ctrl_btn_color"><?php echo __('Control buttons color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_ctrl_btn_color" id="lightbox_ctrl_btn_color" value="<?php echo $row->lightbox_ctrl_btn_color; ?>" class="color"/>
+										<input type="text" name="lightbox_ctrl_btn_color" id="lightbox_ctrl_btn_color" value="<?php echo $row->lightbox_ctrl_btn_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_cntrl4">
@@ -3504,7 +3513,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_close13">
 									  <td class="spider_label"><label for="lightbox_close_btn_border_color"><?php echo __('Close button border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_close_btn_border_color" id="lightbox_close_btn_border_color" value="<?php echo $row->lightbox_close_btn_border_color; ?>" class="color"/>
+										<input type="text" name="lightbox_close_btn_border_color" id="lightbox_close_btn_border_color" value="<?php echo $row->lightbox_close_btn_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_close3">
@@ -3517,7 +3526,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_close11">
 									  <td class="spider_label"><label for="lightbox_close_btn_bg_color"><?php echo __('Close button background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_close_btn_bg_color" id="lightbox_close_btn_bg_color" value="<?php echo $row->lightbox_close_btn_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_close_btn_bg_color" id="lightbox_close_btn_bg_color" value="<?php echo $row->lightbox_close_btn_bg_color; ?>" class="jscolor"/>
                     <div class="spider_description"><?php echo __('The option does not apply to Full-width lightbox.', BWG()->prefix); ?></div>
                     </td>
 									</tr>
@@ -3564,19 +3573,19 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_close14">
 									  <td class="spider_label"><label for="lightbox_close_btn_color"><?php echo __('Close button color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_close_btn_color" id="lightbox_close_btn_color" value="<?php echo $row->lightbox_close_btn_color; ?>" class="color"/>
+										<input type="text" name="lightbox_close_btn_color" id="lightbox_close_btn_color" value="<?php echo $row->lightbox_close_btn_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_close10">
 									  <td class="spider_label"><label for="lightbox_close_btn_full_color"><?php echo __('Fullscreen close button color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_close_btn_full_color" id="lightbox_close_btn_full_color" value="<?php echo $row->lightbox_close_btn_full_color; ?>" class="color"/>
+										<input type="text" name="lightbox_close_btn_full_color" id="lightbox_close_btn_full_color" value="<?php echo $row->lightbox_close_btn_full_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_comment24">
 									  <td class="spider_label"><label for="lightbox_comment_share_button_color"><?php echo __('Share buttons color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_comment_share_button_color" id="lightbox_comment_share_button_color" value="<?php echo $row->lightbox_comment_share_button_color; ?>" class="color" />
+										<input type="text" name="lightbox_comment_share_button_color" id="lightbox_comment_share_button_color" value="<?php echo $row->lightbox_comment_share_button_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 								  </tbody>
@@ -3606,7 +3615,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_right_left7">
 									  <td class="spider_label"><label for="lightbox_rl_btn_bg_color"><?php echo __('Right, left buttons background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_rl_btn_bg_color" id="lightbox_rl_btn_bg_color" value="<?php echo $row->lightbox_rl_btn_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_rl_btn_bg_color" id="lightbox_rl_btn_bg_color" value="<?php echo $row->lightbox_rl_btn_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3643,13 +3652,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_close15">
 									  <td class="spider_label"><label for="lightbox_close_rl_btn_hover_color"><?php echo __('Right, left, close buttons hover color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_close_rl_btn_hover_color" id="lightbox_close_rl_btn_hover_color" value="<?php echo $row->lightbox_close_rl_btn_hover_color; ?>" class="color" />
+										<input type="text" name="lightbox_close_rl_btn_hover_color" id="lightbox_close_rl_btn_hover_color" value="<?php echo $row->lightbox_close_rl_btn_hover_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr id="lightbox_right_left10">
 									  <td class="spider_label"><label for="lightbox_rl_btn_color"><?php echo __('Right, left buttons color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_rl_btn_color" id="lightbox_rl_btn_color" value="<?php echo $row->lightbox_rl_btn_color; ?>" class="color"/>
+										<input type="text" name="lightbox_rl_btn_color" id="lightbox_rl_btn_color" value="<?php echo $row->lightbox_rl_btn_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_right_left1">
@@ -3682,7 +3691,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_right_left9">
 									  <td class="spider_label"><label for="lightbox_rl_btn_border_color"><?php echo __('Right, left buttons border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_rl_btn_border_color" id="lightbox_rl_btn_border_color" value="<?php echo $row->lightbox_rl_btn_border_color; ?>" class="color"/>
+										<input type="text" name="lightbox_rl_btn_border_color" id="lightbox_rl_btn_border_color" value="<?php echo $row->lightbox_rl_btn_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_filmstrip12">
@@ -3726,7 +3735,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_filmstrip10">
 									  <td class="spider_label"><label for="lightbox_filmstrip_thumb_border_color"><?php echo __('Filmstrip thumbnail border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_filmstrip_thumb_border_color" id="lightbox_filmstrip_thumb_border_color" value="<?php echo $row->lightbox_filmstrip_thumb_border_color; ?>" class="color" />
+										<input type="text" name="lightbox_filmstrip_thumb_border_color" id="lightbox_filmstrip_thumb_border_color" value="<?php echo $row->lightbox_filmstrip_thumb_border_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr id="lightbox_filmstrip4">
@@ -3745,7 +3754,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_filmstrip11">
 									  <td class="spider_label"> <label for="lightbox_filmstrip_thumb_active_border_color"><?php echo __('Filmstrip thumbnail active border color:', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="lightbox_filmstrip_thumb_active_border_color" id="lightbox_filmstrip_thumb_active_border_color" value="<?php echo $row->lightbox_filmstrip_thumb_active_border_color; ?>" class="color"/>
+										<input type="text" name="lightbox_filmstrip_thumb_active_border_color" id="lightbox_filmstrip_thumb_active_border_color" value="<?php echo $row->lightbox_filmstrip_thumb_active_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_filmstrip5">
@@ -3764,13 +3773,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_filmstrip7">
 									  <td class="spider_label"><label for="lightbox_filmstrip_rl_btn_color"><?php echo __('Filmstrip right, left buttons color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_filmstrip_rl_btn_color" id="lightbox_filmstrip_rl_btn_color" value="<?php echo $row->lightbox_filmstrip_rl_btn_color; ?>" class="color"/>
+										<input type="text" name="lightbox_filmstrip_rl_btn_color" id="lightbox_filmstrip_rl_btn_color" value="<?php echo $row->lightbox_filmstrip_rl_btn_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_filmstrip8">
 									  <td class="spider_label"><label for="lightbox_filmstrip_rl_bg_color"><?php echo __('Filmstrip right, left button background color:', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="lightbox_filmstrip_rl_bg_color" id="lightbox_filmstrip_rl_bg_color" value="<?php echo $row->lightbox_filmstrip_rl_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_filmstrip_rl_bg_color" id="lightbox_filmstrip_rl_bg_color" value="<?php echo $row->lightbox_filmstrip_rl_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3813,13 +3822,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="lightbox_rate_color"><?php echo __('Rating color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_rate_color" id="lightbox_rate_color" value="<?php echo $row->lightbox_rate_color; ?>" class="color"/>
+										<input type="text" name="lightbox_rate_color" id="lightbox_rate_color" value="<?php echo $row->lightbox_rate_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
 									  <td class="spider_label"><label for="lightbox_rate_hover_color"><?php echo __('Rating hover color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_rate_hover_color" id="lightbox_rate_hover_color" value="<?php echo $row->lightbox_rate_hover_color; ?>" class="color"/>
+										<input type="text" name="lightbox_rate_hover_color" id="lightbox_rate_hover_color" value="<?php echo $row->lightbox_rate_hover_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3867,7 +3876,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="lightbox_hit_bg_color"><?php echo __('Hit counter background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_hit_bg_color" id="lightbox_hit_bg_color" value="<?php echo $row->lightbox_hit_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_hit_bg_color" id="lightbox_hit_bg_color" value="<?php echo $row->lightbox_hit_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3900,7 +3909,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="lightbox_hit_border_color"><?php echo __('Hit counter border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_hit_border_color" id="lightbox_hit_border_color" value="<?php echo $row->lightbox_hit_border_color; ?>" class="color"/>
+										<input type="text" name="lightbox_hit_border_color" id="lightbox_hit_border_color" value="<?php echo $row->lightbox_hit_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -3927,7 +3936,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="lightbox_hit_color"><?php echo __('Hit counter font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_hit_color" id="lightbox_hit_color" value="<?php echo $row->lightbox_hit_color; ?>" class="color"/>
+										<input type="text" name="lightbox_hit_color" id="lightbox_hit_color" value="<?php echo $row->lightbox_hit_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
                   <tr>
@@ -3991,7 +4000,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="lightbox_info_bg_color"><?php echo __('Info background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_info_bg_color" id="lightbox_info_bg_color" value="<?php echo $row->lightbox_info_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_info_bg_color" id="lightbox_info_bg_color" value="<?php echo $row->lightbox_info_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -4024,7 +4033,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="lightbox_info_border_color"><?php echo __('Info border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_info_border_color" id="lightbox_info_border_color" value="<?php echo $row->lightbox_info_border_color; ?>" class="color"/>
+										<input type="text" name="lightbox_info_border_color" id="lightbox_info_border_color" value="<?php echo $row->lightbox_info_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -4051,7 +4060,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="lightbox_title_color"><?php echo __('Title font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_title_color" id="lightbox_title_color" value="<?php echo $row->lightbox_title_color; ?>" class="color"/>
+										<input type="text" name="lightbox_title_color" id="lightbox_title_color" value="<?php echo $row->lightbox_title_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
                   <tr>
@@ -4082,7 +4091,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="lightbox_description_color"><?php echo __('Description font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_description_color" id="lightbox_description_color" value="<?php echo $row->lightbox_description_color; ?>" class="color"/>
+										<input type="text" name="lightbox_description_color" id="lightbox_description_color" value="<?php echo $row->lightbox_description_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
                   <tr>
@@ -4128,7 +4137,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_comment13">
 									  <td class="spider_label"><label for="lightbox_comment_bg_color"><?php echo __('Comments background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_comment_bg_color" id="lightbox_comment_bg_color" value="<?php echo $row->lightbox_comment_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_comment_bg_color" id="lightbox_comment_bg_color" value="<?php echo $row->lightbox_comment_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_comment2">
@@ -4140,7 +4149,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_comment14">
 									  <td class="spider_label"><label for="lightbox_comment_font_color"><?php echo __('Comments font color:', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="lightbox_comment_font_color" id="lightbox_comment_font_color" value="<?php echo $row->lightbox_comment_font_color; ?>" class="color"/>
+										<input type="text" name="lightbox_comment_font_color" id="lightbox_comment_font_color" value="<?php echo $row->lightbox_comment_font_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_comment15">
@@ -4189,7 +4198,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_comment20">
 									  <td class="spider_label"><label for="lightbox_comment_input_border_color"><?php echo __('Comment input border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_comment_input_border_color" id="lightbox_comment_input_border_color" value="<?php echo $row->lightbox_comment_input_border_color; ?>" class="color"/>
+										<input type="text" name="lightbox_comment_input_border_color" id="lightbox_comment_input_border_color" value="<?php echo $row->lightbox_comment_input_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_comment7">
@@ -4208,13 +4217,13 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_comment19">
 									  <td class="spider_label"><label for="lightbox_comment_input_bg_color"><?php echo __('Comment input background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_comment_input_bg_color" id="lightbox_comment_input_bg_color" value="<?php echo $row->lightbox_comment_input_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_comment_input_bg_color" id="lightbox_comment_input_bg_color" value="<?php echo $row->lightbox_comment_input_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_comment16">
 									  <td class="spider_label"><label for="lightbox_comment_button_bg_color"><?php echo __('Comment button background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_comment_button_bg_color" id="lightbox_comment_button_bg_color" value="<?php echo $row->lightbox_comment_button_bg_color; ?>" class="color"/>
+										<input type="text" name="lightbox_comment_button_bg_color" id="lightbox_comment_button_bg_color" value="<?php echo $row->lightbox_comment_button_bg_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_comment5">
@@ -4247,7 +4256,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_comment17">
 									  <td class="spider_label"><label for="lightbox_comment_button_border_color"><?php echo __('Comment button border color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_comment_button_border_color" id="lightbox_comment_button_border_color" value="<?php echo $row->lightbox_comment_button_border_color; ?>" class="color"/>
+										<input type="text" name="lightbox_comment_button_border_color" id="lightbox_comment_button_border_color" value="<?php echo $row->lightbox_comment_button_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr id="lightbox_comment4">
@@ -4280,7 +4289,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr id="lightbox_comment23">
 									  <td class="spider_label"><label for="lightbox_comment_separator_color"><?php echo __('Comment separator color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="lightbox_comment_separator_color" id="lightbox_comment_separator_color" value="<?php echo $row->lightbox_comment_separator_color; ?>" class="color"/>
+										<input type="text" name="lightbox_comment_separator_color" id="lightbox_comment_separator_color" value="<?php echo $row->lightbox_comment_separator_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 								  </tbody>
@@ -4306,7 +4315,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="page_nav_font_color"><?php echo __('Font color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="page_nav_font_color" id="page_nav_font_color" value="<?php echo $row->page_nav_font_color; ?>" class="color"/>
+										<input type="text" name="page_nav_font_color" id="page_nav_font_color" value="<?php echo $row->page_nav_font_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -4350,7 +4359,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="page_nav_border_color"><?php echo __('Border color:', BWG()->prefix); ?></label></td>
 									  <td>
-										<input type="text" name="page_nav_border_color" id="page_nav_border_color" value="<?php echo $row->page_nav_border_color; ?>" class="color"/>
+										<input type="text" name="page_nav_border_color" id="page_nav_border_color" value="<?php echo $row->page_nav_border_color; ?>" class="jscolor"/>
 									  </td>
 									</tr>
 									<tr>
@@ -4387,7 +4396,7 @@ class ThemesView_bwg extends AdminView_bwg {
 									<tr>
 									  <td class="spider_label"><label for="page_nav_button_bg_color"><?php echo __('Button background color:', BWG()->prefix); ?> </label></td>
 									  <td>
-										<input type="text" name="page_nav_button_bg_color" id="page_nav_button_bg_color" value="<?php echo $row->page_nav_button_bg_color; ?>" class="color" />
+										<input type="text" name="page_nav_button_bg_color" id="page_nav_button_bg_color" value="<?php echo $row->page_nav_button_bg_color; ?>" class="jscolor" />
 									  </td>
 									</tr>
 									<tr>
@@ -4482,7 +4491,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="carousel_cont_bg_color"><?php echo __('Background color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="carousel_cont_bg_color" id="carousel_cont_bg_color" value="<?php echo $row->carousel_cont_bg_color; ?>" class="color"/>
+									<input type="text" name="carousel_cont_bg_color" id="carousel_cont_bg_color" value="<?php echo $row->carousel_cont_bg_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								 <tr>
@@ -4507,7 +4516,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="carousel_rl_btn_color"><?php echo __('Buttons color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="carousel_rl_btn_color" id="carousel_rl_btn_color" value="<?php echo $row->carousel_rl_btn_color; ?>" class="color"/>
+									<input type="text" name="carousel_rl_btn_color" id="carousel_rl_btn_color" value="<?php echo $row->carousel_rl_btn_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -4520,7 +4529,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="carousel_close_rl_btn_hover_color"><?php echo __('Buttons hover color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="carousel_close_rl_btn_hover_color" id="carousel_close_rl_btn_hover_color" value="<?php echo $row->carousel_close_rl_btn_hover_color; ?>" class="color"/>
+									<input type="text" name="carousel_close_rl_btn_hover_color" id="carousel_close_rl_btn_hover_color" value="<?php echo $row->carousel_close_rl_btn_hover_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -4538,7 +4547,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="carousel_rl_btn_bg_color"><?php echo __('Right, left buttons background color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="carousel_rl_btn_bg_color" id="carousel_rl_btn_bg_color" value="<?php echo $row->carousel_rl_btn_bg_color; ?>" class="color"/>
+									<input type="text" name="carousel_rl_btn_bg_color" id="carousel_rl_btn_bg_color" value="<?php echo $row->carousel_rl_btn_bg_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -4564,7 +4573,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="carousel_rl_btn_border_color"><?php echo __('Right, left buttons border color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="carousel_rl_btn_border_color" id="slideshow_rl_btn_border_color" value="<?php echo $row->carousel_rl_btn_border_color; ?>" class="color"/>
+									<input type="text" name="carousel_rl_btn_border_color" id="slideshow_rl_btn_border_color" value="<?php echo $row->carousel_rl_btn_border_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -4629,7 +4638,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								 <tr>
 								  <td class="spider_label"><label for="carousel_feature_border_color"><?php echo __('Image border color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="carousel_feature_border_color" id="carousel_feature_border_color" value="<?php echo $row->carousel_feature_border_color; ?>" class="color"/>
+									<input type="text" name="carousel_feature_border_color" id="carousel_feature_border_color" value="<?php echo $row->carousel_feature_border_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 							  </tbody>
@@ -4645,7 +4654,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="carousel_caption_background_color"><?php echo __('Title background color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="carousel_caption_background_color" id="carousel_caption_background_color" value="<?php echo $row->carousel_caption_background_color; ?>" class="color"/>
+									<input type="text" name="carousel_caption_background_color" id="carousel_caption_background_color" value="<?php echo $row->carousel_caption_background_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 
@@ -4688,7 +4697,7 @@ class ThemesView_bwg extends AdminView_bwg {
 								<tr>
 								  <td class="spider_label"><label for="carousel_caption_p_color"><?php echo __('Title color:', BWG()->prefix); ?> </label></td>
 								  <td>
-									<input type="text" name="carousel_caption_p_color" id="carousel_caption_p_color" value="<?php echo $row->carousel_caption_p_color; ?>" class="color"/>
+									<input type="text" name="carousel_caption_p_color" id="carousel_caption_p_color" value="<?php echo $row->carousel_caption_p_color; ?>" class="jscolor"/>
 								  </td>
 								</tr>
 								<tr>
@@ -4715,7 +4724,7 @@ class ThemesView_bwg extends AdminView_bwg {
                 <tr>
                   <td class="spider_label"><label for="carousel_gal_title_font_color"><?php echo __('Gallery title/description font color:', BWG()->prefix); ?> </label></td>
                   <td>
-                    <input type="text" name="carousel_gal_title_font_color" id="carousel_gal_title_font_color" value="<?php echo $row->carousel_gal_title_font_color; ?>" class="color" />
+                    <input type="text" name="carousel_gal_title_font_color" id="carousel_gal_title_font_color" value="<?php echo $row->carousel_gal_title_font_color; ?>" class="jscolor" />
                   </td>
                 </tr>
                 <tr>
@@ -4771,6 +4780,159 @@ class ThemesView_bwg extends AdminView_bwg {
 				</div>
 			</div>
 		</fieldset>
+			<fieldset id="Tags" class="spider_type_fieldset">
+				<div class="wd-table">
+					<div id="Tags_1" class="wd-table-col wd-table-col-20 wd-table-col-left">
+						<div class="wd-box-section">
+							<div class="wd-box-content">
+								<table style="clear:both;">
+									<tbody>
+									<tr>
+										<td class="spider_label"><label><?php echo __('Tags filter type:', BWG()->prefix); ?> </label></td>
+										<td id="tags_view">
+											<input type="radio" name="tags_view" id="tags_view1" value="1"<?php if ($row->tags_view == "1") echo 'checked="checked"'; ?> />
+												<label for="tags_view1" id="tags_view1_lbl"><?php echo __('Select Box', BWG()->prefix); ?></label>
+											<input type="radio" name="tags_view" id="tags_view0" value="0"<?php if ($row->tags_view == "0") echo 'checked="checked"'; ?> />
+												<label for="tags_view0" id="tags_view0_lbl"><?php echo __('Buttons', BWG()->prefix); ?></label>
+										</td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div id="Tags_2" class="wd-table-col wd-table-col-30">
+						<div class="wd-box-section">
+							<div class="wd-box-content">
+								<table style="clear:both;">
+									<tbody>
+									<tr>
+										<td class="spider_label"><label for="tags_but_font_size"><?php echo __('Font size:', BWG()->prefix); ?> </label></td>
+										<td>
+											<input type="text" name="tags_but_font_size" id="tags_but_font_size" value="<?php echo $row->tags_but_font_size; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> px
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_font_color"><?php echo __('Font color:', BWG()->prefix); ?> </label></td>
+										<td><input type="text" name="tags_but_font_color" id="tags_but_font_color" value="<?php echo $row->tags_but_font_color; ?>" class="jscolor"/></td>
+									</tr>
+									<tr>
+										<!--generate font style with google fonts -->
+										<?php $this->font_style_row( $row->tags_but_font_style, 'tags_but_font_style', __('Font family:', BWG()->prefix), 'tags_but_google_fonts' ); ?>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_font_weight"><?php echo __('Font weight:', BWG()->prefix); ?> </label></td>
+										<td>
+											<select name="tags_but_font_weight" id="tags_but_font_weight">
+												<?php foreach ($font_weights as $key => $font_weight) { ?>
+													<option value="<?php echo $key; ?>" <?php echo (($row->tags_but_font_weight == $key) ? 'selected="selected"' : ''); ?>><?php echo __($font_weight, BWG()->prefix); ?></option>
+											 <?php } ?>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_margin"><?php echo __('Margin:', BWG()->prefix); ?> </label></td>
+										<td>
+											<input type="text" name="tags_but_margin" id="tags_but_margin" value="<?php echo $row->tags_but_margin; ?>" class="spider_char_input"/>
+											<div class="spider_description"><?php echo __('Use CSS type values.', BWG()->prefix); ?></div>
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_padding"><?php echo __('Padding:', BWG()->prefix); ?> </label></td>
+										<td>
+											<input type="text" name="tags_but_padding" id="tags_but_padding" value="<?php echo $row->tags_but_padding; ?>" class="spider_char_input"/>
+											<div class="spider_description"><?php echo __('Use CSS type values.', BWG()->prefix); ?></div>
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_border_width"><?php echo __('Border width:', BWG()->prefix); ?> </label></td>
+										<td>
+											<input type="text" name="tags_but_border_width" id="tags_but_border_width" value="<?php echo $row->tags_but_border_width; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> px
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_border_style"><?php echo __('Border style:', BWG()->prefix); ?> </label></td>
+										<td>
+											<select name="tags_but_border_style" id="tags_but_border_style">
+												<?php foreach ($border_styles as $key => $border_style) { ?>
+													<option value="<?php echo $key; ?>" <?php echo (($row->tags_but_border_style == $key) ? 'selected="selected"' : ''); ?>><?php echo __($border_style, BWG()->prefix); ?></option>
+											  <?php } ?>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_border_color"><?php echo __('Border color:', BWG()->prefix); ?></label></td>
+										<td><input type="text" name="tags_but_border_color" id="tags_but_border_color" value="<?php echo $row->tags_but_border_color; ?>" class="jscolor"/></td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_border_radius"><?php echo __('Border radius:', BWG()->prefix); ?> </label></td>
+										<td>
+											<input type="text" name="tags_but_border_radius" id="tags_but_border_radius" value="<?php echo $row->tags_but_border_radius; ?>" class="spider_char_input"/>
+											<div class="spider_description"><?php echo __('Use CSS type values.', BWG()->prefix); ?></div>
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_bg_color"><?php echo __('Button background color:', BWG()->prefix); ?> </label></td>
+										<td><input type="text" name="tags_but_bg_color" id="tags_but_bg_color" value="<?php echo $row->tags_but_bg_color; ?>" class="jscolor" /></td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_active_bg_color"><?php echo __('Active Button background color:', BWG()->prefix); ?> </label></td>
+										<td><input type="text" name="tags_but_active_bg_color" id="tags_but_active_bg_color" value="<?php echo $row->tags_but_active_bg_color; ?>" class="jscolor" /></td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_active_color"><?php echo __('Active Button font color:', BWG()->prefix); ?> </label></td>
+										<td><input type="text" name="tags_but_active_color" id="tags_but_active_color" value="<?php echo $row->tags_but_active_color; ?>" class="jscolor" /></td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_see_all_size"><?php echo __('See All Button Font size:', BWG()->prefix); ?> </label></td>
+										<td>
+											<input type="text" name="tags_but_see_all_size" id="tags_but_see_all_size" value="<?php echo $row->tags_but_see_all_size; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> px
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_see_all_color"><?php echo __('See All Button Font color:', BWG()->prefix); ?> </label></td>
+										<td><input type="text" name="tags_but_see_all_color" id="tags_but_see_all_color" value="<?php echo $row->tags_but_see_all_color; ?>" class="jscolor"/></td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_see_all_back_color"><?php echo __('See All Button background color:', BWG()->prefix); ?> </label></td>
+										<td><input type="text" name="tags_but_see_all_back_color" id="tags_but_see_all_back_color" value="<?php echo $row->tags_but_see_all_back_color; ?>" class="jscolor" /></td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_see_all_border_w"><?php echo __('See All Button Border width:', BWG()->prefix); ?> </label></td>
+										<td>
+											<input type="text" name="tags_but_see_all_border_w" id="tags_but_see_all_border_w" value="<?php echo $row->tags_but_see_all_border_w; ?>" class="spider_int_input" onkeypress="return spider_check_isnum(event)"/> px
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_see_all_border_s"><?php echo __('See All Button Border style:', BWG()->prefix); ?> </label></td>
+										<td>
+											<select name="tags_but_see_all_border_s" id="tags_but_see_all_border_s">
+												<?php foreach ($border_styles as $key => $border_style) { ?>
+																			<option value="<?php echo $key; ?>" <?php echo (($row->tags_but_see_all_border_s == $key) ? 'selected="selected"' : ''); ?>><?php echo __($border_style, BWG()->prefix); ?></option>
+												<?php } ?>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_see_all_border_c"><?php echo __('See All Button Border color:', BWG()->prefix); ?></label></td>
+										<td><input type="text" name="tags_but_see_all_border_c" id="tags_but_see_all_border_c" value="<?php echo $row->tags_but_see_all_border_c; ?>" class="jscolor"/></td>
+									</tr>
+									<tr>
+										<td class="spider_label"><label for="tags_but_see_all_border_r"><?php echo __('See All Button Border radius:', BWG()->prefix); ?> </label></td>
+										<td>
+											<input type="text" name="tags_but_see_all_border_r" id="tags_but_see_all_border_r" value="<?php echo $row->tags_but_see_all_border_r; ?>" class="spider_char_input"/>
+											<div class="spider_description"><?php echo __('Use CSS type values.', BWG()->prefix); ?></div>
+										</td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div id="Tags_3" class="wd-table-col wd-table-col-30 wd-table-col-right">
+					</div>
+				</div>
+			</fieldset>
 		</div>
 		<input type="hidden" id="default_theme" name="default_theme" value="<?php echo $row->default_theme; ?>" />
 		<input type="hidden" id="active_tab" name="active_tab"  value="<?php echo $params['active_tab']; ?>" />

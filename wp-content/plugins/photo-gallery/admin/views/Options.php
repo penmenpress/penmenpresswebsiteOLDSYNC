@@ -65,7 +65,6 @@ class OptionsView_bwg extends AdminView_bwg {
         'buttons' => $buttons,
       )
     );
-
     ?>
     <div class="bwg_tabs">
       <div id="search_in_tablet">
@@ -150,9 +149,9 @@ class OptionsView_bwg extends AdminView_bwg {
                 <div class="wd-group">
                   <label class="wd-label"><?php _e('Image click action', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
-                    <input type="radio" name="thumb_click_action" id="thumb_click_action_1" value="open_lightbox" <?php if ($row->thumb_click_action == 'open_lightbox') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_1" class="wd-radio-label"><?php _e('Open lightbox', BWG()->prefix); ?></label>
-                    <input type="radio" name="thumb_click_action" id="thumb_click_action_2" value="redirect_to_url" <?php if ($row->thumb_click_action == 'redirect_to_url') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_2" class="wd-radio-label"><?php _e('Redirect to url', BWG()->prefix); ?></label>
-                    <input type="radio" name="thumb_click_action" id="thumb_click_action_3" value="do_nothing" <?php if ($row->thumb_click_action == 'do_nothing') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_3" class="wd-radio-label"><?php _e('Do Nothing', BWG()->prefix); ?></label>
+                    <div><input type="radio" name="thumb_click_action" id="thumb_click_action_1" value="open_lightbox" <?php if ($row->thumb_click_action == 'open_lightbox') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_1" class="wd-radio-label"><?php _e('Open lightbox', BWG()->prefix); ?></label></div>
+                    <div><input type="radio" name="thumb_click_action" id="thumb_click_action_2" value="redirect_to_url" <?php if ($row->thumb_click_action == 'redirect_to_url') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_2" class="wd-radio-label"><?php _e('Redirect to url', BWG()->prefix); ?></label></div>
+                    <div><input type="radio" name="thumb_click_action" id="thumb_click_action_3" value="do_nothing" <?php if ($row->thumb_click_action == 'do_nothing') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_3" class="wd-radio-label"><?php _e('Do Nothing', BWG()->prefix); ?></label></div>
                   </div>
                   <p class="description"><?php _e('Select the action which runs after clicking on gallery thumbnails.', BWG()->prefix); ?></p>
                 </div>
@@ -380,14 +379,18 @@ class OptionsView_bwg extends AdminView_bwg {
                 </div>
                 <div class="wd-group">
                   <label class="wd-label"><?php _e('Enable dynamic URLs for galleries and gallery groups', BWG()->prefix); ?></label>
-                  <input type="radio" name="front_ajax" id="front_ajax_1" value="1" <?php if ($row->front_ajax) echo 'checked="checked"'; ?> /><label for="front_ajax_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                  <input type="radio" name="front_ajax" id="front_ajax_0" value="0" <?php if (!$row->front_ajax) echo 'checked="checked"'; ?> /><label for="front_ajax_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                  <div class="bwg-flex">
+										<input type="radio" name="front_ajax" id="front_ajax_1" value="1" <?php if ($row->front_ajax) echo 'checked="checked"'; ?> /><label for="front_ajax_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+										<input type="radio" name="front_ajax" id="front_ajax_0" value="0" <?php if (!$row->front_ajax) echo 'checked="checked"'; ?> /><label for="front_ajax_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+									</div>
                   <p class="description"><?php _e('Enable this option to browse galleries and gallery groups, as well as search results and tagged images with dynamic links.', BWG()->prefix); ?></p>
                 </div>
                 <div class="wd-group">
                   <label class="wd-label"><?php _e('Developer mode', BWG()->prefix); ?></label>
-                  <input type="radio" name="developer_mode" id="developer_mode_1" value="1" <?php if ($row->developer_mode) echo 'checked="checked"'; ?> /><label for="developer_mode_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                  <input type="radio" name="developer_mode" id="developer_mode_0" value="0" <?php if (!$row->developer_mode) echo 'checked="checked"'; ?> /><label for="developer_mode_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                  <div class="bwg-flex">
+										<input type="radio" name="developer_mode" id="developer_mode_1" value="1" <?php if ($row->developer_mode) echo 'checked="checked"'; ?> /><label for="developer_mode_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+										<input type="radio" name="developer_mode" id="developer_mode_0" value="0" <?php if (!$row->developer_mode) echo 'checked="checked"'; ?> /><label for="developer_mode_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+									</div>
                   <p class="description"><?php _e('Do not use minified JS and CSS files. Enable this option if You need to debug JS or CSS issues.', BWG()->prefix); ?></p>
                 </div>
               </div>
@@ -562,7 +565,7 @@ class OptionsView_bwg extends AdminView_bwg {
       </div>
       <div id="bwg_tab_gallery_group_content" class="search-div bwg-section wd-box-content">
         <div class="bwg-section bwg-flex-wrap">
-          <div class="wd-box-content bwg-flex-wrap">
+          <div class="wd-box-content wd-width-100 bwg-flex-wrap">
             <div id="bwg_tab_albums_content">
               <div class="bwg_change_gallery_type">
                     <span class="gallery_type" onClick="bwg_album_type_options('album_compact_preview')">
@@ -760,7 +763,7 @@ class OptionsView_bwg extends AdminView_bwg {
                           ?>
                         </select>
                       </div>
-                      <p class="description"><?php _e('Choose a WordPress user role which can add and edit galleries, images, gallery groups and tags.', BWG()->prefix); ?></p>
+                      <p class="description"><?php _e('Choose a WordPress user role which can add and edit galleries, images, gallery groups, tags, themes and edit settings.', BWG()->prefix); ?></p>
                       <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
                     </div>
                   </div>
@@ -799,6 +802,39 @@ class OptionsView_bwg extends AdminView_bwg {
                       <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
                     </div>
                   </div>
+                  <div class="wd-box-content wd-width-100 bwg_roles <?php echo BWG()->is_pro ? '' : ' bwg-disabled-option'; ?>">
+                    <div class="wd-group">
+                      <label class="wd-label"><?php _e('Tag permission', BWG()->prefix); ?></label>
+                      <div class="bwg-flex">
+                        <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="tag_role" id="tag_role_1" value="1" <?php if ($row->tag_role) echo 'checked="checked"'; ?> /><label for="tag_role_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                        <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="tag_role" id="tag_role_0" value="0" <?php if (!$row->tag_role) echo 'checked="checked"'; ?> /><label for="tag_role_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                      </div>
+                      <p class="description"><?php _e('Enable this setting to allow users to add/edit tags.', BWG()->prefix); ?></p>
+                      <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+                    </div>
+                  </div>
+                  <div class="wd-box-content wd-width-100 bwg_roles <?php echo BWG()->is_pro ? '' : ' bwg-disabled-option'; ?>">
+                    <div class="wd-group">
+                      <label class="wd-label"><?php _e('Theme permission', BWG()->prefix); ?></label>
+                      <div class="bwg-flex">
+                        <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="theme_role" id="theme_role_1" value="1" <?php if ($row->theme_role) echo 'checked="checked"'; ?> /><label for="theme_role_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                        <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="theme_role" id="theme_role_0" value="0" <?php if (!$row->theme_role) echo 'checked="checked"'; ?> /><label for="theme_role_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                      </div>
+                      <p class="description"><?php _e('Enable this setting to allow users to add/edit themes.', BWG()->prefix); ?></p>
+                      <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+                    </div>
+                  </div>
+                  <div class="wd-box-content wd-width-100 bwg_roles <?php echo BWG()->is_pro ? '' : ' bwg-disabled-option'; ?>">
+                    <div class="wd-group">
+                      <label class="wd-label"><?php _e('Global settings permission', BWG()->prefix); ?></label>
+                      <div class="bwg-flex">
+                        <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="settings_role" id="settings_role_1" value="1" <?php if ($row->settings_role) echo 'checked="checked"'; ?> /><label for="settings_role_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+                        <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="settings_role" id="settings_role_0" value="0" <?php if (!$row->settings_role) echo 'checked="checked"'; ?> /><label for="settings_role_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                      </div>
+                      <p class="description"><?php _e('Enable this setting to allow users to edit global settings.', BWG()->prefix); ?></p>
+                      <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -818,12 +854,9 @@ class OptionsView_bwg extends AdminView_bwg {
                     <div class="wd-group">
                       <label class="wd-label"><?php _e('Advertisement type', BWG()->prefix); ?></label>
                       <div class="bwg-flex">
-                        <input type="radio" name="watermark_type" id="watermark_type_none" value="none" <?php if ($row->watermark_type == 'none') echo 'checked="checked"'; ?> onClick="bwg_watermark('watermark_type_none')" />
-                        <label for="watermark_type_none" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label>
-                        <input type="radio" name="watermark_type" id="watermark_type_text" value="text" <?php if ($row->watermark_type == 'text') echo 'checked="checked"'; ?> onClick="bwg_watermark('watermark_type_text')" onchange="preview_watermark()" />
-                        <label for="watermark_type_text" class="wd-radio-label"><?php _e('Text', BWG()->prefix); ?></label>
-                        <input type="radio" name="watermark_type" id="watermark_type_image" value="image" <?php if ($row->watermark_type == 'image') echo 'checked="checked"'; ?> onClick="bwg_watermark('watermark_type_image')" onchange="preview_watermark()" />
-                        <label for="watermark_type_image" class="wd-radio-label"><?php _e('Image', BWG()->prefix); ?></label>
+                        <div><input type="radio" name="watermark_type" id="watermark_type_none" value="none" <?php if ($row->watermark_type == 'none') echo 'checked="checked"'; ?> onClick="bwg_watermark('watermark_type_none')" /><label for="watermark_type_none" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label></div>
+                        <div><input type="radio" name="watermark_type" id="watermark_type_text" value="text" <?php if ($row->watermark_type == 'text') echo 'checked="checked"'; ?> onClick="bwg_watermark('watermark_type_text')" onchange="preview_watermark()" /><label for="watermark_type_text" class="wd-radio-label"><?php _e('Text', BWG()->prefix); ?></label></div>
+                        <div><input type="radio" name="watermark_type" id="watermark_type_image" value="image" <?php if ($row->watermark_type == 'image') echo 'checked="checked"'; ?> onClick="bwg_watermark('watermark_type_image')" onchange="preview_watermark()" /><label for="watermark_type_image" class="wd-radio-label"><?php _e('Image', BWG()->prefix); ?></label></div>
                       </div>
                       <p class="description"><?php _e('Add Text or Image advertisement to your images with this option.', BWG()->prefix) ?></p>
                     </div>
@@ -833,7 +866,12 @@ class OptionsView_bwg extends AdminView_bwg {
                       <label class="wd-label" for="watermark_url"><?php _e('Advertisement URL', BWG()->prefix); ?></label>
                       <div>
                         <?php
-                        $query_url = add_query_arg(array('action' => 'addImages', 'width' => '800', 'height' => '550', 'extensions' => 'jpg,jpeg,png,gif,svg', 'callback' => 'bwg_add_watermark_image'), admin_url('admin-ajax.php'));
+                        $query_url = add_query_arg(array(
+                                                     'action' => 'addImages',
+                                                     'width' => '800',
+                                                     'height' => '550',
+                                                     'callback' => 'bwg_add_watermark_image'
+                                                   ), admin_url('admin-ajax.php'));
                         $query_url = wp_nonce_url( $query_url, 'addImages', 'bwg_nonce' );
                         $query_url = add_query_arg(array('TB_iframe' => '1'), $query_url );
                         ?>
@@ -901,10 +939,12 @@ class OptionsView_bwg extends AdminView_bwg {
                           }
                           ?>
                         </select>
-                        <input type="radio" name="watermark_google_fonts" id="watermark_google_fonts1" onchange="bwg_change_fonts('watermark_font', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts) echo 'checked="checked"'; ?> />
-                        <label for="watermark_google_fonts1" id="watermark_google_fonts1_lbl" class="wd-radio-label"><?php _e('Google fonts', BWG()->prefix); ?></label>
-                        <input type="radio" name="watermark_google_fonts" id="watermark_google_fonts0" onchange="bwg_change_fonts('watermark_font', '')" value="0" <?php if (!$is_google_fonts) echo 'checked="checked"'; ?> />
-                        <label for="watermark_google_fonts0" id="watermark_google_fonts0_lbl" class="wd-radio-label"><?php _e('Default', BWG()->prefix); ?></label>
+												<div class="bwg-flex">
+													<input type="radio" name="watermark_google_fonts" id="watermark_google_fonts1" onchange="bwg_change_fonts('watermark_font', jQuery(this).attr('id'))" value="1" <?php if ($is_google_fonts) echo 'checked="checked"'; ?> />
+													<label for="watermark_google_fonts1" id="watermark_google_fonts1_lbl" class="wd-radio-label"><?php _e('Google fonts', BWG()->prefix); ?></label>
+													<input type="radio" name="watermark_google_fonts" id="watermark_google_fonts0" onchange="bwg_change_fonts('watermark_font', '')" value="0" <?php if (!$is_google_fonts) echo 'checked="checked"'; ?> />
+													<label for="watermark_google_fonts0" id="watermark_google_fonts0_lbl" class="wd-radio-label"><?php _e('Default', BWG()->prefix); ?></label>
+												</div>
                       </div>
                       <p class="description"><?php _e('Select the font family of the advertisement text.', BWG()->prefix) ?></p>
                     </div>
@@ -913,7 +953,7 @@ class OptionsView_bwg extends AdminView_bwg {
                     <div class="wd-group">
                       <label class="wd-label" for="watermark_color"><?php _e('Advertisement color', BWG()->prefix); ?></label>
                       <div class="bwg-flex">
-                        <input type="text" name="watermark_color" id="watermark_color" value="<?php echo $row->watermark_color; ?>" class="color" onchange="preview_watermark()" />
+                        <input type="text" name="watermark_color" id="watermark_color" value="<?php echo $row->watermark_color; ?>" class="jscolor" onchange="preview_watermark()" />
                       </div>
                       <p class="description"><?php _e('Choose the color for the advertisement text on images.', BWG()->prefix) ?></p>
                     </div>
@@ -1061,7 +1101,7 @@ class OptionsView_bwg extends AdminView_bwg {
                 <div class="wd-group">
                   <label class="wd-label" for="built_in_watermark_color"><?php _e('Watermark color', BWG()->prefix); ?></label>
                   <div class="bwg-flex">
-                    <input type="text" name="built_in_watermark_color" id="built_in_watermark_color" value="<?php echo $row->built_in_watermark_color; ?>" class="color" onchange="preview_built_in_watermark()" />
+                    <input type="text" name="built_in_watermark_color" id="built_in_watermark_color" value="<?php echo $row->built_in_watermark_color; ?>" class="jscolor" onchange="preview_built_in_watermark()" />
                   </div>
                   <p class="description"><?php _e('Choose the color for the watermark text on images.', BWG()->prefix) ?></p>
                 </div>
@@ -1167,7 +1207,18 @@ class OptionsView_bwg extends AdminView_bwg {
         bwg_enable_disable(<?php echo $row->popup_enable_ctrl_btn ? "'', 'tr_popup_pinterest', 'popup_enable_ctrl_btn_1'" : "'none', 'tr_popup_pinterest', 'popup_enable_ctrl_btn_0'" ?>);
         bwg_enable_disable(<?php echo $row->popup_enable_ctrl_btn ? "'', 'tr_popup_thumblr', 'popup_enable_ctrl_btn_1'" : "'none', 'tr_popup_thumblr', 'popup_enable_ctrl_btn_0'" ?>);
         bwg_enable_disable(<?php echo $row->popup_enable_filmstrip ? "'', 'tr_popup_filmstrip_height', 'popup_enable_filmstrip_1'" : "'none', 'tr_popup_filmstrip_height', 'popup_enable_filmstrip_0'" ?>);
-        bwg_enable_disable(<?php echo $row->slideshow_enable_filmstrip ? "'', 'tr_slideshow_filmstrip_height', 'slideshow_enable_filmstrip_yes'" : "'none', 'tr_slideshow_filmstrip_height', 'slideshow_enable_filmstrip_no'" ?>);
+        if ( <?php echo $row->slideshow_filmstrip_type ?> == 0 ) {
+          bwg_enable_disable('none','tr_slideshow_thumbnails_count','slideshow_filmstrip_none');
+          bwg_enable_disable('none','tr_slideshow_filmstrip_height','slideshow_filmstrip_none');
+        }
+        else if ( <?php echo $row->slideshow_filmstrip_type ?> == 1 ) {
+          bwg_enable_disable('none','tr_slideshow_thumbnails_count','slideshow_filmstrip_fix_dimension');
+          bwg_enable_disable('','tr_slideshow_filmstrip_height','slideshow_filmstrip_fix_dimension');
+        }
+        else if ( <?php echo $row->slideshow_filmstrip_type ?> == 2 ) {
+          bwg_enable_disable('','tr_slideshow_thumbnails_count','slideshow_filmstrip_fix_count');
+          bwg_enable_disable('none','tr_slideshow_filmstrip_height','slideshow_filmstrip_fix_count');
+        }
         bwg_enable_disable(<?php echo $row->slideshow_enable_title ? "'', 'tr_slideshow_title_position', 'slideshow_enable_title_yes'" : "'none', 'tr_slideshow_title_position', 'slideshow_enable_title_no'" ?>);
         bwg_enable_disable(<?php echo $row->slideshow_enable_description ? "'', 'tr_slideshow_description_position', 'slideshow_enable_description_yes'" : "'none', 'tr_slideshow_description_position', 'slideshow_enable_description_no'" ?>);
         bwg_enable_disable(<?php echo $row->slideshow_enable_music ? "'', 'tr_slideshow_music_url', 'slideshow_enable_music_yes'" : "'none', 'tr_slideshow_music_url', 'slideshow_enable_music_no'" ?>);
@@ -1178,7 +1229,7 @@ class OptionsView_bwg extends AdminView_bwg {
         bwg_enable_disable(<?php echo $row->masonry_image_enable_page == '2' ? "'', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_loadmore'" : "'none', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_" . ($row->masonry_image_enable_page == '0' ? 'no' : ($row->masonry_image_enable_page == '1' ? 'yes' : 'scroll_load')) . "'"; ?>);
         bwg_enable_disable(<?php echo $row->mosaic_image_enable_page == '2' ? "'', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_loadmore'" : "'none', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_" . ($row->mosaic_image_enable_page == '0' ? 'no' : ($row->mosaic_image_enable_page == '1' ? 'yes' : 'scroll_load')) . "'"; ?>);
         bwg_enable_disable(<?php echo $row->blog_style_enable_page == '2' ? "'', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_2'" : "'none', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_" . $row->blog_style_enable_page . "'"; ?>);
-		bwg_enable_disable(<?php echo $row->masonry == 'horizontal' ? "'none', 'bwg-vertical-block-masonry', 'masonry_1'" : "'', 'bwg-vertical-block-masonry', 'masonry_0'"; ?>);
+		    bwg_enable_disable(<?php echo $row->masonry == 'horizontal' ? "'none', 'bwg-vertical-block-masonry', 'masonry_1'" : "'', 'bwg-vertical-block-masonry', 'masonry_0'"; ?>);
         preview_watermark();
         preview_built_in_watermark();
         bwg_show_hide_roles();
@@ -1250,10 +1301,10 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Pagination', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="image_enable_page" id="image_enable_page_0" value="0" <?php if ($row->image_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_load_more_image_count', 'image_enable_page_0'); bwg_pagination_description(this);" /><label for="image_enable_page_0" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label>
-                <input type="radio" name="image_enable_page" id="image_enable_page_1" value="1" <?php if ($row->image_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_load_more_image_count', 'image_enable_page_1'); bwg_pagination_description(this);" /><label for="image_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label>
-                <input type="radio" name="image_enable_page" id="image_enable_page_2" value="2" <?php if ($row->image_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_load_more_image_count', 'image_enable_page_2'); bwg_pagination_description(this);" /><label for="image_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label>
-                <input type="radio" name="image_enable_page" id="image_enable_page_3" value="3" <?php if ($row->image_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_load_more_image_count', 'image_enable_page_3'); bwg_pagination_description(this);" /><label for="image_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label>
+                <div><input type="radio" name="image_enable_page" id="image_enable_page_0" value="0" <?php if ($row->image_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_load_more_image_count', 'image_enable_page_0'); bwg_pagination_description(this);" /><label for="image_enable_page_0" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="image_enable_page" id="image_enable_page_1" value="1" <?php if ($row->image_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_load_more_image_count', 'image_enable_page_1'); bwg_pagination_description(this);" /><label for="image_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="image_enable_page" id="image_enable_page_2" value="2" <?php if ($row->image_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_load_more_image_count', 'image_enable_page_2'); bwg_pagination_description(this);" /><label for="image_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="image_enable_page" id="image_enable_page_3" value="3" <?php if ($row->image_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_load_more_image_count', 'image_enable_page_3'); bwg_pagination_description(this);" /><label for="image_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label></div>
               </div>
               <p class="description" id="image_enable_page_0_description"><?php _e('This option removes all types of pagination from your galleries.', BWG()->prefix); ?></p>
               <p class="description" id="image_enable_page_1_description"><?php _e('Activating this option will add page numbers and next/previous buttons to your galleries.', BWG()->prefix); ?></p>
@@ -1283,7 +1334,7 @@ class OptionsView_bwg extends AdminView_bwg {
         <div class="wd-box-content wd-width-33">
           <div class="wd-box-content wd-width-100">
             <div class="wd-group">
-				<div class="wd-width-65">
+				<div class="wd-width-43">
 					<label class="wd-label" for="sort_by"><?php _e('Order by', BWG()->prefix); ?></label>
 					<select name="sort_by" id="sort_by">
 						<option value="order" <?php if ($row->sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
@@ -1294,7 +1345,7 @@ class OptionsView_bwg extends AdminView_bwg {
 						<option value="random" <?php if ($row->sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 					</select>
 				</div>
-				<div class="wd-width-30">
+				<div class="wd-width-55">
 					<select name="order_by" id="order_by">
 						<option value="asc" <?php if ($row->order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -1375,9 +1426,9 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Show image title', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="image_title_show_hover" id="image_title_show_hover_1" value="hover" <?php if ($row->image_title_show_hover == "hover") echo 'checked="checked"'; ?> /><label for="image_title_show_hover_1" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label>
-                <input type="radio" name="image_title_show_hover" id="image_title_show_hover_0" value="show" <?php if ($row->image_title_show_hover == "show") echo 'checked="checked"'; ?> /><label for="image_title_show_hover_0" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label>
-                <input type="radio" name="image_title_show_hover" id="image_title_show_hover_2" value="none" <?php if ($row->image_title_show_hover == "none") echo 'checked="checked"'; ?> /><label for="image_title_show_hover_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label>
+                <div><input type="radio" name="image_title_show_hover" id="image_title_show_hover_1" value="hover" <?php if ($row->image_title_show_hover == "hover") echo 'checked="checked"'; ?> /><label for="image_title_show_hover_1" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="image_title_show_hover" id="image_title_show_hover_0" value="show" <?php if ($row->image_title_show_hover == "show") echo 'checked="checked"'; ?> /><label for="image_title_show_hover_0" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="image_title_show_hover" id="image_title_show_hover_2" value="none" <?php if ($row->image_title_show_hover == "none") echo 'checked="checked"'; ?> /><label for="image_title_show_hover_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label></div>
               </div>
               <p class="description"><?php _e('Choose to show/hide titles of images, or display them on hover.', BWG()->prefix); ?></p>
             </div>
@@ -1476,10 +1527,10 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Pagination', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="masonry_image_enable_page" id="masonry_image_enable_page_0" value="0" <?php if ($row->masonry_image_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_0'); bwg_pagination_description(this);" /><label for="masonry_image_enable_page_0" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label>
-                <input type="radio" name="masonry_image_enable_page" id="masonry_image_enable_page_1" value="1" <?php if ($row->masonry_image_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_1'); bwg_pagination_description(this);" /><label for="masonry_image_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label>
-                <input type="radio" name="masonry_image_enable_page" id="masonry_image_enable_page_2" value="2" <?php if ($row->masonry_image_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_2'); bwg_pagination_description(this);" /><label for="masonry_image_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label>
-                <input type="radio" name="masonry_image_enable_page" id="masonry_image_enable_page_3" value="3" <?php if ($row->masonry_image_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_3'); bwg_pagination_description(this);" /><label for="masonry_image_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label>
+                <div><input type="radio" name="masonry_image_enable_page" id="masonry_image_enable_page_0" value="0" <?php if ($row->masonry_image_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_0'); bwg_pagination_description(this);" /><label for="masonry_image_enable_page_0" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="masonry_image_enable_page" id="masonry_image_enable_page_1" value="1" <?php if ($row->masonry_image_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_1'); bwg_pagination_description(this);" /><label for="masonry_image_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="masonry_image_enable_page" id="masonry_image_enable_page_2" value="2" <?php if ($row->masonry_image_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_2'); bwg_pagination_description(this);" /><label for="masonry_image_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="masonry_image_enable_page" id="masonry_image_enable_page_3" value="3" <?php if ($row->masonry_image_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_masonry_load_more_image_count', 'masonry_image_enable_page_3'); bwg_pagination_description(this);" /><label for="masonry_image_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label></div>
               </div>
               <p class="description" id="masonry_image_enable_page_0_description"><?php _e('This option removes all types of pagination from your galleries.', BWG()->prefix); ?></p>
               <p class="description" id="masonry_image_enable_page_1_description"><?php _e('Activating this option will add page numbers and next/previous buttons to your galleries.', BWG()->prefix); ?></p>
@@ -1510,7 +1561,7 @@ class OptionsView_bwg extends AdminView_bwg {
           <div class="wd-box-content wd-width-100">
             <div class="wd-group">
               <label class="wd-label" for="masonry_sort_by"><?php _e('Order by', BWG()->prefix); ?></label>
-              <div class="wd-width-65">
+              <div class="wd-width-43">
 			  <select name="masonry_sort_by" id="masonry_sort_by">
                 <option value="order" <?php if ($row->masonry_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
                 <option value="alt" <?php if ($row->masonry_sort_by == 'alt') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
@@ -1520,7 +1571,7 @@ class OptionsView_bwg extends AdminView_bwg {
                 <option value="random" <?php if ($row->masonry_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
               </select>
 			  </div>
-			  <div class="wd-width-30">
+			  <div class="wd-width-55">
 					<select name="masonry_order_by" id="masonry_order_by">
 						<option value="asc" <?php if ($row->masonry_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->masonry_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -1601,9 +1652,9 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Show image title', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="masonry_image_title" id="masonry_image_title_0" value="hover" <?php if ($row->masonry_image_title == "hover") echo 'checked="checked"'; ?> /><label for="masonry_image_title_0" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label>
-                <input type="radio" name="masonry_image_title" id="masonry_image_title_1" value="show" <?php if ($row->masonry_image_title == "show") echo 'checked="checked"'; ?> /><label for="masonry_image_title_1" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label>
-                <input type="radio" name="masonry_image_title" id="masonry_image_title_2" value="none" <?php if ($row->masonry_image_title == "none") echo 'checked="checked"'; ?> /><label for="masonry_image_title_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label>
+                <div><input type="radio" name="masonry_image_title" id="masonry_image_title_0" value="hover" <?php if ($row->masonry_image_title == "hover") echo 'checked="checked"'; ?> /><label for="masonry_image_title_0" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="masonry_image_title" id="masonry_image_title_1" value="show" <?php if ($row->masonry_image_title == "show") echo 'checked="checked"'; ?> /><label for="masonry_image_title_1" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="masonry_image_title" id="masonry_image_title_2" value="none" <?php if ($row->masonry_image_title == "none") echo 'checked="checked"'; ?> /><label for="masonry_image_title_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label></div>
               </div>
               <p class="description"><?php _e('Choose to show/hide titles of images, or display them on hover.', BWG()->prefix); ?></p>
             </div>
@@ -1710,10 +1761,10 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Pagination', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="mosaic_image_enable_page" id="mosaic_image_enable_page_0" value="0" <?php if ($row->mosaic_image_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_0'); bwg_pagination_description(this);" /><label for="mosaic_image_enable_page_0" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label>
-                <input type="radio" name="mosaic_image_enable_page" id="mosaic_image_enable_page_1" value="1" <?php if ($row->mosaic_image_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_1'); bwg_pagination_description(this);" /><label for="mosaic_image_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label>
-                <input type="radio" name="mosaic_image_enable_page" id="mosaic_image_enable_page_2" value="2" <?php if ($row->mosaic_image_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_2'); bwg_pagination_description(this);" /><label for="mosaic_image_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label>
-                <input type="radio" name="mosaic_image_enable_page" id="mosaic_image_enable_page_3" value="3" <?php if ($row->mosaic_image_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_3'); bwg_pagination_description(this);" /><label for="mosaic_image_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label>
+                <div><input type="radio" name="mosaic_image_enable_page" id="mosaic_image_enable_page_0" value="0" <?php if ($row->mosaic_image_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_0'); bwg_pagination_description(this);" /><label for="mosaic_image_enable_page_0" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="mosaic_image_enable_page" id="mosaic_image_enable_page_1" value="1" <?php if ($row->mosaic_image_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_1'); bwg_pagination_description(this);" /><label for="mosaic_image_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="mosaic_image_enable_page" id="mosaic_image_enable_page_2" value="2" <?php if ($row->mosaic_image_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_2'); bwg_pagination_description(this);" /><label for="mosaic_image_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="mosaic_image_enable_page" id="mosaic_image_enable_page_3" value="3" <?php if ($row->mosaic_image_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_mosaic_load_more_image_count', 'mosaic_image_enable_page_3'); bwg_pagination_description(this);" /><label for="mosaic_image_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label></div>
               </div>
               <p class="description" id="mosaic_image_enable_page_0_description"><?php _e('This option removes all types of pagination from your galleries.', BWG()->prefix); ?></p>
               <p class="description" id="mosaic_image_enable_page_1_description"><?php _e('Activating this option will add page numbers and next/previous buttons to your galleries.', BWG()->prefix); ?></p>
@@ -1744,7 +1795,7 @@ class OptionsView_bwg extends AdminView_bwg {
           <div class="wd-box-content wd-width-100">
             <div class="wd-group">
               <label class="wd-label" for="mosaic_sort_by"><?php _e('Order by', BWG()->prefix); ?></label>
-			  <div class="wd-width-65">
+			  <div class="wd-width-43">
               <select name="mosaic_sort_by" id="mosaic_sort_by">
                 <option value="order" <?php if ($row->mosaic_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
                 <option value="alt" <?php if ($row->mosaic_sort_by == 'alt') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
@@ -1754,7 +1805,7 @@ class OptionsView_bwg extends AdminView_bwg {
                 <option value="random" <?php if ($row->mosaic_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
               </select>
 			  </div>
-			  <div class="wd-width-30">
+			  <div class="wd-width-55">
 					<select name="mosaic_order_by" id="mosaic_order_by">
 						<option value="asc" <?php if ($row->mosaic_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->mosaic_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -1939,7 +1990,7 @@ class OptionsView_bwg extends AdminView_bwg {
           <div class="wd-box-content wd-width-100">
             <div class="wd-group">
               <label class="wd-label" for="slideshow_sort_by"><?php _e('Order by', BWG()->prefix); ?></label>
-              <div class="wd-width-65">
+              <div class="wd-width-43">
 				<select name="slideshow_sort_by" id="slideshow_sort_by">
 					<option value="order" <?php if ($row->slideshow_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
 					<option value="alt" <?php if ($row->slideshow_sort_by == 'alt') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
@@ -1949,7 +2000,7 @@ class OptionsView_bwg extends AdminView_bwg {
 					<option value="random" <?php if ($row->slideshow_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 				</select>
 			  </div>
-              <div class="wd-width-30">
+              <div class="wd-width-55">
 					<select name="slideshow_order_by" id="slideshow_order_by">
 						<option value="asc" <?php if ($row->slideshow_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->slideshow_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -2002,12 +2053,23 @@ class OptionsView_bwg extends AdminView_bwg {
         <div class="wd-box-content wd-width-33">
           <div class="wd-box-content wd-width-100 <?php echo BWG()->is_pro ? '' : ' bwg-disabled-option'; ?>">
             <div class="wd-group">
-              <label class="wd-label"><?php _e('Enable slideshow filmstrip', BWG()->prefix); ?></label>
+              <label class="wd-label"><?php _e('Slideshow filmstrip type', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="slideshow_enable_filmstrip" id="slideshow_enable_filmstrip_yes" value="1" <?php if ($row->slideshow_enable_filmstrip) echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_slideshow_filmstrip_height', 'slideshow_enable_filmstrip_yes')" /><label for="slideshow_enable_filmstrip_yes" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="slideshow_enable_filmstrip" id="slideshow_enable_filmstrip_no" value="0" <?php if (!$row->slideshow_enable_filmstrip) echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_slideshow_filmstrip_height', 'slideshow_enable_filmstrip_no')" /><label for="slideshow_enable_filmstrip_no" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="slideshow_filmstrip_type" id="slideshow_filmstrip_none" value="0" <?php if (!$row->slideshow_filmstrip_type) echo 'checked="checked"'; ?> onclick="bwg_enable_disable('none','tr_slideshow_thumbnails_count','slideshow_filmstrip_none'); bwg_enable_disable('none','tr_slideshow_filmstrip_height','slideshow_filmstrip_none');" /><label for="slideshow_filmstrip_none" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label>
+                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="slideshow_filmstrip_type" id="slideshow_filmstrip_fix_dimension" value="1" <?php if ($row->slideshow_filmstrip_type && $row->slideshow_filmstrip_type == 1) echo 'checked="checked"'; ?> onclick="bwg_enable_disable('none','tr_slideshow_thumbnails_count','slideshow_filmstrip_fix_dimension'); bwg_enable_disable('','tr_slideshow_filmstrip_height','slideshow_filmstrip_fix_dimension');" /><label for="slideshow_filmstrip_fix_dimension" class="wd-radio-label"><?php _e('Fix dimension', BWG()->prefix); ?></label>
+                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="slideshow_filmstrip_type" id="slideshow_filmstrip_fix_count" value="2" <?php if ($row->slideshow_filmstrip_type && $row->slideshow_filmstrip_type == 2) echo 'checked="checked"'; ?> onclick="bwg_enable_disable('','tr_slideshow_thumbnails_count','slideshow_filmstrip_fix_count'); bwg_enable_disable('none','tr_slideshow_filmstrip_height','slideshow_filmstrip_fix_count');" /><label for="slideshow_filmstrip_fix_count" class="wd-radio-label"><?php _e('Fix count', BWG()->prefix); ?></label>
               </div>
-              <p class="description"><?php _e('Add a filmstrip with image thumbnails to your slideshow galleries by enabling this option.', BWG()->prefix); ?></p>
+              <p class="description"><?php _e('Select the type for the slideshow filmstrip.', BWG()->prefix); ?></p>
+              <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+            </div>
+          </div>
+          <div class="wd-box-content wd-width-100 <?php echo BWG()->is_pro ? '' : ' bwg-disabled-option'; ?>" id="tr_slideshow_thumbnails_count">
+            <div class="wd-group">
+              <label class="wd-label" for="slideshow_thumbnails_count"><?php _e('Slideshow thumbnails count', BWG()->prefix); ?></label>
+              <div class="bwg-flex">
+                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="number" name="slideshow_thumbnails_count" id="slideshow_thumbnails_count" value="<?php echo $row->slideshow_thumbnails_count; ?>" min="1" />
+              </div>
+              <p class="description"><?php _e('Set the number of items that will be displayed in the filmstrip. This will also construct the width of the filmstrip.', BWG()->prefix); ?></p>
               <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
             </div>
           </div>
@@ -2028,7 +2090,7 @@ class OptionsView_bwg extends AdminView_bwg {
                 <input type="radio" name="slideshow_enable_title" id="slideshow_enable_title_yes" value="1" <?php if ($row->slideshow_enable_title) echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_slideshow_title_position', 'slideshow_enable_title_yes')" /><label for="slideshow_enable_title_yes" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
                 <input type="radio" name="slideshow_enable_title" id="slideshow_enable_title_no" value="0" <?php if (!$row->slideshow_enable_title) echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_slideshow_title_position', 'slideshow_enable_title_no')" /><label for="slideshow_enable_title_no" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
               </div>
-              <p class="description"><?php _e('Enable this setting to display titles of images in Slideshow view.', BWG()->prefix); ?></p>
+              <p class="description"><?php _e('Set the size of your filmstrip. If the filmstrip is horizontal, this indicates its height, whereas for vertical filmstrips it sets the width.', BWG()->prefix); ?></p>
             </div>
           </div>
           <div class="wd-box-content wd-width-100" id="tr_slideshow_title_position">
@@ -2177,7 +2239,7 @@ class OptionsView_bwg extends AdminView_bwg {
           <div class="wd-box-content wd-width-100">
             <div class="wd-group">
               <label class="wd-label" for="image_browser_sort_by"><?php _e('Order by', BWG()->prefix); ?></label>
-              <div class="wd-width-65">
+              <div class="wd-width-43">
 			  <select name="image_browser_sort_by" id="image_browser_sort_by">
                 <option value="order" <?php if ($row->image_browser_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
                 <option value="alt" <?php if ($row->image_browser_sort_by == 'alt') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
@@ -2187,7 +2249,7 @@ class OptionsView_bwg extends AdminView_bwg {
                 <option value="random" <?php if ($row->image_browser_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
               </select>
 			  </div>
-              <div class="wd-width-30">
+              <div class="wd-width-55">
 					<select name="image_browser_order_by" id="image_browser_order_by">
 						<option value="asc" <?php if ($row->image_browser_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->image_browser_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -2298,10 +2360,10 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Pagination', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_enable_page" id="blog_style_enable_page_0" value="0" <?php if ($row->blog_style_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_0'); bwg_pagination_description(this);" /><label for="blog_style_enable_page_0" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_enable_page" id="blog_style_enable_page_1" value="1" <?php if ($row->blog_style_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_1'); bwg_pagination_description(this);" /><label for="blog_style_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_enable_page" id="blog_style_enable_page_2" value="2" <?php if ($row->blog_style_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_2'); bwg_pagination_description(this);" /><label for="blog_style_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label>
-                <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_enable_page" id="blog_style_enable_page_3" value="3" <?php if ($row->blog_style_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_3'); bwg_pagination_description(this);" /><label for="blog_style_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label>
+                <div><input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_enable_page" id="blog_style_enable_page_0" value="0" <?php if ($row->blog_style_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_0'); bwg_pagination_description(this);" /><label for="blog_style_enable_page_0" class="wd-radio-label"><?php _e('None', BWG()->prefix); ?></label></div>
+                <div><input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_enable_page" id="blog_style_enable_page_1" value="1" <?php if ($row->blog_style_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_1'); bwg_pagination_description(this);" /><label for="blog_style_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label></div>
+                <div><input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_enable_page" id="blog_style_enable_page_2" value="2" <?php if ($row->blog_style_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_2'); bwg_pagination_description(this);" /><label for="blog_style_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label></div>
+                <div><input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="blog_style_enable_page" id="blog_style_enable_page_3" value="3" <?php if ($row->blog_style_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_enable_disable('none', 'tr_blog_style_load_more_image_count', 'blog_style_enable_page_3'); bwg_pagination_description(this);" /><label for="blog_style_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label></div>
               </div>
               <p class="description" id="blog_style_enable_page_0_description"><?php _e('This option removes all types of pagination from your galleries.', BWG()->prefix); ?></p>
               <p class="description" id="blog_style_enable_page_1_description"><?php _e('Activating this option will add page numbers and next/previous buttons to your galleries.', BWG()->prefix); ?></p>
@@ -2334,7 +2396,7 @@ class OptionsView_bwg extends AdminView_bwg {
           <div class="wd-box-content wd-width-100">
             <div class="wd-group">
               <label class="wd-label" for="blog_style_sort_by"><?php _e('Order by', BWG()->prefix); ?></label>
-			  <div class="wd-width-65">
+			  <div class="wd-width-43">
 				<select name="blog_style_sort_by" id="blog_style_sort_by">
 					<option value="order" <?php if ($row->blog_style_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
 					<option value="alt" <?php if ($row->blog_style_sort_by == 'alt') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
@@ -2344,7 +2406,7 @@ class OptionsView_bwg extends AdminView_bwg {
 					<option value="random" <?php if ($row->blog_style_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 				</select>
 			  </div>
-              <div class="wd-width-30">
+              <div class="wd-width-55">
 					<select name="blog_style_order_by" id="blog_style_order_by">
 						<option value="asc" <?php if ($row->blog_style_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->blog_style_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -2509,7 +2571,7 @@ class OptionsView_bwg extends AdminView_bwg {
               <div class="wd-box-content wd-width-100">
                 <div class="wd-group">
                   <label class="wd-label" for="carousel_sort_by"><?php _e('Order by', BWG()->prefix); ?></label>
-				  <div class="wd-width-65">
+				  <div class="wd-width-43">
 					<select name="carousel_sort_by" id="carousel_sort_by">
 						<option value="order" <?php if ($row->carousel_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
 						<option value="alt" <?php if ($row->carousel_sort_by == 'alt') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
@@ -2519,7 +2581,7 @@ class OptionsView_bwg extends AdminView_bwg {
 						<option value="random" <?php if ($row->carousel_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 					</select>
 				  </div>
-                  <div class="wd-width-30">
+                  <div class="wd-width-55">
 					<select name="carousel_order_by" id="carousel_order_by">
 						<option value="asc" <?php if ($row->carousel_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->carousel_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -2684,10 +2746,10 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Pagination', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="album_enable_page" id="album_enable_page_0" value="0" <?php if ($row->album_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_enable_page_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
-                <input type="radio" name="album_enable_page" id="album_enable_page_1" value="1" <?php if ($row->album_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label>
-                <input type="radio" name="album_enable_page" id="album_enable_page_2" value="2" <?php if ($row->album_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label>
-                <input type="radio" name="album_enable_page" id="album_enable_page_3" value="3" <?php if ($row->album_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label>
+                <div><input type="radio" name="album_enable_page" id="album_enable_page_0" value="0" <?php if ($row->album_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_enable_page_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_enable_page" id="album_enable_page_1" value="1" <?php if ($row->album_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_enable_page" id="album_enable_page_2" value="2" <?php if ($row->album_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_enable_page" id="album_enable_page_3" value="3" <?php if ($row->album_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label></div>
               </div>
               <p class="description" id="album_enable_page_0_description"><?php _e('This option removes all types of pagination from your galleries.', BWG()->prefix); ?></p>
               <p class="description" id="album_enable_page_1_description"><?php _e('Activating this option will add page numbers and next/previous buttons to your galleries.', BWG()->prefix); ?></p>
@@ -2718,14 +2780,14 @@ class OptionsView_bwg extends AdminView_bwg {
           <div class="wd-box-content wd-width-100">
 			<div class="wd-group">
 				<label class="wd-label" for="compact_album_sort_by"><?php _e('Order Gallery group by', BWG()->prefix); ?></label>
-				<div class="wd-width-65">
+				<div class="wd-width-43">
 					<select name="compact_album_sort_by" id="compact_album_sort_by">
 						<option value="order" <?php if ($row->compact_album_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
 						<option value="name" <?php if ($row->compact_album_sort_by == 'name') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
 						<option value="random" <?php if ($row->compact_album_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 					</select>
 				</div>
-				<div class="wd-width-30">
+				<div class="wd-width-55">
 					<select name="compact_album_order_by" id="compact_album_order_by">
 						<option value="asc" <?php if ($row->compact_album_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->compact_album_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -2735,7 +2797,7 @@ class OptionsView_bwg extends AdminView_bwg {
 			</div>
             <div class="wd-group">
 				<label class="wd-label" for="album_sort_by"><?php _e('Order images by', BWG()->prefix); ?></label>
-				<div class="wd-width-65">
+				<div class="wd-width-43">
 					<select name="album_sort_by" id="album_sort_by">
 						<option value="order" <?php if ($row->album_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
 						<option value="alt" <?php if ($row->album_sort_by == 'alt') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
@@ -2745,7 +2807,7 @@ class OptionsView_bwg extends AdminView_bwg {
 						<option value="random" <?php if ($row->album_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 					</select>
 				</div>
-				<div class="wd-width-30">
+				<div class="wd-width-55">
 					<select name="album_order_by" id="album_order_by">
 						<option value="asc" <?php if ($row->album_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->album_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -2826,9 +2888,9 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Show gallery title', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="album_title_show_hover" id="album_title_show_hover_1" value="hover" <?php if ($row->album_title_show_hover == "hover") echo 'checked="checked"'; ?> /><label for="album_title_show_hover_1" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label>
-                <input type="radio" name="album_title_show_hover" id="album_title_show_hover_0" value="show" <?php if ($row->album_title_show_hover == "show") echo 'checked="checked"'; ?> /><label for="album_title_show_hover_0" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label>
-                <input type="radio" name="album_title_show_hover" id="album_title_show_hover_2" value="none" <?php if ($row->album_title_show_hover == "none") echo 'checked="checked"'; ?> /><label for="album_title_show_hover_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label>
+                <div><input type="radio" name="album_title_show_hover" id="album_title_show_hover_1" value="hover" <?php if ($row->album_title_show_hover == "hover") echo 'checked="checked"'; ?> /><label for="album_title_show_hover_1" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_title_show_hover" id="album_title_show_hover_0" value="show" <?php if ($row->album_title_show_hover == "show") echo 'checked="checked"'; ?> /><label for="album_title_show_hover_0" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_title_show_hover" id="album_title_show_hover_2" value="none" <?php if ($row->album_title_show_hover == "none") echo 'checked="checked"'; ?> /><label for="album_title_show_hover_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label></div>
               </div>
               <p class="description"><?php _e('Choose to show/hide titles of galleries/gallery groups, or display them on hover.', BWG()->prefix); ?></p>
             </div>
@@ -2885,12 +2947,9 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Show image title', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="album_image_title_show_hover" id="album_image_title_show_hover_1" value="hover" <?php if ($row->album_image_title_show_hover == "hover") echo 'checked="checked"'; ?> />
-                <label for="album_image_title_show_hover_1" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label>
-                <input type="radio" name="album_image_title_show_hover" id="album_image_title_show_hover_0" value="show" <?php if ($row->album_image_title_show_hover == "show") echo 'checked="checked"'; ?> />
-                <label id="for_album_image_title_show_hover_0" for="album_image_title_show_hover_0" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label>
-                <input type="radio" name="album_image_title_show_hover" id="album_image_title_show_hover_2" value="none" <?php if ($row->album_image_title_show_hover == "none") echo 'checked="checked"'; ?> />
-                <label for="album_image_title_show_hover_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label>
+                <div><input type="radio" name="album_image_title_show_hover" id="album_image_title_show_hover_1" value="hover" <?php if ($row->album_image_title_show_hover == "hover") echo 'checked="checked"'; ?> /><label for="album_image_title_show_hover_1" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_image_title_show_hover" id="album_image_title_show_hover_0" value="show" <?php if ($row->album_image_title_show_hover == "show") echo 'checked="checked"'; ?> /><label id="for_album_image_title_show_hover_0" for="album_image_title_show_hover_0" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_image_title_show_hover" id="album_image_title_show_hover_2" value="none" <?php if ($row->album_image_title_show_hover == "none") echo 'checked="checked"'; ?> /><label for="album_image_title_show_hover_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label></div>
               </div>
               <p class="description"><?php _e('Choose to show/hide titles of images, or display them on hover.', BWG()->prefix); ?></p>
             </div>
@@ -2982,10 +3041,10 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Pagination', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="album_masonry_enable_page" id="album_masonry_enable_page_0" value="0" <?php if ($row->album_masonry_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_masonry_enable_page_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
-                <input type="radio" name="album_masonry_enable_page" id="album_masonry_enable_page_1" value="1" <?php if ($row->album_masonry_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_masonry_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label>
-                <input type="radio" name="album_masonry_enable_page" id="album_masonry_enable_page_2" value="2" <?php if ($row->album_masonry_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_masonry_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label>
-                <input type="radio" name="album_masonry_enable_page" id="album_masonry_enable_page_3" value="3" <?php if ($row->album_masonry_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_masonry_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label>
+                <div><input type="radio" name="album_masonry_enable_page" id="album_masonry_enable_page_0" value="0" <?php if ($row->album_masonry_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_masonry_enable_page_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_masonry_enable_page" id="album_masonry_enable_page_1" value="1" <?php if ($row->album_masonry_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_masonry_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_masonry_enable_page" id="album_masonry_enable_page_2" value="2" <?php if ($row->album_masonry_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_masonry_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_masonry_enable_page" id="album_masonry_enable_page_3" value="3" <?php if ($row->album_masonry_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_masonry_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label></div>
               </div>
               <p class="description" id="album_masonry_enable_page_0_description"><?php _e('This option removes all types of pagination from your galleries.', BWG()->prefix); ?></p>
               <p class="description" id="album_masonry_enable_page_1_description"><?php _e('Activating this option will add page numbers and next/previous buttons to your galleries.', BWG()->prefix); ?></p>
@@ -3016,14 +3075,14 @@ class OptionsView_bwg extends AdminView_bwg {
           <div class="wd-box-content wd-width-100">
 			<div class="wd-group">
 				<label class="wd-label" for="masonry_album_sort_by"><?php _e('Order Gallery group by', BWG()->prefix); ?></label>
-				<div class="wd-width-65">
+				<div class="wd-width-43">
 					<select name="masonry_album_sort_by" id="masonry_album_sort_by">
 						<option value="order" <?php if ($row->masonry_album_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
 						<option value="name" <?php if ($row->masonry_album_sort_by == 'name') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
 						<option value="random" <?php if ($row->masonry_album_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 					</select>
 				</div>
-				<div class="wd-width-30">
+				<div class="wd-width-55">
 					<select name="masonry_album_order_by" id="masonry_album_order_by">
 						<option value="asc" <?php if ($row->masonry_album_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->masonry_album_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -3033,7 +3092,7 @@ class OptionsView_bwg extends AdminView_bwg {
 			</div>
             <div class="wd-group">
               <label class="wd-label" for="album_masonry_sort_by"><?php _e('Order images by', BWG()->prefix); ?></label>
-				<div class="wd-width-65">
+				<div class="wd-width-43">
 				  <select name="album_masonry_sort_by" id="album_masonry_sort_by">
 					<option value="order" <?php if ($row->album_masonry_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
 					<option value="alt" <?php if ($row->album_masonry_sort_by == 'alt') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
@@ -3043,7 +3102,7 @@ class OptionsView_bwg extends AdminView_bwg {
 					<option value="random" <?php if ($row->album_masonry_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 				  </select>
 				</div>
-				<div class="wd-width-30">
+				<div class="wd-width-55">
 					<select name="album_masonry_order_by" id="album_masonry_order_by">
 						<option value="asc" <?php if ($row->album_masonry_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->album_masonry_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -3124,9 +3183,9 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-group">
               <label class="wd-label"><?php _e('Show image title', BWG()->prefix); ?></label>
               <div class="bwg-flex">
-                <input type="radio" name="album_masonry_image_title" id="album_masonry_image_title_0" value="hover" <?php if ($row->album_masonry_image_title == "hover") echo 'checked="checked"'; ?> /><label for="album_masonry_image_title_0" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label>
-                <input type="radio" name="album_masonry_image_title" id="album_masonry_image_title_1" value="show" <?php if ($row->album_masonry_image_title == "show") echo 'checked="checked"'; ?> /><label for="album_masonry_image_title_1" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label>
-                <input type="radio" name="album_masonry_image_title" id="album_masonry_image_title_2" value="none" <?php if ($row->album_masonry_image_title == "none") echo 'checked="checked"'; ?> /><label for="album_masonry_image_title_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label>
+                <div><input type="radio" name="album_masonry_image_title" id="album_masonry_image_title_0" value="hover" <?php if ($row->album_masonry_image_title == "hover") echo 'checked="checked"'; ?> /><label for="album_masonry_image_title_0" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_masonry_image_title" id="album_masonry_image_title_1" value="show" <?php if ($row->album_masonry_image_title == "show") echo 'checked="checked"'; ?> /><label for="album_masonry_image_title_1" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label></div>
+                <div><input type="radio" name="album_masonry_image_title" id="album_masonry_image_title_2" value="none" <?php if ($row->album_masonry_image_title == "none") echo 'checked="checked"'; ?> /><label for="album_masonry_image_title_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label></div>
               </div>
               <p class="description"><?php _e('Choose to show/hide titles of images, or display them on hover.', BWG()->prefix); ?></p>
             </div>
@@ -3220,10 +3279,10 @@ class OptionsView_bwg extends AdminView_bwg {
               <div class="wd-group">
                 <label class="wd-label"><?php _e('Pagination', BWG()->prefix); ?></label>
                 <div class="bwg-flex">
-                  <input type="radio" name="album_extended_enable_page" id="album_extended_enable_page_0" value="0" <?php if ($row->album_extended_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_extended_enable_page_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
-                  <input type="radio" name="album_extended_enable_page" id="album_extended_enable_page_1" value="1" <?php if ($row->album_extended_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_extended_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label>
-                  <input type="radio" name="album_extended_enable_page" id="album_extended_enable_page_2" value="2" <?php if ($row->album_extended_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_extended_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label>
-                  <input type="radio" name="album_extended_enable_page" id="album_extended_enable_page_3" value="3" <?php if ($row->album_extended_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_extended_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label>
+                  <div><input type="radio" name="album_extended_enable_page" id="album_extended_enable_page_0" value="0" <?php if ($row->album_extended_enable_page == '0') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_extended_enable_page_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label></div>
+                  <div><input type="radio" name="album_extended_enable_page" id="album_extended_enable_page_1" value="1" <?php if ($row->album_extended_enable_page == '1') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_extended_enable_page_1" class="wd-radio-label"><?php _e('Simple', BWG()->prefix); ?></label></div>
+                  <div><input type="radio" name="album_extended_enable_page" id="album_extended_enable_page_2" value="2" <?php if ($row->album_extended_enable_page == '2') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_extended_enable_page_2" class="wd-radio-label"><?php _e('Load More', BWG()->prefix); ?></label></div>
+                  <div><input type="radio" name="album_extended_enable_page" id="album_extended_enable_page_3" value="3" <?php if ($row->album_extended_enable_page == '3') echo 'checked="checked"'; ?> onClick="bwg_pagination_description(this);" /><label for="album_extended_enable_page_3" class="wd-radio-label"><?php _e('Scroll Load', BWG()->prefix); ?></label></div>
                 </div>
                 <p class="description" id="album_extended_enable_page_0_description"><?php _e('This option removes all types of pagination from your galleries.', BWG()->prefix); ?></p>
                 <p class="description" id="album_extended_enable_page_1_description"><?php _e('Activating this option will add page numbers and next/previous buttons to your galleries.', BWG()->prefix); ?></p>
@@ -3254,14 +3313,14 @@ class OptionsView_bwg extends AdminView_bwg {
             <div class="wd-box-content wd-width-100">
 				<div class="wd-group">
 					<label class="wd-label" for="extended_album_sort_by"><?php _e('Order Gallery group by', BWG()->prefix); ?></label>
-					<div class="wd-width-65">
+					<div class="wd-width-43">
 						<select name="extended_album_sort_by" id="extended_album_sort_by">
 							<option value="order" <?php if ($row->extended_album_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
 							<option value="name" <?php if ($row->extended_album_sort_by == 'name') echo 'selected="selected"'; ?>><?php _e('Title', BWG()->prefix); ?></option>
 							<option value="random" <?php if ($row->extended_album_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 						</select>
 					</div>
-					<div class="wd-width-30">
+					<div class="wd-width-55">
 						<select name="extended_album_order_by" id="extended_album_order_by">
 							<option value="asc" <?php if ($row->extended_album_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 							<option value="desc" <?php if ($row->extended_album_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -3270,7 +3329,7 @@ class OptionsView_bwg extends AdminView_bwg {
 					<p class="description"><?php _e("Select the parameter and order direction to sort the gallery group images with. E.g. Title and Ascending.", BWG()->prefix); ?></p>
 				</div>
               <div class="wd-group">
-				<div class="wd-width-65">
+				<div class="wd-width-43">
 					<label class="wd-label" for="album_extended_sort_by"><?php _e('Order images by', BWG()->prefix); ?></label>
 					<select name="album_extended_sort_by" id="album_extended_sort_by">
 					  <option value="order" <?php if ($row->album_extended_sort_by == 'order') echo 'selected="selected"'; ?>><?php _e('Default', BWG()->prefix); ?></option>
@@ -3281,7 +3340,7 @@ class OptionsView_bwg extends AdminView_bwg {
 					  <option value="random" <?php if ($row->album_extended_sort_by == 'random') echo 'selected="selected"'; ?>><?php _e('Random', BWG()->prefix); ?></option>
 					</select>
 				</div>
-				<div class="wd-width-30">
+				<div class="wd-width-55">
 					<select name="album_extended_order_by" id="album_extended_order_by">
 						<option value="asc" <?php if ($row->album_extended_order_by == 'asc') echo 'selected="selected"'; ?>><?php _e('Ascending', BWG()->prefix); ?></option>
 						<option value="desc" <?php if ($row->album_extended_order_by == 'desc') echo 'selected="selected"'; ?>><?php _e('Descending', BWG()->prefix); ?></option>
@@ -3420,12 +3479,9 @@ class OptionsView_bwg extends AdminView_bwg {
               <div class="wd-group">
                 <label class="wd-label"><?php _e('Show image title', BWG()->prefix); ?></label>
                 <div class="bwg-flex">
-                  <input type="radio" name="album_extended_image_title_show_hover" id="album_extended_image_title_show_hover_1" value="hover" <?php if ($row->album_extended_image_title_show_hover == "hover") echo 'checked="checked"'; ?> />
-                  <label for="album_extended_image_title_show_hover_1" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label>
-                  <input type="radio" name="album_extended_image_title_show_hover" id="album_extended_image_title_show_hover_0" value="show" <?php if ($row->album_extended_image_title_show_hover == "show") echo 'checked="checked"'; ?> />
-                  <label id="for_album_extended_image_title_show_hover_0" for="album_extended_image_title_show_hover_0" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label>
-                  <input type="radio" name="album_extended_image_title_show_hover" id="album_extended_image_title_show_hover_2" value="none" <?php if ($row->album_extended_image_title_show_hover == "none") echo 'checked="checked"'; ?> />
-                  <label for="album_extended_image_title_show_hover_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label>
+                  <div><input type="radio" name="album_extended_image_title_show_hover" id="album_extended_image_title_show_hover_1" value="hover" <?php if ($row->album_extended_image_title_show_hover == "hover") echo 'checked="checked"'; ?> /><label for="album_extended_image_title_show_hover_1" class="wd-radio-label"><?php _e('Show on hover', BWG()->prefix); ?></label></div>
+                  <div><input type="radio" name="album_extended_image_title_show_hover" id="album_extended_image_title_show_hover_0" value="show" <?php if ($row->album_extended_image_title_show_hover == "show") echo 'checked="checked"'; ?> /><label id="for_album_extended_image_title_show_hover_0" for="album_extended_image_title_show_hover_0" class="wd-radio-label"><?php _e('Always show', BWG()->prefix); ?></label></div>
+                  <div><input type="radio" name="album_extended_image_title_show_hover" id="album_extended_image_title_show_hover_2" value="none" <?php if ($row->album_extended_image_title_show_hover == "none") echo 'checked="checked"'; ?> /><label for="album_extended_image_title_show_hover_2" class="wd-radio-label"><?php _e("Don't show", BWG()->prefix); ?></label></div>
                 </div>
                 <p class="description"><?php _e('Choose to show/hide titles of images, or display them on hover.', BWG()->prefix); ?></p>
               </div>
@@ -3488,9 +3544,9 @@ class OptionsView_bwg extends AdminView_bwg {
           <div class="wd-group">
             <label class="wd-label"><?php _e('Image click action', BWG()->prefix); ?></label>
             <div class="bwg-flex">
-              <input type="radio" name="thumb_click_action" id="thumb_click_action_1" value="open_lightbox" <?php if ($row->thumb_click_action == 'open_lightbox') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_1" class="wd-radio-label"><?php _e('Open lightbox', BWG()->prefix); ?></label>
-              <input type="radio" name="thumb_click_action" id="thumb_click_action_2" value="redirect_to_url" <?php if ($row->thumb_click_action == 'redirect_to_url') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_2" class="wd-radio-label"><?php _e('Redirect to url', BWG()->prefix); ?></label>
-              <input type="radio" name="thumb_click_action" id="thumb_click_action_3" value="do_nothing" <?php if ($row->thumb_click_action == 'do_nothing') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_3" class="wd-radio-label"><?php _e('Do Nothing', BWG()->prefix); ?></label>
+              <div><input type="radio" name="thumb_click_action" id="thumb_click_action_1" value="open_lightbox" <?php if ($row->thumb_click_action == 'open_lightbox') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_1" class="wd-radio-label"><?php _e('Open lightbox', BWG()->prefix); ?></label></div>
+							<div><input type="radio" name="thumb_click_action" id="thumb_click_action_2" value="redirect_to_url" <?php if ($row->thumb_click_action == 'redirect_to_url') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_2" class="wd-radio-label"><?php _e('Redirect to url', BWG()->prefix); ?></label></div>
+							<div><input type="radio" name="thumb_click_action" id="thumb_click_action_3" value="do_nothing" <?php if ($row->thumb_click_action == 'do_nothing') echo 'checked="checked"'; ?> onClick="bwg_thumb_click_action();" /><label for="thumb_click_action_3" class="wd-radio-label"><?php _e('Do Nothing', BWG()->prefix); ?></label></div>
             </div>
             <p class="description"><?php _e('Select the action which runs after clicking on gallery thumbnails.', BWG()->prefix); ?></p>
           </div>
@@ -3750,6 +3806,17 @@ class OptionsView_bwg extends AdminView_bwg {
               <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="popup_enable_rate" id="popup_enable_rate_0" value="0" <?php if (!$row->popup_enable_rate) echo 'checked="checked"'; ?> /><label for="popup_enable_rate_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
             </div>
             <p class="description"><?php _e('Allow users to rate your images by adding rating feature to Photo Gallery lightbox.', BWG()->prefix) ?></p>
+            <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
+          </div>
+        </div>
+        <div class="wd-box-content wd-width-100 bwg-lightbox bwg-lightbox-lightbox <?php echo BWG()->is_pro ? '' : ' bwg-disabled-option'; ?>" id="tr_popup_zoom">
+          <div class="wd-group">
+            <label class="wd-label"><?php _e('Enable zoom', BWG()->prefix); ?></label>
+            <div class="bwg-flex">
+              <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="popup_enable_zoom" id="popup_enable_zoom_1" value="1" <?php if ($row->popup_enable_zoom) echo 'checked="checked"'; ?> /><label for="popup_enable_zoom_1" class="wd-radio-label"><?php _e('Yes', BWG()->prefix); ?></label>
+              <input <?php echo BWG()->is_pro ? '' : 'disabled="disabled"'; ?> type="radio" name="popup_enable_zoom" id="popup_enable_zoom_0" value="0" <?php if (!$row->popup_enable_zoom) echo 'checked="checked"'; ?> /><label for="popup_enable_zoom_0" class="wd-radio-label"><?php _e('No', BWG()->prefix); ?></label>
+            </div>
+            <p class="description"><?php _e('Allow users to zoom images in Photo Gallery lightbox.', BWG()->prefix) ?></p>
             <?php if ( !BWG()->is_pro ) { ?><p class="description spider_free_version"><?php echo BWG()->free_msg; ?></p><?php } ?>
           </div>
         </div>

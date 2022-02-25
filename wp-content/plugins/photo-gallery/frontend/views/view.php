@@ -58,33 +58,35 @@ class BWGViewSite {
     $params_array = $params['params_array'];
     $theme_row = $params['theme_row'];
     ?>
-    <div id="bwg_container1_<?php echo $bwg; ?>"
-         class="bwg_container bwg_thumbnail bwg_<?php echo $params['gallery_type']; ?>"
-         data-right-click-protection="<?php echo BWG()->options->image_right_click; ?>"
-         data-bwg="<?php echo $bwg; ?>"
-         data-current-url="<?php echo addslashes(urldecode($params_array['current_url'])); ?>"
-         data-lightbox-url="<?php echo addslashes(add_query_arg($params_array, admin_url('admin-ajax.php'))); ?>"
-         data-gallery-id="<?php echo $params_array['gallery_id']; ?>"
-         data-popup-width="<?php echo $params["popup_width"]; ?>"
-         data-popup-height="<?php echo $params["popup_height"]; ?>"
-         data-buttons-position="<?php echo $theme_row->lightbox_ctrl_btn_pos; ?>">
-      <div id="bwg_container2_<?php echo $bwg; ?>">
+    <div id="bwg_container1_<?php echo sanitize_html_class($bwg); ?>"
+         class="bwg_container bwg_thumbnail bwg_<?php echo sanitize_html_class($params['gallery_type']); ?>"
+         data-right-click-protection="<?php echo esc_attr(BWG()->options->image_right_click); ?>"
+         data-bwg="<?php echo esc_attr($bwg); ?>"
+         data-gallery-type="<?php echo esc_attr($params['gallery_type']); ?>"
+         data-current-url="<?php echo esc_url(addslashes(urldecode($params_array['current_url']))); ?>"
+         data-lightbox-url="<?php echo esc_url(addslashes(add_query_arg($params_array, admin_url('admin-ajax.php')))); ?>"
+         data-gallery-id="<?php echo esc_attr($params_array['gallery_id']); ?>"
+         data-popup-width="<?php echo esc_attr($params["popup_width"]); ?>"
+         data-popup-height="<?php echo esc_attr($params["popup_height"]); ?>"
+         data-is-album="<?php echo esc_attr($params["view_type"]); ?>"
+         data-buttons-position="<?php echo esc_attr($theme_row->lightbox_ctrl_btn_pos); ?>">
+      <div id="bwg_container2_<?php echo sanitize_html_class($bwg); ?>">
          <?php $this->loading($bwg, $params["image_enable_page"], $params['gallery_type'] ); ?>
-        <form id="gal_front_form_<?php echo $bwg; ?>"
+        <form id="gal_front_form_<?php echo sanitize_html_class($bwg); ?>"
               class="bwg-hidden"
               method="post"
               action="#"
-              data-current="<?php echo $bwg; ?>"
-              data-shortcode-id="<?php echo isset($params['id']) ? $params['id'] : 0; ?>"
-              data-gallery-type="<?php echo $params['gallery_type']; ?>"
-              data-gallery-id="<?php echo $params['gallery_id']; ?>"
-              data-tag="<?php echo $params['tag']; ?>"
-              data-album-id="<?php echo $params['album_id']; ?>"
-              data-theme-id="<?php echo $params['theme_id']; ?>"
-              data-ajax-url="<?php echo add_query_arg(array('action' => 'bwg_frontend_data'), admin_url('admin-ajax.php')); ?>">
-          <div id="bwg_container3_<?php echo $bwg; ?>" class="bwg-background bwg-background-<?php echo $bwg; ?>">
+              data-current="<?php echo esc_attr($bwg); ?>"
+              data-shortcode-id="<?php echo isset($params['id']) ? esc_attr($params['id']) : 0; ?>"
+              data-gallery-type="<?php echo esc_attr($params['gallery_type']); ?>"
+              data-gallery-id="<?php echo esc_attr($params['gallery_id']); ?>"
+              data-tag="<?php echo esc_attr($params['tag']); ?>"
+              data-album-id="<?php echo esc_attr($params['album_id']); ?>"
+              data-theme-id="<?php echo esc_attr($params['theme_id']); ?>"
+              data-ajax-url="<?php echo esc_url(add_query_arg(array('action' => 'bwg_frontend_data'), admin_url('admin-ajax.php'))); ?>">
+          <div id="bwg_container3_<?php echo sanitize_html_class($bwg); ?>" class="bwg-background bwg-background-<?php echo sanitize_html_class($bwg); ?>">
             <?php
-            $get_album_gallery_id = WDWLibrary::get("album_gallery_id_" . $bwg);
+            $get_album_gallery_id = WDWLibrary::get("album_gallery_id_" . $bwg, 0, 'intval');
             if ( BWG()->options->front_ajax == "1" && isset($get_album_gallery_id) && intval($get_album_gallery_id) > 0 ) {
               $this->back($params, $bwg);
             }
@@ -94,18 +96,30 @@ class BWGViewSite {
             if ( (!isset($params['from']) || $params['from'] !== 'widget')
               && ((isset($params['show_sort_images']) && $params['show_sort_images'])
               || (isset($params['show_tag_box']) && $params['show_tag_box'])
-              || (isset($params['show_search_box']) && $params['show_search_box'])) ) {
-              ?>
-              <div class="search_line">
-                <?php
-                $this->ajax_html_frontend_sort_box($params, $bwg);
-
-                $this->ajax_html_frontend_search_tags($params, $bwg);
-
-                $this->ajax_html_frontend_search_box($params, $bwg);
-                ?>
-              </div>
-              <?php
+              || (isset($params['show_search_box']) && $params['show_search_box'])) )
+            {
+							/* Used when Tag Filter is Select View */
+							if ( $theme_row->tags_view == 1 ) { ?>
+								<div class="search_line bwg_tag_select_view">
+								 <?php
+								 $this->ajax_html_frontend_sort_box($params, $bwg);
+								 $this->ajax_html_frontend_search_tags($params, $bwg);
+								 $this->ajax_html_frontend_search_box($params, $bwg);
+								 ?>
+								</div>
+							<?php
+							}
+							/* Used when Tag Filter is Button View */
+							else { ?>
+								<div class="search_line bwg_tag_buttons_view">
+								 <?php
+								 $this->ajax_html_frontend_sort_box($params, $bwg);
+								 $this->ajax_html_frontend_search_box($params, $bwg);
+								 $this->ajax_html_frontend_search_tags($params, $bwg);
+								 ?>
+								</div>
+							<?php
+							}
             }
             if ( isset($params['image_rows']) && !count($params['image_rows']['images']) ) {
               if ( $params['tag'] ) {
@@ -144,23 +158,36 @@ class BWGViewSite {
             echo '<style>' . $inline_style . '</style>';
           }
           ?>
-        <div id="bwg_spider_popup_loading_<?php echo $bwg; ?>" class="bwg_spider_popup_loading"></div>
-        <div id="spider_popup_overlay_<?php echo $bwg; ?>" class="spider_popup_overlay" onclick="spider_destroypopup(1000)"></div>
-        <input type="hidden" id="bwg_random_seed_<?php echo $bwg; ?>" value="<?php echo isset($GLOBALS['bwg_random_seed_' . $bwg]) ? $GLOBALS['bwg_random_seed_' . $bwg] : '' ?>">
+        <div id="bwg_spider_popup_loading_<?php echo sanitize_html_class($bwg); ?>" class="bwg_spider_popup_loading"></div>
+        <div id="spider_popup_overlay_<?php echo sanitize_html_class($bwg); ?>" class="spider_popup_overlay" onclick="spider_destroypopup(1000)"></div>
+        <input type="hidden" id="bwg_random_seed_<?php echo sanitize_html_class($bwg); ?>" value="<?php echo isset($GLOBALS['bwg_random_seed_' . $bwg]) ? esc_attr($GLOBALS['bwg_random_seed_' . $bwg]) : '' ?>">
           <?php
         }
         ?>
       </div>
     </div>
     <script>
-      jQuery(function() {
-        bwg_main_ready();
-      });
+      if (document.readyState === 'complete') {
+        if( typeof bwg_main_ready == 'function' ) {
+          if ( jQuery("#bwg_container1_<?php echo $bwg; ?>").height() ) {
+            bwg_main_ready(jQuery("#bwg_container1_<?php echo $bwg; ?>"));
+          }
+        }
+      } else {
+        document.addEventListener('DOMContentLoaded', function() {
+          if( typeof bwg_main_ready == 'function' ) {
+            if ( jQuery("#bwg_container1_<?php echo $bwg; ?>").height() ) {
+             bwg_main_ready(jQuery("#bwg_container1_<?php echo $bwg; ?>"));
+            }
+          }
+        });
+      }
     </script>
     <?php
   }
 
   public function ajax_content($params, $bwg, $content) {
+    $theme_row = $params['theme_row'];
 	  if ( isset($params['breadcrumb_arr']) && count($params['breadcrumb_arr']) > 1 ) { /* If not first album.*/
       $this->back($params, $bwg);
     }
@@ -169,18 +196,30 @@ class BWGViewSite {
       if((!isset($params['from']) || $params['from'] !== 'widget')
         && ((isset($params['show_sort_images']) && $params['show_sort_images'])
           || (isset($params['show_tag_box']) && $params['show_tag_box'])
-          || (isset($params['show_search_box']) && $params['show_search_box']))) {
-        ?>
-              <div class="search_line">
-                <?php
-                $this->ajax_html_frontend_sort_box($params, $bwg);
-
-                $this->ajax_html_frontend_search_tags($params, $bwg);
-
-                $this->ajax_html_frontend_search_box($params, $bwg);
-                ?>
-              </div>
-        <?php
+          || (isset($params['show_search_box']) && $params['show_search_box'])))
+      {
+        /* Used when Tag Filter is Select View */
+				if ( $theme_row->tags_view == 1 ) { ?>
+					<div class="search_line bwg_tag_select_view">
+					 <?php
+					 $this->ajax_html_frontend_sort_box($params, $bwg);
+					 $this->ajax_html_frontend_search_tags($params, $bwg);
+					 $this->ajax_html_frontend_search_box($params, $bwg);
+					 ?>
+					</div>
+				<?php
+				}
+				/* Used when Tag Filter is Button View */
+				else { ?>
+					<div class="search_line bwg_tag_buttons_view">
+					 <?php
+             $this->ajax_html_frontend_sort_box($params, $bwg);
+             $this->ajax_html_frontend_search_box($params, $bwg);
+             $this->ajax_html_frontend_search_tags($params, $bwg);
+					 ?>
+					</div>
+				<?php
+				}
       }
     }
 
@@ -219,14 +258,14 @@ class BWGViewSite {
 
   public function loading($bwg = 0, $image_enable_page = 0, $gallery_type = '' ) {
     $load_type_class = "bwg_loading_div_1";
-      if( ($image_enable_page == 2 || $image_enable_page == 3) ) {
+    if ( ($image_enable_page == 2 || $image_enable_page == 3) ) {
       $load_type_class = "bwg_load_more_ajax_loading";
     }
      ?>
-    <div id="ajax_loading_<?php echo $bwg; ?>" class="<?php echo $load_type_class; ?>">
+    <div id="ajax_loading_<?php echo sanitize_html_class($bwg); ?>" class="<?php echo sanitize_html_class($load_type_class); ?>">
       <div class="bwg_loading_div_2">
         <div class="bwg_loading_div_3">
-          <div id="loading_div_<?php echo $bwg; ?>" class="bwg_spider_ajax_loading">
+          <div id="loading_div_<?php echo sanitize_html_class($bwg); ?>" class="bwg_spider_ajax_loading">
           </div>
         </div>
       </div>
@@ -260,7 +299,7 @@ class BWGViewSite {
       echo '<style>' . $inline_style . '</style>';
     }
     ?>
-    <div class="bwg_back bwg_back_<?php echo $bwg; ?>" onclick="bwg_ajax('gal_front_form_<?php echo $bwg; ?>', '<?php echo $bwg; ?>', '<?php echo $params['container_id']; ?>', 'back', '', 'album')"><i class="bwg-icon-arrow-left"></i> <?php _e('Back', BWG()->prefix); ?></div>
+    <div class="bwg_back bwg_back_<?php echo sanitize_html_class($bwg); ?>" onclick="bwg_ajax('gal_front_form_<?php echo $bwg; ?>', '<?php echo $bwg; ?>', '<?php echo $params['container_id']; ?>', 'back', '', 'album')"><i class="bwg-icon-arrow-left"></i> <?php _e('Back', BWG()->prefix); ?></div>
     <?php
   }
 
@@ -302,12 +341,12 @@ class BWGViewSite {
       }
       if ( $params['showthumbs_name'] && isset($row->name) && $row->name != '' ) {
         ?>
-        <div class="bwg_gal_title_<?php echo $bwg; ?>"><?php echo $row->name; ?></div>
+        <div class="bwg_gal_title_<?php echo sanitize_html_class($bwg); ?>"><?php echo WDWLibrary::strip_tags(stripslashes($row->name)); ?></div>
         <?php
       }
       if ( $params['show_gallery_description'] && isset($row->description) && $row->description != '' ) {
         ?>
-        <div class="bwg_gal_title_<?php echo $bwg; ?> bwg_gal_description_<?php echo $bwg; ?>"><?php echo $row->description; ?></div>
+        <div class="bwg_gal_title_<?php echo sanitize_html_class($bwg); ?> bwg_gal_description_<?php echo sanitize_html_class($bwg); ?>"><?php echo WDWLibrary::strip_tags(stripslashes($row->description)); ?></div>
         <?php
       }
     }
@@ -323,8 +362,10 @@ class BWGViewSite {
       && ($params['gallery_row']->id == 0 || ($params['gallery_row']->gallery_type != 'facebook' && $params['gallery_row']->gallery_type != 'instagram' && $params['gallery_row']->gallery_type != 'instagram_post')) ) {
       if ( count($params['image_rows']['images']) ) {
         $bwg_tags_input_value = WDWLibrary::get('bwg_tag_id_'.$params['container_id']);
+        $bwg_download_nonce = wp_create_nonce( 'bwg-download-nonce' );
         $query_url = addslashes(add_query_arg(array(
                                                 "action" => "download_gallery",
+                                                "_wpnonce" => esc_attr( $bwg_download_nonce ),
                                                 "gallery_id" => $params['gallery_id'],
                                                 "bwg" => $bwg,
                                                 "type" => 'gallery',
@@ -335,7 +376,7 @@ class BWGViewSite {
                                               ), admin_url('admin-ajax.php')));
         ?>
         <div class="bwg_download_gallery">
-          <a href="<?php echo $query_url; ?>">
+          <a href="<?php echo esc_url($query_url); ?>">
             <i title="<?php _e('Download gallery', BWG()->prefix); ?>" class="bwg-icon-download bwg_ctrl_btn"></i>
           </a>
         </div>
@@ -354,6 +395,7 @@ class BWGViewSite {
       $placeholder = $params['placeholder'];
       $bwg_search = WDWLibrary::get('bwg_search_' . $current_view);
       $type = WDWLibrary::get('type_' . $current_view, 'album');
+      $type = ($type != 'album') ? 'gallery' : 'album';
       if ( $type == 'album' ) {
        $bwg_search = WDWLibrary::get('bwg_album_search_' . $current_view);
       }
@@ -364,7 +406,7 @@ class BWGViewSite {
       ob_start();
       ?>
       #bwg_search_container_1_<?php echo $current_view; ?> {
-		max-width: <?php echo $search_box_width; ?>px;
+				max-width: <?php echo $search_box_width; ?>px;
       }
       <?php
       $inline_style = ob_get_clean();
@@ -385,22 +427,22 @@ class BWGViewSite {
         $bwg_ajax_reset = "";
       }
       ?>
-      <div class="bwg_search_container_1" id="bwg_search_container_1_<?php echo $current_view; ?>">
-        <div class="bwg_search_container_2" id="bwg_search_container_2_<?php echo $current_view; ?>">
+      <div class="bwg_search_container_1" id="bwg_search_container_1_<?php echo sanitize_html_class($current_view); ?>">
+        <div class="bwg_search_container_2" id="bwg_search_container_2_<?php echo sanitize_html_class($current_view); ?>">
         <span class="bwg_search_input_container">
           <span class="bwg_search_loupe_container1 bwg-hidden">
              <i title="<?php echo __('SEARCH...', BWG()->prefix); ?>" class="bwg-icon-search bwg_search" onclick="bwg_ajax('<?php echo $form_id; ?>', '<?php echo $current_view; ?>', '<?php echo $cur_gal_id; ?>', <?php echo $album_gallery_id; ?>, '', '<?php echo $type; ?>', 1)"></i>
           </span>
-          <input id="bwg_search_input_<?php echo $current_view; ?>" class="bwg_search_input" type="text" onkeypress="bwg_key_press(this); return bwg_check_search_input_enter(this, event);" name="bwg_search_<?php echo $current_view; ?>" value="<?php echo $bwg_search; ?>" placeholder="<?php echo $placeholder; ?>" />
-          <span class="bwg_search_reset_container <?echo $bwg_search_reset; ?>">
+          <input id="bwg_search_input_<?php echo sanitize_html_class($current_view); ?>" class="bwg_search_input" type="text" onkeypress="bwg_key_press(this); return bwg_check_search_input_enter(this, event);" name="bwg_search_<?php echo $current_view; ?>" value="<?php echo esc_attr($bwg_search); ?>" placeholder="<?php echo esc_attr($placeholder); ?>" />
+          <span class="bwg_search_reset_container <?echo sanitize_html_class($bwg_search_reset); ?>">
           <i title="<?php echo __('Reset', BWG()->prefix); ?>" class="bwg-icon-times bwg_reset" onclick="bwg_clear_search_input('<?php echo $current_view; ?>'); <?php echo $bwg_ajax_reset;?> "></i>
         </span>
-          <input id="bwg_images_count_<?php echo $current_view; ?>" class="bwg_search_input" type="hidden" name="bwg_images_count_<?php echo $current_view; ?>" value="<?php echo $images_count; ?>">
+          <input id="bwg_images_count_<?php echo sanitize_html_class($current_view); ?>" class="bwg_search_input" type="hidden" name="bwg_images_count_<?php echo esc_attr($current_view); ?>" value="<?php echo esc_attr($images_count); ?>">
             <span class="search_placeholder_title" onclick="bwg_search_focus(this)" <?php echo $bwg_search_focus; ?>>
                 <span class="bwg_search_loupe_container">
                   <i title="<?php echo __('SEARCH...', BWG()->prefix); ?>" class="bwg-icon-search bwg_search"></i>
                 </span>
-                <span style="font-size: 12px; font-family: Ubuntu;"><?php echo $placeholder; ?></span>
+                <span style="font-size: 12px; font-family: Ubuntu;"><?php echo esc_html($placeholder); ?></span>
           </span>
         </span>
         </div>
@@ -417,6 +459,7 @@ class BWGViewSite {
       $sort_by = $params['sort_by'];
       $search_box_width = $params['search_box_width'];
       $type = WDWLibrary::get('type_' . $current_view, 'album');
+      $type = ($type != 'album') ? 'gallery' : 'album';
       $album_gallery_id = WDWLibrary::get('album_gallery_id_' . $current_view, 0, 'intval');
       if ( BWG()->options->front_ajax == "1" ) {
         $sort_by = WDWLibrary::get( 'sort_by_'. $bwg, $sort_by );
@@ -433,7 +476,7 @@ class BWGViewSite {
       }
       ?>
       <div class="bwg_order_cont">
-        <select id="bwg_order_<?php echo $current_view; ?>" class="bwg_order bwg_order_<?php echo $current_view; ?>" onchange="bwg_ajax('<?php echo $form_id; ?>', '<?php echo $current_view; ?>', '<?php echo $cur_gal_id; ?>', <?php echo $album_gallery_id; ?>, '', '<?php echo $type; ?>', 1, '', this.value)">
+        <select id="bwg_order_<?php echo sanitize_html_class($current_view); ?>" class="bwg_order bwg_order_<?php echo sanitize_html_class($current_view); ?>" onchange="bwg_ajax('<?php echo $form_id; ?>', '<?php echo $current_view; ?>', '<?php echo $cur_gal_id; ?>', <?php echo $album_gallery_id; ?>, '', '<?php echo $type; ?>', 1, '', this.value)">
           <option <?php if ( $sort_by == 'default' ) {
             echo 'selected';
           } ?> value="default"><?php echo __('Order by Default', BWG()->prefix); ?></option>
@@ -460,38 +503,116 @@ class BWGViewSite {
 
   public function ajax_html_frontend_search_tags($params, $bwg) {
     if ( isset($params['show_tag_box']) && $params['show_tag_box'] ) {
-      $form_id = 'gal_front_form_' . $bwg;
+    	$theme_row = $params['theme_row'];
+    	$form_id = 'gal_front_form_' . $bwg;
       $current_view = $bwg;
       $cur_gal_id = $params['container_id'];
       $tags_rows = $params['tags_rows'];
       $type = WDWLibrary::get('type_' . $current_view, 'album');
+      $type = ($type != 'album') ? 'gallery' : 'album';
       $bwg_search_tags = WDWLibrary::get('bwg_tag_id_' . $cur_gal_id, array());
       $get_filter_teg = WDWLibrary::get('filter_tag_' . $bwg);
       if ( BWG()->options->front_ajax == "1" && isset($get_filter_teg) && !empty($get_filter_teg) ) {
         $filter_teg_arr = explode(',', $get_filter_teg);
         $bwg_search_tags = $filter_teg_arr;
-      }
+      } ob_start();
       $album_gallery_id = WDWLibrary::get('album_gallery_id_' . $current_view, 0, 'intval');
+      $show_bottom_tag = 0;
       ?>
-      <div class="search_tags_container">
-        <select class="search_tags" id="bwg_tag_id_<?php echo $cur_gal_id; ?>" multiple="multiple">
-          <?php
-          if( !empty($tags_rows) ) {
-            foreach ( $tags_rows as $tags_row ) {
-              $selected = ( !empty($bwg_search_tags) && in_array($tags_row->term_id ? $tags_row->term_id : '', $bwg_search_tags)) ? 'selected="selected"' : '';
-              ?>
-              <option value="<?php echo $tags_row->term_id ?>" <?php echo $selected; ?>><?php echo $tags_row->name ?></option>
+			/* Tags styles */
+			<?php if ( ( $params['show_sort_images'] || $params['show_search_box'] ) && ( $params['show_tag_box'] && $theme_row->tags_view == 0 ) ) { ?>
+				#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_search_container_1,
+				#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_order_cont {
+					margin-bottom: 20px;
+				}
+			<?php } ?>
+			#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_tag_button_view_container .verLine {
+				border-left: 1px solid #<?php echo $theme_row->tags_but_border_color; ?>;
+			}
+			#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_tag_button_view_container button {
+				padding: <?php echo $theme_row->tags_but_padding; ?>;
+				margin: <?php echo $theme_row->tags_but_margin; ?>;
+				font-size: <?php echo $theme_row->tags_but_font_size; ?>px;
+				color: #<?php echo $theme_row->tags_but_font_color; ?>;
+				font-family: <?php echo $theme_row->tags_but_font_style; ?>;
+				font-weight: <?php echo $theme_row->tags_but_font_weight; ?>;
+				background-color: #<?php echo $theme_row->tags_but_bg_color; ?>;
+				border-radius: <?php echo $theme_row->tags_but_border_radius; ?>;
+				border: <?php echo $theme_row->tags_but_border_width; ?>px <?php echo $theme_row->tags_but_border_style; ?> #<?php echo $theme_row->tags_but_border_color; ?>;
+			}
+			#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_tag_button_view_container button.active {
+				background-color: #<?php echo $theme_row->tags_but_active_bg_color; ?>;
+			  color: #<?php echo $theme_row->tags_but_active_color; ?>;
+			}
+			#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_tag_button_see_all {
+				border-top: 1px solid #<?php echo $theme_row->tags_but_border_color; ?>;
+			}
+			#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_tag_button_see_all .see_all_tags {
+				border: <?php echo $theme_row->tags_but_see_all_border_w; ?>px <?php echo $theme_row->tags_but_see_all_border_s; ?> #<?php echo $theme_row->tags_but_see_all_border_c; ?>;
+				border-radius: <?php echo $theme_row->tags_but_see_all_border_r; ?>;
+				background-color: #<?php echo $theme_row->tags_but_see_all_back_color; ?>;
+				font-size: <?php echo $theme_row->tags_but_see_all_size; ?>px;
+				color: #<?php echo $theme_row->tags_but_see_all_color; ?>;
+			}
+			#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_tag_button_see_all .see_all_tags span {
+				font-size: <?php echo $theme_row->tags_but_see_all_size; ?>px;
+				font-weight: <?php echo $theme_row->tags_but_font_weight; ?>;
+				font-family: <?php echo $theme_row->tags_but_font_style; ?>;
+				background-color: #<?php echo $theme_row->tags_but_see_all_color; ?>;
+			}
+			@media only screen and (max-width : 480px) {
+				#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .bwg_tag_button_see_all .see_all_tags {
+					font-size: calc(<?php echo $theme_row->tags_but_see_all_size; ?>px - 3px);
+					 padding: 10px 15px;
+    left: 42%;
+				}
+			}
+			<?php
+			$inline_style = ob_get_clean();
+			if ( BWG()->options->use_inline_stiles_and_scripts && !WDWLibrary::elementor_is_active() && !$params['ajax'] ) {
+				wp_add_inline_style('bwg_frontend', $inline_style);
+			}
+			else {
+				echo '<style>' . $inline_style . '</style>';
+			}
+      if ( $theme_row->tags_view == 1 ) { ?>
+        <div class="bwg_tags_container_<?php echo sanitize_html_class($current_view); ?>" >
+          <div class="search_tags_container">
+            <select class="search_tags" id="bwg_tag_id_<?php echo sanitize_html_class($cur_gal_id); ?>" multiple="multiple">
+             <?php
+             foreach ( $tags_rows as $tags_row ) {
+                $selected = ( !empty($bwg_search_tags) && in_array($tags_row->term_id ? $tags_row->term_id : '', $bwg_search_tags)) ? 'selected="selected"' : ''; ?>
+                <option value="<?php echo esc_attr($tags_row->term_id) ?>" <?php echo $selected; ?>><?php echo esc_html($tags_row->name) ?></option>
               <?php
-            }
-          }
-          ?>
-        </select>
-        <input type="hidden" id="bwg_tag_id_<?php echo $current_view; ?>" value="" />
-        <input type="hidden" class="current_view" value="<?php echo $current_view; ?>" />
-        <input type="hidden" class="form_id" value="<?php echo $form_id; ?>" />
-        <input type="hidden" class="cur_gal_id" value="<?php echo $cur_gal_id; ?>" />
-        <input type="hidden" class="album_gallery_id" value="<?php echo $album_gallery_id; ?>" />
-        <input type="hidden" class="type" value="<?php echo $type; ?>" />
+             }
+             ?>
+            </select>
+          </div>
+      <?php
+      }
+      else { ?>
+        <div class="bwg_tags_container_<?php echo sanitize_html_class($current_view); ?>">
+          <div class="bwg_tag_button_view_container" >
+             <button type="button" class="bwg_all_tags active" data-filter="All Tags"><?php echo __('All Tags', BWG()->prefix);?></button><div class="verLine"></div>
+             <?php
+             foreach ( $tags_rows as $tags_row ) {
+                $active = ( !empty($bwg_search_tags) && in_array($tags_row->term_id ? $tags_row->term_id : '', $bwg_search_tags)) ? 'active' : '';
+              ?>
+               <button type="button"  class="bwg_tags_filter_buttons <?php echo sanitize_html_class($active) ?>" data-filter="<?php echo esc_attr($tags_row->name) ?>" value="<?php echo esc_attr($tags_row->term_id); ?>" ><?php echo esc_html($tags_row->name) ?></button>
+             <?php
+             }
+             ?>
+          </div>
+          <div class="bwg_tag_button_see_all"><div class="see_all_tags show"><span>&#43;</span><?php echo __('see all tags', BWG()->prefix);?></div></div>
+        <?php
+        } ?>
+        <input type="hidden" id="bwg_tag_id_<?php echo sanitize_html_class($cur_gal_id); ?>" value="<?php echo esc_attr($get_filter_teg) ?>" />
+        <input type="hidden" class="current_view" value="<?php echo esc_attr($current_view); ?>" />
+        <input type="hidden" class="form_id" value="<?php echo esc_attr($form_id); ?>" />
+        <input type="hidden" class="cur_gal_id" value="<?php echo esc_attr($cur_gal_id); ?>" />
+        <input type="hidden" class="album_gallery_id" value="<?php echo esc_attr($album_gallery_id); ?>" />
+        <input type="hidden" class="type" value="<?php echo esc_attr($type); ?>" />
+        <input type="hidden" class="show_bottom_tag" value="<?php echo esc_attr($show_bottom_tag); ?>" />
       </div>
       <?php
     }
@@ -525,59 +646,60 @@ class BWGViewSite {
       ?>
       /*pagination styles*/
       #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> {
-      text-align: <?php echo $theme_row->page_nav_align; ?>;
-      font-size: <?php echo $theme_row->page_nav_font_size; ?>px;
-      font-family: <?php echo $theme_row->page_nav_font_style; ?>;
-      font-weight: <?php echo $theme_row->page_nav_font_weight; ?>;
-      color: #<?php echo $theme_row->page_nav_font_color; ?>;
-      margin: 6px 0 4px;
-      display: block;
-      height: 30px;
-      line-height: 30px;
+				text-align: <?php echo $theme_row->page_nav_align; ?>;
+				font-size: <?php echo $theme_row->page_nav_font_size; ?>px;
+				font-family: <?php echo $theme_row->page_nav_font_style; ?>;
+				font-weight: <?php echo $theme_row->page_nav_font_weight; ?>;
+				color: #<?php echo $theme_row->page_nav_font_color; ?>;
+				margin: 6px 0 4px;
+				display: block;
       }
       @media only screen and (max-width : 320px) {
       #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .displaying-num_<?php echo $current_view; ?> {
-      display: none;
+     	 display: none;
       }
       }
       #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .displaying-num_<?php echo $current_view; ?> {
-      font-size: <?php echo $theme_row->page_nav_font_size; ?>px;
-      font-family: <?php echo $theme_row->page_nav_font_style; ?>;
-      font-weight: <?php echo $theme_row->page_nav_font_weight; ?>;
-      color: #<?php echo $theme_row->page_nav_font_color; ?>;
-      margin-right: 10px;
-      vertical-align: middle;
+				font-size: <?php echo $theme_row->page_nav_font_size; ?>px;
+				font-family: <?php echo $theme_row->page_nav_font_style; ?>;
+				font-weight: <?php echo $theme_row->page_nav_font_weight; ?>;
+				color: #<?php echo $theme_row->page_nav_font_color; ?>;
+				margin-right: 10px;
+				vertical-align: middle;
       }
       #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .paging-input_<?php echo $current_view; ?> {
-      font-size: <?php echo $theme_row->page_nav_font_size; ?>px;
-      font-family: <?php echo $theme_row->page_nav_font_style; ?>;
-      font-weight: <?php echo $theme_row->page_nav_font_weight; ?>;
-      color: #<?php echo $theme_row->page_nav_font_color; ?>;
-      vertical-align: middle;
+				font-size: <?php echo $theme_row->page_nav_font_size; ?>px;
+				font-family: <?php echo $theme_row->page_nav_font_style; ?>;
+				font-weight: <?php echo $theme_row->page_nav_font_weight; ?>;
+				color: #<?php echo $theme_row->page_nav_font_color; ?>;
+				vertical-align: middle;
       }
       #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> a.disabled,
       #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> a.disabled:hover,
-      #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> a.disabled:focus {
-      cursor: default;
-      color: rgba(<?php echo $rgb_page_nav_font_color['red']; ?>, <?php echo $rgb_page_nav_font_color['green']; ?>, <?php echo $rgb_page_nav_font_color['blue']; ?>, 0.5);
+      #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> a.disabled:focus,
+			#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> input.bwg_current_page {
+				cursor: default;
+				color: rgba(<?php echo $rgb_page_nav_font_color['red']; ?>, <?php echo $rgb_page_nav_font_color['green']; ?>, <?php echo $rgb_page_nav_font_color['blue']; ?>, 0.5);
       }
-      #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> a {
-      cursor: pointer;
-      font-size: <?php echo $theme_row->page_nav_font_size; ?>px;
-      font-family: <?php echo $theme_row->page_nav_font_style; ?>;
-      font-weight: <?php echo $theme_row->page_nav_font_weight; ?>;
-      color: #<?php echo $theme_row->page_nav_font_color; ?>;
-      text-decoration: none;
-      padding: <?php echo $theme_row->page_nav_padding; ?>;
-      margin: <?php echo $theme_row->page_nav_margin; ?>;
-      border-radius: <?php echo $theme_row->page_nav_border_radius; ?>;
-      border-style: <?php echo $theme_row->page_nav_border_style; ?>;
-      border-width: <?php echo $theme_row->page_nav_border_width; ?>px;
-      border-color: #<?php echo $theme_row->page_nav_border_color; ?>;
-      background-color: #<?php echo $theme_row->page_nav_button_bg_color; ?>;
-      opacity: <?php echo number_format($theme_row->page_nav_button_bg_transparent / 100, 2, ".", ""); ?>;
-      box-shadow: <?php echo $theme_row->page_nav_box_shadow; ?>;
-      <?php echo ($theme_row->page_nav_button_transition) ? 'transition: all 0.3s ease 0s;-webkit-transition: all 0.3s ease 0s;' : ''; ?>
+      #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> a,
+      #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> input.bwg_current_page {
+				cursor: pointer;
+				text-align: center;
+				font-size: <?php echo $theme_row->page_nav_font_size; ?>px;
+				font-family: <?php echo $theme_row->page_nav_font_style; ?>;
+				font-weight: <?php echo $theme_row->page_nav_font_weight; ?>;
+				color: #<?php echo $theme_row->page_nav_font_color; ?>;
+				text-decoration: none;
+				padding: <?php echo $theme_row->page_nav_padding; ?>;
+				margin: <?php echo $theme_row->page_nav_margin; ?>;
+				border-radius: <?php echo $theme_row->page_nav_border_radius; ?>;
+				border-style: <?php echo $theme_row->page_nav_border_style; ?>;
+				border-width: <?php echo $theme_row->page_nav_border_width; ?>px;
+				border-color: #<?php echo $theme_row->page_nav_border_color; ?>;
+				background-color: #<?php echo $theme_row->page_nav_button_bg_color; ?>;
+				opacity: <?php echo number_format($theme_row->page_nav_button_bg_transparent / 100, 2, ".", ""); ?>;
+				box-shadow: <?php echo $theme_row->page_nav_box_shadow; ?>;
+				<?php echo ($theme_row->page_nav_button_transition) ? 'transition: all 0.3s ease 0s;-webkit-transition: all 0.3s ease 0s;' : ''; ?>
       }
       <?php
       if ( !$params['pagination_default_style'] && $pagination_style == 'image_browser' ) {
@@ -610,7 +732,7 @@ class BWGViewSite {
       .bwg_image_browser#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> a {
          padding: 0% 11% !important;
       }
-        #bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> {
+			#bwg_container1_<?php echo $current_view; ?> #bwg_container2_<?php echo $current_view; ?> .tablenav-pages_<?php echo $current_view; ?> {
         background-color: rgba(<?php echo $image_browser_images_conteiner['red']; ?>, <?php echo $image_browser_images_conteiner['green']; ?>, <?php echo $image_browser_images_conteiner['blue']; ?>, <?php echo number_format($theme_row->image_browser_full_transparent / 100, 2, ".", ""); ?>);
         margin-top: 0;
       }
@@ -635,7 +757,8 @@ class BWGViewSite {
       $limit = $page_number > 1 ? $items_per_page['load_more_image_count'] : $items_per_page['images_per_page'];
       $limit = $limit ? $limit : 1;
       $type = WDWLibrary::get('type_' . $current_view, $type);
-      $album_gallery_id = WDWLibrary::get('album_gallery_id_' . $current_view, $cur_alb_gal_id);
+      $type = ($type != 'album') ? 'gallery' : 'album';
+      $album_gallery_id = WDWLibrary::get('album_gallery_id_' . $current_view, $cur_alb_gal_id, 'intval');
       if ( $count_items ) {
         if ( $count_items % $limit ) {
           $items_county = ($count_items - $count_items % $limit) / $limit + 1;
@@ -655,15 +778,15 @@ class BWGViewSite {
       $next_page = "next-page-" . $current_view;
       $last_page = "last-page-" . $current_view;
       ?>
-      <span class="bwg_nav_cont_<?php echo $current_view; ?>">
+      <span class="bwg_nav_cont_<?php echo sanitize_html_class($current_view); ?>">
       <?php
       if ( $pagination == 1 ) {
         ?>
-        <div class="tablenav-pages_<?php echo $current_view; ?>">
+        <div class="tablenav-pages_<?php echo sanitize_html_class($current_view); ?>">
           <?php
           if ( $theme_row->page_nav_number ) {
             ?>
-            <span class="displaying-num_<?php echo $current_view; ?>"><?php echo $count_items . ' ' . __(' item(s)', BWG()->prefix); ?></span>
+            <span class="displaying-num_<?php echo sanitize_html_class($current_view); ?>"><?php echo esc_html($count_items) . ' ' . __(' item(s)', BWG()->prefix); ?></span>
             <?php
           }
           if ( $count_items > $limit ) {
@@ -688,25 +811,24 @@ class BWGViewSite {
               $last_page = "last-page disabled";
             }
             ?>
-            <span class="pagination-links_<?php echo $current_view; ?> pagination-links">
+            <span class="pagination-links_<?php echo sanitize_html_class($current_view); ?> pagination-links" data-pages-count="<?php echo esc_attr($items_county); ?>">
               <span class="pagination-links_col1">
-              <a class="bwg-a <?php echo $first_page; ?>" title="<?php echo __('Go to the first page', BWG()->prefix); ?>" <?php echo (($enable_dynamic_url || $enable_seo) && $page_number > 1) ? 'href="' . esc_url(add_query_arg(array( "page_number_" . $current_view => 1 ), $_SERVER['REQUEST_URI'])) . '"' : ""; ?>><?php echo $first_button; ?></a>
-              <a class="bwg-a <?php echo $prev_page; ?>" title="<?php echo __('Go to the previous page', BWG()->prefix); ?>" <?php echo (($enable_dynamic_url || $enable_seo) && $page_number > 1) ? 'href="' . esc_url(add_query_arg(array( "page_number_" . $current_view => $page_number - 1 ), $_SERVER['REQUEST_URI'])) . '"' : ""; ?>><?php echo $previous_button; ?></a>
+              <a class="bwg-a <?php echo esc_html($first_page); ?>" title="<?php echo __('Go to the first page', BWG()->prefix); ?>" <?php echo (($enable_dynamic_url || $enable_seo) && $page_number > 1) ? 'href="' . esc_url(add_query_arg(array( "page_number_" . $current_view => 1 ), $_SERVER['REQUEST_URI'])) . '"' : ""; ?>><?php echo esc_html($first_button); ?></a>
+              <a class="bwg-a <?php echo esc_html($prev_page); ?>" title="<?php echo __('Go to the previous page', BWG()->prefix); ?>" <?php echo (($enable_dynamic_url || $enable_seo) && $page_number > 1) ? 'href="' . esc_url(add_query_arg(array( "page_number_" . $current_view => $page_number - 1 ), $_SERVER['REQUEST_URI'])) . '"' : ""; ?>><?php echo esc_html($previous_button); ?></a>
               </span>
-               <span class="pagination-links_col2">
-                <span class="paging-input_<?php echo $current_view; ?>">
-                <span class="total-pages_<?php echo $current_view; ?>"><?php echo $page_number; ?></span> <?php echo __('of', BWG()->prefix); ?>
-                <span class="total-pages_<?php echo $current_view; ?>">
-                  <?php echo $items_county; ?>
-                </span>
-                </span>
-               </span>
+							<span class="pagination-links_col2">
+									<input type="number" class="bwg_current_page" name="bwg_current_page" value="<?php echo esc_attr($page_number); ?>" data-url-info="page_number_<?php echo esc_attr($current_view); ?>" onkeypress="return bwg_change_page_<?php echo $current_view; ?>(event, this)" min="1" oninput="validity.valid||(value='')" />
+										<?php echo __('of', BWG()->prefix); ?>
+										<span class="total-pages_<?php echo sanitize_html_class($current_view); ?>">
+											<?php echo esc_html($items_county); ?>
+										</span>
+							</span>
               <span class="pagination-links_col3">
-                <a class="bwg-a <?php echo $next_page ?>" title="<?php echo __('Go to the next page', BWG()->prefix); ?>" <?php echo (($enable_dynamic_url || $enable_seo) && $page_number + 1 <= $items_county) ? 'href="' . esc_url(add_query_arg(array( "page_number_" . $current_view => $page_number + 1 ), $_SERVER['REQUEST_URI'])) . '"' : ""; ?>><?php echo $next_button; ?></a>
-                <a class="bwg-a <?php echo $last_page ?>" title="<?php echo __('Go to the last page', BWG()->prefix); ?>" <?php echo (($enable_dynamic_url || $enable_seo) && $page_number < $items_county) ? 'href="' . esc_url(add_query_arg(array( "page_number_" . $current_view => $items_county ), $_SERVER['REQUEST_URI'])) . '"' : ""; ?>><?php echo $last_button; ?></a>
+                <a class="bwg-a <?php echo esc_html($next_page) ?>" title="<?php echo __('Go to the next page', BWG()->prefix); ?>" <?php echo (($enable_dynamic_url || $enable_seo) && $page_number + 1 <= $items_county) ? 'href="' . esc_url(add_query_arg(array( "page_number_" . $current_view => $page_number + 1 ), $_SERVER['REQUEST_URI'])) . '"' : ""; ?>><?php echo esc_html($next_button); ?></a>
+                <a class="bwg-a <?php echo esc_html($last_page) ?>" title="<?php echo __('Go to the last page', BWG()->prefix); ?>" <?php echo (($enable_dynamic_url || $enable_seo) && $page_number < $items_county) ? 'href="' . esc_url(add_query_arg(array( "page_number_" . $current_view => $items_county ), $_SERVER['REQUEST_URI'])) . '"' : ""; ?>><?php echo esc_html($last_button); ?></a>
               </span>
-              </span>
-            <?php
+						</span>
+						<?php
           }
           ?>
         </div>
@@ -715,9 +837,9 @@ class BWGViewSite {
       elseif ($pagination == 2) {
         if ($count_items > ($limit * ($page_number - 1)) + $items_per_page['images_per_page']) {
         ?>
-          <div id="bwg_load_<?php echo $current_view; ?>" class="tablenav-pages_<?php echo $current_view; ?>">
-            <a class="bwg-a bwg_load_btn_<?php echo $current_view; ?> bwg_load_btn" href="javascript:void(0);"><?php echo __('Load More...', BWG()->prefix); ?></a>
-            <input type="hidden" id="bwg_load_more_<?php echo $current_view; ?>" name="bwg_load_more_<?php echo $current_view; ?>" value="on" />
+          <div id="bwg_load_<?php echo sanitize_html_class($current_view); ?>" class="tablenav-pages_<?php echo sanitize_html_class($current_view); ?>">
+            <a class="bwg-a bwg_load_btn_<?php echo sanitize_html_class($current_view); ?> bwg_load_btn" href="javascript:void(0);"><?php echo __('Load More...', BWG()->prefix); ?></a>
+            <input type="hidden" id="bwg_load_more_<?php echo sanitize_html_class($current_view); ?>" name="bwg_load_more_<?php echo esc_attr($current_view); ?>" value="on" />
           </div>
         <?php
         } else {
@@ -747,10 +869,11 @@ class BWGViewSite {
           <?php
         }
       }
+
       $page_number = WDWLibrary::get('page_number_' . $current_view, 1, 'intval');
       $scroll_to_top = $pagination == 1 ? 1 : 0;
       ?>
-      <input type="hidden" id="page_number_<?php echo $current_view; ?>" name="page_number_<?php echo $current_view; ?>" value="<?php echo $page_number; ?>" />
+      <input type="hidden" id="page_number_<?php echo sanitize_html_class($current_view); ?>" name="page_number_<?php echo esc_attr($current_view); ?>" value="<?php echo esc_attr($page_number); ?>" />
       <script type="text/javascript">
         function spider_page_<?php echo $current_view; ?>(cur, x, y, load_more) {
           if (typeof load_more == "undefined") {
@@ -783,13 +906,16 @@ class BWGViewSite {
             case -2:
               document.getElementById('page_number_<?php echo $current_view; ?>').value = 1;
               break;
+						case 0:
+              document.getElementById('page_number_<?php echo $current_view; ?>').value = x;
+              break;
             default:
               document.getElementById('page_number_<?php echo $current_view; ?>').value = 1;
           }
           bwg_ajax('<?php echo $form_id; ?>', '<?php echo $current_view; ?>', '<?php echo $id; ?>', '<?php echo $album_gallery_id; ?>', '', '<?php echo $type; ?>', 0, '', '', load_more, '', <?php echo $scroll_to_top; ?>);
         }
 
-        <?php if ( BWG()->options->front_ajax != "1" ) { ?>
+        <?php if ( BWG()->options->front_ajax != "1" ) {  ?>
             jQuery('.<?php echo $first_page; ?>').on('click', function () {
               spider_page_<?php echo $current_view; ?>(this, <?php echo $page_number; ?>, -2, 'numeric');
               return false;
@@ -806,8 +932,39 @@ class BWGViewSite {
               spider_page_<?php echo $current_view; ?>(this, <?php echo $page_number; ?>, 2, 'numeric');
               return false;
             });
-
         <?php } ?>
+
+				/* Change page on input enter. */
+        function bwg_change_page_<?php echo $current_view; ?>( e, that ) {
+          if (  e.key == 'Enter' ) {
+            var to_page = parseInt(jQuery(that).val());
+            var pages_count = jQuery(that).parents(".pagination-links").data("pages-count");
+            var current_url_param = jQuery(that).attr('data-url-info');
+            if (to_page > pages_count) {
+              to_page = 1;
+            }
+	 					<?php if ( BWG()->options->front_ajax != "1" ) {  ?>
+							spider_page_<?php echo $current_view; ?>(this, to_page, 0, 'numeric');
+							return false;
+						<?php
+	 					} else { ?>
+            	var url= new URL(window.parent.location);
+							var searchParams = new URLSearchParams(url.search);
+           	 	if(searchParams != ""){
+                var get_page_number = searchParams.get(current_url_param);
+                searchParams.set(current_url_param, to_page);
+                var new_url = searchParams.toString();
+              }
+           	 	else {
+                var new_url = current_url_param + "=" + to_page;
+              }
+							window.location.replace("?" + new_url);
+							return false;
+		  			<?php } ?>
+          }
+          return true;
+        }
+
         jQuery('.bwg_load_btn_<?php echo $current_view; ?>').on('click', function () {
             spider_page_<?php echo $current_view; ?>(this, <?php echo $page_number; ?>, 1, true);
             return false;

@@ -24,7 +24,7 @@ class ShortcodeController_bwg {
 
   public function display() {
     $params = array();
-    $params['gutenberg_callback'] = WDWLibrary::get('callback');
+    $params['gutenberg_callback'] = WDWLibrary::get('callback', '', 'esc_js');
     $params['gutenberg_id'] = WDWLibrary::get('edit', 0, 'intval');
     $params['elementor_callback'] = WDWLibrary::get('elementor_callback', 0, 'intval');
     $params['from_menu'] = $this->from_menu;

@@ -5,14 +5,7 @@ jQuery(window).on('load',function(){
   }
 });
 
-jQuery(function() {
-  bwg_shortcode_ready();
-});
-jQuery(window).resize(function() {
-  bwg_shortcode_ready();
-});
-
-function bwg_shortcode_ready() {
+(function () {
   var width_window;
   var height_window;
   tinymce.create('tinymce.plugins.bwg_mce', {
@@ -113,4 +106,4 @@ function bwg_shortcode_ready() {
   if ( typeof bwg_set_shortcode_popup_dimensions == "function" ) {
     bwg_set_shortcode_popup_dimensions();
   }
-}
+})()

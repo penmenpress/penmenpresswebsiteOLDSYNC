@@ -74,7 +74,7 @@ class TenWebLibNew {
     $this->overview_instance->display_overview_page();
   }
 
-  // Includs
+  // Includes
   public function wd_includes() {
     $wd_options = $this->config;
     require_once $wd_options->wd_dir_includes . '/deactivate.php';

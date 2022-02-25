@@ -13,31 +13,27 @@ class BWGViewThumbnails extends BWGViewSite {
           wp_add_inline_style('bwg_frontend', $inline_style);
         }
         else {
-          echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
+          echo '<style id="bwg-style-' . sanitize_html_class($bwg) . '">' . $inline_style . '</style>';
         }
       }
     }
     else {
-      echo '<style id="bwg-style-' . $bwg . '">' . $inline_style . '</style>';
-      echo '<script id="bwg-script-' . $bwg .'">
-        jQuery(function() {
-          bwg_main_ready();
-        });
-      </script>';
+      echo '<style id="bwg-style-' . sanitize_html_class($bwg) . '">' . $inline_style . '</style>';
     }
     ob_start();
     ?>
-    <div data-max-count="<?php echo $params['image_column_number']; ?>"
-         data-thumbnail-width="<?php echo $params['thumb_width']; ?>"
-         data-bwg="<?php echo $bwg; ?>"
-         data-gallery-id="<?php echo $params['gallery_id']; ?>"
-         data-lightbox-url="<?php echo addslashes(add_query_arg($params['params_array'], admin_url('admin-ajax.php'))); ?>"
-         id="bwg_<?php echo $params['gallery_type'].'_'.$bwg ?>"
-         class="bwg-container-<?php echo $bwg; ?> bwg-thumbnails bwg-standard-thumbnails bwg-container bwg-border-box">
+    <div data-max-count="<?php echo esc_attr($params['image_column_number']); ?>"
+         data-thumbnail-width="<?php echo esc_attr($params['thumb_width']); ?>"
+         data-bwg="<?php echo esc_attr($bwg); ?>"
+         data-gallery-id="<?php echo esc_attr($params['gallery_id']); ?>"
+         data-lightbox-url="<?php echo esc_attr(addslashes(add_query_arg($params['params_array'], admin_url('admin-ajax.php')))); ?>"
+         id="bwg_<?php echo esc_attr($params['gallery_type'].'_'.$bwg) ?>"
+         class="bwg-container-<?php echo sanitize_html_class($bwg); ?> bwg-thumbnails bwg-standard-thumbnails bwg-container bwg-border-box">
       <?php
       foreach ($image_rows as $image_row) {
         $is_embed = preg_match('/EMBED/',$image_row->filetype) == 1 ? true : false;
         $is_embed_video = preg_match('/VIDEO/',$image_row->filetype) == 1 ? true : false;
+	  		$bwg_thumb_url = esc_url($is_embed ? $image_row->thumb_url : BWG()->upload_url . $image_row->thumb_url);
         $class = '';
         $data_image_id = '';
         $href = '';
@@ -55,13 +51,13 @@ class BWGViewThumbnails extends BWGViewSite {
         $ecommerce_icon .= '</div></div>';
         if ( $params['thumb_click_action'] == 'open_lightbox' ) {
           $class = ' bwg_lightbox';
-          $data_image_id = ' data-image-id="' . $image_row->id . '"';
+          $data_image_id = ' data-image-id="' . esc_attr($image_row->id) . '"';
           if ( BWG()->options->enable_seo ) {
-            $href = ' href="' . ($is_embed ? $image_row->thumb_url : BWG()->upload_url . $image_row->image_url) . '"';
+            $href = ' href="' . esc_url($is_embed ? $image_row->thumb_url : BWG()->upload_url . $image_row->image_url) . '"';
           }
         }
         elseif ( $params['thumb_click_action'] == 'redirect_to_url' && $image_row->redirect_url ) {
-          $href = ' href="' . $image_row->redirect_url . '" target="' .  ($params['thumb_link_target'] ? '_blank' : '')  . '"';
+          $href = ' href="' . esc_url($image_row->redirect_url) . '" target="' .  (esc_attr($params['thumb_link_target']) ? '_blank' : '')  . '"';
         }
 
         $resolution_thumb = $image_row->resolution_thumb;
@@ -75,18 +71,18 @@ class BWGViewThumbnails extends BWGViewSite {
         }
         ?>
       <div class="bwg-item">
-        <a class="bwg-a<?php echo $class; ?>" <?php echo $data_image_id; ?><?php echo $href; ?>>
+        <a class="bwg-a <?php echo sanitize_html_class($class); ?>" <?php echo $data_image_id; ?><?php echo $href; ?> data-elementor-open-lightbox="no" >
         <?php if ( $params['image_title'] == 'show' && $theme_row->thumb_title_pos == 'top' ) { echo $title; } ?>
         <div class="bwg-item0 <?php if( $lazyload ) { ?> lazy_loader <?php } ?>">
           <div class="bwg-item1 <?php echo $theme_row->thumb_hover_effect == 'zoom' && $params['image_title'] == 'hover' ? 'bwg-zoom-effect' : ''; ?>">
             <div class="bwg-item2">
-              <img class="skip-lazy bwg_standart_thumb_img_<?php echo $bwg; ?> <?php if( $lazyload ) { ?> bwg_lazyload <?php } ?>"
-                   data-id="<?php echo $image_row->id; ?>"
-                   data-width="<?php echo $image_thumb_width; ?>"
-                   data-height="<?php echo $image_thumb_height; ?>"
-                   data-original="<?php echo ($is_embed ? "" : BWG()->upload_url) . $image_row->thumb_url; ?>"
-                   src="<?php if( !$lazyload ) { echo ($is_embed ? "" : BWG()->upload_url) . $image_row->thumb_url; } else { echo BWG()->plugin_url."/images/lazy_placeholder.gif"; } ?>"
-                   alt="<?php echo $image_row->alt; ?>" />
+              <img class="skip-lazy bwg_standart_thumb_img_<?php echo sanitize_html_class($bwg); ?> <?php if( $lazyload ) { ?> bwg_lazyload <?php } ?>"
+                   data-id="<?php echo esc_attr($image_row->id); ?>"
+                   data-width="<?php echo esc_attr($image_thumb_width); ?>"
+                   data-height="<?php echo esc_attr($image_thumb_height); ?>"
+                   data-src="<?php echo $bwg_thumb_url; ?>"
+                   src="<?php if( !$lazyload ) { echo $bwg_thumb_url; } else { echo esc_url(BWG()->plugin_url."/images/lazy_placeholder.gif"); } ?>"
+                   alt="<?php echo esc_attr($image_row->alt); ?>" />
             </div>
             <div class="<?php echo $theme_row->thumb_hover_effect == 'zoom' && $params['image_title'] == 'hover' ? 'bwg-zoom-effect-overlay' : ''; ?>">
               <?php if ( $params['image_title'] == 'hover' ) { echo $title; } ?>
@@ -97,9 +93,8 @@ class BWGViewThumbnails extends BWGViewSite {
         </div>
         <?php if ( function_exists('BWGEC') && $params['ecommerce_icon'] == 'show' ) { echo $ecommerce_icon; } ?>
         <?php if ( $params['image_title'] == 'show' && $theme_row->thumb_title_pos == 'bottom' ) { echo $title; } ?>
-        <?php
-        if ( isset($params['show_thumb_description']) && $params['show_thumb_description'] ) { echo $description; } ?>
         </a>
+        <?php if ( isset($params['show_thumb_description']) && $params['show_thumb_description'] ) { echo $description; } ?>
       </div>
       <?php
       }

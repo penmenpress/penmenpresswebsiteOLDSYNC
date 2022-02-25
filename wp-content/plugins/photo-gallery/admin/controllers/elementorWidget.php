@@ -33,7 +33,7 @@ class BWGElementor extends \Elementor\Widget_Base {
       }
     </style>
     <?php
-    return __('Gallery', BWG()->prefix);
+    return __('Photo Gallery', BWG()->prefix);
   }
 
   /**
@@ -42,7 +42,7 @@ class BWGElementor extends \Elementor\Widget_Base {
    * @return string Widget icon.
    */
   public function get_icon() {
-    return 'fa twbb-photo-gallery twbb-widget-icon';
+    return 'twbb-photo-gallery twbb-widget-icon';
   }
 
   /**

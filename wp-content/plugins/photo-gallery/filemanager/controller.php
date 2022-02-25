@@ -41,16 +41,15 @@ class FilemanagerController {
   }
 
   public function display() {
-	$params = array();
-	$dir = $this->model->get_from_session('dir', '');
+    $params = array();
+    $dir = str_replace(array('\\', '../'), '', $this->model->get_from_session('dir', ''));
     $search = $this->model->get_from_session('search', '');
     $page_num = $this->model->get_from_session('paged', 0);
-    $extensions = $this->model->get_from_session('extensions', '*');
     $callback = $this->model->get_from_session('callback', '');
-    $valid_types = explode( ',', strtolower($extensions) );
+    $valid_types = explode( ',', strtolower('jpg,jpeg,png,gif,svg') );
 
 	// set session data.
-	$session_data = array();
+	  $session_data = array();
     $session_data['sort_by'] = $this->model->get_from_session('sort_by', 'date_modified');
     $session_data['sort_order'] = $this->model->get_from_session('sort_order', 'desc');
     $session_data['items_view'] = $this->model->get_from_session('items_view', 'thumbs');
@@ -58,19 +57,19 @@ class FilemanagerController {
     $session_data['clipboard_files'] = $this->model->get_from_session('clipboard_files', '');
     $session_data['clipboard_src'] = $this->model->get_from_session('clipboard_src', '');
     $session_data['clipboard_dest'] = $this->model->get_from_session('clipboard_dest', '');
-	$params['session_data'] = $session_data;
+    $params['session_data'] = $session_data;
 
-	$params['dir'] = ($dir == '' || $dir == '/') ? '/' : $dir .'/';
-	$params['path_components'] = $this->model->get_path_components( $dir );
-	$params['search'] = $search;
-	$params['page_num'] = $page_num;
-	$params['valid_types'] = $valid_types;
-	$params['orderby'] = $session_data['sort_by'];
-	$params['order'] = $session_data['sort_order'];
-	$params['page_per'] = $this->page_per;
-	// get file lists.
-	$items = $this->model->get_file_lists( $params );
-	$params['items'] = $items;
+    $params['dir'] = ($dir == '' || $dir == '/') ? '/' : $dir .'/';
+    $params['path_components'] = $this->model->get_path_components( $dir );
+    $params['search'] = $search;
+    $params['page_num'] = $page_num;
+    $params['valid_types'] = $valid_types;
+    $params['orderby'] = $session_data['sort_by'];
+    $params['order'] = $session_data['sort_order'];
+    $params['page_per'] = $this->page_per;
+    // get file lists.
+    $items = $this->model->get_file_lists( $params );
+    $params['items'] = $items;
 
 	$pagination_args = array(
 		'action' => 'addImages',
@@ -78,7 +77,7 @@ class FilemanagerController {
 		'width' => '850',
 		'height' => '550',
 		'task' => 'pagination',
-		'extensions' => '',
+		'extensions' => 'jpg,jpeg,png,gif,svg',
 		'callback' => '',
 		'dir' => $dir,
 		'TB_iframe' => '1',
@@ -99,34 +98,34 @@ class FilemanagerController {
   }
 
   function pagination() {
-	$dir = $this->model->get_from_session('dir', '');
-	$dir = ($dir == '') ? '/' : $dir .'/';
-	$order   = $this->model->get_from_session('order', 'desc');
-	$orderby = $this->model->get_from_session('orderby', 'date_modified');
-	$search = $this->model->get_from_session('search', '');
-	$paged = $this->model->get_from_session('paged', 0);
-	$page_per = $this->page_per;
-	$data = $this->model->get_file_lists(
-		array(
-		'dir' => $dir,
-		'order' => $order,
-		'orderby' => $orderby,
-		'page_num' => $paged,
-		'page_per' => $page_per,
-		'search' => $search
-		)
-	);
-	$html = '';
-	$i = 0;
-	if ( !empty($data['files']) ) {
-		foreach($data['files'] as $file ) {
-			++$i;
-			$file['index'] = $paged * $this->page_per + $i;
-			$html .= $this->view->print_file_thumb($file);
-		}
-	}
-	$json = array('html' => $html);
-	echo json_encode($json); exit;
+    $dir = str_replace(array('\\', '../'), '', $this->model->get_from_session('dir', ''));
+    $dir = ($dir == '') ? '/' : $dir .'/';
+    $order   = $this->model->get_from_session('order', 'desc');
+    $orderby = $this->model->get_from_session('orderby', 'date_modified');
+    $search = $this->model->get_from_session('search', '');
+    $paged = $this->model->get_from_session('paged', 0);
+    $page_per = $this->page_per;
+    $data = $this->model->get_file_lists(
+      array(
+      'dir' => $dir,
+      'order' => $order,
+      'orderby' => $orderby,
+      'page_num' => $paged,
+      'page_per' => $page_per,
+      'search' => $search
+      )
+    );
+    $html = '';
+    $i = 0;
+    if ( !empty($data['files']) ) {
+      foreach($data['files'] as $file ) {
+        ++$i;
+        $file['index'] = $paged * $this->page_per + $i;
+        $html .= $this->view->print_file_thumb($file);
+      }
+    }
+    $json = array('html' => $html);
+    echo json_encode($json); exit;
   }
 
 	function get_all_select() {
@@ -155,7 +154,7 @@ class FilemanagerController {
   public function make_dir() {
 
     global $wpdb;
-    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', WDWLibrary::get('dir','','sanitize_text_field','REQUEST')) : '');
+    $input_dir = (isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir','','sanitize_text_field','REQUEST')) : '');
     $input_dir = htmlspecialchars_decode($input_dir, ENT_COMPAT | ENT_QUOTES);
     $input_dir = $this->esc_dir($input_dir);
 
@@ -187,7 +186,8 @@ class FilemanagerController {
 		'alt' => str_replace("_", " ", $new_dir_path_name),
 		'filename' => str_replace("_", " ", $new_dir_path_name),
 		'thumb' => '/filemanager/images/dir.png',
-		'date_modified' => date("Y-m-d H:i:s")
+		'date_modified' => date("Y-m-d H:i:s"),
+		'author' => get_current_user_id(),
       );
       $format = array(
         '%d',
@@ -196,7 +196,8 @@ class FilemanagerController {
         '%s',
         '%s',
         '%s',
-        '%s'
+        '%s',
+        '%d'
       );
       $wpdb->insert($wpdb->prefix . 'bwg_file_paths', $data, $format);
       mkdir($new_dir_path);
@@ -207,7 +208,7 @@ class FilemanagerController {
       'bwg_width' => '850',
       'bwg_height' => '550',
       'task' => 'display',
-      'extensions' => WDWLibrary::get('extensions'),
+      'extensions' => 'jpg,jpeg,png,gif,svg',
       'callback' => WDWLibrary::get('callback'),
       'dir' => $input_dir,
       'TB_iframe' => '1',
@@ -219,10 +220,10 @@ class FilemanagerController {
   }
 
   public function parsing_items() {
-		$dir = $this->model->get_from_session('dir', '');
+		$dir = str_replace(array('\\', '../'), '', $this->model->get_from_session('dir', ''));
 		$dir = ($dir == '' || $dir == '/') ? '/' : $dir .'/';
-		$input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', WDWLibrary::get('dir','','sanitize_text_field','REQUEST')) : '');
-		$valid_types = explode(',', isset($_REQUEST['extensions']) ? strtolower(WDWLibrary::get('extensions','','sanitize_text_field','REQUEST')) : '*');
+		$input_dir = (isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) : '');
+		$valid_types = explode(',', 'jpg,jpeg,png,gif,svg');
 		$parsing = $this->model->files_parsing_db(array(
 			'refresh' => true,
 			'dir' => BWG()->upload_dir . $dir,
@@ -236,7 +237,7 @@ class FilemanagerController {
 			'width' => '850',
 			'height' => '550',
 			'task' => 'display',
-			'extensions' => WDWLibrary::get('extensions'),
+			'extensions' => 'jpg,jpeg,png,gif,svg',
 			'callback' => WDWLibrary::get('callback'),
 			'dir' => $input_dir,
 			'TB_iframe' => '1',
@@ -248,8 +249,8 @@ class FilemanagerController {
 	}
 
   public function rename_item() {
-	global $wpdb;
-    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', WDWLibrary::get('dir','','sanitize_text_field','REQUEST')) : '');
+	  global $wpdb;
+    $input_dir = (isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) : '');
     $input_dir = htmlspecialchars_decode($input_dir, ENT_COMPAT | ENT_QUOTES);
     $input_dir = $this->esc_dir($input_dir);
 
@@ -383,7 +384,7 @@ class FilemanagerController {
       'bwg_width' => '850',
       'bwg_height' => '550',
       'task' => 'display',
-      'extensions' => WDWLibrary::get('extensions'),
+      'extensions' => 'jpg,jpeg,png,gif,svg',
       'callback' => WDWLibrary::get('callback'),
       'dir' => $input_dir,
       'TB_iframe' => '1',
@@ -396,7 +397,7 @@ class FilemanagerController {
 
   public function remove_items() {
     global $wpdb;
-    $input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', (WDWLibrary::get('dir','','sanitize_text_field','REQUEST'))) : '');
+    $input_dir = (isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) : '');
     $input_dir = htmlspecialchars_decode($input_dir, ENT_COMPAT | ENT_QUOTES);
     $input_dir = $this->esc_dir($input_dir);
 
@@ -405,7 +406,7 @@ class FilemanagerController {
     $file_names = explode('**#**', (isset($_REQUEST['file_names']) ? stripslashes(WDWLibrary::get('file_names','','sanitize_text_field','REQUEST')) : ''));
     $path = $input_dir .'/';
     $msg = '';
-	$file_path_tbl = $wpdb->prefix . 'bwg_file_paths';
+	  $file_path_tbl = $wpdb->prefix . 'bwg_file_paths';
     foreach ($file_names as $file_name) {
       $file_name = htmlspecialchars_decode($file_name, ENT_COMPAT | ENT_QUOTES);
       $file_name = str_replace('../', '', $file_name);
@@ -444,7 +445,7 @@ class FilemanagerController {
       'bwg_width' => '850',
       'bwg_height' => '550',
       'task' => 'show_file_manager',
-      'extensions' => WDWLibrary::get('extensions'),
+      'extensions' => 'jpg,jpeg,png,gif,svg',
       'callback' => WDWLibrary::get('callback'),
       'dir' => $input_dir,
       'TB_iframe' => '1',
@@ -457,7 +458,7 @@ class FilemanagerController {
 
   public function paste_items() {
 	global $wpdb;
-	$input_dir = (isset($_REQUEST['dir']) ? str_replace('\\', '', (WDWLibrary::get('dir','','sanitize_text_field','REQUEST'))) : '');
+	$input_dir = (isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) : '');
 	$input_dir = htmlspecialchars_decode($input_dir, ENT_COMPAT | ENT_QUOTES);
 	$input_dir = $this->esc_dir($input_dir);
 
@@ -668,7 +669,7 @@ class FilemanagerController {
       'bwg_width' => '850',
       'bwg_height' => '550',
       'task' => 'show_file_manager',
-      'extensions' => WDWLibrary::get('extensions','','sanitize_text_field','REQUEST'),
+      'extensions' => 'jpg,jpeg,png,gif,svg',
       'callback' => WDWLibrary::get('callback','','sanitize_text_field','REQUEST'),
       'dir' => $input_dir,
       'TB_iframe' => '1',
@@ -682,7 +683,7 @@ class FilemanagerController {
 
   public function import_items() {
     $args = array(
-      'action' => 'bwg_UploadHandler',
+      'action' => 'bwg_upl',
       'importer_thumb_width' => WDWLibrary::get('importer_thumb_width','','intval','REQUEST'),
       'importer_thumb_height' => WDWLibrary::get('importer_thumb_height','','intval','REQUEST'),
       'callback' => WDWLibrary::get('callback','','sanitize_text_field','REQUEST'),
@@ -690,11 +691,11 @@ class FilemanagerController {
       'importer_img_width' => WDWLibrary::get('importer_img_width','','intval','REQUEST'),
       'importer_img_height' => WDWLibrary::get('importer_img_height','','intval','REQUEST'),
       'import' => 'true',
-      'redir' => WDWLibrary::get('dir','','sanitize_text_field','REQUEST'),
-      'dir' => WDWLibrary::get('dir','','sanitize_text_field','REQUEST') . '/',
+      'redir' => str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')),
+      'dir' => str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) . '/',
     );
 
-    $query_url = wp_nonce_url( admin_url('admin-ajax.php'), 'bwg_UploadHandler', 'bwg_nonce' );
+    $query_url = wp_nonce_url( admin_url('admin-ajax.php'), 'bwg_upl', 'bwg_nonce' );
     $query_url = add_query_arg($args, $query_url);
     header('Location: ' . $query_url);
     exit;
@@ -803,13 +804,14 @@ class FilemanagerController {
     }
 
 		$items = $wpdb->get_results( $wpdb->prepare('SELECT * FROM `' . $wpdb->prefix . 'bwg_file_paths` WHERE `is_dir` = 1 AND `path` ="%s"' . $where, $prepareArgs) );
-		if( !empty($items) ) {
-			foreach( $items as $item) {
-				$path = $item->path . $item->name .'/';
-				$children = $this->getRecursivePathLists($path, $item->name, $level+1);
-				$parents[] = $path;
-			}
-		}
+    if ( !empty($items) ) {
+      foreach ( $items as $item ) {
+        $path = $item->path . $item->name . '/';
+        $children = $this->getRecursivePathLists($path, $item->name, $level + 1);
+        $parents[] = $path;
+      }
+    }
+
 		return $parents;
 	}
 }

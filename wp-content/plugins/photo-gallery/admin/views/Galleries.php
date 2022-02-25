@@ -172,7 +172,6 @@ class GalleriesView_bwg extends AdminView_bwg {
     );
 
     echo $this->form(ob_get_clean(), $form_attr);
-
   }
 
   /**
@@ -185,6 +184,40 @@ class GalleriesView_bwg extends AdminView_bwg {
     $row = $params['row'];
     $current_id = $params['id'];
     $enable_wp_editor = isset(BWG()->options->enable_wp_editor) ? BWG()->options->enable_wp_editor : 0;
+
+    /* Preview Section - set galleries types */
+    $demo_url_for_free = "https://demo.10web.io/photo-gallery/";
+
+    $get_gallery_types = array(
+			'thumbnails' 	=> array(
+				'title' => __('Thumbnails', BWG()->prefix),
+				'preview_url' => add_query_arg('bwg-preview-type', 'thumbnails', $params['preview_action']),
+			),
+			'thumbnails_masonry' 	=> array(
+				'title' => __('Masonry', BWG()->prefix) . (!BWG()->is_pro ? '<span class="pro_btn">' . __('Premium', BWG()->prefix) . '</span>' : ''),
+				'preview_url' => !BWG()->is_pro ? $demo_url_for_free : add_query_arg('bwg-preview-type', 'thumbnails_masonry', $params['preview_action']),
+		  ),
+			'thumbnails_mosaic' 	=> array(
+				'title' => __('Mosaic', BWG()->prefix) . (!BWG()->is_pro ? '<span class="pro_btn">' . __('Premium', BWG()->prefix) . '</span>' : ''),
+				'preview_url' => !BWG()->is_pro ? $demo_url_for_free.'mosaic' : add_query_arg('bwg-preview-type', 'thumbnails_mosaic', $params['preview_action']),
+		  ),
+			'slideshow' 	=> array(
+				'title' => __('Slideshow', BWG()->prefix),
+				'preview_url' => add_query_arg('bwg-preview-type', 'slideshow', $params['preview_action']),
+		  ),
+			'image_browser' 	=> array(
+				'title' => __('Image Browser', BWG()->prefix),
+				'preview_url' => add_query_arg('bwg-preview-type', 'image_browser', $params['preview_action']),
+		  ),
+			'blog_style' 	=> array(
+				'title' => __('Blog Style', BWG()->prefix) . (!BWG()->is_pro ? '<span class="pro_btn">' . __('Premium', BWG()->prefix) . '</span>' : ''),
+				'preview_url' => !BWG()->is_pro ? $demo_url_for_free.'blog-style' : add_query_arg('bwg-preview-type', 'blog_style', $params['preview_action']),
+		  ),
+			'carousel' 	=> array(
+				'title' => __('Carousel', BWG()->prefix) . (!BWG()->is_pro ? '<span class="pro_btn">' . __('Premium', BWG()->prefix) . '</span>' : ''),
+				'preview_url' => !BWG()->is_pro ? $demo_url_for_free.'carousel' : add_query_arg('bwg-preview-type', 'carousel', $params['preview_action']),
+		  ),
+    );
     ?>
     <div class="gal-msg wd-hide">
       <?php
@@ -206,23 +239,35 @@ class GalleriesView_bwg extends AdminView_bwg {
           <input type="text" id="name" name="name" class="bwg_requried" value="<?php echo !empty($row->name) ? $row->name : ''; ?>">
         </div>
         <div class="bwg-page-actions">
-          <?php
-          if ( $params['shortcode_id'] ) {
-            require BWG()->plugin_dir . '/framework/howto/howto.php';
-          }
-          ?>
-          <button class="tw-button-primary button-large" onclick="if (spider_check_required('name', 'Title') || bwg_check_instagram_gallery_input('<?php echo BWG()->options->instagram_access_token ?>') ) {return false;};
-            spider_set_input_value('task', 'save');
-            spider_set_input_value('ajax_task', '');
-            spider_set_input_value('bulk-action-selector-top', '-1');
-            spider_ajax_save('<?php echo BWG()->prefix . '_gallery'; ?>');return false;">
-            <?php echo ($params['id']) ? __('Update', BWG()->prefix) : __('Publish', BWG()->prefix); ?>
-          </button>
-          <?php if ( $params['id'] && $params['preview_action'] ) { ?>
-            <a href="<?php echo $params['preview_action'] ?>" target="_blank" class="tw-button-secondary">
-              <?php _e('Preview', BWG()->prefix); ?>
-            </a>
-          <?php } ?>
+					<button class="tw-button-primary button-large" onclick="if (spider_check_required('name', 'Title') || bwg_check_instagram_gallery_input('<?php echo BWG()->options->instagram_access_token ?>') ) {return false;};
+						spider_set_input_value('task', 'save');
+						spider_set_input_value('ajax_task', '');
+						spider_set_input_value('bulk-action-selector-top', '-1');
+						spider_ajax_save('<?php echo BWG()->prefix . '_gallery'; ?>');return false;">
+		  			<?php echo ($params['id']) ? __('Update', BWG()->prefix) : __('Publish', BWG()->prefix); ?>
+					</button>
+
+					<?php /* Preview Section */
+					if ( $params['id'] && $params['preview_action'] ) { ?>
+						<div class="tw-button-secondary bwg-preview-button " onclick="bwg_preview_section(this);"><?php _e('Preview', BWG()->prefix); ?></div>
+						<div class="bwg-preview-section">
+							<p><?php _e('Preview gallery in:', BWG()->prefix); ?></p>
+							<?php  foreach ( $get_gallery_types as $key => $value ) { ?>
+								<div class="bwg-preview-gallery-type" onclick="window.open('<?php echo $value['preview_url']; ?>')">
+									<div class="bwg-preview-gallery-type-icon"></div>
+									<div class="bwg-preview-gallery-type-title">
+										<?php echo $value["title"]; ?>
+									</div>
+								</div>
+						 	<?php } ?>
+						</div>
+					<?php } ?>
+
+					<?php
+					if ( $params['shortcode_id'] ) {
+						require BWG()->plugin_dir . '/framework/howto/howto.php';
+					}
+					?>
         </div>
       </div>
         <?php
@@ -397,13 +442,16 @@ class GalleriesView_bwg extends AdminView_bwg {
   }
 
   public function image_display( $params = array() ) {
-	if( $params['row'] ) {
-	  $is_google_photos = ($params['row']->gallery_type == 'google_photos') ? TRUE : FALSE;
-	}
+    if( $params['row'] ) {
+      $is_google_photos = ($params['row']->gallery_type == 'google_photos') ? TRUE : FALSE;
+    }
     $ids_string = '';
     ?>
     <div class="buttons_div_left">
-      <a href="<?php echo $params['add_images_action']; ?>" id="add_image_bwg" onclick="jQuery('#loading_div').show();" class="button button-primary button-large thickbox thickbox-preview" title="<?php _e("Add Images", BWG()->prefix); ?>" onclick="return false;" style="margin-bottom:5px; <?php if ( $params['gallery_type'] != '' ) { echo 'display:none';} ?>">
+      <a href="<?php echo $params['add_images_action']; ?>" id="add_image_bwg"
+         class="button button-primary button-large thickbox thickbox-preview"
+         title="<?php _e("Add Images", BWG()->prefix); ?>"
+         style="margin-bottom:5px; <?php if ( $params['gallery_type'] != '' ) { echo 'display:none'; } ?>">
         <?php _e('Add Images', BWG()->prefix); ?>
       </a>
       <input type="button" id="import_image_bwg" class="button button-secondary button-large" onclick="<?php echo (BWG()->is_demo ? 'alert(\'' . addslashes(__('This option is disabled in demo.', BWG()->prefix)) . '\');' : 'spider_media_uploader(event, true);'); ?>return false;" value="<?php _e("Import from Media Library", BWG()->prefix); ?>" style="<?php if ( $params['gallery_type'] != '' ) { echo 'display:none';} ?>" />
@@ -411,14 +459,10 @@ class GalleriesView_bwg extends AdminView_bwg {
       /*(re?)define ajax_url to add nonce only in admin*/
       ?>
       <script>
-        var ajax_url = "<?php echo wp_nonce_url(admin_url('admin-ajax.php'), '', 'bwg_nonce'); ?>";
+        var bwg_ajax_url_nonce = "<?php echo wp_nonce_url(admin_url('admin-ajax.php'), '', 'bwg_nonce'); ?>";
       </script>
-      <input id="show_add_embed" class="button button-secondary button-large" title="<?php _e('Embed Media', BWG()->prefix); ?>" style="<?php if ( $params['gallery_type'] != '' ) {
-        echo 'display:none';
-      } ?>" type="button" onclick="jQuery('.opacity_add_embed').show(); jQuery('#add_embed_help').hide(); return false;" value="<?php _e('Embed Media', BWG()->prefix); ?>" />
-      <input id="show_bulk_embed" class="button button-secondary button-large" title="<?php _e('Social Bulk Embed', BWG()->prefix); ?>" style="<?php if ( $params['gallery_type'] != '' ) {
-        echo 'display:none';
-      } ?>" type="button" onclick="<?php echo (!BWG()->is_pro ? 'alert(\'' . addslashes(__('This option is available in Premium version', BWG()->prefix)) . '\');' : 'jQuery(\'.opacity_bulk_embed\').show();'); ?> return false;" value="<?php _e('Social Bulk Embed', BWG()->prefix); ?>" />
+      <input id="show_add_embed" class="button button-secondary button-large" title="<?php _e('Embed Media', BWG()->prefix); ?>" style="<?php if ( $params['gallery_type'] != '' ) { echo 'display:none'; } ?>" type="button" onclick="jQuery('.opacity_add_embed').show(); jQuery('#add_embed_help').hide(); return false;" value="<?php _e('Embed Media', BWG()->prefix); ?>" />
+      <input id="show_bulk_embed" class="button button-secondary button-large" title="<?php _e('Social Bulk Embed', BWG()->prefix); ?>" style="<?php if ( $params['gallery_type'] != '' ) { echo 'display:none'; } ?>" type="button" onclick="<?php echo (!BWG()->is_pro ? 'alert(\'' . addslashes(__('This option is available in Premium version', BWG()->prefix)) . '\');' : 'jQuery(\'.opacity_bulk_embed\').show();'); ?> return false;" value="<?php _e('Social Bulk Embed', BWG()->prefix); ?>" />
       <?php
       if ( is_plugin_active('image-optimizer-wd/io-wd.php') && !empty($params['rows']) ) {
         ?><a href="<?php echo add_query_arg(array('page' => 'iowd_settings', 'target' => 'wd_gallery'), admin_url('admin.php')); ?>" class="button button-primary button-large" target="_blank"><?php _e("Optimize Images", BWG()->prefix); ?></a><?php
@@ -455,7 +499,6 @@ class GalleriesView_bwg extends AdminView_bwg {
         <div>
           <p class="spider_description_title"><?php _e('<b>Instagram</b> URL example:', BWG()->prefix); ?></p>
           <input type="text" value="https://instagram.com/p/ykvv0puS4u" disabled="disabled">
-          <p class="description"><?php _e('Add', BWG()->prefix); ?> "<i style="text-decoration:underline;"><?php _e('post', BWG()->prefix); ?></i>" <?php _e('to the end of URL if you want to embed the whole Instagram post, not only its content.', BWG()->prefix); ?></p>
         </div>
         <?php
         if ( !empty($params['facebook_embed']['media']) && !empty($params['facebook_embed']['media']['body']) ) {
@@ -605,6 +648,8 @@ class GalleriesView_bwg extends AdminView_bwg {
         }
       }
       ?>
+      <!--Using to get message id in ajax response in spider_ajax_save function  -->
+      <input type="hidden" name="bwg_action_last_message" id="bwg_action_last_message" value="<?php echo isset($params['message']['image_message']) ? $params['message']['image_message'] : 0; ?>">
     </div>
     <div class="unsaved-msg wd-hide">
       <?php
@@ -660,11 +705,12 @@ class GalleriesView_bwg extends AdminView_bwg {
         foreach ( $params['rows'] as $row ) {
           $alternate = (!isset($alternate) || $alternate == '') ? 'alternate' : '';
           $temp = $row->id == 'tempid' ? TRUE : FALSE;
-          $is_oembed_instagram_post = ( $row->filetype == 'EMBED_OEMBED_INSTAGRAM_POST' ) ? TRUE : FALSE;
           $is_embed = preg_match('/EMBED/', $row->filetype) == 1 ? TRUE : FALSE;
-          $is_facebook_post = ($row->filetype == 'EMBED_OEMBED_FACEBOOK_POST') ? TRUE : FALSE;
-          $fb_post_url = ($is_facebook_post) ? $row->filename : '';
           $is_embed_instagram_post = preg_match('/INSTAGRAM_POST/', $row->filetype) == 1 ? TRUE : FALSE;
+          $is_oembed_instagram_post = ( $row->filetype == 'EMBED_OEMBED_INSTAGRAM_POST' ) ? TRUE : FALSE;
+          $is_facebook_post = ($row->filetype == 'EMBED_OEMBED_FACEBOOK_POST') ? TRUE : FALSE;
+          $is_instagram = ( in_array($row->filetype, WDWLibrary::get_instagram_types()) ) ? TRUE : FALSE;
+          $fb_post_url = ($is_facebook_post) ? $row->filename : '';
           $instagram_post_width = 'temp_instagram_post_width';
           $instagram_post_height = 'temp_instagram_post_height';
           $link = add_query_arg(array(
@@ -718,7 +764,7 @@ class GalleriesView_bwg extends AdminView_bwg {
                 <a class="thickbox thickbox-preview" onclick="jQuery('#loading_div').show();" href="<?php echo $image_link; ?>">
                 <?php } ?>
                   <span class="media-icon image-icon">
-                    <img id="image_thumb_<?php echo $row->id; ?>" class="preview-image gallery_image_thumb <?php echo $temp ? '' : 'bwg_no_border' ?>" title="<?php echo $row->filename; ?>" <?php echo $temp ? 'tempthumb_src=""' : ''; ?>  alt="" data-src = "<?php echo $temp ? '' : $image_url ?>" />
+                    <img id="image_thumb_<?php echo $row->id; ?>" class="preview-image gallery_image_thumb <?php echo $temp ? '' : 'bwg_no_border' ?>" title="<?php echo $row->filename; ?>" <?php echo $temp ? 'tempthumb_src=""' : ''; ?>  alt="" data-embed="<?php echo $is_embed; ?>" data-instagram="<?php echo $is_instagram; ?>" data-src = "<?php echo $temp ? '' : $image_url ?>" />
                   </span>
                   <?php echo $row->filename; ?>
                   <i class="wd-info dashicons dashicons-info" data-id="wd-info-<?php echo $row->id; ?>"></i>
@@ -821,6 +867,7 @@ class GalleriesView_bwg extends AdminView_bwg {
                 </div>
                 <?php } ?>
                 <input type="hidden" value="<?php echo $tags_id_string; ?>" id="tags_<?php echo $row->id; ?>" name="tags_<?php echo $row->id; ?>" />
+                <input type="hidden" value="<?php echo $tags_id_string; ?>" id="deleted_tags_<?php echo $row->id; ?>" name="deleted_tags_<?php echo $row->id; ?>" />
                 <input type="hidden" id="image_url_<?php echo $row->id; ?>" name="image_url_<?php echo $row->id; ?>" value="<?php echo $row->pure_image_url; ?>" />
                 <input type="hidden" id="thumb_url_<?php echo $row->id; ?>" name="thumb_url_<?php echo $row->id; ?>" value="<?php echo $row->pure_thumb_url; ?>" />
                 <input type="hidden" id="input_filename_<?php echo $row->id; ?>" name="input_filename_<?php echo $row->id; ?>" value="<?php echo $row->filename; ?>" />
@@ -836,22 +883,22 @@ class GalleriesView_bwg extends AdminView_bwg {
           $ids_string .= $temp ? '' : ($row->id . ',');
         }
         if (  count($params['rows']) <= 1 ) {
-          echo WDWLibrary::no_items('images', (BWG()->options->thumb_click_action != 'open_lightbox' ? 8 : 7));
+          echo WDWLibrary::no_items('images', 5);
         }
       }
       ?>
       </tbody>
     </table>
+    <?php $paged = WDWLibrary::get('paged', 1, 'intval'); ?>
     <div class="wd-hidden-values">
 	  <input type="hidden" value="<?php echo !empty($params['row']->modified_date) ? $params['row']->modified_date : time() ?>" id="modified_date" name="modified_date" />
       <input type="hidden" id="ids_string" name="ids_string" value="<?php echo $ids_string; ?>" />
-      <input type="hidden" id="paged" name="paged" value="1" />
+      <input type="hidden" id="paged" name="paged" value="<?php echo $paged; ?>" />
       <input type="hidden" id="ajax_task" name="ajax_task" value="" />
       <input type="hidden" id="image_current_id" name="image_current_id" value="" />
       <input type="hidden" id="total" name="total" value="<?php echo $params['total']; ?>" />
       <input type="hidden" id="added_tags_id" name="added_tags_id" value="" />
       <input type="hidden" id="added_tags_act" name="added_tags_act" value="" />
-      <a class="wd-add-tags thickbox thickbox-preview wd-hide" href="<?php echo add_query_arg(array('TB_iframe' => '1'),  $params['add_tags_action']); ?>"></a>
       <?php
       if (class_exists('BWGEC')) {
         $query_url = admin_url('admin-ajax.php');
@@ -869,6 +916,7 @@ class GalleriesView_bwg extends AdminView_bwg {
       <?php } ?>
       <input type="hidden" id="remove_pricelist" value="" />
     </div>
+    <a class="wd-add-tags thickbox thickbox-preview wd-hide" href="<?php echo add_query_arg(array('TB_iframe' => '1'),  $params['add_tags_action']); ?>"></a>
     <div class="tablenav bottom">
       <?php echo $this->pagination($params['page_url'], $params['total'], $params['items_per_page']); ?>
     </div>

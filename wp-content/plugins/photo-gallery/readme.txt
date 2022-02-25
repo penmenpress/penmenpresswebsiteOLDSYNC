@@ -1,9 +1,9 @@
-﻿=== Photo Gallery by 10Web - Mobile-Friendly Image Gallery ===
+=== Photo Gallery by 10Web - Mobile-Friendly Image Gallery ===
 Contributors: webdorado,wdsupport,photogallerysupport,10web
 Tags: gallery, photo gallery, image gallery, responsive gallery, wordpress gallery plugin, photo albums, gallery slider, gallery lightbox, wordpress photo gallery plugin, fullscreen gallery, watermarking, video gallery
 Requires at least: 4.6
-Tested up to: 5.6
-Stable tag: 1.5.65
+Tested up to: 5.9
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,10 +23,10 @@ Photo Gallery is the leading plugin for building beautiful mobile-friendly galle
 
 [Special Offer for all Premium Plugins](https://10web.io/plugins-bundle-pricing/)
 
-https://youtu.be/pA8-5qaMBqM
+https://www.youtube.com/watch?v=wCpF0BifvI8
 
 
-If you’re looking for a user friendly and feature rich plugin to add responsive galleries and albums to your website, Photo Gallery plugin can be the best option for you. It’s simple in use yet packed with powerful functionality, allowing you to create anything from simple photo galleries to selling digital content right from your website (Premium version). Photo Gallery  comes packed with stunning layout options, gallery and album views, multiple widgets and a number of extensions that take its functionality even further.  WordPress Photo Gallery is a great choice for photography websites and blogs,  as well as sites that want to have robust image galleries with easy navigation.
+If you’re looking for a user friendly and feature rich plugin to add responsive galleries and albums to your website, Photo Gallery plugin can be the best option for you. It’s simple to use yet packed with powerful functionality, allowing you to create anything from simple to complex photo galleries. Photo Gallery  comes packed with stunning layout options, gallery and album views, multiple widgets and a number of extensions that take its functionality even further.  WordPress Photo Gallery is a great choice for photography websites and blogs,  as well as sites that want to have robust image galleries with easy navigation.
 Check the extensive feature list of the plugin bellow, have a look at the plugin demo and give it a try.
 
 
@@ -104,7 +104,7 @@ Under the social options tab you’ll find settings for the Instagram and Facebo
 *   Possibility of changing the roles of who can edit the galleries/albums/images (Author/All Users)
 
 = Photo Gallery Add-ons =
-[Ecommerce Add-on](https://10web.io/plugins/wordpress-photo-gallery/) - Display your digital content and sell it directly from your website.
+[Google Photos Add-on](https://10web.io/plugins/wordpress-photo-gallery/) - Link and display your Google Photos albums in one click
 [Export/Import Add-on](https://10web.io/plugins/wordpress-photo-gallery/)  Export/import galleries, albums and all related data from one WordPress site to another.
 
 ###IMPORTANT:
@@ -281,6 +281,197 @@ Choose whether to display random or the first/last specific number of images.
 **Theme.** Choose the theme, which will be applied to the gallery/album.
 
 == Changelog ==
+
+= 1.6.0 =
+* Added: Slideshow filmstrip with fix count of thumbnails.
+* Improved: Russian translation.
+* Fixed: Security issue.
+* Fixed: XSS vulnerability reported by Nikita Podotykin of Positive Technologies.
+* Fixed: Zoom functionality.
+* Fixed: Filmstrip images load with enabled lazy load.
+* Fixed: Tags count on image delete.
+
+= 1.5.87 =
+* Fixed: Adding tags using Bulk Actions.
+* Fixed: Conflict with lazy load of SVG images in Elementor Tabs.
+* Fixed: Thumbnails titles on Elementor responsive mode.
+
+= 1.5.86 =
+* Fixed: Scroll Load functionality in Filemanager.
+* Fixed: Image title on Mosaic view.
+* Fixed: Negative numbers for ordering.
+* Fixed: Image tittle on hover for multiple galleries.
+* Fixed: Zoom functionality compatibility with some themes.
+
+= 1.5.85 =
+* Improved: Images sizes for Masonry view with few images.
+* Fixed: Bug on image upload in some cases.
+* Fixed: Preview for Masonry gallery group.
+* Fixed: Back button for Extended gallery group.
+* Fixed: Thumbnail dimensions should be the same after upload and reset.
+* Fixed: Image title and Gallery title/description font changing issue for Carousel view.
+
+= 1.5.84 =
+* Fixed: PHP warning on Extended view.
+* Fixed: Issue on generated shortcode page.
+* Fixed: Issue on closing shortcode popup.
+* Fixed: Instagram post sizes.
+* Fixed: Captcha in comments section.
+
+= 1.5.83 =
+* Improved: Updated external JS libs.
+* Fixed: Shortcode popup on WP5.8.
+* Fixed: Keep ordering of images the same when adding images to the gallery.
+* Fixed: Html in extended gallery group description.
+* Fixed: Thumbnail sizes after reset.
+* Fixed: Masonry layout with SVG images.
+* Fixed: Lightbox error when tag was chosen.
+
+= 1.5.82 =
+* Fixed: Instagram image thumbnails after publishing in edit mode.
+* Fixed: Zoom functional.
+* Fixed: Lightbox with active Select Tag.
+* Fixed: Image upload in some cases.
+* Fixed: Uploading multiple images.
+* Fixed: Tag filter with no results.
+* Fixed: Preview popup for rtl.
+* Fixed: Deleting image without update.
+* Fixed: Embed media hover.
+* Fixed: Images sharing.
+* Fixed: Empty shortcode options for custom post type.
+* Fixed: Gallery/Group list column headers alignment.
+
+= 1.5.81 =
+* Improved: DB queries on opening lightbox.
+* Improved: Updated external js libraries.
+* Improved: Escaped all data printed in gallery views.
+* Fixed: Disable "Add selected images to gallery" button after adding images.
+* Fixed: Missing "Back" button in Gallery groups with disabled dynamic URLs for galleries and gallery groups.
+* Fixed: Masonry distance issue with video items.
+* Fixed: Restrict Gallery download from URL.
+* Fixed: Bulk actions after search by alt/desc.
+
+= 1.5.80 =
+* Fixed: Shortcode popup on WP5.8.
+
+= 1.5.79 =
+* Fixed: Security issues with SVG files in folder.
+* Fixed: Set text watermark.
+* Fixed: Double loading in Gallery Group and Blog style views.
+* Fixed: Play button on Vimeo videos.
+* Fixed: Notices on import from media library.
+
+= 1.5.78 =
+* Fixed: Sanitize files data.
+
+= 1.5.77 =
+* Added: Select gallery/gallery group type on preview.
+* Fixed: XSS vulnerability.
+* Fixed: Lightbox close button on mobile.
+* Fixed: Gallery group preview image stretched.
+* Fixed: Adding image with dot in tag name.
+* Fixed: Warnings in filemanager.
+* Fixed: Image table header style on editing gallery.
+* Fixed: Bulk rotate.
+* Fixed: Create thumbnail for svg images.
+
+= 1.5.76 =
+* Improved: Lightbox load time.
+* Improved: Use "a" tag in image description.
+* Fixed: XSS vulnerability.
+* Fixed: Gallery Group styles on loading.
+* Fixed: Shortcode page style on mobile.
+* Fixed: Masonry view in some cases.
+* Fixed: "Show image counter" option with default settings.
+* Fixed: Filemanager size on opening.
+* Fixed: Delete image functionality.
+* Fixed: Delete gallery description functionality.
+* Fixed: Deleting images after search.
+
+= 1.5.75 =
+* Fixed: Security issues with SVG files.
+
+= 1.5.74 =
+* Fixed: XSS vulnerability.
+
+= 1.5.73 =
+* Fixed: Conflicts with some themes which added width/height attributes to img tags.
+* Fixed: Tags filter dropdown.
+* Fixed: New lines in image description on thumbnail view.
+* Fixed: Styles of pagination with top position.
+* Fixed: JS error after closing lightbox fullscreen.
+* Fixed: Importing newly added images from media library.
+* Fixed: Remove pagination from Add tags popup.
+* Fixed: Show image counter with disabled control buttons.
+* Fixed: HTML in gallery/gallery group description.
+
+= 1.5.72 =
+* Fixed: Random flash when changing photos.
+* Fixed: Images ordering when there are more than 50 image on a page.
+* Fixed: Image role restrictions for folders.
+* Fixed: Filemanager on screen with width 1920px.
+* Fixed: Styles in Add tags popup.
+* Fixed: AddThis functional.
+* Fixed: Gallery group title/description with quote in it.
+* Fixed: Select box is missing in case of there are no tags and tag box is shown.
+
+= 1.5.71 =
+* Added: New design for tag filters.
+* Added: Possibility to enter page number to jump to the specific page.
+* Fixed: Show gallery in tabs with changing visibility.
+* Fixed: Gallery in advanced tabs widget of Essential Addons for Elementor plugin.
+* Fixed: Horizontal mosaic view on mobile.
+* Fixed: Compatibility with PHP 8.
+* Fixed: Compatibility with WP 5.7.
+* Fixed: Removing +, ^ symbols from image filename on upload.
+* Fixed: Slideshow, Carousel autoplay when changing between browser tabs.
+* Fixed: Play/pause button size for Carousel view on mobile.
+
+= 1.5.70 =
+* Added: Zoom in/out for images in lightbox.
+* Changed: Reset only the current tag options on themes reset.
+* Changed: Make items clickable on editing Gallery groups.
+* Fixed: Removed hash after closing lightbox.
+* Fixed: Video causes a JS error while trying to close full screen in Slideshow view.
+* Fixed: Uploader issue in some cases.
+* Fixed: Scrolling down in options page.
+* Fixed: Date and Title filters as a default.
+* Fixed: Blog Style view alignment.
+* Fixed: Importing Gallery groups.
+* Fixed: Disable Elementor lightbox for gallery images.
+* Fixed: Preview in Elementor.
+* Fixed: Spacing between images in masonry view.
+* Fixed: Images description in gallery groups.
+
+= 1.5.69 =
+* Added: Possibility to set Embed YouTube video starting time and to show related videos from your channel.
+* Fixed: XSS vulnerability.
+* Fixed: Scroll bar styles in comments.
+* Fixed: Thumbnails alignment in uploader.
+* Fixed: Remove I button to show image title/description for image with empty title/description in lightbox.
+* Fixed: Update preview images after the gallery content has been removed.
+* Fixed: Message after deleting images with bulk action.
+
+= 1.5.68 =
+* Added: Possibility to allow users with none administrator role to edit themes, tags, options.
+* Fixed: XSS vulnerability.
+* Fixed: Ordering functionality for admin.
+* Fixed: Autoplay during blur/focus tabs.
+* Fixed: Export functionality on Mozilla.
+* Fixed: Image role restrictions.
+* Fixed: Slideshow autoplay in the multiple tabs.
+
+= 1.5.67 =
+* Fixed: Style issues with WP5.6.
+* Fixed: Duplicate of Gallery groups with Select all button.
+* Fixed: Do not allow double quotes in image name.
+* Fixed: Double quotes in gallery name.
+* Fixed: Do not duplicate image on importing from media library.
+* Fixed: Issue with jQuery mobile library.
+* Fixed: Editing shortcode in WP Classic editor.
+
+= 1.5.66 =
+* Changed: js ready function call logic.
 
 = 1.5.65 =
 * Changed: Adding shortcode design.

@@ -202,7 +202,6 @@ class AlbumsController_bwg {
       'action' => 'addImages',
       'bwg_width' => '800',
       'bwg_height' => '550',
-      'extensions' => 'jpg,jpeg,png,gif,svg',
       'callback' => 'bwg_add_preview_image',
       BWG()->nonce => wp_create_nonce('addImages'),
       'TB_iframe' => '1',

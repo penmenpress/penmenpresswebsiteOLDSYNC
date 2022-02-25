@@ -2,8 +2,8 @@
 class BWGControllerGalleryBox {
   public function execute() {
     $ajax_task = WDWLibrary::get('ajax_task');
-    if (method_exists($this, $ajax_task)) {
-	 $this->$ajax_task();
+    if ( method_exists($this, $ajax_task) ) {
+      $this->$ajax_task();
     }
     else {
       $this->display();
@@ -22,7 +22,7 @@ class BWGControllerGalleryBox {
 
   public function save_rate() {
     global $wpdb;
-    $image_id = WDWLibrary::get('image_id', 0, 'intval','POST');
+    $image_id = WDWLibrary::get('image_id', 0, 'intval', 'POST');
     $rate = WDWLibrary::get('rate');
     $ip = BWG()->options->save_ip ? $_SERVER['REMOTE_ADDR'] : '';
     if ( !$ip || !$wpdb->get_var($wpdb->prepare('SELECT `image_id` FROM `' . $wpdb->prefix . 'bwg_image_rate` WHERE `ip`="%s" AND `image_id`="%d"', $ip, $image_id)) ) {
@@ -31,19 +31,24 @@ class BWGControllerGalleryBox {
         'rate' => $rate,
         'ip' => $ip,
         'date' => date('Y-m-d H:i:s'),
-      ), array(
-		  '%d',
-		  '%f',
-		  '%s',
-		  '%s',
-		));
+    ), array(
+      '%d',
+      '%f',
+      '%s',
+      '%s',
+    ));
     }
     $rates = $wpdb->get_row($wpdb->prepare('SELECT AVG(`rate`) as `average`, COUNT(`rate`) as `rate_count` FROM ' . $wpdb->prefix . 'bwg_image_rate WHERE image_id="%d"', $image_id));
-    $wpdb->update($wpdb->prefix . 'bwg_image', array(
-      'avg_rating' => $rates->average,
-      'rate_count' => $rates->rate_count
-    ), array( 'id' => $image_id ),
-      array('%f','%d'),array('%d'));
+    $wpdb->update($wpdb->prefix . 'bwg_image',
+                  array(
+                    'avg_rating' => $rates->average,
+                    'rate_count' => $rates->rate_count,
+                  ),
+                  array( 'id' => $image_id ),
+                  array( '%f', '%d' ),
+                  array( '%d' )
+              );
+
     $this->display();
   }
 
@@ -65,7 +70,7 @@ class BWGControllerGalleryBox {
 		$image_id = WDWLibrary::get('comment_image_id', 0);
 		$name = trim(WDWLibrary::get('comment_name', ''));
 		$email = WDWLibrary::get('comment_email', '');
-		$comment = trim(WDWLibrary::get('comment_text', ''));
+		$comment = trim(WDWLibrary::get('comment_text', '', 'htmlentities'));
 		$moderation = trim(WDWLibrary::get('comment_moderation', 0));
 		$privacy_policy = WDWLibrary::get('privacy_policy', '');
 		$published = (current_user_can('manage_options') || !$moderation) ? 1 : 0;

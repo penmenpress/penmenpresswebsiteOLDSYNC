@@ -168,6 +168,7 @@ class BWGInsert {
 		`copyright` varchar(250),
 		`tags` mediumtext,
 		`date_modified` datetime,
+		`author` bigint(20) DEFAULT 1,
 		PRIMARY KEY (`id`)
 	) " . $charset_collate . ";";
 	$wpdb->query($file_paths);

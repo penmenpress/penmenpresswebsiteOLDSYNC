@@ -7,6 +7,15 @@ class BWGModelSite {
       $id = $wpdb->get_var('SELECT id FROM ' . $wpdb->prefix . 'bwg_theme WHERE default_theme=1');
     }
     $row = new WD_BWG_Theme($id);
+    foreach ( $row as $key => $val ) {
+      // '#' is removed from the color (jscolor lib v2.4.5)
+      preg_match('/_color/', $key, $is_color_array);
+      if ( !empty($is_color_array) && !empty($is_color_array[0]) ) {
+        $val = str_replace('#', '', $val);
+      }
+      $row->$key = $val;
+    }
+
     return $row;
   }
 
@@ -62,120 +71,6 @@ class BWGModelSite {
     return $row;
   }
 
-  public function get_image_rows_data( $gallery_id, $bwg, $type, $tag_input_name, $tag, $images_per_page, $load_more_image_count, $sort_by, $sort_direction = 'ASC' ) {
-    if ( $images_per_page < 0 ) {
-      $images_per_page = 0;
-    }
-    if ( $load_more_image_count < 0 ) {
-      $load_more_image_count = 0;
-    }
-    global $wpdb;
-    $gallery_id = (int) $gallery_id;
-    $tag = (int) $tag;
-    $bwg_search = trim( WDWLibrary::get('bwg_search_' . $bwg) );
-    if ( BWG()->options->front_ajax == "1" ) {
-      $sort_by = trim( WDWLibrary::get('sort_by_' . $bwg, $sort_by ) );
-      $filter_teg = trim( WDWLibrary::get('filter_tag_' . $bwg) );
-
-      if ( !empty($filter_teg) ) {
-        $filter_teg_arr = explode(',', trim($filter_teg));
-        $_REQUEST[$tag_input_name] = $filter_teg_arr;
-      }
-    }
-    $where = '';
-    if ( $bwg_search !== '' ) {
-      $bwg_search_keys = explode(' ', $bwg_search);
-      $alt_search = '(';
-      $description_search = '(';
-      foreach( $bwg_search_keys as $search_key) {
-        $alt_search .= $wpdb->prepare('`image`.`alt` LIKE %s AND ', "%" . trim($search_key) . "%");
-        $description_search .= $wpdb->prepare('`image`.`description` LIKE %s AND ', "%" . trim($search_key) . "%");
-      }
-      $alt_search = rtrim($alt_search, 'AND ');
-      $alt_search .= ')';
-      $description_search = rtrim($description_search, 'AND ');
-      $description_search .= ')';
-      $where = 'AND (' . $alt_search . ' OR ' . $description_search . ')';
-    }
-    if ( $sort_by == 'size' || $sort_by == 'resolution' ) {
-      $sort_by = ' CAST(image.' . $sort_by . ' AS SIGNED) ';
-    }
-    elseif ( $sort_by == 'random' || $sort_by == 'RAND()' ) {
-      $sort_by = 'RAND()';
-    }
-    elseif ( ($sort_by != 'alt') && ($sort_by != 'date') && ($sort_by != 'filetype') && ($sort_by != 'RAND()') && ($sort_by != 'filename') ) {
-      $sort_by = 'image.`order`';
-    }
-    else {
-      $sort_by = 'image.' . $sort_by;
-    }
-    $items_in_page = $images_per_page;
-    $limit = 0;
-	  $page_number = WDWLibrary::get('page_number_' . $bwg, 0, 'intval');
-    if ( $page_number ) {
-      if ( $page_number > 1 ) {
-        $items_in_page = $load_more_image_count;
-      }
-      $limit = ( ($page_number - 2) * $items_in_page ) + $images_per_page;
-      $bwg_random_seed = WDWLibrary::get('bwg_random_seed_' . $bwg);
-    }
-    else {
-      $bwg_random_seed = rand();
-      $GLOBALS['bwg_random_seed_' . $bwg] = $bwg_random_seed;
-    }
-    $limit_str = '';
-    if ( $images_per_page ) {
-      $limit_str = 'LIMIT ' . $limit . ',' . $items_in_page;
-    }
-    $where .= ($gallery_id ? $wpdb->prepare(' AND image.gallery_id = %d ', $gallery_id) : '') . ($tag ? $wpdb->prepare(' AND tag.tag_id = %d ', $tag) : '');
-    $join = $tag ? 'LEFT JOIN ' . $wpdb->prefix . 'bwg_image_tag as tag ON image.id=tag.image_id' : '';
-
-    $filter_tags_name = WDWLibrary::get($tag_input_name, '', 'sanitize_text_field', 'REQUEST');
-    if ( $filter_tags_name ) {
-      if ( !BWG()->options->tags_filter_and_or ) {
-        // To find images which have at least one from tags filtered by.
-        $compare_sign = "|";
-      }
-      else {
-        // To find images which have all tags filtered by.
-        // For this case there is need to sort tags by ascending to compare with comma.
-        sort( $filter_tags_name );
-        $compare_sign = ",";
-      }
-      $join .= ' LEFT JOIN (SELECT GROUP_CONCAT(tag_id order by tag_id SEPARATOR ",") AS tags_combined, image_id FROM  ' . $wpdb->prefix . 'bwg_image_tag' . ($gallery_id ?  $wpdb->prepare(' WHERE gallery_id=%d', $gallery_id) : '') . ' GROUP BY image_id) AS tags ON image.id=tags.image_id';
-      $where .= ' AND CONCAT(",", tags.tags_combined, ",") REGEXP ",(' . implode( $compare_sign, $filter_tags_name ) . ')," ';
-    }
-    $join .= ' LEFT JOIN '. $wpdb->prefix .'bwg_gallery as gallery ON gallery.id = image.gallery_id';
-    $where .= ' AND gallery.published = 1 ';
-    $query = 'SELECT image.* FROM ' . $wpdb->prefix . 'bwg_image as image ' . $join . ' WHERE image.published=1 ' . $where . ' ORDER BY ' . str_replace('RAND()', 'RAND(' . $bwg_random_seed . ')', $sort_by) . ' ' . $sort_direction . ', image.id asc ' . $limit_str;
-    $rows = $wpdb->get_results($query);
-    $total = $wpdb->get_var('SELECT COUNT(*) FROM ' . $wpdb->prefix . 'bwg_image as image ' . $join . ' WHERE image.published=1 ' . $where);
-    $page_nav['total'] = $total;
-    $page_nav['limit'] = 1;
-    if ( $page_number ) {
-      $page_nav['limit'] = (int) $page_number;
-    }
-    $images = array();
-    $thumb_urls = array();
-    if ( !empty($rows) ) {
-      foreach ( $rows as $row ) {
-        $row->alt = esc_html($row->alt);
-        if ( strpos($row->filetype, 'EMBED') === FALSE ) {
-          $row->image_url_raw = $row->image_url;
-          $row->image_url = WDWLibrary::image_url_version($row->image_url, $row->modified_date);
-          $row->thumb_url = WDWLibrary::image_url_version($row->thumb_url, $row->modified_date);
-          // To disable Jetpack Photon module.
-          $thumb_urls[] = BWG()->upload_url . $row->thumb_url;
-        }
-        else {
-          // To disable Jetpack Photon module.
-          $thumb_urls[] = $row->thumb_url;
-        }
-        $images[] = $row;
-      }
-    }
-    return array( 'images' => $images, 'page_nav' => $page_nav, 'thumb_urls' => $thumb_urls );
-  }
 
   /**
    * Get images from Gallery Group for XML Sitemap.
@@ -283,7 +178,7 @@ class BWGModelSite {
       $limitation = ' ' . $order_by . ' ' . $limit_str;
       $sql = $query . $limitation;
       if( !empty($prepareArgs) ) {
-          $rows = $wpdb->get_results($wpdb->prepare($sql, $prepareArgs));
+          $rows = $wpdb->get_results($wpdb->prepare($sql, $prepareArgsnew));
           $total = count($wpdb->get_results($wpdb->prepare($query, $prepareArgsnew)));
       } else {
           $rows = $wpdb->get_results($sql);
@@ -308,7 +203,7 @@ class BWGModelSite {
 
           $row->preview_image = WDWLibrary::image_url_version( $row->preview_image, $row->modified_date );
         }
-        if ( !empty( $row->random_preview_image ) ) {
+        if ( !empty( $row->random_preview_image ) && empty( $row->preview_image ) ) {
           $row->resolution_thumb = WDWLibrary::get_thumb_size( $row->random_preview_image );
           if ( $row->resolution_thumb == "" ) {
             $row->resolution_thumb = $this->get_album_preview_thumb_dimensions( $row->random_preview_image );

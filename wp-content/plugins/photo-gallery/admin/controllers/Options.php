@@ -5,7 +5,10 @@
  */
 class OptionsController_bwg {
 
+  public $prefix;
+
   public function __construct() {
+    $this->prefix = BWG()->prefix;
     $this->model = new OptionsModel_bwg();
     $this->view = new OptionsView_bwg();
     $this->page = WDWLibrary::get('page');
@@ -242,13 +245,16 @@ class OptionsController_bwg {
     }
 
 	$error = false;
+
     if ( ini_get('allow_url_fopen') == 0 ) {
       $error = true;
       $message = WDWLibrary::message_id(0, __('http:// wrapper is disabled in the server configuration by allow_url_fopen=0.', $this->prefix), 'error');
     }
     else {
-      list($width_watermark, $height_watermark, $type_watermark) = getimagesize($update_options['built_in_watermark_url']);
-      if ( $update_options['built_in_watermark_type'] == 'image' && (empty($width_watermark) OR empty($height_watermark) OR empty($type_watermark)) ) {
+      if ( !empty($update_options['built_in_watermark_url']) ) {
+        list($width_watermark, $height_watermark, $type_watermark) = getimagesize($update_options['built_in_watermark_url']);
+      }
+      if ( isset($update_options['built_in_watermark_type']) && $update_options['built_in_watermark_type'] == 'image' && (empty($width_watermark) OR empty($height_watermark) OR empty($type_watermark)) ) {
         $error = TRUE;
         $message = WDWLibrary::message_id(0, __('Watermark could not be set. The image URL is incorrect.', $this->prefix), 'error');
       }

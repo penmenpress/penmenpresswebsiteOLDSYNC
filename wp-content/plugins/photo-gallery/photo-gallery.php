@@ -3,7 +3,7 @@
  * Plugin Name: Photo Gallery
  * Plugin URI: https://10web.io/plugins/wordpress-photo-gallery/?utm_source=photo_gallery&utm_medium=free_plugin
  * Description: This plugin is a fully responsive gallery plugin with advanced functionality.  It allows having different image galleries for your posts and pages. You can create unlimited number of galleries, combine them into albums, and provide descriptions and tags.
- * Version: 1.5.65
+ * Version: 1.6.0
  * Author: Photo Gallery Team
  * Author URI: https://10web.io/plugins/?utm_source=photo_gallery&utm_medium=free_plugin
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -105,8 +105,8 @@ final class BWG {
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->front_url = $this->plugin_url;
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.5.65';
-    $this->db_version = '1.5.65';
+    $this->plugin_version = '1.6.0';
+    $this->db_version = '1.6.0';
     $this->prefix = 'bwg';
     $this->nicename = __('Photo Gallery', $this->prefix);
     require_once($this->plugin_dir . '/framework/WDWLibrary.php');
@@ -154,7 +154,7 @@ final class BWG {
     // Admin AJAX actions.
     add_action('wp_ajax_galleries_' . $this->prefix , array($this, 'admin_ajax'));
     add_action('wp_ajax_albumsgalleries_' . $this->prefix , array($this, 'admin_ajax'));
-    add_action('wp_ajax_bwg_UploadHandler', array($this, 'bwg_UploadHandler'));
+    add_action('wp_ajax_bwg_upl', array($this, 'bwg_upl'));
     add_action('wp_ajax_addImages', array($this, 'bwg_filemanager_ajax'));
     add_action('wp_ajax_addMusic', array($this, 'bwg_filemanager_ajax'));
     add_action('wp_ajax_addEmbed', array($this, 'bwg_add_embed_ajax'));
@@ -472,6 +472,9 @@ final class BWG {
    */
   public function admin_menu() {
     $permissions = $this->is_pro ? $this->options->permissions : 'manage_options';
+    $tags_permission = $this->is_pro && $this->options->tag_role ? $this->options->permissions : 'manage_options';
+    $themes_permission = $this->is_pro && $this->options->theme_role ? $this->options->permissions : 'manage_options';
+    $settings_permission = $this->is_pro && $this->options->settings_role ? $this->options->permissions : 'manage_options';
     $parent_slug = 'galleries_' . $this->prefix;
     add_menu_page($this->nicename, $this->nicename, $permissions, 'galleries_' . $this->prefix, array($this , 'admin_pages'), $this->plugin_url . '/images/icons/icon.png');
 
@@ -481,11 +484,11 @@ final class BWG {
     $albums_page = add_submenu_page($parent_slug, __('Gallery Groups', $this->prefix), __('Gallery Groups', $this->prefix), $permissions, 'albums_' . $this->prefix, array($this , 'admin_pages'));
     add_action('load-' . $albums_page, array($this, 'albums_per_page_option'));
 
-    add_submenu_page($parent_slug, __('Tags', $this->prefix), __('Tags', $this->prefix), $permissions, 'edit-tags.php?taxonomy=bwg_tag');
+    add_submenu_page($parent_slug, __('Tags', $this->prefix), __('Tags', $this->prefix), $tags_permission, 'edit-tags.php?taxonomy=bwg_tag');
 
-    add_submenu_page($parent_slug, __('Global Settings', $this->prefix), __('Global Settings', $this->prefix), 'manage_options', 'options_' . $this->prefix, array($this , 'admin_pages'));
+    add_submenu_page($parent_slug, __('Global Settings', $this->prefix), __('Global Settings', $this->prefix), $settings_permission, 'options_' . $this->prefix, array($this , 'admin_pages'));
 
-    $themes_page = add_submenu_page($parent_slug, __('Themes', $this->prefix), __('Themes', $this->prefix), 'manage_options', 'themes_' . $this->prefix, array($this , 'admin_pages'));
+    $themes_page = add_submenu_page($parent_slug, __('Themes', $this->prefix), __('Themes', $this->prefix), $themes_permission, 'themes_' . $this->prefix, array($this , 'admin_pages'));
     add_action('load-' . $themes_page, array($this, 'themes_per_page_option'));
 
     if( $this->is_pro ) {
@@ -606,9 +609,9 @@ final class BWG {
       'wp-auth-check', // check all
     );
     if ( $this->is_pro ) {
-      wp_register_style($this->prefix . '_fontselect', $this->plugin_url . '/js/fontselect/styles/fontselect-default.css', $required_styles, $this->plugin_version);
+      wp_register_style($this->prefix . '_fontselect', $this->plugin_url . '/js/fontselect/fontselect.min.css', $required_styles, '1.0.0');
       array_push($required_styles, $this->prefix . '_fontselect');
-      wp_register_script($this->prefix . '_fontselect', $this->plugin_url . '/js/fontselect/jquery.fontselect.js', $required_scripts, $this->plugin_version);
+      wp_register_script($this->prefix . '_fontselect', $this->plugin_url . '/js/fontselect/fontselect.min.js', $required_scripts, '1.0.0');
     }
     wp_register_style($this->prefix . '_tables', $this->plugin_url . '/css/bwg_tables.css', $required_styles, $this->plugin_version);
     wp_register_style($this->prefix . '_gallery-upgrade', $this->plugin_url . '/css/gallery-upgrade.css', $required_styles, $this->plugin_version);
@@ -628,7 +631,7 @@ final class BWG {
       'bwg_field_required'  => __('field is required.', $this->prefix),
       'bwg_select_image'  => __('You must select an image file.', $this->prefix),
       'bwg_select_audio'  => __('You must select an audio file.', $this->prefix),
-      'bwg_access_token'  => __('You do not have Instagram access token. Sign in with Instagram in Options -> Advanced tab -> Social. ', $this->prefix),
+      'bwg_access_token'  => __('You do not have Instagram access token. Sign in with Instagram in Global Settings -> Advanced tab -> Social. ', $this->prefix),
       'bwg_client_id' => __('You do not have Instagram CLIENT_ID. Input its value in Options->Embed options.', $this->prefix),
       'bwg_post_number'  => __('Instagram recent post number must be between 1 and 25.', $this->prefix),
       'bwg_not_empty'  => __('Gallery type cannot be changed, since it is not empty. In case you would like to have Instagram gallery, please create a new one.', $this->prefix),
@@ -640,15 +643,15 @@ final class BWG {
       'bwg_hide_order'  => __('Hide order column', $this->prefix),
       'selected_item'  =>  __('Selected %d item.', $this->prefix),
       'selected_items'  =>  __('Selected %d items.', $this->prefix),
-      'saved'  => __('Items Succesfully Saved.', $this->prefix),
-      'recovered'  => __('Item Succesfully Recovered.', $this->prefix),
-      'published'  => __('Item Succesfully Published.', $this->prefix),
-      'unpublished'  => __('Item Succesfully Unpublished.', $this->prefix),
-      'deleted'  => __('Item Succesfully Deleted.', $this->prefix),
+      'saved'  => __('Items Successfully Saved.', $this->prefix),
+      'recovered'  => __('Item Successfully Recovered.', $this->prefix),
+      'published'  => __('Item Successfully Published.', $this->prefix),
+      'unpublished'  => __('Item Successfully Unpublished.', $this->prefix),
+      'deleted'  => __('Item Successfully Deleted.', $this->prefix),
       'one_item'  => __('You must select at least one item.', $this->prefix),
-      'resized'  => __('Items Succesfully resized.', $this->prefix),
-      'watermark_set'  => __('Watermarks Succesfully Set.', $this->prefix),
-      'reset'  => __('Items Succesfully Reset.', $this->prefix),
+      'resized'  => __('Items Successfully resized.', $this->prefix),
+      'watermark_set'  => __('Watermarks Successfully Set.', $this->prefix),
+      'reset'  => __('Items Successfully Reset.', $this->prefix),
       'save_tag' => __('Save Tag', $this->prefix),
       'delete_alert' => __('Do you want to delete selected items?', $this->prefix),
       'default_warning' => __('This action will reset gallery type to mixed and will save that choice. You cannot undo it.', $this->prefix),
@@ -658,14 +661,15 @@ final class BWG {
       'import_failed' => __('Failed to import images from media library', $this->prefix),
       'only_the_following_types_are_allowed' => __('Sorry, only jpg, jpeg, gif, png types are allowed.', $this->prefix),
       'wp_upload_dir' => wp_upload_dir(),
-      'ajax_url' => wp_nonce_url( admin_url('admin-ajax.php'), 'bwg_UploadHandler', 'bwg_nonce' ),
+      'ajax_url' => wp_nonce_url( admin_url('admin-ajax.php'), 'bwg_upl', 'bwg_nonce' ),
       'uploads_url' => BWG()->options->upload_url,
       'recreate_success' => __('Thumbnails successfully recreated.', $this->prefix),
       'watermark_option_reset' => __('All images are successfully reset.', $this->prefix),
     ));
+
     wp_localize_script($this->prefix . '_admin', 'bwg_objectGGF', WDWLibrary::get_google_fonts());
     wp_enqueue_script('jquery-ui-sortable');
-    wp_register_script($this->prefix . '_jscolor', $this->plugin_url . '/js/jscolor/jscolor.js', array('jquery'), '1.3.9');
+    wp_register_script($this->prefix . '_jscolor', $this->plugin_url . '/js/jquery.jscolor.js', array('jquery'), '2.4.5');
 
     wp_register_style($this->prefix . '_addons', $this->plugin_url . '/addons/style.css');
 
@@ -676,7 +680,7 @@ final class BWG {
     wp_register_style($this->prefix . '_shortcode', $this->plugin_url . '/css/bwg_shortcode.css', $required_styles, $this->plugin_version);
     wp_register_script($this->prefix . '_shortcode', $this->plugin_url . '/js/bwg_shortcode.js', $required_scripts, $this->plugin_version);
     wp_localize_script($this->prefix . '_shortcode', 'bwg_objectGGF', WDWLibrary::get_google_fonts());
-    wp_localize_script($this->prefix . '_shortcode', 'bwg_premium_text', __(' view is<br>available in Premium Version', $this->prefix));
+    wp_localize_script($this->prefix . '_shortcode', 'bwg_shortcode_premium_text', array('bwg_premium_text' => __(' view is<br>available in Premium Version', $this->prefix)));
 
     if ( !$this->is_pro ) {
       wp_register_style($this->prefix . '_licensing', $this->plugin_url . '/css/bwg_licensing.css', $required_styles, $this->plugin_version);
@@ -700,19 +704,18 @@ final class BWG {
    */
   public function frontend_data() {
     $params = array();
-    $params['id'] = WDWLibrary::get('shortcode_id', 0);
+    $params['id'] = WDWLibrary::get('shortcode_id', 0, 'intval');
 
     // Get values for elementor widget.
     $params['gallery_type'] = WDWLibrary::get('gallery_type', 'thumbnails');
-    $params['gallery_id'] = WDWLibrary::get('gallery_id', 0);
-    $params['tag'] = WDWLibrary::get('tag', 0);
-    $params['album_id'] = WDWLibrary::get('album_id', 0);
-    $params['theme_id'] = WDWLibrary::get('theme_id', 0);
+    $params['gallery_id'] = WDWLibrary::get('gallery_id', 0, 'intval');
+    $params['tag'] = WDWLibrary::get('tag', 0, 'intval');
+    $params['album_id'] = WDWLibrary::get('album_id', 0, 'intval');
+    $params['theme_id'] = WDWLibrary::get('theme_id', 0, 'intval');
     $params['current_url'] = WDWLibrary::get('current_url', NULL);
     $params['ajax'] = TRUE;
 
-    echo $this->shortcode($params);
-
+    echo $this->shortcode($params, TRUE);
     die();
   }
 
@@ -738,11 +741,12 @@ final class BWG {
     }
   }
 
-  public function shortcode( $params = array() ) {
+  public function shortcode( $params = array(), $from_ajax = FALSE ) {
     if ( is_admin() && defined('DOING_AJAX') && !DOING_AJAX) {
       return;
     }
     if ( isset($params['id']) && $params['id'] ) {
+      $params['id'] = (int) $params['id'];
       global $wpdb;
       $shortcode = $wpdb->get_var($wpdb->prepare("SELECT tagtext FROM " . $wpdb->prefix . "bwg_shortcode WHERE id='%d'", $params['id']));
       if ($shortcode) {
@@ -750,25 +754,34 @@ final class BWG {
         foreach ($shortcode_params as $shortcode_param) {
           $shortcode_param = str_replace('"', '', $shortcode_param);
           $shortcode_elem = explode('=', $shortcode_param);
-          $params[str_replace(' ', '', $shortcode_elem[0])] = $shortcode_elem[1];
-        }
+					/* Not change 'gallery_type' after ajax, for Preview_Section and Album's Types */
+					if ( !$from_ajax || str_replace( ' ', '', $shortcode_elem[0]) != 'gallery_type' || $shortcode_elem[1] == 'album_compact_preview' || $shortcode_elem[1] == 'album_masonry_preview'|| $shortcode_elem[1] == 'album_extended_preview' ) {
+						$params[str_replace(' ', '', $shortcode_elem[0])] = $shortcode_elem[1];
+					}
+			 }
       }
       else {
         return;
       }
+    }
+    /* For Preview section - get selected 'gallery_type' from URL */
+    $preview_type = WDWLibrary::get('bwg-preview-type', '', 'sanitize_text_field');
+    if ( !empty($preview_type) ) {
+      $params['gallery_type'] = basename(stripslashes($preview_type));
     }
 
     // 'gallery_type' is the only parameter not being checked.
     // Checking for incomplete shortcodes.
     $gallery_allowed_types = WDWLibrary::get_gallery_allowed_types();
     if ( isset($params['gallery_type']) && in_array($params['gallery_type'], $gallery_allowed_types) ) {
-      $pairs = WDWLibrary::get_shortcode_option_params( $params );
+      $pairs = WDWLibrary::get_shortcode_option_params ($params );
       if ( isset($params['ajax']) ) {
         $pairs['ajax'] = $params['ajax'];
       }
       ob_start();
-      $this->front_end( $pairs );
-      return str_replace( array( "\r\n", "\n", "\r" ), '', ob_get_clean() );
+      $this->front_end($pairs);
+
+      return str_replace(array( "\r\n", "\n", "\r" ), '', ob_get_clean());
     }
   }
 
@@ -956,9 +969,9 @@ final class BWG {
   }
 
   // TODO:
-  public function bwg_UploadHandler() {
+  public function bwg_upl() {
     require_once(BWG()->plugin_dir . '/framework/WDWLibrary.php');
-    if(!WDWLibrary::verify_nonce('bwg_UploadHandler')){
+    if(!WDWLibrary::verify_nonce('bwg_upl')){
       die('Sorry, your nonce did not verify.');
     }
     require_once(BWG()->plugin_dir . '/filemanager/UploadHandler.php');
@@ -1003,8 +1016,6 @@ final class BWG {
 
   /**
    * Add media button to Wp editor.
-   *
-   * @param $context
    *
    * @return string
    */
@@ -1359,16 +1370,16 @@ final class BWG {
       }
     }
     wp_register_script('instagram-embed', 'https://www.instagram.com/embed.js', $required_scripts, '', $in_footer);
-    wp_register_script('sumoselect', BWG()->front_url . '/js/jquery.sumoselect.min.js', $required_scripts, '3.0.3', $in_footer);
-    wp_register_style('sumoselect', BWG()->front_url . '/css/sumoselect.min.css', array(), '3.0.3');
+    wp_register_script('sumoselect', BWG()->front_url . '/js/jquery.sumoselect.min.js', $required_scripts, '3.3.24', $in_footer);
+    wp_register_style('sumoselect', BWG()->front_url . '/css/sumoselect.min.css', array(), '3.3.24');
 
     // Styles/Scripts for popup.
     wp_register_style($this->prefix . '_fonts', BWG()->front_url . '/css/bwg-fonts/fonts.css', array(), '0.0.1');
-    wp_register_script('jquery-mobile', BWG()->front_url . '/js/jquery.mobile.min.js', $required_scripts, '1.3.2', $in_footer);
-    wp_register_script('mCustomScrollbar', BWG()->front_url . '/js/jquery.mCustomScrollbar.concat.min.js', $required_scripts, $version, $in_footer);
-    wp_register_style('mCustomScrollbar', BWG()->front_url . '/css/jquery.mCustomScrollbar.min.css', array(), $version);
-
-    wp_register_script('jquery-fullscreen', BWG()->front_url . '/js/jquery.fullscreen-0.4.1.min.js', $required_scripts, '0.4.1', $in_footer);
+    // jquery.mobile js file contain "Defaults, Namespace, Events All" selected from  https://jquerymobile.com/download-builder/
+    wp_register_script('jquery-mobile', BWG()->front_url . '/js/jquery.mobile.min.js', $required_scripts, '1.4.5', $in_footer);
+    wp_register_script('mCustomScrollbar', BWG()->front_url . '/js/jquery.mCustomScrollbar.concat.min.js', $required_scripts, '3.1.5', $in_footer);
+    wp_register_style('mCustomScrollbar', BWG()->front_url . '/css/jquery.mCustomScrollbar.min.css', array(), '3.1.5');
+    wp_register_script('jquery-fullscreen', BWG()->front_url . '/js/jquery.fullscreen.min.js', $required_scripts, '0.6.0', $in_footer);
     wp_register_script($this->prefix . '_lazyload', BWG()->front_url . '/js/jquery.lazy.min.js', $required_scripts, $version, $in_footer);
 
     array_push($required_scripts,
@@ -1387,7 +1398,7 @@ final class BWG {
                  $this->prefix . '_embed'
       );
       if ( $this->is_pro ) {
-        wp_register_script($this->prefix . '_raty', BWG()->front_url . '/js/jquery.raty.min.js', $required_scripts, '2.5.2', $in_footer);
+        wp_register_script($this->prefix . '_raty', BWG()->front_url . '/js/jquery.raty.min.js', $required_scripts, '3.0.0', $in_footer);
         wp_register_script($this->prefix . '_featureCarousel', BWG()->plugin_url . '/js/jquery.featureCarousel.js', $required_scripts, $version, $in_footer);
         // 3D Tag Cloud.
         wp_register_script($this->prefix . '_3DEngine', BWG()->front_url . '/js/3DEngine/3DEngine.min.js', $required_scripts, '1.0.0', $in_footer);
@@ -1452,6 +1463,8 @@ final class BWG {
       'lazy_load'=> BWG()->options->lazyload_images,
       'lazy_loader'=> BWG()->plugin_url."/images/ajax_loader.png",
       'front_ajax' => BWG()->options->front_ajax,
+      'bwg_tag_see_all' => __('see all tags', $this->prefix),
+      'bwg_tag_see_less' => __('see less tags', $this->prefix),
     ));
   }
 
@@ -1706,8 +1719,8 @@ final class BWG {
         "plugin_wd_url" => BWG()->plugin_link . BWG()->utm_source,
         "plugin_wd_demo_link" => "https://demo.10web.io/photo-gallery/" . BWG()->utm_source,
         "plugin_wd_addons_link" => BWG()->plugin_link . BWG()->utm_source,
-        "plugin_wd_docs_link" => "https://help.10web.io/hc/en-us/sections/360002159111-Photo-Gallery/" . BWG()->utm_source,
-        "after_subscribe" => admin_url('admin.php?page=galleries_bwg'), // this can be plagin overview page or set up page
+        "plugin_wd_docs_link" => "https://help.10web.io/hc/en-us/categories/4403736780306/" . BWG()->utm_source,
+        "after_subscribe" => admin_url('admin.php?page=galleries_bwg'), // this can be plugin overview page or set up page
         "plugin_wizard_link" => '',
         "plugin_menu_title" => $this->nicename,
         "plugin_menu_icon" => BWG()->plugin_url . '/images/icons/icon.png',

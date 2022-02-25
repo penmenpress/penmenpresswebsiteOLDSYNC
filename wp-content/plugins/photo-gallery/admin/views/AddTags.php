@@ -44,7 +44,7 @@ class AddTagsView_bwg extends AdminView_bwg {
 	  ?>
 	<div class="wd-table-container">
 		<?php
-    $image_id = WDWLibrary::get('image_id', 0);
+    $image_id = WDWLibrary::get('image_id', 0, 'intval');
     echo $this->title( array(
                'title' => $params['page_title'],
                'title_class' => 'wd-header',
@@ -56,9 +56,13 @@ class AddTagsView_bwg extends AdminView_bwg {
 		?>
 		<div class="wp-search-wrap">
 			<?php echo $this->search(); ?>
-			<div class="tablenav top">
-				<?php echo $this->pagination($params['page_url'], $params['total'], $params['items_per_page']); ?>
-			</div>
+      <div class="tablenav top">
+        <div class="tablenav-pages">
+          <div class="displaying-num">
+            <?php printf(_n('%s item', '%s items', $params['total'], BWG()->prefix), $params['total']); ?>
+          </div>
+        </div>
+      </div>
 		</div>
       <div>
       <table class="adminlist table table-striped wp-list-table widefat fixed pages">

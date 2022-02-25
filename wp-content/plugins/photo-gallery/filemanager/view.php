@@ -22,9 +22,9 @@ class FilemanagerView {
    * Display.
    */
   public function display( $params = array() ) {
-	$dir = $params['dir'];
-	$items = $params['items'];
-	$path_components = $params['path_components'];
+    $dir = $params['dir'];
+    $items = $params['items'];
+    $path_components = $params['path_components'];
     $session = $params['session_data'];
     $sort_by = $session['sort_by'];
     $sort_order = $session['sort_order'];
@@ -37,7 +37,7 @@ class FilemanagerView {
     $ajax_pagination_url = $params["ajax_pagination_url"];
     $ajax_get_all_select_url = $params["ajax_get_all_select_url"];
 
-	if (isset($_GET['filemanager_msg']) && WDWLibrary::get('filemanager_msg','','sanitize_text_field','GET') != '') {
+	  if (isset($_GET['filemanager_msg']) && WDWLibrary::get('filemanager_msg','','sanitize_text_field','GET') != '') {
       ?>
       <div id="file_manager_message" style="height:40px;">
         <div  style="background-color: #FFEBE8; border: 1px solid #CC0000; margin: 5px 15px 2px; padding: 5px 10px;">
@@ -59,14 +59,14 @@ class FilemanagerView {
     wp_print_styles('wp-auth-check');
     wp_print_styles('wp-pointer');
     ?>
-    <script src="<?php echo BWG()->plugin_url; ?>/filemanager/js/jq_uploader/jquery.iframe-transport.js?v=10.0.0"></script>
-    <script src="<?php echo BWG()->plugin_url; ?>/filemanager/js/jq_uploader/jquery.fileupload.js?v=10.0.0"></script>
+    <script src="<?php echo BWG()->plugin_url; ?>/filemanager/js/jq_uploader/jquery.iframe-transport.js?v=10.31.0"></script>
+    <script src="<?php echo BWG()->plugin_url; ?>/filemanager/js/jq_uploader/jquery.fileupload.js?v=10.31.0"></script>
     <script>
-	  var DS = "<?php echo addslashes('/'); ?>";
+	    var DS = "<?php echo addslashes('/'); ?>";
       var demo_message = "<?php echo addslashes(__('This option is disabled in demo.', BWG()->prefix)); ?>";
       var ajaxurl = "<?php echo wp_nonce_url( admin_url('admin-ajax.php'), 'addImages', 'bwg_nonce' ); ?>";
       var ajax_pagination_url = "<?php echo $ajax_pagination_url; ?>";
-	  var ajax_get_all_select_url = "<?php echo $ajax_get_all_select_url; ?>";
+	    var ajax_get_all_select_url = "<?php echo $ajax_get_all_select_url; ?>";
       var errorLoadingFile = "<?php echo __('File loading failed', BWG()->prefix); ?>";
       var warningRemoveItems = "<?php echo __('Are you sure you want to permanently remove selected items?', BWG()->prefix); ?>";
       var warningCancelUploads = "<?php echo __('This will cancel uploads. Continue?', BWG()->prefix); ?>";
@@ -74,9 +74,9 @@ class FilemanagerView {
       var messageEnterNewName = "<?php echo __('Enter new name', BWG()->prefix); ?>";
       var messageFilesUploadComplete = "<?php echo __('Processing uploaded files...', BWG()->prefix); ?>";
       var root = "<?php echo addslashes($this->controller->get_uploads_dir()); ?>";
-      var dir = "<?php echo (isset($_REQUEST['dir']) ? WDWLibrary::get('dir','','sanitize_text_field','REQUEST') : ''); ?>";
-      var dirUrl = "<?php echo $this->controller->get_uploads_url() . (isset($_REQUEST['dir']) ? WDWLibrary::get('dir','','sanitize_text_field','REQUEST') . '/' : ''); ?>";
-      var callback = "<?php echo (isset($_REQUEST['callback']) ? WDWLibrary::get('callback','','sanitize_text_field','REQUEST') : ''); ?>";
+      var dir = "<?php echo(isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) : ''); ?>";
+      var dirUrl = "<?php echo $this->controller->get_uploads_url() . (isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) . '/' : ''); ?>";
+      var callback = "<?php echo (isset($_REQUEST['callback']) ? WDWLibrary::get('callback','','esc_js','REQUEST') : ''); ?>";
       var sortBy = "<?php echo $sort_by; ?>";
       var sortOrder = "<?php echo $sort_order; ?>";
       var page_per = "<?php echo $page_per; ?>";
@@ -86,11 +86,11 @@ class FilemanagerView {
     do_action( 'bwg_filemanager_scripts_after' );
     ?>
     <link href="<?php echo BWG()->plugin_url; ?>/filemanager/css/default.css?ver=<?php echo BWG()->plugin_version; ?>" type="text/css" rel="stylesheet">
-	<link href="<?php echo BWG()->plugin_url; ?>/filemanager/css/default_view_<?php echo $items_view; ?>.css?ver=<?php echo BWG()->plugin_version; ?>" type="text/css" rel="stylesheet">
-	<form id="adminForm" name="adminForm" action="" method="post" class="wp-core-ui">
+	  <link href="<?php echo BWG()->plugin_url; ?>/filemanager/css/default_view_<?php echo $items_view; ?>.css?ver=<?php echo BWG()->plugin_version; ?>" type="text/css" rel="stylesheet">
+	  <form id="adminForm" name="adminForm" action="" method="post" class="wp-core-ui">
       <?php wp_nonce_field( '', 'bwg_nonce' ); ?>
       <div id="wrapper">
-		<div id="file_manager">
+		    <div id="file_manager">
           <div class="ctrls_bar ctrls_bar_header">
             <div class="ctrls_left header_bar">
               <span class="dashicons dashicons-arrow-up-alt ctrl_bar_btn" onclick="onBtnUpClick(event, this);" title="<?php echo __('Up', BWG()->prefix); ?>"></span>
@@ -197,9 +197,9 @@ class FilemanagerView {
                   }
                   ?>
                 </div>
-				<div class="fm-no-found-wrap">
-					<h2><?php _e('No items found.', BWG()->prefix); ?></h2>
-				</div>
+                <div class="fm-no-found-wrap">
+                  <h2><?php _e('No items found.', BWG()->prefix); ?></h2>
+                </div>
               </div>
             </div>
           </div>
@@ -218,7 +218,7 @@ class FilemanagerView {
               <a id="add_selectid_img" title="<?php echo $add_image_btn; ?>" class="button button-primary button-large" onclick="window.parent.bwg_create_loading_block(); onBtnOpenClick(event, this);">
                 <div id="bwg_img_add"><?php echo $add_image_btn; ?></div>
               </a>
-              <a class="button button-secondary button-large" title="<?php _e('Cancel', BWG()->prefix); ?>" onclick="onBtnCancelClick(event, this);">
+              <a id="cancel_add_img" class="button button-secondary button-large" title="<?php _e('Cancel', BWG()->prefix); ?>" onclick="onBtnCancelClick(event, this);">
                 <div id="bwg_img_cancel"><?php _e('Cancel', BWG()->prefix); ?></div>
               </a>
             </div>
@@ -227,14 +227,14 @@ class FilemanagerView {
         <div id="uploader">
           <div id="uploader_bg"></div>
           <div class="ctrls_bar ctrls_bar_header">
-            <div class="ctrls_left upload_thumb">
+						<div class="ctrls_left">
+							<span class="dashicons dashicons-arrow-left-alt ctrl_bar_btn" onclick="onBtnBackClick(event, this);" title="<?php echo __('Back', BWG()->prefix); ?>"></span>
+						</div>
+						<div class="ctrls_left upload_thumb">
               <div class="upload_thumb thumb_full_title"><?php _e("Thumbnail Max Dimensions:", BWG()->prefix); ?></div>
               <div class="upload_thumb thumb_title"><?php _e("Thumbnail:", BWG()->prefix); ?></div>
               <input type="text" class="upload_thumb_dim" name="upload_thumb_width" id="upload_thumb_width" value="<?php echo BWG()->options->upload_thumb_width; ?>" /> x
               <input type="text" class="upload_thumb_dim" name="upload_thumb_height" id="upload_thumb_height" value="<?php echo BWG()->options->upload_thumb_height; ?>" /> px
-            </div>
-            <div class="ctrls_right">
-              <span class="dashicons dashicons-arrow-left-alt ctrl_bar_btn" onclick="onBtnBackClick(event, this);" title="<?php echo __('Back', BWG()->prefix); ?>"></span>
             </div>
             <div class="ctrls_right_img upload_thumb">
               <div class="upload_thumb thumb_full_title"><?php _e("Image Max Dimensions:", BWG()->prefix); ?></div>
@@ -248,8 +248,8 @@ class FilemanagerView {
               <div id="btnBrowseContainer">
 				<div class="bwg-select-file-text"><?php _e('Drag files here', BWG()->prefix); ?><br><?php _e('or', BWG()->prefix); ?><br><span class="button"><?php _e('Select Files', BWG()->prefix); ?></span></div>
 				<?php
-				  $query_url = wp_nonce_url( admin_url('admin-ajax.php'), 'bwg_UploadHandler', 'bwg_nonce' );
-				  $query_url = add_query_arg(array('action' => 'bwg_UploadHandler', 'dir' => (isset($_REQUEST['dir']) ? WDWLibrary::get('dir','','sanitize_text_field','REQUEST') : '') . '/'), $query_url);
+				  $query_url = wp_nonce_url( admin_url('admin-ajax.php'), 'bwg_upl', 'bwg_nonce' );
+				  $query_url = add_query_arg(array('action' => 'bwg_upl', 'dir' => (isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) : '') . '/'), $query_url);
 				?>
                 <input id="jQueryUploader" type="file" name="files[]"
 				   data-url="<?php echo $query_url; ?>"
@@ -271,12 +271,12 @@ class FilemanagerView {
         </div>
       </div>
       <input type="hidden" name="task" value="" />
-      <input type="hidden" name="extensions" value="<?php echo (isset($_REQUEST['extensions']) ? WDWLibrary::get('extensions','','sanitize_text_field','REQUEST') : '*'); ?>" />
-      <input type="hidden" name="callback" value="<?php echo (isset($_REQUEST['callback']) ? WDWLibrary::get('callback','','sanitize_text_field','REQUEST') : ''); ?>" />
+      <input type="hidden" name="extensions" value="jpg,jpeg,png,gif,svg" />
+      <input type="hidden" name="callback" value="<?php echo (isset($_REQUEST['callback']) ? WDWLibrary::get('callback','','esc_attr','REQUEST') : ''); ?>" />
       <input type="hidden" name="sort_by" value="<?php echo $sort_by; ?>" />
       <input type="hidden" name="sort_order" value="<?php echo $sort_order; ?>" />
       <input type="hidden" name="items_view" value="<?php echo $items_view; ?>" />
-      <input type="hidden" name="dir" value="<?php echo (isset($_REQUEST['dir']) ? str_replace('\\', '', (WDWLibrary::get('dir','','sanitize_text_field','REQUEST'))) : ''); ?>" />
+      <input type="hidden" name="dir" value="<?php echo (isset($_REQUEST['dir']) ? str_replace(array('\\', '../'), '', WDWLibrary::get('dir', '', 'sanitize_text_field', 'REQUEST')) : ''); ?>" />
       <input type="hidden" name="file_names" value="" />
       <input type="hidden" name="file_namesML" value="" />
       <input type="hidden" name="file_new_name" value="" />
@@ -298,86 +298,92 @@ class FilemanagerView {
 			'allowed_upload_types' : '<?php _e('Allowed upload types JPG, JPEG, GIF, PNG, SVG.', BWG()->prefix); ?>'
 		};
     last_uploaded = [];
-		jQuery(function() {
-			jQuery("#loading_div", window.parent.document).hide();
-      if (localStorage.getItem("bwg_selected_images")) {
-        var bwg_selected_images = localStorage.getItem("bwg_selected_images").split(",");
+    jQuery(function () {
+      jQuery('#loading_div', window.parent.document).hide();
+      if ( localStorage.getItem('bwg_selected_images') ) {
+        var bwg_selected_images = localStorage.getItem('bwg_selected_images').split(',');
         filesSelected = bwg_selected_images;
-        jQuery(".explorer_item").each(function () {
-          if (bwg_selected_images.includes(jQuery(this).attr("name")) > 0) {
-            jQuery(this).addClass("explorer_item_select");
+        jQuery('.explorer_item').each(function ( i, val ) {
+          if ( bwg_selected_images.includes(jQuery(this).attr('name')) > 0 ) {
+            jQuery(this).addClass('explorer_item_select');
           }
         });
-        localStorage.removeItem("bwg_selected_images");
+        /*
+        This is the option when the number of downloadable files is less than the number of images displayed on page 1 (pagination 1).
+        which means that the downloaded files will be automatically selected·
+        */
+        if ( page_per >= bwg_selected_images.length ) {
+          localStorage.removeItem('bwg_selected_images');
+        }
       }
-		});
+    });
 		jQuery("#jQueryUploader").fileupload({
 		  dataType: "json",
 		  dropZone: jQuery("#uploader_hitter"),
-		  limitConcurrentUploads: 10, // upload step by step
+		  limitConcurrentUploads: 5, // upload step by step
 		  acceptFileTypes: /(\.|\/)(jpe?g|gif|png|svg)$/i,
 		  submit: function (e, data) {
-      localStorage.removeItem( "bwg_selected_images" );
-			isUploading = true;
-			jQuery("#uploader_progress_text").removeClass("uploader_text");
-			jQuery("#uploader_progress_bar").fadeIn();
+        localStorage.removeItem( "bwg_selected_images" );
+        isUploading = true;
+        jQuery("#uploader_progress_text").removeClass("uploader_text");
+        jQuery("#uploader_progress_bar").fadeIn();
 		  },
 		  progressall: function (e, data) {
-			var progress = parseInt(data.loaded / data.total * 100, 10);
-			jQuery("#uploader_progress_text").text("Progress " + progress + "%");
-			jQuery("#uploader_progress div div").css({width: progress + "%"});
-			if ( data.loaded == data.total ) {
-			  isUploading = false;
-			  jQuery("#uploader_progress_bar").fadeOut(function () {
-          jQuery("#uploader_progress_text").text(messageFilesUploadComplete);
-          jQuery("#uploader_progress_text").addClass("uploader_text");
-			  });
-			}
+        var progress = parseInt(data.loaded / data.total * 100, 10);
+        jQuery("#uploader_progress_text").text("Progress " + progress + "%");
+        jQuery("#uploader_progress div div").css({width: progress + "%"});
+        if ( data.loaded == data.total ) {
+          isUploading = false;
+          jQuery("#uploader_progress_bar").fadeOut(function () {
+            jQuery("#uploader_progress_text").text(messageFilesUploadComplete);
+            jQuery("#uploader_progress_text").addClass("uploader_text");
+          });
+        }
 		  },
 		  stop: function (e, data) {
-			jQuery("#bwg-errors-wrap .errors").remove();
-			jQuery("#bwg-errors-wrap .bwg-files-item").html('');
-			if ( errorMessages && Object.keys(errorMessages).length > 0 ) {
-				var html = '';
-				jQuery.each( errorMessages, function( index, message ) {
-					html += '<div class="errors ' + index + '">';
-						html += '<div class="error"><p>' + message + '</p></div>';
-						if ( errorFiles[index]  && errorFiles[index].length > 0 ) {
-							html += '<ul class="bwg-files-item">';
-								jQuery.each( errorFiles[index], function( key, value ) {
-									html += '<li class="uploaded_item_failed">' + value + ' (' + messages.upload_failed + ')</li>';
-								});
-							html += '</ul>';
-							errorFiles[index] = {};
-						}
-					html += '</div>';
-				});
-				jQuery("#bwg-errors-wrap").prepend( html );
-				errorMessages = {};
-				allowed_files = [];
-				not_uploading_files = [];
-			}
-			else {
-				onBtnBackClick();
-			}
+        jQuery("#bwg-errors-wrap .errors").remove();
+        jQuery("#bwg-errors-wrap .bwg-files-item").html('');
+        if ( errorMessages && Object.keys(errorMessages).length > 0 ) {
+          var html = '';
+          jQuery.each( errorMessages, function( index, message ) {
+            html += '<div class="errors ' + index + '">';
+              html += '<div class="error"><p>' + message + '</p></div>';
+              if ( errorFiles[index]  && errorFiles[index].length > 0 ) {
+                html += '<ul class="bwg-files-item">';
+                  jQuery.each( errorFiles[index], function( key, value ) {
+                    html += '<li class="uploaded_item_failed">' + value + ' (' + messages.upload_failed + ')</li>';
+                  });
+                html += '</ul>';
+                errorFiles[index] = {};
+              }
+            html += '</div>';
+          });
+          jQuery("#bwg-errors-wrap").prepend( html );
+          errorMessages = {};
+          allowed_files = [];
+          not_uploading_files = [];
+        }
+        else {
+          onBtnBackClick();
+        }
 		  },
 		  done: function (e, data) {
-			jQuery("#bwg-errors-wrap .errors").remove();
-			var html = '';
-			jQuery.each( data.result.files, function (index, file) {
-				if ( file.error ) {
-					allowed_files.push( file.name );
-					errorFiles['allowed'] = allowed_files;
-					errorMessages['allowed'] = messages.allowed_upload_types;
-					html += '<li class="uploaded_item_failed">' + file.name + ' (' + messages.upload_failed + ')</li>';
-				}
-				else {
-					html += '<li class="uploaded_item">' + file.name + ' (' + messages.uploaded + ')</li>';
-          last_uploaded.push( file.name );
-				}
-				jQuery("#bwg-errors-wrap .bwg-files-item").prepend( html );
-			});
-      localStorage.setItem( "bwg_selected_images", last_uploaded );
+        jQuery("#bwg-errors-wrap .errors").remove();
+        var html = '';
+        jQuery.each( data.result.files, function (index, file) {
+          if ( file.error ) {
+            allowed_files.push( file.name );
+            errorFiles['allowed'] = allowed_files;
+            errorMessages['allowed'] = messages.allowed_upload_types;
+            html += '<li class="uploaded_item_failed">' + file.name + ' (' + messages.upload_failed + ')</li>';
+          }
+          else {
+            html += '<li class="uploaded_item">' + file.name + ' (' + messages.uploaded + ')</li>';
+            last_uploaded.push( file.name );
+          }
+          jQuery("#bwg-errors-wrap .bwg-files-item").prepend( html );
+        });
+        localStorage.setItem( "bwg_selected_images", last_uploaded );
 		  },
 		  fail: function (e, data) {
 			  if ( data.textStatus == 'error' ) {
@@ -438,6 +444,7 @@ class FilemanagerView {
 			fileOrientation="<?php echo isset( $file['orientation'] ) ? $file['orientation'] : ''; ?>"
 			fileCopyright="<?php echo isset( $file['copyright'] ) ? $file['copyright'] : ''; ?>"
 			fileTags='<?php echo isset( $file['tags'] ) ? $file['tags'] : ''; ?>'
+      isDir="<?php echo ($file[ 'is_dir' ] == true) ? 'true' : 'false'; ?>"
 			onmouseover="onFileMOver(event, this);"
 			onmouseout="onFileMOut(event, this);"
 			onclick="onFileClick(event, this);"
@@ -445,7 +452,7 @@ class FilemanagerView {
 			<?php if ( $file[ 'is_dir' ] == true ) { ?>
 				ontouchend="onFileDblClick(event, this);"
 			<?php } ?>
-			isDir="<?php echo ($file[ 'is_dir' ] == true) ? 'true' : 'false'; ?>">
+			>
 				<span class="item_numbering"><?php echo $file['index']; ?></span>
 				<span class="item_thumb"><img src="<?php echo $file[ 'thumb' ]; ?>" /></span>
 				<span class="item_icon"><img src="<?php echo $file[ 'thumb' ]; ?>" /></span>

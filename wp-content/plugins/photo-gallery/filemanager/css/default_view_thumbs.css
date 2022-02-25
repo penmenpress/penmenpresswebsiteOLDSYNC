@@ -77,8 +77,9 @@
   display: inline-block;
   width: 120px;
   height: 100px;
-  margin: 0 auto;
+  margin: 2px 1px;
   text-align: center;
+  vertical-align: bottom;
 }
 
 .explorer_item_hover,

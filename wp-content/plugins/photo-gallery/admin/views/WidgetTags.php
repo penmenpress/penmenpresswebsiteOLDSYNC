@@ -56,7 +56,7 @@ class WidgetTagsView_bwg {
 	 * @param $instance
 	 */
 	function form($params, $instance) {
-		wp_register_script(BWG()->prefix . '_jscolor', BWG()->plugin_url . '/js/jscolor/jscolor.js', array('jquery'), '1.3.9');
+		wp_register_script(BWG()->prefix . '_jscolor', BWG()->plugin_url . '/js/jquery.jscolor.js', array('jquery'), '2.4.5');
 		wp_enqueue_script(BWG()->prefix . '_jscolor');
 		extract($params);
 		$defaults = array(
@@ -114,11 +114,11 @@ class WidgetTagsView_bwg {
 		</p>
 		<p id="p_bg_color" style="display:<?php echo (!$instance['background_transparent']) ? "" : "none" ?>;">
 		  <label for="<?php echo $id_background_color; ?>"><?php _e('Background Color:', BWG()->prefix); ?></label><br>
-		  <input class="color" style="width:25%;" id="<?php echo $id_background_color; ?>" name="<?php echo $name_background_color; ?>'" type="text" value="<?php echo $instance['background_color']; ?>"/>
+		  <input class="jscolor" style="width:25%;" id="<?php echo $id_background_color; ?>" name="<?php echo $name_background_color; ?>'" type="text" value="<?php echo $instance['background_color']; ?>"/>
 		</p> 
 		<p>
 		  <label for="<?php echo $id_text_color; ?>"><?php _e('Text Color:', BWG()->prefix); ?></label><br>
-		  <input class="color" style="width:25%;" id="<?php echo $id_text_color; ?>" name="<?php echo $name_text_color; ?>'" type="text" value="<?php echo $instance['text_color']; ?>"/>
+		  <input class="jscolor" style="width:25%;" id="<?php echo $id_text_color; ?>" name="<?php echo $name_text_color; ?>'" type="text" value="<?php echo $instance['text_color']; ?>"/>
 		</p> 
 		<p>
 		  <label for="<?php echo $id_theme_id; ?>"><?php _e('Themes:', BWG()->prefix); ?></label><br>

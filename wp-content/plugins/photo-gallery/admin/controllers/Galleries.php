@@ -323,16 +323,14 @@ class GalleriesController_bwg {
                                                           'action' => 'addImages',
                                                           'bwg_width' => '800',
                                                           'bwg_height' => '550',
-                                                          'extensions' => 'jpg,jpeg,png,gif,svg',
                                                           'callback' => 'bwg_add_preview_image',
                                                           BWG()->nonce => wp_create_nonce('addImages'),
                                                           'TB_iframe' => '1',
                                                         ), admin_url('admin-ajax.php'));
     $params['add_images_action'] = add_query_arg(array(
                                                    'action' => 'addImages',
-                                                   'bwg_width' => '1150',
-                                                   'bwg_height' => '800',
-                                                   'extensions' => 'jpg,jpeg,png,gif,svg',
+                                                   'bwg_width' => '0',
+                                                   'bwg_height' => '0',
                                                    'callback' => 'bwg_add_image',
                                                    BWG()->nonce => wp_create_nonce('addImages'),
                                                    'TB_iframe' => '1',
@@ -398,8 +396,21 @@ class GalleriesController_bwg {
     $ajax_task = WDWLibrary::get('ajax_task');
     if ( $ajax_task !== '' ) {
       if ( method_exists($this->model, $ajax_task) ) {
-        $image_id = WDWLibrary::get('image_current_id', 0, 'intval');
-        $message['image_message'] = $this->model->$ajax_task($image_id, $data['id'], $all);
+        $image_id = WDWLibrary::get('image_current_id', 0);
+        if ( strpos($image_id, 'pr_') === 0 ) {
+          $action_image_id = isset($data['action_image_id'][$image_id]) ? $data['action_image_id'][$image_id] : 0;
+        }
+        $ids_string = WDWLibrary::get('ids_string', 0);
+        $ids = explode(',', $ids_string);
+        /* Getting from ajax last message id as we are loosing success message on second iteration */
+        $message['image_message'] = WDWLibrary::get('bwg_action_last_message', '', 'intval');
+        /* check if image_id is not defined in the portion 50 ids_string skip ajax_task action */
+        if ( in_array($image_id, $ids) ) {
+          if( $action_image_id != '' ) {
+            $image_id = $action_image_id;
+          }
+          $message['image_message'] = $this->model->$ajax_task($image_id, $data['id'], $all);
+        }
       }
     }
 

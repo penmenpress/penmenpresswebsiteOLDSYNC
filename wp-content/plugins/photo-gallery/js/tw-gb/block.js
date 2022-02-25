@@ -162,9 +162,21 @@
         }
 
         function showShortcode() {
+          if(pluginData.title=="Photo Gallery"){
+            var iconWidth = 'auto';
+            var iconHeight = 'auto';
+          }
+          else {
+            var iconWidth = '36px';
+            var iconHeight = '36px';
+          }
           return el( 'img', {
             src: pluginData.iconUrl,
             alt: pluginData.title,
+            style: {
+              'height': iconHeight,
+              'width': iconWidth
+            },
             onClick: function () {
               props.setAttributes( { popupOpened: true } );
             }.bind( this )

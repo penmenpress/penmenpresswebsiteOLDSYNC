@@ -4,7 +4,7 @@ function bwg_addons_display() {
   $addons = array(
     'ngitopg'   => array(
       'name'        => __('NextGen Gallery Import to Photo Gallery', BWG()->prefix),
-      'url'         => BWG()->plugin_link . BWG()->utm_source,
+      'url'         => 'https://wordpress.org/plugins/import-to-photo-gallery-from-nextgen-gallery/',
       'description' => __('This addon integrates NextGen with Photo Gallery allowing to import images and related data from NextGen to use with Photo Gallery', BWG()->prefix),
       'icon'        => '',
       'image'       => BWG()->plugin_url . '/addons/images/nextgen_gallery.png',

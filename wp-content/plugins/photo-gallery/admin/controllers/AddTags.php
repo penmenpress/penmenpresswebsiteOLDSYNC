@@ -65,7 +65,7 @@ class AddTagsController_bwg {
     $params['search'] = WDWLibrary::get('s', '');
 
     $params['total'] = $this->model->total($params);
-    $params['rows'] = $this->model->get_rows_data($params);
+    $params['rows'] = $this->model->get_rows_data($params, FALSE, TRUE);
 
     $this->view->display($params);
   }
