@@ -11,7 +11,17 @@ const el = wp.element.createElement;
  */
 export function getActionHistoryIdFromURL() {
    let params = new URLSearchParams(window.location.search);
-   return params.get('oasiswf');
+       params = params.get('oasiswf');
+   
+    if (params == null) {
+        let oasiswf_id = document.getElementById('hi_oasiswf_id');
+        if (typeof(oasiswf_id) == 'undefined' || oasiswf_id == null) {
+            return null;
+        }
+        return oasiswf_id.value;
+    } else {
+        return params;
+    }
 }
 
 export function getPostTypeFromURL() {

@@ -81,6 +81,14 @@ export class Signoff extends Component {
 
         if (workflowSettings) {
             let displayDueDate = workflowSettings.oasiswf_default_due_days;
+
+            // set the default due date by using the workflow settings
+            let dueDate = new Date();
+            if (displayDueDate !== "") {
+                dueDate.setDate(dueDate.getDate() + parseInt(displayDueDate));
+            }
+            this.props.setDueDate({ dueDate: dueDate });
+
             this.setState({
                 displayDueDate
             });
@@ -281,7 +289,7 @@ export class Signoff extends Component {
     /**
      * handle form submit for sign off
      */
-    handleSignoff(event) {
+    async handleSignoff(event) {
         this.setState({
             submitSpinner: "show",
             submitButtonDisable: true
@@ -301,7 +309,7 @@ export class Signoff extends Component {
         };
 
         // save the post
-        this.props.onSave();
+        await this.props.onSave();
 
         const errors = this.validateSignoff(form_data);
 
@@ -438,7 +446,7 @@ export class Signoff extends Component {
                                     <label>{dueDateLabel + ":"} </label>
                                     <Dropdown
                                         position="bottom left"
-                                        contentClassName="edit-post-post-schedule__dialog"
+                                        contentClassName="edit-post-post-schedule__dialog owduedatepicker-dropdown"
                                         renderToggle={({ onToggle, isOpen }) => (
                                             <Fragment>
                                                 <Button

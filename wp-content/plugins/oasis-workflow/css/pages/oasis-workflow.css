@@ -1469,3 +1469,13 @@ inbox-comments {
 .ow-feedback-email {
     width:20vw;
 }
+.owduedatepicker-dropdown .components-datetime__time {
+    opacity: 0;
+    overflow: hidden;
+    height: 0;
+    padding: 0;
+    margin: 0;
+}
+.owduedatepicker-dropdown .components-datetime__date {
+    border-top: 0px solid transparent !important;
+}

@@ -159,77 +159,77 @@ class OW_Email_Settings {
             <div id="settingstuff">
                 <div class="select-info">
                     <label class="settings-title">
-                        <?php echo __( "From Name:", "oasisworkflow" ); ?>
+                        <?php esc_html_e( "From Name:", "oasisworkflow" ); ?>
                     </label>
-                    <input type="text" class="regular-text" name="<?php echo $this->ow_email_option_name?>[from_name]" value="<?php echo esc_attr( $email_options['from_name'] ); ?>" />
+                    <input type="text" class="regular-text" name="<?php echo esc_attr( $this->ow_email_option_name ); ?>[from_name]" value="<?php echo esc_attr( $email_options['from_name'] ); ?>" />
                     <br/>
-                    <span class="description"><?php echo __( "(Name to be used for sending the workflow related emails. If left blank, the emails will be sent from the blog name.)", "oasisworkflow" ); ?></span>
+                    <span class="description"><?php esc_html_e( "(Name to be used for sending the workflow related emails. If left blank, the emails will be sent from the blog name.)", "oasisworkflow" ); ?></span>
                 </div>
                 <div class="select-info">
                     <label class="settings-title">
-                        <?php echo __( "From Email:", "oasisworkflow" ); ?>
+                        <?php esc_html_e( "From Email:", "oasisworkflow" ); ?>
                     </label>
-                    <input type="text" class="regular-text" name="<?php echo $this->ow_email_option_name?>[from_email_address]" value="<?php echo sanitize_email( $email_options['from_email_address'] ); ?>" />
+                    <input type="text" class="regular-text" name="<?php echo esc_attr( $this->ow_email_option_name ); ?>[from_email_address]" value="<?php echo esc_attr( $email_options['from_email_address'] ); ?>" />
                     <br/>
-                    <span class="description"><?php echo __( "(Email address to be used for sending the workflow related emails. If left blank, the default email will be used.)", "oasisworkflow" ); ?></span>
+                    <span class="description"><?php esc_html_e( "(Email address to be used for sending the workflow related emails. If left blank, the default email will be used.)", "oasisworkflow" ); ?></span>
                 </div>
                 <hr/>
                 
                 <div class="select-info">
-                    <input type="checkbox" id="assignment_emails" name="<?php echo $this->ow_email_option_name?>[assignment_emails]" value="yes"<?php checked( $email_options['assignment_emails'], 'yes' ); ?> />&nbsp;&nbsp;
-                    <label class="settings-title" for="assignment_emails"><?php echo __( "Check this box if you want to send emails when tasks are assigned.", "oasisworkflow" ); ?> </label>
+                    <input type="checkbox" id="assignment_emails" name="<?php echo esc_attr( $this->ow_email_option_name ); ?>[assignment_emails]" value="yes"<?php checked( $email_options['assignment_emails'], 'yes' ); ?> />&nbsp;&nbsp;
+                    <label class="settings-title" for="assignment_emails"><?php esc_html_e( "Check this box if you want to send emails when tasks are assigned.", "oasisworkflow" ); ?> </label>
                 </div>
                 
                 <div class="select-info">
-                    <input type="checkbox" id="post_publish_emails" name="<?php echo $this->ow_email_option_name?>[post_publish_emails]" value="yes"<?php checked( $email_options['post_publish_emails'], 'yes' ); ?> />&nbsp;&nbsp;
-                    <label class="settings-title" for="post_publish_emails"><?php echo __( "Check this box if you want to send an email to the author when post/page is published.", "oasisworkflow" ); ?> </label>
+                    <input type="checkbox" id="post_publish_emails" name="<?php echo esc_attr( $this->ow_email_option_name ); ?>[post_publish_emails]" value="yes"<?php checked( $email_options['post_publish_emails'], 'yes' ); ?> />&nbsp;&nbsp;
+                    <label class="settings-title" for="post_publish_emails"><?php esc_html_e( "Check this box if you want to send an email to the author when post/page is published.", "oasisworkflow" ); ?> </label>
                 </div>
                 
                 <div class="select-info">
-                   <input type="checkbox" id="unauthorized_post_update_emails" name="<?php echo $this->ow_email_option_name?>[unauthorized_post_update_emails]" value="yes"<?php checked( $email_options['unauthorized_post_update_emails'], 'yes' ); ?> />&nbsp;&nbsp;
-                   <label class="settings-title" for="unauthorized_post_update_emails"><?php echo __( "Check this box if you want to send an alert email to the current assignees when a non-assignee updates the article outside the workflow.", "oasisworkflow" ); ?> </label>
+                   <input type="checkbox" id="unauthorized_post_update_emails" name="<?php echo esc_attr( $this->ow_email_option_name ); ?>[unauthorized_post_update_emails]" value="yes"<?php checked( $email_options['unauthorized_post_update_emails'], 'yes' ); ?> />&nbsp;&nbsp;
+                   <label class="settings-title" for="unauthorized_post_update_emails"><?php esc_html_e( "Check this box if you want to send an alert email to the current assignees when a non-assignee updates the article outside the workflow.", "oasisworkflow" ); ?> </label>
                 </div>
                 
                 <div class="select-info">
-                   <input type="checkbox" id="abort_email_to_author" name="<?php echo $this->ow_email_option_name?>[abort_email_to_author]" value="yes"<?php checked( $email_options['abort_email_to_author'], 'yes' ); ?> />&nbsp;&nbsp;
-                   <label class="settings-title" for="abort_email_to_author"><?php echo __( "Check this box if you want to send email to the author when the workflow is aborted/cancelled.", "oasisworkflow" ); ?> </label>
+                   <input type="checkbox" id="abort_email_to_author" name="<?php echo esc_attr( $this->ow_email_option_name ); ?>[abort_email_to_author]" value="yes"<?php checked( $email_options['abort_email_to_author'], 'yes' ); ?> />&nbsp;&nbsp;
+                   <label class="settings-title" for="abort_email_to_author"><?php esc_html_e( "Check this box if you want to send email to the author when the workflow is aborted/cancelled.", "oasisworkflow" ); ?> </label>
                 </div>
                 
                 <div class="select-info">
-                   <input type="checkbox" id="submit_to_workflow_email" name="<?php echo $this->ow_email_option_name?>[submit_to_workflow_email]" value="yes"<?php checked( $email_options['submit_to_workflow_email'], 'yes' ); ?> />&nbsp;&nbsp;
-                   <label class="settings-title" for="submit_to_workflow_email"><?php echo __( "Check this box if you want to send email to the submitter when post/page is submitted to workflow.", "oasisworkflow" ); ?> </label>
+                   <input type="checkbox" id="submit_to_workflow_email" name="<?php echo esc_attr( $this->ow_email_option_name ); ?>[submit_to_workflow_email]" value="yes"<?php checked( $email_options['submit_to_workflow_email'], 'yes' ); ?> />&nbsp;&nbsp;
+                   <label class="settings-title" for="submit_to_workflow_email"><?php esc_html_e( "Check this box if you want to send email to the submitter when post/page is submitted to workflow.", "oasisworkflow" ); ?> </label>
                 </div>
                 
                 <fieldset class="owf_fieldset">
-                    <legend><?php echo __( "Task reminder settings", "oasisworkflow" ); ?></legend>
-                    <span class="description"><?php echo __( "(Applicable only if reminder email configuration is completed during workflow setup.)", "oasisworkflow" ); ?></span>
+                    <legend><?php esc_html_e( "Task reminder settings", "oasisworkflow" ); ?></legend>
+                    <span class="description"><?php esc_html_e( "(Applicable only if reminder email configuration is completed during workflow setup.)", "oasisworkflow" ); ?></span>
                     <div class="select-info">
-                       <input type="checkbox" id="reminder_emails" name="<?php echo $this->ow_email_option_name?>[reminder_emails]" value="yes"<?php checked( $email_options['reminder_emails'], 'yes' ); ?> />&nbsp;&nbsp;
-                       <label class="settings-title" for="reminder_emails"><?php echo __( "Check this box if you want to send reminder emails about a pending task.", "oasisworkflow" ); ?> </label>
+                       <input type="checkbox" id="reminder_emails" name="<?php echo esc_attr( $this->ow_email_option_name ); ?>[reminder_emails]" value="yes"<?php checked( $email_options['reminder_emails'], 'yes' ); ?> />&nbsp;&nbsp;
+                       <label class="settings-title" for="reminder_emails"><?php esc_html_e( "Check this box if you want to send reminder emails about a pending task.", "oasisworkflow" ); ?> </label>
                         <br/>
                     </div>
                     <div class="select-info">
                         <label class="settings-title">
                             <input type="checkbox" id="chk_reminder_day" <?php echo ( $email_reminder_days_before_option ) ? "checked" : ""; ?> />&nbsp;&nbsp;
-                            <?php echo __( " Send Reminder Email", "oasisworkflow" ); ?>
+                            <?php esc_html_e( " Send Reminder Email", "oasisworkflow" ); ?>
                         </label>
-                        <input type="text" size="4" class="reminder_days" id="<?php echo $this->ow_email_reminder_day_before_option_name?>" name="<?php echo $this->ow_email_reminder_day_before_option_name?>" value="<?php echo esc_attr( $email_reminder_days_before_option); ?>" maxlength=2 />
-                        <label class="settings-title"><?php echo __( "day(s) before due date.", "oasisworkflow" ); ?></label>
+                        <input type="text" size="4" class="reminder_days" id="<?php echo esc_attr( $this->ow_email_reminder_day_before_option_name ); ?>" name="<?php echo esc_attr( $this->ow_email_reminder_day_before_option_name ); ?>" value="<?php echo esc_attr( $email_reminder_days_before_option); ?>" maxlength=2 />
+                        <label class="settings-title"><?php esc_html_e( "day(s) before due date.", "oasisworkflow" ); ?></label>
                     </div>
                     <div class="select-info">
                         <label class="settings-title">
                             <input type="checkbox" id="chk_reminder_day_after" <?php echo ($email_reminder_days_after_option) ? "checked" : ""; ?> />&nbsp;&nbsp;
-                            <?php echo __( " Send Reminder Email", "oasisworkflow" ); ?>
+                            <?php esc_html_e( " Send Reminder Email", "oasisworkflow" ); ?>
                         </label>
-                        <input type="text" size="4" class="reminder_days" id="<?php echo $this->ow_email_reminder_day_after_option_name?>" name="<?php echo $this->ow_email_reminder_day_after_option_name?>" value="<?php echo esc_attr( $email_reminder_days_after_option ); ?>" maxlength=2 />
-                        <label class="settings-title"><?php echo __( "day(s) after due date.", "oasisworkflow" ); ?></label>
+                        <input type="text" size="4" class="reminder_days" id="<?php echo esc_attr( $this->ow_email_reminder_day_after_option_name ); ?>" name="<?php echo esc_attr( $this->ow_email_reminder_day_after_option_name ); ?>" value="<?php echo esc_attr( $email_reminder_days_after_option ); ?>" maxlength=2 />
+                        <label class="settings-title"><?php esc_html_e( "day(s) after due date.", "oasisworkflow" ); ?></label>
                     </div>
                 </fieldset>
                 <div class="select-info full-width">
 	                <div id="owf_settings_button_bar">
 	                    <input type="submit" id="emailSettingSave"
 	                           class="button button-primary button-large"
-	                           value="<?php echo __( "Save", "oasisworkflow" ); ?>" />
+	                           value="<?php esc_html_e( "Save", "oasisworkflow" ); ?>" />
 	                </div>
 	            </div>
             </div>
@@ -240,4 +240,3 @@ class OW_Email_Settings {
 }
 
 $ow_email_settings = new OW_Email_Settings();
-?>

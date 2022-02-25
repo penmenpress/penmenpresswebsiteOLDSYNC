@@ -2,8 +2,8 @@
 Contributors: nuggetsol
 Tags: workflow, work flow, review, assignment, publish, inbox, workflow history, audit, versioning, edit flow, newsroom, custom post status, journalism, auto submit, approval workflow, editorial workflow, notifications, oasis workflow, editorial, revisions, document revision, version control, collaboration, document management, revision scheduling, duplication, clone, revise, revise article
 Requires at least: 4.4
-Tested up to: 5.6
-Stable tag: 5.6
+Tested up to: 5.8.1
+Stable tag: 5.9
 
 Automate your WordPress Editorial Workflow with Oasis Workflow. Simple, intuitive drag and drop workflow builder to streamline your editorial process.
 
@@ -115,6 +115,21 @@ For [Frequently Asked Questions](https://www.oasisworkflow.com/faq) plus documen
 
 
 == Changelog ==
+
+= Version 5.9 =
+* Fixed due date datepicker
+* Fixed due date set due date settings options
+
+= Version 5.8 =
+* Fixed the redirection issue after abort, signoff etc in block editor
+* Fixed issue with <br> showing up in comments.
+* Removed babel-cli dependency since it was not needed.
+
+= Version 5.7 =
+* Security Fix - Fixed output escaping issue where some of the strings were not properly escaped.
+* REST API Security - Added capability security to publicly accessible API endpoints.
+* PHP to JS Escaping - Javascript variables printed and defined through PHP variables were properly sanitized and escaped.
+* Unprepared SQL Queries - Fixed instances of SQL queries that were not properly escaped and prepared.
 
 = Version 5.6 =
 * Made it compatible with WP 5.6.

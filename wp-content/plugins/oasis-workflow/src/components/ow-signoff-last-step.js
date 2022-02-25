@@ -66,8 +66,8 @@ export class SignoffLastStep extends Component {
    /**
     * handle successful completion of workflow
     */
-   handleWorkflowComplete(event) {
-      this.props.onSave();
+    async handleWorkflowComplete(event) {
+      await this.props.onSave();
 
       this.setState({
          submitSpinner: "show",
@@ -142,7 +142,7 @@ export class SignoffLastStep extends Component {
     * handle immediately checkbox change
     * @param {boolean} checked 
     */
-   onImmediatelyChange(checked) {
+   async onImmediatelyChange(checked) {
       let currentDate = new Date();
       let newDate = '';
       if (checked) {
@@ -158,7 +158,7 @@ export class SignoffLastStep extends Component {
       }
 
       this.props.editPost({ date: newDate });
-      this.props.onSave();
+      await this.props.onSave();
    }
 
    render() {

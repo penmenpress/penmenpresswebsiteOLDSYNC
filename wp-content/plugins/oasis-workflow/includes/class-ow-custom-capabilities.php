@@ -35,7 +35,7 @@ class OW_Custom_Capabilities {
 		global $wp_roles;
 
 		if ( class_exists( 'WP_Roles' ) && ( ! isset( $wp_roles ) ) ) {
-			$wp_roles = new WP_Roles();
+			$wp_roles = new WP_Roles(); // phpcs:ignore
 		}
 
 		if ( is_object( $wp_roles ) ) {
@@ -106,7 +106,7 @@ class OW_Custom_Capabilities {
 		global $wp_roles;
 
 		if ( class_exists( 'WP_Roles' ) && ( ! isset( $wp_roles ) ) ) {
-			$wp_roles = new WP_Roles();
+			$wp_roles = new WP_Roles(); // phpcs:ignore
 		}
 
 		if ( is_object( $wp_roles ) ) {
@@ -169,11 +169,11 @@ class OW_Custom_Capabilities {
 	public function api_check_user_capabilities( $criteria ) {
 
 		if ( ! wp_verify_nonce( $criteria->get_header( 'x_wp_nonce' ), 'wp_rest' ) ) {
-			wp_die( __( 'Unauthorized access.', 'oasisworkflow' ) );
+			wp_die( esc_html__( 'Unauthorized access.', 'oasisworkflow' ) );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_die( __( 'You are not allowed to invoke this api.', 'oasisworkflow' ) );
+			wp_die( esc_html__( 'You are not allowed to invoke this api.', 'oasisworkflow' ) );
 		}
 
 		$response = array(
@@ -187,5 +187,3 @@ class OW_Custom_Capabilities {
 	}
 
 }
-
-?>

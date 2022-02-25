@@ -79,6 +79,14 @@ export class SubmitToWorkflow extends Component {
         if (workflowSettings) {
             let displayPublishDate = workflowSettings.oasiswf_publish_date_setting;
             let displayDueDate = workflowSettings.oasiswf_default_due_days;
+
+            // set the default due date by using the workflow settings
+            let dueDate = new Date();
+            if (displayDueDate !== "") {
+                dueDate.setDate(dueDate.getDate() + parseInt(displayDueDate));
+            }
+            this.props.setDueDate({ dueDate: dueDate });
+            
             this.setState({
                 displayPublishDate,
                 displayDueDate
@@ -209,7 +217,7 @@ export class SubmitToWorkflow extends Component {
     }
 
     // Submit to workflow - form submit
-    handleSubmitToWorkflow(event) {
+    async handleSubmitToWorkflow(event) {
         this.setState({
             submitSpinner: "show",
             submitButtonDisable: true
@@ -225,7 +233,7 @@ export class SubmitToWorkflow extends Component {
             comments: this.state.comments
         };
 
-        this.props.onSave();
+        await this.props.onSave();
 
         const errors = this.validateSubmitToWorkflow(form_data);
 
@@ -390,7 +398,7 @@ export class SubmitToWorkflow extends Component {
                             <label>{dueDateLabel + ":"} </label>
                             <Dropdown
                                 position="bottom left"
-                                contentClassName="edit-post-post-schedule__dialog"
+                                contentClassName="edit-post-post-schedule__dialog owduedatepicker-dropdown"
                                 renderToggle={({ onToggle, isOpen }) => (
                                     <Fragment>
                                         <Button

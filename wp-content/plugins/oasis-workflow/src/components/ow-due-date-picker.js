@@ -2,7 +2,7 @@
  * WordPress Dependencies
  */
 const {
-	DatePicker
+	DateTimePicker
 } = wp.components;
 
 const { withSelect, withDispatch } = wp.data;
@@ -11,7 +11,7 @@ const { compose } = wp.compose;
 
 export function OWDueDatePicker( { dueDate, onUpdateDate } ) {
 	return (
-		<DatePicker
+		<DateTimePicker
 			key="ow-date-picker"
 			onChange={ onUpdateDate }
 			currentDate={ dueDate }

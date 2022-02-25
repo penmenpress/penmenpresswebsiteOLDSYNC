@@ -9,8 +9,8 @@
  *
  */
 // Exit if accessed directly
-if( !defined( 'ABSPATH' ) ) {
-   exit();
+if ( ! defined( 'ABSPATH' ) ) {
+	exit();
 }
 
 /**
@@ -20,310 +20,322 @@ if( !defined( 'ABSPATH' ) ) {
  */
 class OW_Custom_Statuses {
 
-   // This is taxonomy name used to store all our custom statuses
-   var $taxonomy_key = 'post_status';
+	// This is taxonomy name used to store all our custom statuses
+	var $taxonomy_key = 'post_status';
 
-   public function __construct() {
-      add_action( 'init', array( $this, 'register_custom_taxonomy' ) );
-      add_action( 'init', array( $this, 'register_custom_statuses' ) );
+	public function __construct() {
+		add_action( 'init', array( $this, 'register_custom_taxonomy' ) );
+		add_action( 'init', array( $this, 'register_custom_statuses' ) );
 
-      // Methods for handling the actions of creating, making default, and deleting post stati
-      add_action( 'admin_init', array( $this, 'add_custom_status' ) );
-      add_action( 'admin_init', array( $this, 'edit_custom_status' ) );
-      add_action( 'admin_init', array( $this, 'delete_custom_status' ) );
+		// Methods for handling the actions of creating, making default, and deleting post stati
+		add_action( 'admin_init', array( $this, 'add_custom_status' ) );
+		add_action( 'admin_init', array( $this, 'edit_custom_status' ) );
+		add_action( 'admin_init', array( $this, 'delete_custom_status' ) );
 
-      add_filter( 'display_post_states', array( $this, 'add_custom_post_states' ), 10, 2 );
+		add_filter( 'display_post_states', array( $this, 'add_custom_post_states' ), 10, 2 );
 
-      add_action( 'wp_ajax_get_all_custom_statuses', array( $this, 'get_all_custom_statuses_ajax' ) );
-      
-      foreach ( array( 'post', 'post-new' ) as $hook ) {
-         add_action( "admin_footer-{$hook}.php", array( $this,'display_custom_post_status' ) );
-      }      
-   }
+		add_action( 'wp_ajax_get_all_custom_statuses', array( $this, 'get_all_custom_statuses_ajax' ) );
 
-   /**
-    * Register custom post status taxonomy - used by workflows.
-    *
-    * @since 2.0
-    */
-   public function register_custom_taxonomy() {
-      if( !taxonomy_exists( $this->taxonomy_key ) ) {
-         $args = array( 'hierarchical' => false,
-                        'update_count_callback' => '_update_post_term_count',
-                        'label' => false,
-                        'query_var' => false,
-                        'rewrite' => false,
-                        'show_ui' => false
-         );
-         register_taxonomy( $this->taxonomy_key, 'post', $args );
-      }
-   }
+		foreach ( array( 'post', 'post-new' ) as $hook ) {
+			add_action( "admin_footer-{$hook}.php", array( $this, 'display_custom_post_status' ) );
+		}
+	}
 
-   /**
-    * Register custom post status - used by workflows.
-    *
-    * @since 2.0
-    */
-   public function register_custom_statuses() {
-      $args = array( 'hide_empty' => false );
-      $custom_statuses = get_terms( $this->taxonomy_key, $args );
-      foreach ( $custom_statuses as $status ) {
-         register_post_status( $status->slug, array(
-            'label' => $status->name,
-            'protected' => true,
-            '_builtin' => false,
-            'label_count' => _n_noop( "{$status->name} <span class='count'>(%s)</span>", "{$status->name} <span class='count'>(%s)</span>" )
-         ) );
-      }
-   }
+	/**
+	 * Register custom post status taxonomy - used by workflows.
+	 *
+	 * @since 2.0
+	 */
+	public function register_custom_taxonomy() {
+		if ( ! taxonomy_exists( $this->taxonomy_key ) ) {
+			$args = array(
+				'hierarchical'          => false,
+				'update_count_callback' => '_update_post_term_count',
+				'label'                 => false,
+				'query_var'             => false,
+				'rewrite'               => false,
+				'show_ui'               => false
+			);
+			register_taxonomy( $this->taxonomy_key, 'post', $args );
+		}
+	}
 
-   /**
-    * Add custom status to term table
-    *
-    * @return string
-    * @since 2.0
-    */
-   public function add_custom_status() {
+	/**
+	 * Register custom post status - used by workflows.
+	 *
+	 * @since 2.0
+	 */
+	public function register_custom_statuses() {
+		$args            = array( 'hide_empty' => false );
+		$custom_statuses = get_terms( $this->taxonomy_key, $args );
+		foreach ( $custom_statuses as $status ) {
+			register_post_status( $status->slug, array(
+				'label'       => $status->name,
+				'protected'   => true,
+				'_builtin'    => false,
+				'label_count' => _n_noop( "{$status->name} <span class='count'>(%s)</span>", "{$status->name} <span class='count'>(%s)</span>" )
+			) );
+		}
+	}
 
-      if( isset( $_POST['submit'] ) && isset( $_POST['action'] ) && $_POST['action'] == 'add-new' ) {
+	/**
+	 * Add custom status to term table
+	 *
+	 * @return string
+	 * @since 2.0
+	 */
+	public function add_custom_status() {
 
-         if( ! current_user_can( 'ow_edit_workflow' ) ) {
-            wp_die( __( 'You are not allowed to create custom statuses.', 'oasisworkflow' ) );
-         }
+		if ( isset( $_POST['submit'] ) && isset( $_POST['action'] ) && $_POST['action'] == 'add-new' ) {
 
-         check_admin_referer( 'custom-status-add-nonce' );
+			if ( ! current_user_can( 'ow_edit_workflow' ) ) {
+				wp_die( esc_html__( 'You are not allowed to create custom statuses.', 'oasisworkflow' ) );
+			}
 
-         // Validate and sanitize the form data
-         $term = sanitize_text_field( trim( $_POST['status_name'] ) );
-         $slug = sanitize_text_field( trim( $_POST['slug_name'] ) );
-         $slug = $slug ? $slug : sanitize_title( $term );
-         $status_description = stripslashes( wp_filter_nohtml_kses( trim( $_POST['status_description'] ) ) );
-         
-         // Check if custom status name and slug name doesn't match with the existing and core statuses
-         $is_term_exist = $this->check_if_term_exist( $term, $slug );
-         
-         if( $is_term_exist ) {
-            add_action( 'admin_notices', array( $this, 'custom_status_exist' ) );
-         } else {         
-            //handle_add_custom_status
-            $args = array(
-               'slug' => $slug,
-               'description' => $status_description
-            );
-            $response = wp_insert_term( $term, $this->taxonomy_key, $args );
-            if( is_wp_error( $response ) ) {
-               wp_die( __( 'Could not add status: ', 'oasisworkflow' ) . $response->get_error_message() );
-            }
+			check_admin_referer( 'custom-status-add-nonce' );
 
-            add_action( 'admin_notices', array( $this, 'custom_status_added' ) );
-         }
-      }
-   }
-   
-   /**
-    * Check if custom status name and slug name doesn't match with the existing and core statuses
-    * @param string $term
-    * @param string $slug
-    * @return boolean
-    * @since 4.4
-    */
-   public function check_if_term_exist( $term, $slug ) {
-      
-      $status_array = get_post_stati( array( 'show_in_admin_status_list' => true ) );
-      
-      if( term_exists( $term ) || term_exists( $slug ) || array_key_exists( $slug, $status_array ) ) {
-         return true;
-      } else {
-         return false;
-      }
-   }
+			// Validate and sanitize the form data
+			$term               = sanitize_text_field( trim( $_POST['status_name'] ) ); // phpcs:ignore
+			$slug               = sanitize_text_field( trim( $_POST['slug_name'] ) ); // phpcs:ignore
+			$slug               = $slug ? $slug : sanitize_title( $term );
+			$status_description = stripslashes( wp_filter_nohtml_kses( trim( $_POST['status_description'] ) ) ); // phpcs:ignore
 
-   /**
-    * Notice: Custom status added successfully.
-    *
-    * @since 2.0
-    */
-   public function custom_status_added() {
-      echo OW_Utility::instance()->admin_notice( array(
-         'type' => 'update',
-         'message' => __( 'Custom status has been added successfully.', 'oasisworkflow' )
-      ) );
-   }
-   
-   /**
-    * Notice: Custom status already exist.
-    * @since 4.4
-    */
-   public function custom_status_exist() {
-      echo OW_Utility::instance()->admin_notice( array(
-         'type' => 'error',
-         'message' => __( 'Custom status already exist.', 'oasisworkflow' )
-      ) );
-   }
+			// Check if custom status name and slug name doesn't match with the existing and core statuses
+			$is_term_exist = $this->check_if_term_exist( $term, $slug );
 
-   /**
-    * Update custom status
-    * @since 2.0
-    */
-   public function edit_custom_status() {
+			if ( $is_term_exist ) {
+				add_action( 'admin_notices', array( $this, 'custom_status_exist' ) );
+			} else {
+				//handle_add_custom_status
+				$args     = array(
+					'slug'        => $slug,
+					'description' => $status_description
+				);
+				$response = wp_insert_term( $term, $this->taxonomy_key, $args );
+				if ( is_wp_error( $response ) ) {
+					wp_die( esc_html__( 'Could not add status: ', 'oasisworkflow' ) . $response->get_error_message() ); // phpcs:ignore
+				}
 
-      if( isset( $_POST['submit'] ) && isset( $_POST['action'] ) && 'update-status' == $_POST['action'] ) {
+				add_action( 'admin_notices', array( $this, 'custom_status_added' ) );
+			}
+		}
+	}
 
-         if( ! current_user_can( 'ow_edit_workflow' ) ) {
-            wp_die( __( 'You are not allowed to edit/update the custom status.', 'oasisworkflow' ) );
-         }
+	/**
+	 * Check if custom status name and slug name doesn't match with the existing and core statuses
+	 *
+	 * @param string $term
+	 * @param string $slug
+	 *
+	 * @return boolean
+	 * @since 4.4
+	 */
+	public function check_if_term_exist( $term, $slug ) {
 
-         check_admin_referer( 'edit_custom_status' );
+		$status_array = get_post_stati( array( 'show_in_admin_status_list' => true ) );
 
-         // Validate and sanitize the form data
-         $term_id = intval( sanitize_text_field( $_POST['term_id'] ) );
-         $term = sanitize_text_field( trim( $_POST['status_name'] ) );
-         $slug = sanitize_text_field( trim( $_POST['slug_name'] ) );
-         $slug = $slug ? $slug : sanitize_title( $term );
-         $status_description = stripslashes( wp_filter_nohtml_kses( trim( $_POST['status_description'] ) ) );
+		// phpcs:ignore
+		if ( term_exists( $term ) || term_exists( $slug ) || array_key_exists( $slug, $status_array ) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-         $args = array(
-            'slug' => $slug,
-            'description' => $status_description,
-            'name' => $term
-         );
-         $response = wp_update_term( $term_id, 'post_status', $args );
-         if( is_wp_error( $response ) ) {
-            wp_die( __( 'Could not add status: ', 'oasisworkflow' ) . $response->get_error_message() );
-         }
+	/**
+	 * Notice: Custom status added successfully.
+	 *
+	 * @since 2.0
+	 */
+	public function custom_status_added() {
+		// phpcs:ignore
+		echo OW_Utility::instance()->admin_notice( array(
+			'type'    => 'update',
+			'message' => esc_html__( 'Custom status has been added successfully.', 'oasisworkflow' )
+		) );
+	}
 
-         add_action( 'admin_notices', array( $this, 'custom_status_updated' ) );
-      }
-   }
+	/**
+	 * Notice: Custom status already exist.
+	 * @since 4.4
+	 */
+	public function custom_status_exist() {
+		// phpcs:ignore
+		echo OW_Utility::instance()->admin_notice( array(
+			'type'    => 'error',
+			'message' => esc_html__( 'Custom status already exist.', 'oasisworkflow' )
+		) );
+	}
 
-   /**
-    * AJAX handler - Get all custom statuses and then send the json string
-    *
-    * @since 2.1
-    */
-   public function get_all_custom_statuses_ajax() {
-      wp_send_json( $this->get_all_custom_statuses() );
-   }
+	/**
+	 * Update custom status
+	 * @since 2.0
+	 */
+	public function edit_custom_status() {
 
-   /**
-    * Notice: Custom status updated successfully.
-    *
-    * @since 2.0
-    */
-   public function custom_status_updated() {
-      echo OW_Utility::instance()->admin_notice( array(
-         'type' => 'update',
-         'message' => 'Custom status has been updated successfully.'
-      ) );
-   }
+		if ( isset( $_POST['submit'] ) && isset( $_POST['action'] ) && 'update-status' == $_POST['action'] ) {
 
-   /**
-    * Delete custom status for given term id
-    * @since 2.0
-    */
-   public function delete_custom_status() {
+			if ( ! current_user_can( 'ow_edit_workflow' ) ) {
+				wp_die( esc_html__( 'You are not allowed to edit/update the custom status.', 'oasisworkflow' ) );
+			}
 
-      if( isset( $_GET['action'] ) && 'delete-status' == $_GET['action'] ) {
+			check_admin_referer( 'edit_custom_status' );
 
-         if( ! current_user_can( 'ow_edit_workflow' ) ) {
-            wp_die( __( 'You are not allowed to delete the custom status.', 'oasisworkflow' ) );
-         }
+			// Validate and sanitize the form data
+			$term_id            = intval( sanitize_text_field( $_POST['term_id'] ) ); // phpcs:ignore
+			$term               = sanitize_text_field( trim( $_POST['status_name'] ) ); // phpcs:ignore
+			$slug               = sanitize_text_field( trim( $_POST['slug_name'] ) ); // phpcs:ignore
+			$slug               = $slug ? $slug : sanitize_title( $term );
+			$status_description = stripslashes( wp_filter_nohtml_kses( trim( $_POST['status_description'] ) ) ); // phpcs:ignore
 
-         check_admin_referer( 'delete-custom-status' );
-         $term_id = intval( sanitize_text_field( $_GET['term_id'] ) );
-         wp_delete_term( $term_id, $this->taxonomy_key );
-         wp_redirect( admin_url( 'admin.php?page=oasiswf-custom-statuses' ) );
-         exit();
-      }
-   }
+			$args     = array(
+				'slug'        => $slug,
+				'description' => $status_description,
+				'name'        => $term
+			);
+			$response = wp_update_term( $term_id, 'post_status', $args );
+			if ( is_wp_error( $response ) ) {
+				wp_die( esc_html__( 'Could not add status: ', 'oasisworkflow' ) . $response->get_error_message() ); // phpcs:ignore
+			}
 
-   /**
-    * Retrive all custom status from db
-    * @return object
-    *
-    * @since 2.0
-    */
-   public function get_all_custom_statuses() {
-      $args = array(
-         'hide_empty' => false
-      );
-      return get_terms( $this->taxonomy_key, $args );
-   }
+			add_action( 'admin_notices', array( $this, 'custom_status_updated' ) );
+		}
+	}
 
-   /**
-    * Return the single term for given field and its value
-    * @param string $field
-    * @param mixed $value
-    * @return object
-    */
-   public function get_single_term_by( $field, $value ) {
-      return get_term_by( $field, $value, $this->taxonomy_key );
-   }
+	/**
+	 * AJAX handler - Get all custom statuses and then send the json string
+	 *
+	 * @since 2.1
+	 */
+	public function get_all_custom_statuses_ajax() {
+		wp_send_json( $this->get_all_custom_statuses() );
+	}
 
-   /**
-    * Filter: Add our custom post status if its not set into $post_states
-    * @param array $post_states
-    * @param object $post
-    * @return array
-    * @since 2.0
-    */
-   public function add_custom_post_states( $post_states, $post ) {
-      if( empty( $post_states ) && $post->post_status != 'trash' && $post->post_status != 'publish' ) {
-         $post_status = $this->get_single_term_by( 'slug', get_post_status( $post->ID ) );
-         if( is_object( $post_status ) && $post_status->slug ) {
-            $post_states[$post_status->slug] = $post_status->name;
-         }
-      }
-      return $post_states;
-   }
+	/**
+	 * Retrive all custom status from db
+	 * @return object
+	 *
+	 * @since 2.0
+	 */
+	public function get_all_custom_statuses() {
+		$args = array(
+			'hide_empty' => false
+		);
 
-   /**
-    * Add the header/footer of custom status
-    * @since 2.0
-    */
-   public function get_custom_status_header() {
-      echo '<tr>
-                  <th scope="col" class="manage-column column-name">' . __( 'Name', 'oasisworkflow' ) . '</th>
-                  <th scope="col" class="manage-column column-slug">' . __( 'Slug', 'oasisworkflow' ) . '</th>
-                  <th scope="col" class="manage-column column-description">' . __( 'Description', 'oasisworkflow' ) . '</th>
+		return get_terms( $this->taxonomy_key, $args );
+	}
+
+	/**
+	 * Notice: Custom status updated successfully.
+	 *
+	 * @since 2.0
+	 */
+	public function custom_status_updated() {
+		// phpcs:ignore
+		echo OW_Utility::instance()->admin_notice( array(
+			'type'    => 'update',
+			'message' => esc_html__( 'Custom status has been updated successfully.', 'oasisworkflow' )
+		) );
+	}
+
+	/**
+	 * Delete custom status for given term id
+	 * @since 2.0
+	 */
+	public function delete_custom_status() {
+
+		if ( isset( $_GET['action'] ) && 'delete-status' == $_GET['action'] ) {
+
+			if ( ! current_user_can( 'ow_edit_workflow' ) ) {
+				wp_die( esc_html__( 'You are not allowed to delete the custom status.', 'oasisworkflow' ) );
+			}
+
+			check_admin_referer( 'delete-custom-status' );
+			$term_id = intval( sanitize_text_field( $_GET['term_id'] ) ); // phpcs:ignore
+			wp_delete_term( $term_id, $this->taxonomy_key );
+			wp_redirect( admin_url( 'admin.php?page=oasiswf-custom-statuses' ) );
+			exit();
+		}
+	}
+
+	/**
+	 * Filter: Add our custom post status if its not set into $post_states
+	 *
+	 * @param array $post_states
+	 * @param object $post
+	 *
+	 * @return array
+	 * @since 2.0
+	 */
+	public function add_custom_post_states( $post_states, $post ) {
+		if ( empty( $post_states ) && $post->post_status != 'trash' && $post->post_status != 'publish' ) {
+			$post_status = $this->get_single_term_by( 'slug', get_post_status( $post->ID ) );
+			if ( is_object( $post_status ) && $post_status->slug ) {
+				$post_states[ $post_status->slug ] = $post_status->name;
+			}
+		}
+
+		return $post_states;
+	}
+
+	/**
+	 * Return the single term for given field and its value
+	 *
+	 * @param string $field
+	 * @param mixed $value
+	 *
+	 * @return object
+	 */
+	public function get_single_term_by( $field, $value ) {
+		return get_term_by( $field, $value, $this->taxonomy_key );
+	}
+
+	/**
+	 * Add the header/footer of custom status
+	 * @since 2.0
+	 */
+	public function get_custom_status_header() {
+		echo '<tr>
+                  <th scope="col" class="manage-column column-name">' . esc_html__( 'Name', 'oasisworkflow' ) . '</th>
+                  <th scope="col" class="manage-column column-slug">' . esc_html__( 'Slug', 'oasisworkflow' ) . '</th>
+                  <th scope="col" class="manage-column column-description">' . esc_html__( 'Description', 'oasisworkflow' ) . '</th>
                </tr>';
-   }
-   
-   /**
-    * Hook - post, post-new
-    * Display custom status on the post edit page
-    *
-    * @since 4.9
-    */
-   public function display_custom_post_status() {
-      global $post, $ow_custom_statuses;
-      $custom_statuses = $ow_custom_statuses->get_all_custom_statuses();
+	}
 
-      foreach ( $custom_statuses as $custom_status ) {
-         if ($custom_status->slug === $post->post_status) {
-            $custom_post_status = $custom_status->name;
-         }
-      }
+	/**
+	 * Hook - post, post-new
+	 * Display custom status on the post edit page
+	 *
+	 * @since 4.9
+	 */
+	public function display_custom_post_status() {
+		global $post, $ow_custom_statuses;
+		$custom_statuses = $ow_custom_statuses->get_all_custom_statuses();
 
-      if ( ! empty ( $custom_post_status ) ) {
+		foreach ( $custom_statuses as $custom_status ) {
+			if ( $custom_status->slug === $post->post_status ) {
+				$custom_post_status = $custom_status->name;
+			}
+		}
 
-         ?>
+		if ( ! empty ( $custom_post_status ) ) {
 
-         <script type="text/javascript">
-            jQuery(document).ready(function () {
+			?>
+
+           <script type="text/javascript">
+             jQuery(document).ready(function () {
                if (jQuery('#post-status-display').html().trim() != '') {
-                  return false;
+                 return false
                }
-               jQuery('#post-status-display').html('<?php echo $custom_post_status ?>');
-               return false;
-            });
-         </script>
+               jQuery('#post-status-display').html('<?php echo esc_attr( $custom_post_status ) ?>')
+               return false
+             })
+           </script>
 
-         <?php
-      }
-   }   
+			<?php
+		}
+	}
 
 }
 
 $ow_custom_statuses = new OW_Custom_Statuses();
-?>

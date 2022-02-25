@@ -3,7 +3,7 @@
   Plugin Name: Oasis Workflow
   Plugin URI: http://www.oasisworkflow.com
   Description: Automate your WordPress Editorial Workflow with Oasis Workflow.
-  Version: 5.6
+  Version: 5.9
   Author: Nugget Solutions Inc.
   Author URI: http://www.nuggetsolutions.com
   Text Domain: oasisworkflow
@@ -26,8 +26,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-define( 'OASISWF_VERSION', '5.6' );
-define( 'OASISWF_DB_VERSION', '5.6' );
+define( 'OASISWF_VERSION', '5.9' );
+define( 'OASISWF_DB_VERSION', '5.9' );
 define( 'OASISWF_PATH', plugin_dir_path( __FILE__ ) ); //use for include files to other files
 define( 'OASISWF_ROOT', dirname( __FILE__ ) );
 define( 'OASISWF_FILE_PATH', OASISWF_ROOT . '/' . basename( __FILE__ ) );
@@ -126,7 +126,7 @@ class OW_Plugin_Init
          // check if it is a network activation - if so, run the activation function for each blog id
          if ($network_wide) {
             // Get all blog ids
-            $blogids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+            $blogids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
             foreach ($blogids as $blog_id) {
                switch_to_blog($blog_id);
                $this->run_for_site();
@@ -153,7 +153,7 @@ class OW_Plugin_Init
          // check if it is a network activation - if so, run the activation function for each blog id
          if ($network_wide) {
             // Get all blog ids
-            $blogids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+            $blogids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
             foreach ($blogids as $blog_id) {
                switch_to_blog($blog_id);
                $this->run_on_deactivation();
@@ -179,11 +179,12 @@ class OW_Plugin_Init
       OW_Plugin_Init::run_on_uninstall();
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                OW_Plugin_Init::clear_scheduled_hooks();
                OW_Plugin_Init::delete_for_site();
@@ -214,8 +215,8 @@ class OW_Plugin_Init
 
       // top level menu for Workflows
       add_menu_page(
-         __('Workflows', 'oasisworkflow'),
-         __('Workflows', 'oasisworkflow') . $count, $current_role,
+         esc_html__('Workflows', 'oasisworkflow'),
+         esc_html__('Workflows', 'oasisworkflow') . $count, $current_role,
          'oasiswf-inbox',
          array($this, 'workflow_inbox_page_content'),
          '',
@@ -223,8 +224,8 @@ class OW_Plugin_Init
 
       // Inbox menu
       add_submenu_page('oasiswf-inbox',
-         __('Inbox', 'oasisworkflow'),
-         __('Inbox', 'oasisworkflow') . $count, $current_role,
+         esc_html__('Inbox', 'oasisworkflow'),
+         esc_html__('Inbox', 'oasisworkflow') . $count, $current_role,
          'oasiswf-inbox',
          array($this, 'workflow_inbox_page_content'));
 
@@ -243,8 +244,8 @@ class OW_Plugin_Init
       // Reports
       if (current_user_can('ow_view_reports')) {
          add_submenu_page('oasiswf-inbox',
-            __('Reports', 'oasisworkflow'),
-            __('Reports', 'oasisworkflow'),
+            esc_html__('Reports', 'oasisworkflow'),
+            esc_html__('Reports', 'oasisworkflow'),
             $current_role,
             'oasiswf-reports',
             array($this, 'workflow_reports_page_content'));
@@ -253,8 +254,8 @@ class OW_Plugin_Init
       // All Workflows - will display the workflow list
       if (current_user_can('ow_create_workflow') || current_user_can('ow_edit_workflow')) {
          add_submenu_page('oasiswf-inbox',
-            __('All Workflows', 'oasisworkflow'),
-            __('All Workflows', 'oasisworkflow'),
+            esc_html__('All Workflows', 'oasisworkflow'),
+            esc_html__('All Workflows', 'oasisworkflow'),
             'ow_create_workflow',
             'oasiswf-admin',
             array($this, 'list_workflows_page_content'));
@@ -263,8 +264,8 @@ class OW_Plugin_Init
       // Add New Workflow
       if (current_user_can('ow_create_workflow')) {
          add_submenu_page('oasiswf-inbox',
-            __('Add New Workflow', 'oasisworkflow'),
-            __('Add New Workflow', 'oasisworkflow'),
+            esc_html__('Add New Workflow', 'oasisworkflow'),
+            esc_html__('Add New Workflow', 'oasisworkflow'),
             'ow_create_workflow',
             'oasiswf-add',
             array($this, 'create_workflow_page_content'));
@@ -272,8 +273,8 @@ class OW_Plugin_Init
 
       if (current_user_can('ow_edit_workflow')) {
          add_submenu_page('oasiswf-inbox',
-            __('Custom Statuses', 'oasisworkflow'),
-            __('Custom Statuses', 'oasisworkflow'),
+            esc_html__('Custom Statuses', 'oasisworkflow'),
+            esc_html__('Custom Statuses', 'oasisworkflow'),
             $current_role,
             'oasiswf-custom-statuses',
             array($this, 'custom_statuses_page_content'));
@@ -281,8 +282,8 @@ class OW_Plugin_Init
       
       if (current_user_can('ow_export_import_workflow')) {
          add_submenu_page('oasiswf-inbox',
-            __('Tools', 'oasisworkflow'),
-            __('Tools', 'oasisworkflow'),
+            esc_html__('Tools', 'oasisworkflow'),
+            esc_html__('Tools', 'oasisworkflow'),
             $current_role,
             'oasiswf-tools',
             array($this, 'display_workflow_tools'));
@@ -291,8 +292,8 @@ class OW_Plugin_Init
       // Stay Informed page - hidden from the menu
       if (current_user_can('ow_edit_workflow')) {
          add_submenu_page('oasiswf-stay-informed',
-            __('Stay Informed', 'oasisworkflow'),
-            __('Stay Informed', 'oasisworkflow'),
+            esc_html__('Stay Informed', 'oasisworkflow'),
+            esc_html__('Stay Informed', 'oasisworkflow'),
             $current_role,
             'oasiswf-stay-informed',
             array($this, 'news_letter_page_content'));
@@ -436,11 +437,12 @@ class OW_Plugin_Init
       // look through each of the blogs and upgrade the DB
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                $this->upgrade_helper_14();
             }
@@ -456,6 +458,7 @@ class OW_Plugin_Init
       global $wpdb;
       $action_history_table = OW_Utility::instance()->get_action_history_table_name();
 
+      // phpcs:ignore
       $wpdb->update(
          $action_history_table,
          array(
@@ -466,6 +469,7 @@ class OW_Plugin_Init
          )
       );
 
+      // phpcs:ignore
       $wpdb->update(
          $action_history_table,
          array(
@@ -476,6 +480,7 @@ class OW_Plugin_Init
          )
       );
 
+      // phpcs:ignore
       $wpdb->update(
          $action_history_table,
          array(
@@ -490,13 +495,13 @@ class OW_Plugin_Init
    public function upgrade_database_15()
    {
       $oasiswf_custom_workflow_terminology = array(
-         'submitToWorkflowText' => __('Submit to Workflow', 'oasisworkflow'),
-         'signOffText' => __('Sign Off', 'oasisworkflow'),
-         'assignActorsText' => __('Assign Actor(s)', 'oasisworkflow'),
-         'dueDateText' => __('Due Date', 'oasisworkflow'),
-         'publishDateText' => __('Publish Date', 'oasisworkflow'),
-         'abortWorkflowText' => __('Abort Workflow', 'oasisworkflow'),
-         'workflowHistoryText' => __('Workflow History')
+         'submitToWorkflowText' => esc_html__('Submit to Workflow', 'oasisworkflow'),
+         'signOffText' => esc_html__('Sign Off', 'oasisworkflow'),
+         'assignActorsText' => esc_html__('Assign Actor(s)', 'oasisworkflow'),
+         'dueDateText' => esc_html__('Due Date', 'oasisworkflow'),
+         'publishDateText' => esc_html__('Publish Date', 'oasisworkflow'),
+         'abortWorkflowText' => esc_html__('Abort Workflow', 'oasisworkflow'),
+         'workflowHistoryText' => esc_html__('Workflow History')
       );
       update_option("oasiswf_custom_workflow_terminology", $oasiswf_custom_workflow_terminology);
    }
@@ -508,11 +513,12 @@ class OW_Plugin_Init
       // look through each of the blogs and upgrade the DB
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                $this->upgrade_helper_16();
             }
@@ -602,6 +608,7 @@ class OW_Plugin_Init
       }
 
       // create tables and data only if the workflow tables do not exist
+      // phpcs:ignore
       if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_workflow%'")) {
          return;
       }
@@ -611,17 +618,17 @@ class OW_Plugin_Init
 
       // delete the default data
       //fc_workflow_steps table
-      $wpdb->query("DELETE FROM " . OW_Utility::instance()->get_workflow_steps_table_name());
+      $wpdb->query("DELETE FROM " . OW_Utility::instance()->get_workflow_steps_table_name()); // phpcs:ignore
 
       //fc_workflows table
-      $wpdb->get_results("DELETE FROM " . OW_Utility::instance()->get_workflows_table_name());
+      $wpdb->get_results("DELETE FROM " . OW_Utility::instance()->get_workflows_table_name()); // phpcs:ignore
 
       // now insert data from the original/main table into these new tables
       $sql = "INSERT INTO " . OW_Utility::instance()->get_workflows_table_name() . " SELECT * FROM " . $wpdb->base_prefix . "fc_workflows";
-      $wpdb->get_results($sql);
+      $wpdb->get_results($sql); // phpcs:ignore
 
       $sql = "INSERT INTO " . OW_Utility::instance()->get_workflow_steps_table_name() . " SELECT * FROM " . $wpdb->base_prefix . "fc_workflow_steps";
-      $wpdb->get_results($sql);
+      $wpdb->get_results($sql); // phpcs:ignore
    }
 
    public function upgrade_database_17()
@@ -648,11 +655,12 @@ class OW_Plugin_Init
       // look through each of the blogs and upgrade the DB
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                $this->upgrade_helper_19();
             }
@@ -676,7 +684,7 @@ class OW_Plugin_Init
 
       if (class_exists('WP_Roles')) {
          if (!isset($wp_roles)) {
-            $wp_roles = new WP_Roles();
+            $wp_roles = new WP_Roles(); // phpcs:ignore
          }
       }
 
@@ -691,11 +699,12 @@ class OW_Plugin_Init
       // look through each of the blogs and upgrade the DB
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                $this->upgrade_helper_20();
             }
@@ -711,12 +720,12 @@ class OW_Plugin_Init
       global $wpdb;
 
       $oasiswf_placeholders = array(
-         '%first_name%' => __('first name', "oasisworkflow"),
-         '%last_name%' => __('last name', "oasisworkflow"),
-         '%post_title%' => __('post title', "oasisworkflow"),
-         '%category%' => __('category', "oasisworkflow"),
-         '%last_modified_date%' => __('last modified date', "oasisworkflow"),
-         '%post_author%' => __('post author', 'oasisworkflow')
+         '%first_name%' => esc_html__('first name', "oasisworkflow"),
+         '%last_name%' => esc_html__('last name', "oasisworkflow"),
+         '%post_title%' => esc_html__('post title', "oasisworkflow"),
+         '%category%' => esc_html__('category', "oasisworkflow"),
+         '%last_modified_date%' => esc_html__('last modified date', "oasisworkflow"),
+         '%post_author%' => esc_html__('post author', 'oasisworkflow')
       );
 
       update_site_option('oasiswf_placeholders', $oasiswf_placeholders);
@@ -724,11 +733,12 @@ class OW_Plugin_Init
       // look through each of the blogs and upgrade the DB
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                $this->upgrade_helper_22_for_workflow_info();
                $this->upgrade_helper_22_for_settings();
@@ -788,6 +798,7 @@ class OW_Plugin_Init
        * 3. Since we were using only roles, all the current assignees will be roles.
        */
       $steps_table = OW_Utility::instance()->get_workflow_steps_table_name();
+      // phpcs:ignore
       $step_infos = $wpdb->get_results("SELECT step_info, ID FROM $steps_table");
       if ($step_infos) {
          foreach ($step_infos as $step_info) {
@@ -803,6 +814,7 @@ class OW_Plugin_Init
                   }
                   $step_info->$key->roles = $roles;
                   unset($step_info->assignee);
+                  // phpcs:ignore
                   $wpdb->query($wpdb->prepare("UPDATE $steps_table SET step_info = %s WHERE ID = %d", json_encode($step_info), $step_id));
 
                }
@@ -822,7 +834,7 @@ class OW_Plugin_Init
        */
       $workflows_table = OW_Utility::instance()->get_workflows_table_name();
       $workflow_steps_table = OW_Utility::instance()->get_workflow_steps_table_name();
-      $workflows = $wpdb->get_results("SELECT * FROM $workflows_table");
+      $workflows = $wpdb->get_results("SELECT * FROM $workflows_table"); // phpcs:ignore
       if ($workflows) {
 
          foreach ($workflows as $workflow) {
@@ -877,7 +889,7 @@ class OW_Plugin_Init
                $step_name = '%' . $step_name . '%';
 
                $sql = "SELECT * FROM $workflow_steps_table WHERE workflow_id = %d AND step_info LIKE %s LIMIT 0, 1";
-               $results = $wpdb->get_row($wpdb->prepare($sql, $workflow_id, $step_name));
+               $results = $wpdb->get_row($wpdb->prepare($sql, $workflow_id, $step_name)); // phpcs:ignore
 
                if ($results) {
                   $step_info = json_decode($results->step_info);
@@ -901,6 +913,7 @@ class OW_Plugin_Init
             $wf_info = wp_unslash(wp_json_encode($wf_info));
 
             // Finally update the workflow info for given workflow id
+            // phpcs:ignore
             $wpdb->update($workflows_table, array(
                'wf_info' => $wf_info
             ), array(
@@ -911,11 +924,12 @@ class OW_Plugin_Init
 
          // now lets unset the status from step info
          $sql = "SELECT ID, step_info FROM $workflow_steps_table";
-         $steps = $wpdb->get_results($sql);
+         $steps = $wpdb->get_results($sql); // phpcs:ignore
          foreach ($steps as $step) {
             $step_info = json_decode($step->step_info);
             unset($step_info->status, $step_info->failure_status);
             $step->step_info = wp_json_encode($step_info);
+            // phpcs:ignore
             $wpdb->update($workflow_steps_table, array(
                'step_info' => $step->step_info
             ), array(
@@ -930,7 +944,7 @@ class OW_Plugin_Init
       global $wpdb;
 
       $workflows_table = OW_Utility::instance()->get_workflows_table_name();
-      $workflows = $wpdb->get_results("SELECT * FROM $workflows_table");
+      $workflows = $wpdb->get_results("SELECT * FROM $workflows_table"); // phpcs:ignore
       $additional_info = stripcslashes('a:4:{s:16:"wf_for_new_posts";i:1;s:20:"wf_for_revised_posts";i:1;s:12:"wf_for_roles";a:0:{}s:17:"wf_for_post_types";a:0:{}}');
 
       if ($workflows) {
@@ -957,7 +971,7 @@ class OW_Plugin_Init
 
       if (class_exists('WP_Roles')) {
          if (!isset($wp_roles)) {
-            $wp_roles = new WP_Roles();
+            $wp_roles = new WP_Roles(); // phpcs:ignore
          }
       }
 
@@ -1019,6 +1033,7 @@ class OW_Plugin_Init
 
       foreach ($custom_statuses as $custom_status => $desc) {
 
+         // phpcs:ignore
          if (term_exists($custom_status)) {
             continue;
          }
@@ -1039,11 +1054,12 @@ class OW_Plugin_Init
       // look through each of the blogs and upgrade the DB
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                $this->upgrade_helper_23();
             }
@@ -1068,7 +1084,7 @@ class OW_Plugin_Init
       );
 
       foreach ($meta_keys as $old_meta_key => $new_meta_key) {
-         $wpdb->query($wpdb->prepare("UPDATE {$wpdb->postmeta} SET meta_key = %s WHERE meta_key = %s", $new_meta_key, $old_meta_key));
+         $wpdb->query($wpdb->prepare("UPDATE {$wpdb->postmeta} SET meta_key = %s WHERE meta_key = %s", $new_meta_key, $old_meta_key)); // phpcs:ignore
       }
 
       // get current review settings
@@ -1077,13 +1093,14 @@ class OW_Plugin_Init
       // add review_approval settings on existing review processes
       $workflow_steps_table = OW_Utility::instance()->get_workflow_steps_table_name();
       $sql = "SELECT ID, step_info FROM $workflow_steps_table";
-      $steps = $wpdb->get_results($sql);
+      $steps = $wpdb->get_results($sql); // phpcs:ignore
       foreach ($steps as $step) {
          $step_info = json_decode($step->step_info);
          if ($step_info->process === 'review') {
             // add review approval and set it's value to
             $step_info->review_approval = $review_setting;
             $step->step_info = wp_json_encode($step_info);
+            // phpcs:ignore
             $wpdb->update($workflow_steps_table, array(
                'step_info' => $step->step_info
             ), array(
@@ -1111,6 +1128,7 @@ class OW_Plugin_Init
 
       // Count the post/pages processed and published via workflow for review rating
       $table_name = OW_Utility::instance()->get_action_history_table_name();
+      // phpcs:ignore
       $workflow_completed_post = $wpdb->get_var("SELECT COUNT(ID) FROM {$table_name} WHERE action_status = 'complete'");
       if (!get_option('oasiswf_workflow_completed_post_count')) {
          update_option("oasiswf_workflow_completed_post_count", $workflow_completed_post);
@@ -1125,11 +1143,12 @@ class OW_Plugin_Init
       // look through each of the blogs and upgrade the DB
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                $this->upgrade_helper_29();
             }
@@ -1146,11 +1165,11 @@ class OW_Plugin_Init
 
       //fc_action_history table  - add history_meta field
       $table_name = OW_Utility::instance()->get_action_history_table_name();
-      $wpdb->query("ALTER TABLE {$table_name} ADD history_meta longtext");
+      $wpdb->query("ALTER TABLE {$table_name} ADD history_meta longtext"); // phpcs:ignore
 
       //fc_action table  - add history_meta field
       $table_name = OW_Utility::instance()->get_action_table_name();
-      $wpdb->query("ALTER TABLE {$table_name} ADD history_meta longtext");
+      $wpdb->query("ALTER TABLE {$table_name} ADD history_meta longtext"); // phpcs:ignore
    }
 
    /**
@@ -1164,11 +1183,12 @@ class OW_Plugin_Init
       // look through each of the blogs and upgrade the DB
       if (function_exists('is_multisite') && is_multisite()) {
          //Get all blog ids; foreach them and call the uninstall procedure on each of them
-         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs");
+         $blog_ids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->base_prefix}blogs"); // phpcs:ignore
 
          //Get all blog ids; foreach them and call the install procedure on each of them if the plugin table is found
          foreach ($blog_ids as $blog_id) {
             switch_to_blog($blog_id);
+            // phpcs:ignore
             if ($wpdb->query("SHOW TABLES FROM " . $wpdb->dbname . " LIKE '" . $wpdb->prefix . "fc_%'")) {
                $this->upgrade_helper_33();
             }
@@ -1183,12 +1203,15 @@ class OW_Plugin_Init
    {
       global $wpdb;
       $action_history_table_name = OW_Utility::instance()->get_action_history_table_name();
+      // phpcs:ignore
       $wpdb->query("ALTER TABLE {$action_history_table_name} MODIFY ID bigint(20) NOT NULL AUTO_INCREMENT, MODIFY post_id bigint(20), MODIFY from_id bigint(20)");
 
       $action_table_name = OW_Utility::instance()->get_action_table_name();
+      // phpcs:ignore
       $wpdb->query("ALTER TABLE {$action_table_name} MODIFY ID bigint(20) NOT NULL AUTO_INCREMENT, MODIFY action_history_id bigint(20)");
 
       $email_table_name = OW_Utility::instance()->get_emails_table_name();
+      // phpcs:ignore
       $wpdb->query("ALTER TABLE {$email_table_name} MODIFY history_id bigint(20)");
    }
 
@@ -1214,13 +1237,13 @@ class OW_Plugin_Init
 
       // Format : array( 'screen_id' => array( 'pointer_id' => array([options : target, content, position...]) ) );
 
-      $welcome_title = __("Welcome to Oasis Workflow", "oasisworkflow");
+      $welcome_title = esc_html__("Welcome to Oasis Workflow", "oasisworkflow");
       $img_html = "<img src='" . OASISWF_URL . "img/small-arrow.gif" . "' style='border:0px;' />";
-      $welcome_message_1 = __("To get started with Oasis Workflow follow the steps listed below.", "oasisworkflow");
-      $welcome_message_1_multisite = __("To get started with Oasis Workflow go to the individual site and follow the steps listed below.", "oasisworkflow");
-      $welcome_message_2 = sprintf(__("1. Go to Workflows %s All Workflows.", "oasisworkflow"), $img_html);
-      $welcome_message_3 = __("2. Create a new workflow OR modify/use the sample workflows that come with the plugin.", "oasisworkflow");
-      $welcome_message_4 = sprintf(__("3. Activate the workflow process from Workflows %s Settings, Workflow tab.", "oasisworkflow"), $img_html);
+      $welcome_message_1 = esc_html__("To get started with Oasis Workflow follow the steps listed below.", "oasisworkflow");
+      $welcome_message_1_multisite = esc_html__("To get started with Oasis Workflow go to the individual site and follow the steps listed below.", "oasisworkflow");
+      $welcome_message_2 = sprintf(esc_html__("1. Go to Workflows %s All Workflows.", "oasisworkflow"), $img_html);
+      $welcome_message_3 = esc_html__("2. Create a new workflow OR modify/use the sample workflows that come with the plugin.", "oasisworkflow");
+      $welcome_message_4 = sprintf(esc_html__("3. Activate the workflow process from Workflows %s Settings, Workflow tab.", "oasisworkflow"), $img_html);
       if (function_exists('is_multisite') && is_multisite()) {
          $default_pointers = array(
             'toplevel_page_oasiswf-inbox' => array(
@@ -1318,6 +1341,7 @@ class OW_Plugin_Init
     */
    public function display_pointers()
    {
+      // phpcs:disable
       if (!empty($this->current_screen_pointers)):
          ?>
           <script type="text/javascript">// <![CDATA[
@@ -1342,6 +1366,7 @@ class OW_Plugin_Init
               });
               // ]]></script>
       <?php
+      // phpcs:enable
       endif;
    }
 
@@ -1353,6 +1378,7 @@ class OW_Plugin_Init
     */
    public function list_workflows_page_content()
    {
+       // phpcs:ignore
       $workflow_id = isset($_GET['wf_id']) ? intval(sanitize_text_field($_GET["wf_id"])) : "";
       if (!empty ($workflow_id)) {
          include(OASISWF_PATH . "includes/pages/workflow-create.php");
@@ -1513,6 +1539,7 @@ class OW_Plugin_Init
 
       // Redirect to oasis workflow subscribe page
       wp_safe_redirect('admin.php?page=oasiswf-stay-informed');
+      exit();
    }
 
    /**
@@ -1668,6 +1695,7 @@ class OW_Plugin_Init
 
       foreach ($custom_statuses as $custom_status => $desc) {
 
+         // phpcs:ignore
          if (term_exists($custom_status)) {
             continue;
          }
@@ -1900,6 +1928,7 @@ class OW_Plugin_Init
 
       //fc_workflows table
       $table_name = OW_Utility::instance()->get_workflows_table_name();
+      // phpcs:ignore
       if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
          $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
 			ID int(11) NOT NULL AUTO_INCREMENT,
@@ -1923,6 +1952,7 @@ class OW_Plugin_Init
 
       //fc_workflow_steps table
       $table_name = OW_Utility::instance()->get_workflow_steps_table_name();
+      // phpcs:ignore
       if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
          $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
 			ID int(11) NOT NULL AUTO_INCREMENT,
@@ -1956,6 +1986,7 @@ class OW_Plugin_Init
 
       //fc_emails table
       $table_name = OW_Utility::instance()->get_emails_table_name();
+      // phpcs:ignore
       if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
          // action - 1 indicates not send, 0 indicates email sent
          $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
@@ -1975,6 +2006,7 @@ class OW_Plugin_Init
 
       //fc_action_history table
       $table_name = OW_Utility::instance()->get_action_history_table_name();
+      // phpcs:ignore
       if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
          $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
 			ID bigint(20) NOT NULL AUTO_INCREMENT,
@@ -1996,6 +2028,7 @@ class OW_Plugin_Init
 
       //fc_action table
       $table_name = OW_Utility::instance()->get_action_table_name();
+      // phpcs:ignore
       if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
          $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
 			ID bigint(20) NOT NULL AUTO_INCREMENT,
@@ -2023,25 +2056,30 @@ class OW_Plugin_Init
 
       // insert into workflow table
       $table_name = OW_Utility::instance()->get_workflows_table_name();
+      // phpcs:ignore
       $row = $wpdb->get_row("SELECT max(ID) as maxid FROM $table_name");
       if (is_numeric($row->maxid)) { //data already exists, do not insert another row.
          return;
       }
+      // phpcs:ignore
       $workflow_info = stripcslashes('{"steps":{"step0":{"fc_addid":"step0","fc_label":"Author Assignment","fc_dbid":"2","fc_process":"assignment","fc_position":["326px","568px"]},"step1":{"fc_addid":"step1","fc_label":"First Level Review","fc_dbid":"1","fc_process":"review","fc_position":["250px","358px"]},"step2":{"fc_addid":"step2","fc_label":"Second Level Review and Publish","fc_dbid":"3","fc_process":"publish","fc_position":["119px","622px"]}},"conns":{"0":{"sourceId":"step2","targetId":"step0","post_status":"draft","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"1":{"sourceId":"step1","targetId":"step0","post_status":"draft","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"2":{"sourceId":"step0","targetId":"step1","post_status":"pending","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"blue"}}},"3":{"sourceId":"step2","targetId":"step1","post_status":"pending","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"4":{"sourceId":"step1","targetId":"step2","post_status":"ready-to-publish","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"blue"}}}},"first_step":[{"step":"step1","post_status":"draft"}]}');
+      // phpcs:ignore
       $additional_info = stripcslashes('a:4:{s:16:"wf_for_new_posts";i:1;s:20:"wf_for_revised_posts";i:1;s:12:"wf_for_roles";a:0:{}s:17:"wf_for_post_types";a:0:{}}');
       $data = array(
          'name' => 'Multi Level Review Workflow',
          'description' => 'Multi Level Review Workflow',
          'wf_info' => $workflow_info,
-         'start_date' => date("Y-m-d", current_time('timestamp')),
-         'end_date' => date("Y-m-d", current_time('timestamp') + YEAR_IN_SECONDS),
+         'start_date' => date("Y-m-d", current_time('timestamp')), // phpcs:ignore
+         'end_date' => date("Y-m-d", current_time('timestamp') + YEAR_IN_SECONDS), // phpcs:ignore
          'is_valid' => 1,
          'create_datetime' => current_time('mysql'),
          'update_datetime' => current_time('mysql'),
          'wf_additional_info' => $additional_info
       );
+      // phpcs:ignore
       $result = $wpdb->insert($table_name, $data);
       if ($result) {
+          // phpcs:ignore
          $row = $wpdb->get_row("SELECT max(ID) as maxid FROM $table_name");
          if ($row)
             $workflow_id = $row->maxid;
@@ -2057,6 +2095,7 @@ class OW_Plugin_Init
       // step 1 - review
       $review_step_info = '{"process":"review","step_name":"First Level Review","assign_to_all":0,"task_assignee":{"roles":["editor"],"users":[],"groups":[]},"assignee":{},"status":"","review_approval":"everyone"}';
       $review_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
+      // phpcs:ignore
       $wpdb->insert(
          $workflow_step_table, array(
             'step_info' => stripcslashes($review_step_info),
@@ -2070,6 +2109,7 @@ class OW_Plugin_Init
       // step 2 - assignment
       $assignment_step_info = '{"process":"assignment","step_name":"Author Assignment","assign_to_all":0,"task_assignee":{"roles":["author"],"users":[],"groups":[]},"assignee":{},"status":""}';
       $assignment_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
+      // phpcs:ignore
       $wpdb->insert(
          $workflow_step_table, array(
             'step_info' => stripcslashes($assignment_step_info),
@@ -2083,6 +2123,7 @@ class OW_Plugin_Init
       // step 3 - publish
       $publish_step_info = '{"process":"publish","step_name":"Second Level Review and Publish","assign_to_all":0,"task_assignee":{"roles":["administrator"],"users":[],"groups":[]},"assignee":{},"status":""}';
       $publish_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
+      // phpcs:ignore
       $wpdb->insert(
          $workflow_step_table, array(
             'step_info' => stripcslashes($publish_step_info),
@@ -2105,25 +2146,28 @@ class OW_Plugin_Init
       
       // insert into workflow table
       $table_name = OW_Utility::instance()->get_workflows_table_name();
-      $row = $wpdb->get_row("SELECT max(ID) as maxid FROM $table_name");
+      $row = $wpdb->get_row("SELECT max(ID) as maxid FROM $table_name"); // phpcs:ignore
       if (is_numeric($row->maxid) && ( $row->maxid >= 2 ) ) { //data already exists, do not insert another row.
          return;
       }
+      // phpcs:ignore
       $workflow_info = stripcslashes('{"steps":{"step0":{"fc_addid":"step0","fc_label":"Review and Publish","fc_dbid":"4","fc_process":"publish","fc_position":["169px","135px"]},"step1":{"fc_addid":"step1","fc_label":"Author Assignment","fc_dbid":"5","fc_process":"assignment","fc_position":["168px","506px"]}},"conns":{"0":{"sourceId":"step0","targetId":"step1","post_status":"with-author","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"red"}}},"1":{"sourceId":"step1","targetId":"step0","post_status":"ready-to-publish","connset":{"connector":"StateMachine","paintStyle":{"lineWidth":3,"strokeStyle":"blue"}}}},"first_step":[{"step":"step0","post_status":"pending"}]}');
+      // phpcs:ignore
       $additional_info = stripcslashes('a:4:{s:16:"wf_for_new_posts";i:1;s:20:"wf_for_revised_posts";i:1;s:12:"wf_for_roles";a:0:{}s:17:"wf_for_post_types";a:0:{}}');
       $data = array(
          'name' => 'Single Level Review Workflow',
          'description' => 'Single Level Review Workflow',
          'wf_info' => $workflow_info,
-         'start_date' => date("Y-m-d", current_time('timestamp')),
-         'end_date' => date("Y-m-d", current_time('timestamp') + YEAR_IN_SECONDS),
+         'start_date' => date("Y-m-d", current_time('timestamp')), // phpcs:ignore
+         'end_date' => date("Y-m-d", current_time('timestamp') + YEAR_IN_SECONDS), // phpcs:ignore
          'is_valid' => 1,
          'create_datetime' => current_time('mysql'),
          'update_datetime' => current_time('mysql'),
          'wf_additional_info' => $additional_info
       );
-      $result = $wpdb->insert($table_name, $data);
+      $result = $wpdb->insert($table_name, $data); // phpcs:ignore
       if ($result) {
+          // phpcs:ignore
          $row = $wpdb->get_row("SELECT max(ID) as maxid FROM $table_name");
          if ($row)
             $workflow_id = $row->maxid;
@@ -2140,6 +2184,7 @@ class OW_Plugin_Init
       $publish_step_info = '{"process":"publish","step_name":"Review and Publish","assign_to_all":0,"task_assignee":{"roles":["administrator"],"users":[],"groups":[]},"assignee":{},"status":""}';
       $publish_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
       
+      // phpcs:ignore
       $wpdb->insert(
          $workflow_step_table, array(
             'step_info' => stripcslashes($publish_step_info),
@@ -2152,7 +2197,8 @@ class OW_Plugin_Init
 
       // step 2 - assignment      
       $assignment_step_info = '{"process":"assignment","step_name":"Author Assignment","assign_to_all":0,"task_assignee":{"roles":["owfpostsubmitter"],"users":[],"groups":[]},"assignee":{},"status":""}';
-      $assignment_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';      
+      $assignment_process_info = '{"assign_subject":"","assign_content":"","reminder_subject":"","reminder_content":""}';
+      // phpcs:ignore  
       $wpdb->insert(
          $workflow_step_table, array(
             'step_info' => stripcslashes($assignment_step_info),
@@ -2186,6 +2232,7 @@ class OW_Plugin_Init
    public function add_css_files($page)
    {
       // ONLY load OWF scripts on OWF plugin pages
+      // phpcs:ignore
       if (is_admin() && preg_match_all('/page=ow-settings(.*)|page=oasiswf(.*)|post-new\.(.*)|post\.(.*)/', $_SERVER['REQUEST_URI'], $matches)) {
          wp_enqueue_style('owf-css', OASISWF_URL . 'css/pages/context-menu.css', false, OASISWF_VERSION, 'all');
          wp_enqueue_style('owf-modal-css', OASISWF_URL . 'css/lib/modal/simple-modal.css', false, OASISWF_VERSION, 'all');
@@ -2210,16 +2257,17 @@ class OW_Plugin_Init
    {
 
       // ONLY load OWF scripts on OWF plugin pages
+      // phpcs:ignore
       if (is_admin() && preg_match_all('/page=oasiswf(.*)|post-new\.(.*)|post\.(.*)/', $_SERVER['REQUEST_URI'], $matches)) {
          echo "<script type='text/javascript'>
    					var wf_structure_data = '' ;
    					var wfeditable = '' ;
-   					var wfPluginUrl  = '" . OASISWF_URL . "' ;
+   					var wfPluginUrl  = '" . esc_url( OASISWF_URL ) . "' ;
    				</script>";
       }
 
-      if (is_admin() && isset($_GET['page']) && ($_GET["page"] == "oasiswf-inbox" ||
-            $_GET["page"] == "oasiswf-history")) {
+      // phpcs:ignore
+      if (is_admin() && isset($_GET['page']) && ($_GET["page"] == "oasiswf-inbox" || $_GET["page"] == "oasiswf-history")) {
          OW_Plugin_Init::enqueue_and_localize_inbox_script();
       }
       if (is_admin()) {
@@ -2247,6 +2295,7 @@ class OW_Plugin_Init
    public function load_js_files_footer()
    {
       // ONLY load OWF scripts on OWF plugin pages
+      // phpcs:ignore
       if (is_admin() && preg_match_all('/page=oasiswf(.*)|post-new\.(.*)|post\.(.*)/', $_SERVER['REQUEST_URI'], $matches)) {
          //wp_enqueue_script( 'thickbox' );
          wp_enqueue_script('jquery-ui-core');
@@ -2259,31 +2308,33 @@ class OW_Plugin_Init
          wp_enqueue_script('jquery-ui-droppable');
       }
 
+      // phpcs:ignore
       if (is_admin() && (isset($_GET['page']) && ($_GET["page"] == "oasiswf-admin" || $_GET["page"] == "oasiswf-add"))) {
          wp_enqueue_style('select2-style', OASISWF_URL . 'css/lib/select2/select2.css', false, OASISWF_VERSION, 'all');
          wp_enqueue_script('jsPlumb', OASISWF_URL . 'js/lib/jquery.jsPlumb-all-min.js', array('jquery-ui-core', 'jquery-ui-draggable', 'jquery-ui-droppable'), '1.4.1', true);
          wp_enqueue_script('drag-drop-jsplumb', OASISWF_URL . 'js/pages/drag-drop-jsplumb.js', array('jsPlumb'), OASISWF_VERSION, true);
          wp_enqueue_script('select2-js', OASISWF_URL . 'js/lib/select2/select2.min.js', array('jquery'), OASISWF_VERSION, true);
          wp_localize_script('drag-drop-jsplumb', 'drag_drop_jsplumb_vars', array(
-            'clearAllSteps' => __('Do you really want to clear all the steps?', 'oasisworkflow'),
-            'removeStep' => __('This step is already defined. Do you really want to remove this step?', 'oasisworkflow'),
-            'postStatusRequired' => __('Please select Post Status.', 'oasisworkflow'),
-            'pathBetween' => __('The path between', 'oasisworkflow'),
-            'stepAnd' => __('step and', 'oasisworkflow'),
-            'incorrect' => __('step is incorrect.', 'oasisworkflow'),
-            'stepHelp' => __('To edit/delete the step, right click on the step to access the step menu.', 'oasisworkflow'),
-            'connectionHelp' => __('To connect to another step drag a line from the "dot" to the next step.', 'oasisworkflow'),
-            'postStatusLabel' => __('Post Status', 'oasisworkflow')
+            'clearAllSteps' => esc_html__('Do you really want to clear all the steps?', 'oasisworkflow'),
+            'removeStep' => esc_html__('This step is already defined. Do you really want to remove this step?', 'oasisworkflow'),
+            'postStatusRequired' => esc_html__('Please select Post Status.', 'oasisworkflow'),
+            'pathBetween' => esc_html__('The path between', 'oasisworkflow'),
+            'stepAnd' => esc_html__('step and', 'oasisworkflow'),
+            'incorrect' => esc_html__('step is incorrect.', 'oasisworkflow'),
+            'stepHelp' => esc_html__('To edit/delete the step, right click on the step to access the step menu.', 'oasisworkflow'),
+            'connectionHelp' => esc_html__('To connect to another step drag a line from the "dot" to the next step.', 'oasisworkflow'),
+            'postStatusLabel' => esc_html__('Post Status', 'oasisworkflow')
          ));
       }
 
+      // phpcs:ignore
       if (is_admin() && preg_match_all('/page=oasiswf(.*)|post-new\.(.*)|post\.(.*)/', $_SERVER['REQUEST_URI'], $matches)) {
          wp_enqueue_script('owf-workflow-create', OASISWF_URL . 'js/pages/workflow-create.js', '', OASISWF_VERSION, true);
          wp_enqueue_script('owf-workflow-delete', OASISWF_URL . 'js/pages/workflow-delete.js', '', OASISWF_VERSION, true);
 
          wp_localize_script('owf-workflow-create', 'owf_workflow_create_vars', array(
-            'alreadyExistWorkflow' => __('There is an existing workflow with the same name. Please choose another name.', 'oasisworkflow'),
-            'unsavedChanges' => __('You have unsaved changes.', 'oasisworkflow'),
+            'alreadyExistWorkflow' => esc_html__('There is an existing workflow with the same name. Please choose another name.', 'oasisworkflow'),
+            'unsavedChanges' => esc_html__('You have unsaved changes.', 'oasisworkflow'),
             'dateFormat' => OW_Utility::instance()->owf_date_format_to_jquery_ui_format(get_option('date_format')),
             'editDateFormat' => OW_Utility::instance()->owf_date_format_to_jquery_ui_format(OASISWF_EDIT_DATE_FORMAT)
          ));
@@ -2295,20 +2346,21 @@ class OW_Plugin_Init
          wp_enqueue_script('jquery-simplemodal', OASISWF_URL . 'js/lib/modal/jquery.simplemodal.js', '', '1.4.6', true);
          wp_enqueue_script('owf-workflow-util', OASISWF_URL . 'js/pages/workflow-util.js', '', OASISWF_VERSION, true);
          wp_localize_script('owf-workflow-util', 'owf_workflow_util_vars', array(
-            'dueDateInPast' => __('Due date cannot be in the past.', 'oasisworkflow')
+            'dueDateInPast' => esc_html__('Due date cannot be in the past.', 'oasisworkflow')
          ));
 
          wp_enqueue_script('text-edit-whizzywig', OASISWF_URL . 'js/lib/textedit/whizzywig63.js', '', '63', true);
          wp_enqueue_script('owf-workflow-step-info', OASISWF_URL . 'js/pages/subpages/step-info.js', array('text-edit-whizzywig'), OASISWF_VERSION, true);
 
          wp_localize_script('owf-workflow-step-info', 'owf_workflow_step_info_vars', array(
-            'stepNameRequired' => __('Step name is required.', 'oasisworkflow'),
-            'stepNameAlreadyExists' => __('Step name already exists. Please use a different name.', 'oasisworkflow'),
-            'selectAssignees' => __('Please select assignee(s).', 'oasisworkflow'),
-            'selectPlaceholder' => __('Please select a placeholder.', 'oasisworkflow')
+            'stepNameRequired' => esc_html__('Step name is required.', 'oasisworkflow'),
+            'stepNameAlreadyExists' => esc_html__('Step name already exists. Please use a different name.', 'oasisworkflow'),
+            'selectAssignees' => esc_html__('Please select assignee(s).', 'oasisworkflow'),
+            'selectPlaceholder' => esc_html__('Please select a placeholder.', 'oasisworkflow')
          ));
       }
 
+      // phpcs:ignore
       if (is_admin() && preg_match_all('/edit\.(.*)/', $_SERVER['REQUEST_URI'], $matches)) {
          wp_enqueue_style('owf-oasis-workflow-css', OASISWF_URL . 'css/pages/oasis-workflow.css', false, OASISWF_VERSION, 'all');
 
@@ -2323,6 +2375,7 @@ class OW_Plugin_Init
          OW_Plugin_Init::enqueue_and_localize_simple_modal_script();
       }
 
+      // phpcs:ignore
       if (is_admin() && preg_match_all('/page=ow-settings&tab=email_settings(.*)/', $_SERVER['REQUEST_URI'], $matches)) {
          wp_enqueue_script('owf-email-settings', OASISWF_URL . 'js/pages/email-settings.js', array('jquery'), OASISWF_VERSION);
       }
@@ -2348,7 +2401,7 @@ class OW_Plugin_Init
    public function add_workflow_tasks_summary_widget()
    {
       wp_add_dashboard_widget('task_dashboard',
-         __('Workflow Tasks At a Glance', 'oasisworkflow'),
+         esc_html__('Workflow Tasks At a Glance', 'oasisworkflow'),
          array($this, 'tasks_summary_dashboard_content'));
    }
 
@@ -2457,4 +2510,3 @@ class OW_Plugin_Init
 
 // initialize the plugin
 $ow_plugin_init = new OW_Plugin_Init();
-?>
