@@ -11,6 +11,8 @@ final class ExactMetrics_Notification_Audience extends ExactMetrics_Notification
 	public $notification_id = 'exactmetrics_notification_audience';
 	public $notification_interval = 30; // in days
 	public $notification_type = array( 'basic', 'lite', 'master', 'plus', 'pro' );
+	public $notification_category = 'insight';
+	public $notification_priority = 2;
 
 	/**
 	 * Build Notification
@@ -30,17 +32,18 @@ final class ExactMetrics_Notification_Audience extends ExactMetrics_Notification
 		}
 
 		// Translators: Audience notification title
-		$notification['title'] = sprintf( __( '%s%% of your Audience is from %s', 'google-analytics-dashboard-for-wp' ), $data['percentage'], $data['country'] );
+		$notification['title'] = sprintf( __( '%s%% of Your Audience is From %s', 'google-analytics-dashboard-for-wp' ), $data['percentage'], $data['country'] );
 		// Translators: Audience notification content
 		$notification['content'] = sprintf( __( 'Is your site properly translated? By adding translated content specific to your audience you could gain big boosts in pageviews, time spent on page and a reduced bounce rate.<br><br>If you need help choosing a translation plugin to get you started take a look at %sthis article%s for the best options available.', 'google-analytics-dashboard-for-wp' ), '<a href="' . $this->build_external_link( 'https://www.wpbeginner.com/showcase/9-best-translation-plugins-for-wordpress-websites/' ) . '" target="_blank">', '</a>' );
 		$notification['btns']    = array(
 			"view_report" => array(
-				'url'  => $this->get_view_url(),
+				'url'  => $this->get_view_url( 'exactmetrics-report-top-countries', 'exactmetrics_reports' ),
 				'text' => __( 'View Report', 'google-analytics-dashboard-for-wp' )
 			),
 			"learn_more"  => array(
-				'url'  => $this->build_external_link( 'https://www.wpbeginner.com/showcase/9-best-translation-plugins-for-wordpress-websites/' ),
-				'text' => __( 'Learn More', 'google-analytics-dashboard-for-wp' )
+				'url'           => $this->build_external_link( 'https://www.wpbeginner.com/showcase/9-best-translation-plugins-for-wordpress-websites/' ),
+				'text'          => __( 'Learn More', 'google-analytics-dashboard-for-wp' ),
+				'is_external'   => true,
 			),
 		);
 

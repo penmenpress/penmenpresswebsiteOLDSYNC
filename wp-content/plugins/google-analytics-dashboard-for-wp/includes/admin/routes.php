@@ -22,6 +22,9 @@ class ExactMetrics_Rest_Routes {
 		add_action( 'wp_ajax_exactmetrics_vue_update_settings_bulk', array( $this, 'update_settings_bulk' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_get_addons', array( $this, 'get_addons' ) );
 		add_action( 'wp_ajax_exactmetrics_update_manual_ua', array( $this, 'update_manual_ua' ) );
+		add_action( 'wp_ajax_exactmetrics_update_manual_v4', array( $this, 'update_manual_v4' ) );
+		add_action( 'wp_ajax_exactmetrics_update_dual_tracking_id', array( $this, 'update_dual_tracking_id' ) );
+		add_action( 'wp_ajax_exactmetrics_update_measurement_protocol_secret', array( $this, 'update_measurement_protocol_secret' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_get_report_data', array( $this, 'get_report_data' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_install_plugin', array( $this, 'install_plugin' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_notice_status', array( $this, 'get_notice_status' ) );
@@ -90,20 +93,27 @@ class ExactMetrics_Rest_Routes {
 	 * Ajax handler for grabbing the current authenticated profile.
 	 */
 	public function get_profile() {
-
 		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'exactmetrics_save_settings' ) ) {
 			return;
 		}
 
+		$auth = ExactMetrics()->auth;
+
 		wp_send_json( array(
-			'ua'                => ExactMetrics()->auth->get_ua(),
-			'viewname'          => ExactMetrics()->auth->get_viewname(),
-			'manual_ua'         => ExactMetrics()->auth->get_manual_ua(),
-			'network_ua'        => ExactMetrics()->auth->get_network_ua(),
-			'network_viewname'  => ExactMetrics()->auth->get_network_viewname(),
-			'network_manual_ua' => ExactMetrics()->auth->get_network_manual_ua(),
+			'ua'                                  => $auth->get_ua(),
+			'v4'                                  => $auth->get_v4_id(),
+			'viewname'                            => $auth->get_viewname(),
+			'manual_ua'                           => $auth->get_manual_ua(),
+			'manual_v4'                           => $auth->get_manual_v4_id(),
+			'measurement_protocol_secret'         => $auth->get_measurement_protocol_secret(),
+			'network_ua'                          => $auth->get_network_ua(),
+			'network_v4'                          => $auth->get_network_v4_id(),
+			'network_viewname'                    => $auth->get_network_viewname(),
+			'network_manual_ua'                   => $auth->get_network_manual_ua(),
+			'network_measurement_protocol_secret' => $auth->get_network_measurement_protocol_secret(),
+			'connected_type'                      => $auth->get_connected_type(),
 		) );
 
 	}
@@ -127,9 +137,6 @@ class ExactMetrics_Rest_Routes {
 			if ( ! isset( $options[ $array_field ] ) ) {
 				$options[ $array_field ] = array();
 			}
-		}
-		if ( isset( $options['custom_code'] ) ) {
-			$options['custom_code'] = stripslashes( $options['custom_code'] );
 		}
 
 		//add email summaries options
@@ -160,6 +167,10 @@ class ExactMetrics_Rest_Routes {
 
 			if ( ! isset( $options['summaries_header_image'] ) ) {
 				$options['summaries_header_image'] = '';
+			}
+
+			if ( ! isset( $options['local_gtag_file_modified_at'] ) ) {
+				$options['local_gtag_file_modified_at'] = '';
 			}
 		}
 
@@ -231,9 +242,7 @@ class ExactMetrics_Rest_Routes {
 		$value = wp_unslash( $value );
 
 		// Textarea fields.
-		$textarea_fields = array(
-			'custom_code',
-		);
+		$textarea_fields = array();
 
 		if ( in_array( $field, $textarea_fields, true ) ) {
 			if ( function_exists( 'sanitize_textarea_field' ) ) {
@@ -318,6 +327,13 @@ class ExactMetrics_Rest_Routes {
 		// Edd.
 		$parsed_addons['easy_digital_downloads'] = array(
 			'active' => class_exists( 'Easy_Digital_Downloads' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-edd.png',
+			'title'     => 'Easy Digital Downloads',
+			'excerpt'   => __( 'Easy digital downloads plugin.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'easy-digital-downloads/easy-digital-downloads.php', $installed_plugins ),
+			'basename'  => 'easy-digital-downloads/easy-digital-downloads.php',
+			'slug'      => 'easy-digital-downloads',
+			'settings'  => admin_url( 'edit.php?post_type=download' ),
 		);
 		// MemberPress.
 		$parsed_addons['memberpress'] = array(
@@ -327,6 +343,18 @@ class ExactMetrics_Rest_Routes {
 		$parsed_addons['lifterlms'] = array(
 			'active' => function_exists( 'LLMS' ) && version_compare( LLMS()->version, '3.32.0', '>=' ),
 		);
+		// Restrict Content Pro.
+		$parsed_addons['rcp'] = array(
+			'active' => class_exists( 'Restrict_Content_Pro' ) && version_compare( RCP_PLUGIN_VERSION, '3.5.4', '>=' ),
+		);
+		// GiveWP.
+		$parsed_addons['givewp'] = array(
+			'active' => function_exists( 'Give' ),
+		);
+		// GiveWP Analytics.
+		$parsed_addons['givewp_google_analytics'] = array(
+			'active' => function_exists( 'Give_Google_Analytics' ),
+		);
 		// Cookiebot.
 		$parsed_addons['cookiebot'] = array(
 			'active' => function_exists( 'cookiebot_active' ) && cookiebot_active(),
@@ -334,6 +362,14 @@ class ExactMetrics_Rest_Routes {
 		// Cookie Notice.
 		$parsed_addons['cookie_notice'] = array(
 			'active' => class_exists( 'Cookie_Notice' ),
+		);
+		// Complianz.
+		$parsed_addons['complianz'] = array(
+			'active' => defined( 'cmplz_plugin') || defined( 'cmplz_premium'),
+		);
+		// Cookie Yes
+		$parsed_addons['cookie_yes'] = array(
+			'active' => defined( 'CLI_SETTINGS_FIELD'),
 		);
 		// Fb Instant Articles.
 		$parsed_addons['instant_articles'] = array(
@@ -343,35 +379,123 @@ class ExactMetrics_Rest_Routes {
 		$parsed_addons['google_amp'] = array(
 			'active' => defined( 'AMP__FILE__' ),
 		);
+		// Yoast SEO.
+		$parsed_addons['yoast_seo'] = array(
+			'active' => defined( 'WPSEO_VERSION' ),
+		);
+		// EasyAffiliate.
+		$parsed_addons['easy_affiliate'] = array(
+			'active' => defined( 'ESAF_EDITION' ),
+		);
+		$parsed_addons['affiliate_wp'] = array(
+			'active' => function_exists( 'affiliate_wp' ) && defined( 'AFFILIATEWP_VERSION' ),
+		);
 		// WPForms.
 		$parsed_addons['wpforms-lite'] = array(
 			'active'    => function_exists( 'wpforms' ),
 			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-wpforms.png',
 			'title'     => 'WPForms',
-			'excerpt'   => __( 'The most beginner friendly drag & drop WordPress forms plugin allowing you to create beautiful contact forms, subscription forms, payment forms, and more in minutes, not hours!', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'The best drag & drop WordPress form builder. Easily create beautiful contact forms, surveys, payment forms, and more with our 150+ form templates. Trusted by over 4 million websites as the best forms plugin', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'wpforms-lite/wpforms.php', $installed_plugins ),
 			'basename'  => 'wpforms-lite/wpforms.php',
 			'slug'      => 'wpforms-lite',
+			'settings'  => admin_url( 'admin.php?page=wpforms-overview' ),
+		);
+		// AIOSEO.
+		$parsed_addons['aioseo'] = array(
+			'active'    => function_exists( 'aioseo' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-all-in-one-seo.png',
+			'title'     => 'AIOSEO',
+			'excerpt'   => __( 'The original WordPress SEO plugin and toolkit that improves your website’s search rankings. Comes with all the SEO features like Local SEO, WooCommerce SEO, sitemaps, SEO optimizer, schema, and more.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'all-in-one-seo-pack/all_in_one_seo_pack.php', $installed_plugins ),
+			'basename'  => ( exactmetrics_is_installed_aioseo_pro() ) ? 'all-in-one-seo-pack-pro/all_in_one_seo_pack.php' : 'all-in-one-seo-pack/all_in_one_seo_pack.php',
+			'slug'      => 'all-in-one-seo-pack',
+			'settings'  => admin_url( 'admin.php?page=aioseo' ),
 		);
 		// OptinMonster.
 		$parsed_addons['optinmonster'] = array(
 			'active'    => class_exists( 'OMAPI' ),
 			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-om.png',
 			'title'     => 'OptinMonster',
-			'excerpt'   => __( 'Our high-converting optin forms like Exit-Intent® popups, Fullscreen Welcome Mats, and Scroll boxes help you dramatically boost conversions and get more email subscribers.', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'Instantly get more subscribers, leads, and sales with the #1 conversion optimization toolkit. Create high converting popups, announcement bars, spin a wheel, and more with smart targeting and personalization.', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'optinmonster/optin-monster-wp-api.php', $installed_plugins ),
 			'basename'  => 'optinmonster/optin-monster-wp-api.php',
 			'slug'      => 'optinmonster',
+			'settings'  => admin_url( 'admin.php?page=optin-monster-dashboard' ),
 		);
 		// WP Mail Smtp.
 		$parsed_addons['wp-mail-smtp'] = array(
 			'active'    => function_exists( 'wp_mail_smtp' ),
 			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-smtp.png',
 			'title'     => 'WP Mail SMTP',
-			'excerpt'   => __( 'SMTP (Simple Mail Transfer Protocol) is an industry standard for sending emails. SMTP helps increase email deliverability by using proper authentication.', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'Improve your WordPress email deliverability and make sure that your website emails reach user’s inbox with the #1 SMTP plugin for WordPress. Over 2 million websites use it to fix WordPress email issues.', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'wp-mail-smtp/wp_mail_smtp.php', $installed_plugins ),
 			'basename'  => 'wp-mail-smtp/wp_mail_smtp.php',
 			'slug'      => 'wp-mail-smtp',
+		);
+		// SeedProd.
+		$parsed_addons['coming-soon']    = array(
+			'active'    => defined( 'SEEDPROD_VERSION' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-seedprod.png',
+			'title'     => 'SeedProd',
+			'excerpt'   => __( 'The fastest drag & drop landing page builder for WordPress. Create custom landing pages without writing code, connect them with your CRM, collect subscribers, and grow your audience. Trusted by 1 million sites.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'coming-soon/coming-soon.php', $installed_plugins ),
+			'basename'  => 'coming-soon/coming-soon.php',
+			'slug'      => 'coming-soon',
+			'settings'  => admin_url( 'admin.php?page=seedprod_lite' ),
+		);
+		// RafflePress
+		$parsed_addons['rafflepress']    = array(
+			'active'    => function_exists( 'rafflepress_lite_activation' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/pluign-rafflepress.png',
+			'title'     => 'RafflePress',
+			'excerpt'   => __( 'Turn your website visitors into brand ambassadors! Easily grow your email list, website traffic, and social media followers with the most powerful giveaways & contests plugin for WordPress.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'rafflepress/rafflepress.php', $installed_plugins ),
+			'basename'  => 'rafflepress/rafflepress.php',
+			'slug'      => 'rafflepress',
+			'settings'  => admin_url( 'admin.php?page=rafflepress_lite' ),
+		);
+		// TrustPulse
+		$parsed_addons['trustpulse-api'] = array(
+			'active'    => class_exists( 'TPAPI' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-trust-pulse.png',
+			'title'     => 'TrustPulse',
+			'excerpt'   => __( 'Boost your sales and conversions by up to 15% with real-time social proof notifications. TrustPulse helps you show live user activity and purchases to help convince other users to purchase.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'trustpulse-api/trustpulse.php', $installed_plugins ),
+			'basename'  => 'trustpulse-api/trustpulse.php',
+			'slug'      => 'trustpulse-api',
+		);
+		// Smash Balloon (Instagram)
+		$parsed_addons['smash-balloon-instagram'] = array(
+			'active'    => defined( 'SBIVER' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-smash-balloon.png',
+			'title'     => 'Smash Balloon Instagram Feeds',
+			'excerpt'   => __( 'Easily display Instagram content on your WordPress site without writing any code. Comes with multiple templates, ability to show content from multiple accounts, hashtags, and more. Trusted by 1 million websites.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'instagram-feed/instagram-feed.php', $installed_plugins ),
+			'basename'  => 'instagram-feed/instagram-feed.php',
+			'slug'      => 'instagram-feed',
+			'settings'  => admin_url( 'admin.php?page=sb-instagram-feed' ),
+		);
+		// Smash Balloon (Facebook)
+		$parsed_addons['smash-balloon-facebook'] = array(
+			'active'    => defined( 'CFFVER' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-smash-balloon.png',
+			'title'     => 'Smash Balloon Facebook Feeds',
+			'excerpt'   => __( 'Easily display Facebook content on your WordPress site without writing any code. Comes with multiple templates, ability to show content from multiple accounts, hashtags, and more. Trusted by 1 million websites.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'custom-facebook-feed/custom-facebook-feed.php', $installed_plugins ),
+			'basename'  => 'custom-facebook-feed/custom-facebook-feed.php',
+			'slug'      => 'custom-facebook-feed',
+			'settings'  => admin_url( 'admin.php?page=cff-feed-builder' ),
+		);
+		// PushEngage
+		$parsed_addons['pushengage'] = array(
+			'active'    => method_exists( 'Pushengage', 'init' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-pushengage.svg',
+			'title'     => 'PushEngage',
+			'excerpt'   => __( 'Connect with your visitors after they leave your website with the leading web push notification software. Over 10,000+ businesses worldwide use PushEngage to send 9 billion notifications each month.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'pushengage/main.php', $installed_plugins ),
+			'basename'  => 'pushengage/main.php',
+			'slug'      => 'pushengage',
 		);
 		// Pretty Links
 		$parsed_addons['pretty-link'] = array(
@@ -382,35 +506,32 @@ class ExactMetrics_Rest_Routes {
 			'installed' => array_key_exists( 'pretty-link/pretty-link.php', $installed_plugins ),
 			'basename'  => 'pretty-link/pretty-link.php',
 			'slug'      => 'pretty-link',
+			'settings'  => admin_url( 'edit.php?post_type=pretty-link' ),
 		);
-		// SeedProd.
-		$parsed_addons['coming-soon']    = array(
-			'active'    => function_exists( 'seed_csp4_activation' ),
-			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/seedprod.png',
-			'title'     => 'SeedProd',
-			'excerpt'   => __( 'Better Coming Soon & Maintenance Mode Pages', 'google-analytics-dashboard-for-wp' ),
-			'installed' => array_key_exists( 'coming-soon/coming-soon.php', $installed_plugins ),
-			'basename'  => 'coming-soon/coming-soon.php',
-			'slug'      => 'coming-soon',
+		// Thirsty Affiliates
+		$parsed_addons['thirstyaffiliates'] = array(
+			'active'    => class_exists( 'ThirstyAffiliates' ),
+			'icon'      => '',
+			'title'     => 'Thirsty Affiliates',
+			'excerpt'   => __( 'ThirstyAffiliates is a revolution in affiliate link management. Collect, collate and store your affiliate links for use in your posts and pages.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'thirstyaffiliates/thirstyaffiliates.php', $installed_plugins ),
+			'basename'  => 'thirstyaffiliates/thirstyaffiliates.php',
+			'slug'      => 'thirstyaffiliates',
+			'settings'  => admin_url( 'edit.php?post_type=thirstylink' ),
 		);
-		$parsed_addons['rafflepress']    = array(
-			'active'    => function_exists( 'rafflepress_lite_activation' ),
-			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/rafflepress.png',
-			'title'     => 'RafflePress',
-			'excerpt'   => __( 'Get More Traffic with Viral Giveaways', 'google-analytics-dashboard-for-wp' ),
-			'installed' => array_key_exists( 'rafflepress/rafflepress.php', $installed_plugins ),
-			'basename'  => 'rafflepress/rafflepress.php',
-			'slug'      => 'rafflepress',
-		);
-		$parsed_addons['trustpulse-api'] = array(
-			'active'    => class_exists( 'TPAPI' ),
-			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/trustpulse.png',
-			'title'     => 'TrustPulse',
-			'excerpt'   => __( 'Social Proof Notifications that Boost Sales', 'google-analytics-dashboard-for-wp' ),
-			'installed' => array_key_exists( 'trustpulse-api/trustpulse.php', $installed_plugins ),
-			'basename'  => 'trustpulse-api/trustpulse.php',
-			'slug'      => 'trustpulse-api',
-		);
+		if ( function_exists( 'WC' ) ) {
+			// Advanced Coupons
+			$parsed_addons['advancedcoupons'] = array(
+				'active'    => class_exists( 'ACFWF' ),
+				'icon'      => '',
+				'title'     => 'Advanced Coupons',
+				'excerpt'   => __( 'Advanced Coupons for WooCommerce (Free Version) gives WooCommerce store owners extra coupon features so they can market their stores better.', 'google-analytics-dashboard-for-wp' ),
+				'installed' => array_key_exists( 'advanced-coupons-for-woocommerce-free/advanced-coupons-for-woocommerce-free.php', $installed_plugins ),
+				'basename'  => 'advanced-coupons-for-woocommerce-free/advanced-coupons-for-woocommerce-free.php',
+				'slug'      => 'advanced-coupons-for-woocommerce-free',
+				'settings'  => admin_url( 'edit.php?post_type=shop_coupon&acfw' ),
+			);
+		}
 		// Gravity Forms.
 		$parsed_addons['gravity_forms'] = array(
 			'active' => class_exists( 'GFCommon' ),
@@ -447,10 +568,18 @@ class ExactMetrics_Rest_Routes {
 			$addon->url = '';
 		}
 
-		$addon->type      = $addons_type;
-		$addon->installed = $installed;
-		$addon->active    = $active;
-		$addon->basename  = $plugin_basename;
+		$active_version = false;
+		if ( $active ) {
+			if ( ! empty( $installed_plugins[ $plugin_basename ]['Version'] ) ) {
+				$active_version = $installed_plugins[ $plugin_basename ]['Version'];
+			}
+		}
+
+		$addon->type           = $addons_type;
+		$addon->installed      = $installed;
+		$addon->active_version = $active_version;
+		$addon->active         = $active;
+		$addon->basename       = $plugin_basename;
 
 		return $addon;
 	}
@@ -532,6 +661,139 @@ class ExactMetrics_Rest_Routes {
 	}
 
 	/**
+	 * Update manual v4.
+	 */
+	public function update_manual_v4() {
+
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'exactmetrics_save_settings' ) ) {
+			return;
+		}
+
+		$manual_v4_code = isset( $_POST['manual_v4_code'] ) ? sanitize_text_field( wp_unslash( $_POST['manual_v4_code'] ) ) : '';
+		$manual_v4_code = exactmetrics_is_valid_v4_id( $manual_v4_code ); // Also sanitizes the string.
+
+		if ( ! empty( $_REQUEST['isnetwork'] ) && sanitize_text_field( wp_unslash( $_REQUEST['isnetwork'] ) ) ) {
+			define( 'WP_NETWORK_ADMIN', true );
+		}
+		$manual_v4_code_old = is_network_admin() ? ExactMetrics()->auth->get_network_manual_v4_id() : ExactMetrics()->auth->get_manual_v4_id();
+
+		if ( $manual_v4_code && $manual_v4_code_old && $manual_v4_code_old === $manual_v4_code ) {
+			// Same code we had before
+			// Do nothing.
+			wp_send_json_success();
+		} else if ( $manual_v4_code && $manual_v4_code_old && $manual_v4_code_old !== $manual_v4_code ) {
+			// Different UA code.
+			if ( is_network_admin() ) {
+				ExactMetrics()->auth->set_network_manual_v4_id( $manual_v4_code );
+			} else {
+				ExactMetrics()->auth->set_manual_v4_id( $manual_v4_code );
+			}
+		} else if ( $manual_v4_code && empty( $manual_v4_code_old ) ) {
+			// Move to manual.
+			if ( is_network_admin() ) {
+				ExactMetrics()->auth->set_network_manual_v4_id( $manual_v4_code );
+			} else {
+				ExactMetrics()->auth->set_manual_v4_id( $manual_v4_code );
+			}
+		} else if ( empty( $manual_v4_code ) && $manual_v4_code_old ) {
+			// Deleted manual.
+			if ( is_network_admin() ) {
+				ExactMetrics()->auth->delete_network_manual_v4_id();
+			} else {
+				ExactMetrics()->auth->delete_manual_v4_id();
+			}
+		} else if ( isset( $_POST['manual_v4_code'] ) && empty( $manual_v4_code ) ) {
+			wp_send_json_error( array(
+				'error' => __( 'Invalid UA code', 'google-analytics-dashboard-for-wp' ),
+			) );
+		}
+
+		wp_send_json_success();
+	}
+
+	public function update_dual_tracking_id() {
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'exactmetrics_save_settings' ) ) {
+			return;
+		}
+
+		if ( ! empty( $_REQUEST['isnetwork'] ) && sanitize_text_field( wp_unslash( $_REQUEST['isnetwork'] ) ) ) {
+			define( 'WP_NETWORK_ADMIN', true );
+		}
+
+		$value = empty( $_REQUEST['value'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['value'] ) );
+		$sanitized_ua_value = exactmetrics_is_valid_ua( $value );
+		$sanitized_v4_value = exactmetrics_is_valid_v4_id( $value );
+
+		if ( $sanitized_v4_value ) {
+			$value = $sanitized_v4_value;
+		} elseif ( $sanitized_ua_value ) {
+			$value = $sanitized_ua_value;
+		} elseif ( ! empty( $value ) ) {
+			wp_send_json_error( array(
+				'error' => __( 'Invalid dual tracking code', 'google-analytics-dashboard-for-wp' ),
+			) );
+		}
+
+		$auth = ExactMetrics()->auth;
+
+		if ( is_network_admin() ) {
+			$auth->set_network_dual_tracking_id( $value );
+		} else {
+			$auth->set_dual_tracking_id( $value );
+		}
+
+		wp_send_json_success();
+	}
+
+	public function update_measurement_protocol_secret() {
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'exactmetrics_save_settings' ) ) {
+			return;
+		}
+
+		if ( ! empty( $_REQUEST['isnetwork'] ) && sanitize_text_field( wp_unslash( $_REQUEST['isnetwork'] ) ) ) {
+			define( 'WP_NETWORK_ADMIN', true );
+		}
+
+		$value = empty( $_REQUEST['value'] ) ? '' : sanitize_text_field( wp_unslash( $_REQUEST['value'] ) );
+
+		$auth = ExactMetrics()->auth;
+
+		if ( is_network_admin() ) {
+			$auth->set_network_measurement_protocol_secret( $value );
+		} else {
+			$auth->set_measurement_protocol_secret( $value );
+		}
+
+		// Send API request to Relay
+		// TODO: Remove when token automation API is ready
+		$api = new ExactMetrics_API_Request( 'auth/mp-token/', 'POST' );
+		$api->set_additional_data( array(
+			'mp_token' => $value,
+		) );
+
+		// Even if there's an error from Relay, we can still return a successful json
+		// payload because we can try again with Relay token push in the future
+		$data   = array();
+		$result = $api->request();
+		if ( is_wp_error( $result ) ) {
+			// Just need to output the error in the response for debugging purpose
+			$data['error'] = array(
+				'message' => $result->get_error_message(),
+				'code'    => $result->get_error_code(),
+			);
+		}
+
+		wp_send_json_success( $data );
+	}
+
+
+	/**
 	 *
 	 */
 	public function handle_settings_import() {
@@ -579,12 +841,6 @@ class ExactMetrics_Rest_Routes {
 		foreach ( $exclude as $e ) {
 			if ( ! empty( $new_settings[ $e ] ) ) {
 				unset( $new_settings[ $e ] );
-			}
-		}
-
-		if ( ! is_super_admin() ) {
-			if ( ! empty( $new_settings['custom_code'] ) ) {
-				unset( $new_settings['custom_code'] );
 			}
 		}
 
