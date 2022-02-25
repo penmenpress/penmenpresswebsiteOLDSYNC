@@ -1,17 +1,17 @@
 === WP phpMyAdmin ===
 
 Tags			 : phpmyadmin,phpminiadmin,mysql,sql,database,manager,management,browser
-Stable tag		 : 5.0.4.1
+Stable tag		 : 5.1.3
 WordPress URI	 : https://wordpress.org/plugins/wp-phpmyadmin-extension/
-Plugin URI		 : https://puvox.software/wordpress/
+Plugin URI		 : https://puvox.software/software/wordpress-plugins/?plugin=wp-phpmyadmin-extension
 Contributors	 : puvoxsoftware,ttodua
 Author			 : Puvox.software
 Author URI		 : https://puvox.software/
 Donate link		 : https://paypal.me/puvox
 License			 : GPL-3.0
 License URI		 : https://www.gnu.org/licenses/gpl-3.0.html
-Requires at least: 4.4
-Tested up to	 : 5.5.3
+Requires at least: 5.0
+Tested up to	 : 5.8
 
 [ ✅ 𝐒𝐄𝐂𝐔𝐑𝐄 𝐏𝐋𝐔𝐆𝐈𝐍𝐒 b𝓎 𝒫𝓊𝓋𝑜𝓍 ]
 phpMyAdmin -  Database Browser & Manager (for MySQL & MariaDB)
@@ -25,7 +25,7 @@ phpMyAdmin -  Database Browser & Manager (for MySQL & MariaDB)
 The famous database browser & manager (for MySQL & MariaDB) - use it inside WordPress Dashboard without an extra hassle.
 
 == NOTES ==
-* PHP >= 7.1.3 is required to for <strong>phpMyAdmin</strong> latest version (otherwise you will have option to use older version of PMA, which is not encouraged for usage).
+* PHP >= 7.2.5 is required to for <strong>phpMyAdmin</strong> latest version (otherwise you will have option to use older version of PMA, which is not encouraged to be used).
 * This plugin has been started from 2018 year, and we have no relations to the old age's (from 3rd party scammers) vulnerable <b>wp-phpMyAdmin</b> plugin. This plugin is just a wrapper for official phpMyAdmin release and depends itself on the realiability & security of the `phpMyAdmin` itself. Also, initially we wanted to put PhpMyAdmin release `.zip` file (with same checksum, to ensure the checksums are same) to unpack that `.zip` directly upon plugin's installation, but unfortunately WordPress.Org plugin team didn't allow to put `.zip` file in the package (saying that SVN doesn't like .zip files). Thus, we had to submit original PMA (extracted, untouched) to the repository.
 * For the reason to make it compact, some extra or unnecessary files (language files,GIS map, etc) are removed.
 
@@ -52,6 +52,14 @@ B) Download plugin from WordPress.org , Extract the zip file and upload the cont
 
 
 == Changelog ==
+
+= 5.1.3 =
+* PMA 5.1.3
+* added language files
+* >= PHP 7.1.3 requirement
+
+= 5.10 =
+* PMA 5.1.0
 
 = 3.02 =
 * PMA 5.0.2 

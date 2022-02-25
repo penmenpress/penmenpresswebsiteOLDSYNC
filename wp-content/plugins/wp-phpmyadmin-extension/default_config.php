@@ -6,6 +6,7 @@ $i = 0;
 
 $i++;
 $cfg['Servers'][$i]['host'] 			= ___HOSTADR___;
+$cfg['Servers'][$i]['port'] 			= ___PORTADR___;
 $cfg['Servers'][$i]['connect_type'] 	= ___CONNECTIONTYPE___;
 $cfg['Servers'][$i]['socket'] 			= ___SOCKET___;
 $cfg['Servers'][$i]['AllowNoPassword']	= ___ALLOWNOPASS___;   // true/false
@@ -13,17 +14,18 @@ $cfg['blowfish_secret']					= ___BLOWFISHSECRET___ ;  // i.e. '$b~`lnkwm>^^jNUEE
 $cfg['DefaultLang']						= ___LANG___;		// 'en'
 $cfg['Servers'][$i]['only_db']			= ___DBARRAY___ ;    //i.e. array('db1', 'db2') Show only listed databases
 $cfg['PmaAbsoluteUri'] 					= ___PmaAbsoluteUri___;			//used, if different directory by htaccess ; or parse_url($GLOBALS['PMA_PHP_SELF']);
-//$cfg['LoginCookieValidity']			= 14400;
 
 $cfg['ForceSSL'] = false;
 $cfg['ServerDefault'] = 1;  // If you have more than one server configured, you can set $cfg['ServerDefault'] to any one of them to auto-connect to that server when phpMyAdmin is started,  or set it to 0 to be given a list of servers without logging in If you have only one server configured, $cfg['ServerDefault'] *MUST* be  set to that server. 
 $cfg['UploadDir'] = '';  //'Upload directoryDocumentation Directory on server where you can upload files for import.';
 $cfg['SaveDir'] = '';  // 'Save directoryDocumentation Directory where exports can be saved on server';
 
-//$cfg['Servers'][$i]['port']		= 10222;
 //$cfg['Servers'][$i]['ssl']		= true;  //Compress connection to MySQL server.
 //$cfg['Servers'][$i]['compress']	= false;
-$cfg['Servers'][$i]['auth_type']	= 'cookie';
+$cfg['Servers'][$i]['auth_type']	= 'signon'; //cookie | signon | ...
+//$cfg['LoginCookieValidity']			= 14400;
+$cfg['Servers'][$i]['SignonSession']= 'CustomSignonSession';
+$cfg['Servers'][$i]['SignonURL']    = ___SignOnUri___;
 //$cfg['Servers'][$i]['user']		= 'User for config authDocumentation Leave empty if not using config auth.';
 //$cfg['Servers'][$i]['password']	= 'Password for config authDocumentation Leave empty if not using config auth.';
 $cfg['Servers'][$i]['DisableIS']	= true;  //disable information schema

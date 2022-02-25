@@ -54,7 +54,14 @@ trait ApcuTrait
         $unserializeCallbackHandler = ini_set('unserialize_callback_func', __CLASS__.'::handleUnserializeCallback');
         try {
             $values = [];
-            foreach (apcu_fetch($ids, $ok) ?: [] as $k => $v) {
+            $ids = array_flip($ids);
+            foreach (apcu_fetch(array_keys($ids), $ok) ?: [] as $k => $v) {
+                if (!isset($ids[$k])) {
+                    // work around https://github.com/krakjoe/apcu/issues/247
+                    $k = key($ids);
+                }
+                unset($ids[$k]);
+
                 if (null !== $v || $ok) {
                     $values[$k] = $v;
                 }
@@ -81,7 +88,7 @@ trait ApcuTrait
      */
     protected function doClear($namespace)
     {
-        return isset($namespace[0]) && class_exists('APCuIterator', false) && ('cli' !== \PHP_SAPI || filter_var(ini_get('apc.enable_cli'), \FILTER_VALIDATE_BOOLEAN))
+        return isset($namespace[0]) && class_exists(\APCuIterator::class, false) && ('cli' !== \PHP_SAPI || filter_var(ini_get('apc.enable_cli'), \FILTER_VALIDATE_BOOLEAN))
             ? apcu_delete(new \APCuIterator(sprintf('/^%s/', preg_quote($namespace, '/')), \APC_ITER_KEY))
             : apcu_clear_cache();
     }
@@ -112,7 +119,7 @@ trait ApcuTrait
         } catch (\Throwable $e) {
             if (1 === \count($values)) {
                 // Workaround https://github.com/krakjoe/apcu/issues/170
-                apcu_delete(key($values));
+                apcu_delete(array_key_first($values));
             }
 
             throw $e;

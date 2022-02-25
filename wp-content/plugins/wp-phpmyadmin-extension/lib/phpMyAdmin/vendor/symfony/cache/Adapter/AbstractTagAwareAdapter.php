@@ -80,7 +80,7 @@ abstract class AbstractTagAwareAdapter implements TagAwareAdapterInterface, TagA
                     $key = (string) $key;
                     if (null === $item->expiry) {
                         $ttl = 0 < $defaultLifetime ? $defaultLifetime : 0;
-                    } elseif (0 === $item->expiry) {
+                    } elseif (!$item->expiry) {
                         $ttl = 0;
                     } elseif (0 >= $ttl = (int) (0.1 + $item->expiry - $now)) {
                         $expiredIds[] = $getId($key);
@@ -110,6 +110,7 @@ abstract class AbstractTagAwareAdapter implements TagAwareAdapterInterface, TagA
                     }
 
                     $byLifetime[$ttl][$getId($key)] = $value;
+                    $item->metadata = $item->newMetadata;
                 }
 
                 return $byLifetime;
