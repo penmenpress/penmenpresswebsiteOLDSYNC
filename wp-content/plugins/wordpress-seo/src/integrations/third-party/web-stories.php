@@ -2,13 +2,11 @@
 
 namespace Yoast\WP\SEO\Integrations\Third_Party;
 
-use Google\Web_Stories as Google_Web_Stories;
-use WP_Screen;
-use WPSEO_Admin_Asset_Manager;
 use Yoast\WP\SEO\Conditionals\Web_Stories_Conditional;
 use Yoast\WP\SEO\Integrations\Front_End_Integration;
 use Yoast\WP\SEO\Integrations\Integration_Interface;
 use Yoast\WP\SEO\Models\Indexable;
+use Yoast\WP\SEO\Presentations\Indexable_Presentation;
 
 /**
  * Web Stories integration.
@@ -48,64 +46,39 @@ class Web_Stories implements Integration_Interface {
 	 * @return void
 	 */
 	public function register_hooks() {
-		\add_action( 'web_stories_story_head', [ $this, 'remove_web_stories_meta_output' ], 0 );
-		\add_action( 'web_stories_story_head', [ $this->front_end, 'call_wpseo_head' ], 9 );
-		\add_filter( 'wpseo_schema_article_post_types', [ $this, 'filter_schema_article_post_types' ] );
+		\add_action( 'web_stories_enable_metadata', '__return_false' );
+		\add_action( 'web_stories_enable_schemaorg_metadata', '__return_false' );
+		\add_action( 'web_stories_enable_open_graph_metadata', '__return_false' );
+		\add_action( 'web_stories_enable_twitter_metadata', '__return_false' );
+
+		\add_action( 'web_stories_story_head', [ $this, 'web_stories_story_head' ], 1 );
 		\add_filter( 'wpseo_schema_article_type', [ $this, 'filter_schema_article_type' ], 10, 2 );
-		\add_action( 'admin_enqueue_scripts', [ $this, 'dequeue_admin_assets' ] );
+		\add_filter( 'wpseo_metadesc', [ $this, 'filter_meta_description' ], 10, 2 );
 	}
 
 	/**
-	 * Removes Web Stories meta output.
+	 * Hooks into web story <head> generation to modify output.
 	 *
 	 * @return void
 	 */
-	public function remove_web_stories_meta_output() {
-		$instance = Google_Web_Stories\get_plugin_instance()->discovery;
-		\remove_action( 'web_stories_story_head', [ $instance, 'print_metadata' ] );
-		\remove_action( 'web_stories_story_head', [ $instance, 'print_schemaorg_metadata' ] );
-		\remove_action( 'web_stories_story_head', [ $instance, 'print_open_graph_metadata' ] );
-		\remove_action( 'web_stories_story_head', [ $instance, 'print_twitter_metadata' ] );
+	public function web_stories_story_head() {
 		\remove_action( 'web_stories_story_head', 'rel_canonical' );
+		\add_action( 'web_stories_story_head', [ $this->front_end, 'call_wpseo_head' ], 9 );
 	}
 
 	/**
-	 * Removes assets for the stories editor & dashboard as they are completely custom.
+	 * Filters the meta description for stories.
 	 *
-	 * @return void
+	 * @param string                 $description  The description sentence.
+	 * @param Indexable_Presentation $presentation The presentation of an indexable.
+	 * @return string The description sentence.
 	 */
-	public function dequeue_admin_assets() {
-		$screen = \get_current_screen();
-
-		if ( $screen instanceof WP_Screen
-			&& Google_Web_Stories\Story_Post_Type::POST_TYPE_SLUG === $screen->post_type
-			&& $screen->base !== 'edit'
-		) {
-			\wp_dequeue_script( WPSEO_Admin_Asset_Manager::PREFIX . 'post-edit' );
-			\wp_dequeue_script( WPSEO_Admin_Asset_Manager::PREFIX . 'post-edit-classic' );
-			\wp_dequeue_script( WPSEO_Admin_Asset_Manager::PREFIX . 'edit-page-script' );
-			\wp_dequeue_script( WPSEO_Admin_Asset_Manager::PREFIX . 'quick-edit-handler' );
-
-			\wp_dequeue_style( WPSEO_Admin_Asset_Manager::PREFIX . 'metabox-css' );
-			\wp_dequeue_style( WPSEO_Admin_Asset_Manager::PREFIX . 'scoring' );
-			\wp_dequeue_style( WPSEO_Admin_Asset_Manager::PREFIX . 'select2' );
-			\wp_dequeue_style( WPSEO_Admin_Asset_Manager::PREFIX . 'monorepo' );
-			\wp_dequeue_style( WPSEO_Admin_Asset_Manager::PREFIX . 'admin-css' );
-			\wp_dequeue_style( WPSEO_Admin_Asset_Manager::PREFIX . 'featured-image' );
-			\wp_dequeue_style( WPSEO_Admin_Asset_Manager::PREFIX . 'dismissible' );
-			\wp_dequeue_style( WPSEO_Admin_Asset_Manager::PREFIX . 'edit-page' );
+	public function filter_meta_description( $description, $presentation ) {
+		if ( $description || $presentation->model->object_sub_type !== 'web-story' ) {
+			return $description;
 		}
-	}
 
-	/**
-	 * Adds web story post type to list of which post types to output Article schema  for.
-	 *
-	 * @param string[] $post_types Array of post types.
-	 * @return string[] Array of post types.
-	 */
-	public function filter_schema_article_post_types( $post_types ) {
-		$post_types[] = Google_Web_Stories\Story_Post_Type::POST_TYPE_SLUG;
-		return $post_types;
+		return \get_the_excerpt( $presentation->model->object_id );
 	}
 
 	/**
@@ -116,7 +89,7 @@ class Web_Stories implements Integration_Interface {
 	 * @return string|string[] Article type.
 	 */
 	public function filter_schema_article_type( $type, $indexable ) {
-		if ( Google_Web_Stories\Story_Post_Type::POST_TYPE_SLUG !== $indexable->object_sub_type ) {
+		if ( $indexable->object_sub_type !== 'web-story' ) {
 			return $type;
 		}
 

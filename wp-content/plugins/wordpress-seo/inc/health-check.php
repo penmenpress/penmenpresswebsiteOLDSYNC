@@ -153,10 +153,11 @@ abstract class WPSEO_Health_Check {
 	}
 
 	/**
-	 * Formats the test result as an array.
+	 * Formats the test result as JSON as response to an AJAX request.
 	 */
 	public function get_async_test_result() {
-		wp_send_json_success( $this->get_test_result() );
+		$result = $this->get_test_result();
+		wp_send_json_success( $result );
 	}
 
 	/**
@@ -206,7 +207,7 @@ abstract class WPSEO_Health_Check {
 		$this->actions .= sprintf(
 			/* translators: 1: Start of a paragraph beginning with the Yoast icon, 2: Expands to 'Yoast SEO', 3: Paragraph closing tag. */
 			esc_html__( '%1$sThis was reported by the %2$s plugin%3$s', 'wordpress-seo' ),
-			'<p class="yoast-site-health__signature"><img src="' . esc_url( plugin_dir_url( WPSEO_FILE ) . 'images/Yoast_SEO_Icon.svg' ) . '" alt="" height="20" width="20" class="yoast-site-health__signature-icon">',
+			'<p class="yoast-site-health__signature"><img src="' . esc_url( plugin_dir_url( WPSEO_FILE ) . 'packages/js/images/Yoast_SEO_Icon.svg' ) . '" alt="" height="20" width="20" class="yoast-site-health__signature-icon">',
 			'Yoast SEO',
 			'</p>'
 		);

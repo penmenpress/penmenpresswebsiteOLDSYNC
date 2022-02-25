@@ -15,7 +15,7 @@ if ( ! function_exists( 'add_filter' ) ) {
  * {@internal Nobody should be able to overrule the real version number as this can cause
  *            serious issues with the options, so no if ( ! defined() ).}}
  */
-define( 'WPSEO_VERSION', '15.5' );
+define( 'WPSEO_VERSION', '18.2' );
 
 
 if ( ! defined( 'WPSEO_PATH' ) ) {
@@ -35,8 +35,8 @@ define( 'YOAST_VENDOR_DEFINE_PREFIX', 'YOASTSEO_VENDOR__' );
 define( 'YOAST_VENDOR_PREFIX_DIRECTORY', 'vendor_prefixed' );
 
 define( 'YOAST_SEO_PHP_REQUIRED', '5.6' );
-define( 'YOAST_SEO_WP_TESTED', '5.6' );
-define( 'YOAST_SEO_WP_REQUIRED', '5.4' );
+define( 'YOAST_SEO_WP_TESTED', '5.9' );
+define( 'YOAST_SEO_WP_REQUIRED', '5.6' );
 
 if ( ! defined( 'WPSEO_NAMESPACES' ) ) {
 	define( 'WPSEO_NAMESPACES', true );
@@ -72,7 +72,7 @@ function wpseo_auto_load( $class ) {
 $yoast_autoload_file = WPSEO_PATH . 'vendor/autoload.php';
 
 if ( is_readable( $yoast_autoload_file ) ) {
-	require $yoast_autoload_file;
+	$yoast_autoloader = require $yoast_autoload_file;
 }
 elseif ( ! class_exists( 'WPSEO_Options' ) ) { // Still checking since might be site-level autoload R.
 	add_action( 'admin_init', 'yoast_wpseo_missing_autoload', 1 );
@@ -92,6 +92,25 @@ require_once WPSEO_PATH . 'src/functions.php';
  */
 if ( ! defined( 'YOAST_ENVIRONMENT' ) ) {
 	define( 'YOAST_ENVIRONMENT', 'production' );
+}
+
+if ( YOAST_ENVIRONMENT === 'development' && isset( $yoast_autoloader ) ) {
+	add_action(
+		'plugins_loaded',
+		/**
+		 * Reregisters the autoloader so that Yoast SEO is at the front.
+		 * This prevents conflicts with the development versions of our addons.
+		 * An anonymous function is used so we can use the autoloader variable.
+		 * As this is only loaded in development removing this action is not a concern.
+		 *
+		 * @return void
+		 */
+		static function() use ( $yoast_autoloader ) {
+			$yoast_autoloader->unregister();
+			$yoast_autoloader->register( true );
+		},
+		1
+	);
 }
 
 /**
@@ -116,6 +135,9 @@ function wpseo_activate( $networkwide = false ) {
 		/* Multi-site network activation - activate the plugin for all blogs. */
 		wpseo_network_activate_deactivate( true );
 	}
+
+	// This is done so that the 'uninstall_{$file}' is triggered.
+	register_uninstall_hook( WPSEO_FILE, '__return_false' );
 }
 
 /**
@@ -183,16 +205,26 @@ function _wpseo_activate() {
 		delete_option( 'rewrite_rules' );
 	}
 	else {
-		$wpseo_rewrite = new WPSEO_Rewrite();
-		$wpseo_rewrite->schedule_flush();
+		if ( WPSEO_Options::get( 'stripcategorybase' ) === true ) {
+			// Constructor has side effects so this registers all hooks.
+			$GLOBALS['wpseo_rewrite'] = new WPSEO_Rewrite();
+		}
+		add_action( 'shutdown', 'flush_rewrite_rules' );
 	}
 
 	// Reset tracking to be disabled by default.
-	if ( ! WPSEO_Utils::is_yoast_seo_premium() ) {
+	if ( ! YoastSEO()->helpers->product->is_premium() ) {
 		WPSEO_Options::set( 'tracking', false );
 	}
 
 	WPSEO_Options::set( 'indexing_reason', 'first_install' );
+	WPSEO_Options::set( 'first_time_install', true );
+	if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
+		WPSEO_Options::set( 'should_redirect_after_install_free', true );
+	}
+	else {
+		WPSEO_Options::set( 'activation_redirect_timestamp_free', \time() );
+	}
 
 	do_action( 'wpseo_register_roles' );
 	WPSEO_Role_Manager_Factory::get()->add();
@@ -209,6 +241,7 @@ function _wpseo_activate() {
 
 	do_action( 'wpseo_activate' );
 }
+
 /**
  * On deactivation, flush the rewrite rules so XML sitemaps stop working.
  */
@@ -256,7 +289,7 @@ function wpseo_on_activate_blog( $blog_id ) {
 		$blog_id = (int) $blog_id->blog_id;
 	}
 
-	if ( is_plugin_active_for_network( plugin_basename( WPSEO_FILE ) ) ) {
+	if ( is_plugin_active_for_network( WPSEO_BASENAME ) ) {
 		switch_to_blog( $blog_id );
 		wpseo_activate( false );
 		restore_current_blog();
@@ -329,9 +362,6 @@ function wpseo_init() {
 	// Loading Ryte integration.
 	$wpseo_ryte = new WPSEO_Ryte();
 	$wpseo_ryte->register_hooks();
-
-	// Initializes the Yoast indexables for the first time.
-	YoastSEO();
 }
 
 /**
@@ -344,9 +374,6 @@ function wpseo_init_rest_api() {
 	}
 
 	// Boot up REST API.
-	$configuration_service = new WPSEO_Configuration_Service();
-	$configuration_service->initialize();
-
 	$statistics_service = new WPSEO_Statistics_Service( new WPSEO_Statistics() );
 
 	$endpoints   = [];
@@ -373,7 +400,7 @@ function wpseo_admin_init() {
  * on PHP 5.3+, the constant should only be set when requirements are met.
  */
 function wpseo_cli_init() {
-	if ( WPSEO_Utils::is_yoast_seo_premium() ) {
+	if ( YoastSEO()->helpers->product->is_premium() ) {
 		WP_CLI::add_command(
 			'yoast redirect list',
 			'WPSEO_CLI_Redirect_List_Command',
@@ -457,6 +484,14 @@ if ( ! wp_installing() && ( $spl_autoload_exists && $filter_exists ) ) {
 	}
 
 	add_action( 'init', [ 'WPSEO_Replace_Vars', 'setup_statics_once' ] );
+
+	// Initializes the Yoast indexables for the first time.
+	YoastSEO();
+
+	/**
+	 * Action called when the Yoast SEO plugin file has loaded.
+	 */
+	do_action( 'wpseo_loaded' );
 }
 
 // Activation and deactivation hook.
@@ -578,7 +613,7 @@ function yoast_wpseo_self_deactivate() {
 
 	if ( $is_deactivated === null ) {
 		$is_deactivated = true;
-		deactivate_plugins( plugin_basename( WPSEO_FILE ) );
+		deactivate_plugins( WPSEO_BASENAME );
 		if ( isset( $_GET['activate'] ) ) {
 			unset( $_GET['activate'] );
 		}
