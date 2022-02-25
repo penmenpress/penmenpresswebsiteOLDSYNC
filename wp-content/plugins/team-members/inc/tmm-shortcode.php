@@ -92,6 +92,8 @@ function tmm_sc($atts) {
                     if ($member['_tmm_sc_type'.$i] != 'nada') {
                       if ($member['_tmm_sc_type'.$i] == 'email') {
                         $team_view .= '<a class="tmm_sociallink" href="mailto:'.(!empty($member['_tmm_sc_url'.$i])?$member['_tmm_sc_url'.$i]:'').'" title="'.(!empty($member['_tmm_sc_title'.$i])?$member['_tmm_sc_title'.$i]:'').'"><img alt="'.(!empty($member['_tmm_sc_title'.$i])?$member['_tmm_sc_title'.$i]:'').'" src="'.plugins_url('img/links/', __FILE__).$member['_tmm_sc_type'.$i].'.png"/></a>';
+                      } else if ($member['_tmm_sc_type'.$i] == 'phone') {
+                        $team_view .= '<a class="tmm_sociallink" href="tel:'.(!empty($member['_tmm_sc_url'.$i])?$member['_tmm_sc_url'.$i]:'').'" title="'.(!empty($member['_tmm_sc_title'.$i])?$member['_tmm_sc_title'.$i]:'').'"><img alt="'.(!empty($member['_tmm_sc_title'.$i])?$member['_tmm_sc_title'.$i]:'').'" src="'.plugins_url('img/links/', __FILE__).$member['_tmm_sc_type'.$i].'.png"/></a>';
                       } else {
                         $team_view .= '<a target="_blank" class="tmm_sociallink" href="'.(!empty($member['_tmm_sc_url'.$i])?$member['_tmm_sc_url'.$i]:'').'" title="'.(!empty($member['_tmm_sc_title'.$i])?$member['_tmm_sc_title'.$i]:'').'"><img alt="'.(!empty($member['_tmm_sc_title'.$i])?$member['_tmm_sc_title'.$i]:'').'" src="'.plugins_url('img/links/', __FILE__).$member['_tmm_sc_type'.$i].'.png"/></a>';
                       }

@@ -71,9 +71,9 @@
 	-webkit-box-shadow: 2px 0px 1px 0px rgba(0,0,0,0.05);
 	-moz-box-shadow: 2px 0px 1px 0px rgba(0,0,0,0.05);
 	box-shadow: 2px 0px 1px 0px rgba(0,0,0,0.05);
-	border-radius:60px !important;
+	border-radius: 34% !important;
 	margin-top:-30%;
-	border:6px solid #eeeeee;}
+	border:6px solid #eeeeee; }
 
 .tmm_1_columns .tmm_member .tmm_photo { 
 	width:35%; padding-bottom:35%; margin-top: -18%; }

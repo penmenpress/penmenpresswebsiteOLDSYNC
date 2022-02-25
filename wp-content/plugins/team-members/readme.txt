@@ -2,7 +2,7 @@
 Contributors: spwebguy
 Tags: team, teams, meet the team, shortcode, responsive, members, staff, people
 Requires at least: 3.6
-Tested up to: 5.6
+Tested up to: 5.8
 Stable tag: trunk
 License: GPL2
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -93,8 +93,20 @@ Find help on [our support platform](https://wpdarko.com/support) for this plugin
 6. Finding the shortcode (admin view)
 
 == Changelog ==
+= 5.1.0 =
+* Fixed photo styling issue
+* Better handling of rounded photos
+
+= 5.0.10 =
+* Fixed phone link issue
+
+= 5.0.9 =
+* Updated deprecated jQuery code
+* Fixed Instant Preview issue
+* Fixed color pickers bug
+
 = 5.0.8 =
-* Fixed styling issue with WP5.5
+* Fixed styling issue
 
 = 5.0.7 =
 *  Updated Instagram icon
@@ -106,7 +118,7 @@ Find help on [our support platform](https://wpdarko.com/support) for this plugin
 * Various styling fixes
 
 = 5.0.0 =
-* CSS rewrite to match WordPress 5.3's new admin styles
+* CSS rewrite to match WordPress' new admin styles
 * Improved Instant Preview mode
 * Improved member photo sizes (photos needs to be the same size)
 * Added Phone link for opening calling apps (Skype etc.)

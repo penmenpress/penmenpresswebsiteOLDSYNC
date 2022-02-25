@@ -3,7 +3,7 @@
  * Plugin Name: Team Members
  * Plugin URI: https://wpdarko.com/team-members
  * Description: A responsive, simple and clean way to display your team. Create new members, add their positions, bios, social links and copy-paste the shortcode into any post/page. Find help and information on our <a href="https://wpdarko.com/support">support site</a>. This free version is NOT limited and does not contain any ad. Check out the <a href='https://wpdarko.com/team-members'>PRO version</a> for more great features.
- * Version: 5.0.8
+ * Version: 5.1.0
  * Author: WP Darko
  * Author URI: https://wpdarko.com
  * Text Domain: team-members

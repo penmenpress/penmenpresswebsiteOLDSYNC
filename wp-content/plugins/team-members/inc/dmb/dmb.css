@@ -55,6 +55,7 @@
 
 .dmb_sidebar .dmb_field_title{ font-size:13px; }
 .dmb_field_title{
+  width: 100%;
   margin-top: 10px;
   margin-bottom:3px;
   color: #555;

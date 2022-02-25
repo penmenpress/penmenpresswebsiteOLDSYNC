@@ -393,7 +393,7 @@ $(document).ready(function (){
     settings.color = dmb_rgb2hex($('.dmb_color_of_team').find(".wp-color-result").css('backgroundColor')) || '#8dba09';
 
     /* Counts the members. */
-    team.memberCount = $('.dmb_main').not('.dmb_empty_row').size();
+    team.memberCount = $('.dmb_main').not('.dmb_empty_row').length;
 
     /* Prepares the output. */
     preview_html += '<div class="tmm" style="margin-top: 100px;">';
