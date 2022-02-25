@@ -23,14 +23,17 @@ if (!class_exists("rsssl_site_health")) {
 		}
 
 		public function rsssl_health_check( $tests ) {
-			if ( !RSSSL()->really_simple_ssl->dismiss_all_notices ) {
+
+			unset($tests['async']['https_status']);
+
+			if ( !RSSSL()->really_simple_ssl->dismiss_all_notices || is_multisite() && !rsssl_multisite::this()->dismiss_all_notices ) {
 
 				$tests['direct']['rsssl-health'] = array(
 					'label' => __( 'SSL Status Test' , 'really-simple-ssl'),
 					'test'  => array($this, "health_test"),
 				);
 
-				if ( RSSSL()->really_simple_ssl->ssl_enabled && RSSSL()->rsssl_server->uses_htaccess() && file_exists( RSSSL()->really_simple_ssl->htaccess_file() ) ) {
+				if ( RSSSL()->really_simple_ssl->ssl_enabled ) {
 					$tests['direct']['rsssl-headers'] = array(
 						'label' => __( 'Security Headers Test' , 'really-simple-ssl' ),
 						'test'  => array($this, "headers_test"),
@@ -52,7 +55,7 @@ if (!class_exists("rsssl_site_health")) {
 				'label'       => __( 'Recommended security headers installed', 'really-simple-ssl' ),
 				'status'      => 'good',
 				'badge'       => array(
-					'label' => 'SSL',
+					'label' => __('Security'),
 					'color' => 'blue',
 				),
 				'description' => sprintf(
@@ -70,7 +73,7 @@ if (!class_exists("rsssl_site_health")) {
 				$list = '<ul class="rsssl-sec-headers-list"><li>'.implode('</li><li>', $recommended_headers ).'</li></ul>';
 				$result['status']      = 'recommended';
 				$result['label']       = __( 'Not all recommended security headers are installed' , 'really-simple-ssl' );
-				$result['description'] = sprintf( '<p>%s</p>', __( 'Your .htaccess file does not contain all recommended security headers.', 'really-simple-ssl' ).$style.$list);
+				$result['description'] = sprintf( '<p>%s</p>', __( 'Your website does not send all recommended security headers.', 'really-simple-ssl' ).$style.$list);
 				$result['actions']     = sprintf(
 					'<p><a href="%s" target="_blank">%s</a></p>',
 					'https://really-simple-ssl.com/site-health-recommended-security-headers/',
@@ -96,7 +99,7 @@ if (!class_exists("rsssl_site_health")) {
 				'label'       => __( '301 SSL redirect enabled', 'really-simple-ssl' ),
 				'status'      => 'good',
 				'badge'       => array(
-					'label' => 'SSL',
+					'label' => __('Security'),
 					'color' => 'blue',
 				),
 				'description' => sprintf(
@@ -109,7 +112,7 @@ if (!class_exists("rsssl_site_health")) {
 
 			if (!RSSSL()->really_simple_ssl->ssl_enabled) {
 				if ( RSSSL()->really_simple_ssl->site_has_ssl ) {
-					$result['status']      = 'recommended';
+					$result['status']      = 'critical';
 					$result['label']       = __( 'SSL is not enabled.', 'really-simple-ssl' );
 					$result['description'] = sprintf(
 						'<p>%s</p>',
@@ -122,7 +125,7 @@ if (!class_exists("rsssl_site_health")) {
 						__( 'Activate SSL', 'really-simple-ssl' )
 					);
 				} else {
-					$result['status']      = 'recommended';
+					$result['status']      = 'critical';
 					$result['label']       = __( 'No SSL detected.' , 'really-simple-ssl' );
 					$result['description'] = sprintf(
 						'<p>%s</p>',
