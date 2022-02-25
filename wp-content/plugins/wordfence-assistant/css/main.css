@@ -35,3 +35,8 @@
 	max-height: 16px;
 	box-sizing: content-box;
 }
+
+.wf-assistant-checkbox {
+	display: block;
+	margin-bottom: 8px;
+}

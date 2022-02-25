@@ -14,7 +14,18 @@ class wfaWAFAutoPrependUninstaller {
 		return get_home_path() . 'php.ini'; //SiteGround and similar
 	}
 
+	public static function isPressable() {
+		return (defined('IS_ATOMIC') && IS_ATOMIC) || (defined('IS_PRESSABLE') && IS_PRESSABLE);
+	}
+
+	public static function isWpEngine() {
+		return array_key_exists('IS_WPE', $_SERVER) && $_SERVER['IS_WPE'];
+	}
+
 	public function getWAFBootstrapPath() {
+		if (self::isPressable()) {
+			return WP_CONTENT_DIR . '/wordfence-waf.php';
+		}
 		return ABSPATH . 'wordfence-waf.php';
 	}
 	
@@ -33,16 +44,12 @@ class wfaWAFAutoPrependUninstaller {
 		return ($serverInfo->isApache() && !$serverInfo->isApacheSuPHP() && ($serverInfo->isCGI() || $serverInfo->isFastCGI()));
 	}
 
-	public function uninstall($removeBootstrap = null) {
-		/** @var WP_Filesystem_Base $wp_filesystem */
+	private function initializeFilesystem() {
 		global $wp_filesystem;
-
-		$htaccessPath = $this->getHtaccessPath();
-		$userIniPath = $this->getUserIniPath();
 
 		$adminURL = admin_url('/');
 		$allow_relaxed_file_ownership = true;
-		$homePath = dirname($htaccessPath);
+		$homePath = get_home_path();
 
 		ob_start();
 		if (false === ($credentials = request_filesystem_credentials($adminURL, '', false, $homePath,
@@ -65,6 +72,16 @@ class wfaWAFAutoPrependUninstaller {
 			return false;
 		}
 		ob_end_clean();
+	}
+
+	public function uninstall($removeBootstrap = null) {
+		/** @var WP_Filesystem_Base $wp_filesystem */
+		global $wp_filesystem;
+
+		$this->initializeFilesystem();
+
+		$htaccessPath = $this->getHtaccessPath();
+		$userIniPath = $this->getUserIniPath();
 
 		if ($wp_filesystem->is_file($htaccessPath)) {
 			$htaccessContent = $wp_filesystem->get_contents($htaccessPath);
@@ -91,11 +108,21 @@ class wfaWAFAutoPrependUninstaller {
 		if ($removeBootstrap === null) {
 			$removeBootstrap = !$this->usesUserIni(); //Default to removing bootstrap file except when user.ini in use
 		}
+
+		if ($removeBootstrap)
+			$this->removeBootstrap();
 		
-		$bootstrapPath = $this->getWAFBootstrapPath();
-		if ($removeBootstrap && $wp_filesystem->is_file($bootstrapPath)) {
-			$wp_filesystem->delete($bootstrapPath);
-		}
 		return true;
+	}
+
+	public function removeBootstrap() {	
+		global $wp_filesystem;
+		$this->initializeFilesystem();
+		$bootstrapPath = $this->getWAFBootstrapPath();
+		if ($wp_filesystem->is_file($bootstrapPath)) {
+			$wp_filesystem->delete($bootstrapPath);
+			return true;
+		}
+		return false;
 	}
 }

@@ -4,10 +4,24 @@ window['wordfenceAst'] = {
 	nonce: '',
 	init: function(){
 		this.nonce = WordfenceAstVars.firstNonce; 
+		jQuery('.wf-assistant-checkbox').each(function() {
+			var checkbox = jQuery(this).find('input[type=checkbox]');
+			jQuery(this).find('label').on('click', function() {
+				checkbox.trigger('click');
+			});
+		});
 	},
 	delAll: function(){
-		if(confirm("Are you sure you want to delete all Wordfence data and tables?")){
-			this.ajax({ func: 'delAll' });
+		var delete2faSecrets = jQuery('#delete_2fa_secrets').prop('checked');
+		var message;
+		if (delete2faSecrets) {
+			message = "Are you sure you want to delete all Wordfence data and tables, including 2FA secrets?";
+		}
+		else {
+			message = "Are you sure you want to delete all Wordfence data and tables except for 2FA secrets?";
+		}
+		if(confirm(message)){
+			this.ajax({ func: 'delAll', delete2faSecrets: delete2faSecrets });
 		}
 	},
 	clearLocks: function(){
@@ -35,7 +49,7 @@ window['wordfenceAst'] = {
 		});
 	},
 	disableBlacklist: function() {
-		if(confirm("Are you sure you want to disable the Wordfence IP Blacklist?")){
+		if(confirm("Are you sure you want to disable the Wordfence IP Blocklist?")){
 			this.ajax({ func: 'disableIPBlacklist' });
 		}
 	},
