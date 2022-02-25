@@ -34,7 +34,7 @@ if (!$controls->is_action()) {
     <div id="tnp-heading">
 
         <h2><?php _e('Cancellation', 'newsletter') ?></h2>
-        <?php $controls->panel_help('https://www.thenewsletterplugin.com/documentation/cancellation') ?>
+        <?php $controls->page_help('https://www.thenewsletterplugin.com/documentation/cancellation') ?>
 
     </div>
 
@@ -51,6 +51,7 @@ if (!$controls->is_action()) {
                 <ul>
                     <li><a href="#tabs-cancellation"><?php _e('Cancellation', 'newsletter') ?></a></li>
                     <li><a href="#tabs-reactivation"><?php _e('Reactivation', 'newsletter') ?></a></li>
+                    <li><a href="#tabs-advanced"><?php _e('Advanced', 'newsletter') ?></a></li>
                 </ul>
                 
                 <div id="tabs-cancellation">
@@ -59,8 +60,6 @@ if (!$controls->is_action()) {
                             <th><?php _e('Cancellation message', 'newsletter') ?></th>
                             <td>
                                 <?php $controls->wp_editor('unsubscribe_text', array('editor_height' => 250)); ?>
-                                <p class="description">
-                                </p>
                             </td>
                         </tr>
 
@@ -68,8 +67,6 @@ if (!$controls->is_action()) {
                             <th><?php _e('Goodbye message', 'newsletter') ?></th>
                             <td>
                                 <?php $controls->wp_editor('unsubscribed_text', array('editor_height' => 250)); ?>
-                                <p class="description">
-                                </p>
                             </td>
                         </tr>
 
@@ -77,9 +74,6 @@ if (!$controls->is_action()) {
                             <th><?php _e('Goodbye email', 'newsletter') ?></th>
                             <td>
                                 <?php $controls->email('unsubscribed', 'wordpress', $is_all_languages, array('editor_height' => 250)); ?>
-                                <p class="description">
-
-                                </p>
                             </td>
                         </tr>
                         
@@ -87,15 +81,25 @@ if (!$controls->is_action()) {
                             <th><?php _e('On error', 'newsletter') ?></th>
                             <td>
                                 <?php $controls->wp_editor('error_text', array('editor_height' => 150)); ?>
-                                <p class="description">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
+                <div id="tabs-reactivation">
+                    <table class="form-table">
+                        <tr>
+                            <th><?php _e('Reactivated message', 'newsletter') ?></th>
+                            <td>
+                                <?php $controls->wp_editor('reactivated_text', array('editor_height' => 250)); ?>
+                                <p class="description">
                                 </p>
                             </td>
                         </tr>
                     </table>
-                    
-                    <h3><?php _e('Advanced', 'newsletter')?></h3>
-                    
+                </div>
+                
+                <div id="tabs-advanced">
                     <?php if ($is_all_languages) { ?>
                     <table class="form-table">
                     <tr>
@@ -127,19 +131,7 @@ if (!$controls->is_action()) {
                        
                     <?php } ?>
                 </div>
-
-                <div id="tabs-reactivation">
-                    <table class="form-table">
-                        <tr>
-                            <th><?php _e('Reactivated message', 'newsletter') ?></th>
-                            <td>
-                                <?php $controls->wp_editor('reactivated_text', array('editor_height' => 250)); ?>
-                                <p class="description">
-                                </p>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                
             </div>
 
             <p>

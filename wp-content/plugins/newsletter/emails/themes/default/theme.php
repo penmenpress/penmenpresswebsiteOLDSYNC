@@ -37,7 +37,9 @@ if (isset($theme_options['theme_posts'])) {
     }
 
     if (!empty($theme_options['theme_tags'])) {
-        $filters['tag'] = $theme_options['theme_tags'];
+        $tags = explode(',', $theme_options['theme_tags']);
+        $tags = array_unique(array_map('sanitize_title', $tags));
+        $filters['tag'] = $tags;
     }
 
     if (!empty($theme_options['theme_post_types'])) {
@@ -60,6 +62,12 @@ if (isset($theme_options['theme_posts'])) {
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style type="text/css">
+        * {
+            line-height: normal;
+        }
+        h1, h2, h3, h4, h5 {
+            line-height: normal;
+        }
         a {
             text-decoration: none;
             color: <?php echo $color; ?>;

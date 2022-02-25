@@ -99,9 +99,10 @@ if (empty($page_exists)) {
     $logger->info('Dedicated page already exists');
 }
 ?>
-
-<script src="<?php echo plugins_url('newsletter') ?>/main/js/snap.svg-min.js"></script>
-<script src="<?php echo plugins_url('newsletter') ?>/main/js/main.js"></script>
+<style>
+    <?php include __DIR__ . '/css/welcome.css' ?>
+</style>
+<script src="<?php echo plugins_url('newsletter') ?>/main/js/welcome.js"></script>
 <script>
     // Email test
     function tnp_welcome_test() {
@@ -125,7 +126,7 @@ if (empty($page_exists)) {
             <ul class="cd-slider">
                 <li class="tnp-first-slide visible">
                     <div>
-                        <img class="tnp-logo-big" src="<?php echo plugins_url('newsletter') ?>/images/tnp-logo-colore-text-white@2x.png">
+                        <img class="tnp-logo-big" src="<?php echo plugins_url('newsletter') ?>/admin/images/logo-white.png">
                         <p><?php _e('Welcome to The Newsletter Plugin and thank your for choosing the best mail management system for Wordpress!', 'newsletter'); ?><br><br> 
                             <?php _e('In this short tutorial we will guide you through some of the basic settings to get the most out of our plugin. ', 'newsletter'); ?></p>
                     </div>

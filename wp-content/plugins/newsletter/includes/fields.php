@@ -1,8 +1,8 @@
 <?php
 
 class NewsletterFields {
-
     /* @var NewsletterControls */
+
     var $controls;
 
     public function __construct(NewsletterControls $controls) {
@@ -10,7 +10,7 @@ class NewsletterFields {
     }
 
     public function _open($subclass = '') {
-        echo '<div class="tnp-field ', $subclass, '">';
+        echo '<div class="tnpf-field ', $subclass, '">';
     }
 
     public function _close() {
@@ -22,7 +22,7 @@ class NewsletterFields {
             return;
         }
         // Do not escape, HTML allowed
-        echo '<label class="tnp-label">', $text, '</label>';
+        echo '<label class="tnpf-label">', $text, '</label>';
     }
 
     public function _description($attrs) {
@@ -30,7 +30,7 @@ class NewsletterFields {
             return;
         }
         // Do not escape, HTML allowed
-        echo '<div class="tnp-description">', $attrs['description'], '</div>';
+        echo '<div class="tnpf-description">', $attrs['description'], '</div>';
     }
 
     public function _id($name) {
@@ -43,7 +43,7 @@ class NewsletterFields {
 
     /**
      * Adds some empty basic atributes to avoid the isset() checking.
-     * 
+     *
      * @param array $attrs
      * @return array
      */
@@ -52,7 +52,7 @@ class NewsletterFields {
     }
 
     /** Adds some basic attributes and the provided default ones.
-     * 
+     *
      * @param array $attrs
      * @param array $defaults
      * @return array
@@ -63,28 +63,28 @@ class NewsletterFields {
 
     /**
      * A form section title.
-     * 
+     *
      * @param string $title
      */
     public function section($title = '') {
         // Do not escape, HTML allowed
-        echo '<h3 class="tnp-section">', $title, '</h3>';
+        echo '<div class="tnpf-section">', $title, '</div>';
     }
 
     public function separator() {
-        echo '<div class="tnp-field tnp-separator"></div>';
+        echo '<div class="tnpf-separator"></div>';
     }
 
     public function checkbox($name, $label = '', $attrs = []) {
         $attrs = $this->_merge_base_attrs($attrs);
-        $this->_open('tnp-checkbox');
+        $this->_open('tnpf-checkbox');
         $this->controls->checkbox($name, $label);
         $this->_description($attrs);
         $this->_close();
     }
 
-    /** General Input field with default type = text 
-     * 
+    /** General Input field with default type = text
+     *
      * Attributes:
      * - label_after (default: none): small text ti be displayed after the text field
      * - min (default: none): minimum number of characters
@@ -126,6 +126,41 @@ class NewsletterFields {
         $this->input($name, $label, $attrs);
     }
 
+    public function text_on_off($name, $label = '', $attrs = []) {
+        $attrs = $this->_merge_attrs($attrs, ['placeholder' => '', 'size' => 0, 'label_after' => '', 'type' => 'text']);
+        $this->_open();
+        $this->_label($label);
+        $value = $this->controls->get_value($name);
+
+        echo '<input type="hidden" name="tnp_fields[' . esc_attr($name . '_enabled') . ']" value="checkbox">';
+        echo '<input id="', $this->_id($name . '_enabled'), '" name="', $this->_name($name . '_enabled'), '" type="checkbox" value="1"';
+        if (!empty($this->controls->get_value($name . '_enabled'))) {
+            echo ' checked';
+        }
+        echo '>&nbsp;';
+        
+        echo '<input id="', $this->_id($name), '" placeholder="', esc_attr($attrs['placeholder']), '" name="', $this->_name($name), '" type="text"';
+
+        echo ' style="width: 90%;"';
+
+        if (isset($attrs['min'])) {
+            echo ' min="' . (int) $attrs['min'] . '"';
+        }
+
+        if (isset($attrs['max'])) {
+            echo ' max="' . (int) $attrs['max'] . '"';
+        }
+
+        echo ' value="', esc_attr($value), '">';
+
+        if (!empty($attrs['label_after'])) {
+            echo $attrs['label_after'];
+        }
+
+        $this->_description($attrs);
+        $this->_close();
+    }
+
     public function number($name, $label = '', $attrs = []) {
         $attrs = array_merge(['type' => 'number'], $attrs);
         $this->input($name, $label, $attrs);
@@ -133,10 +168,10 @@ class NewsletterFields {
 
     /**
      * A set of text fields, named $name_1, $name_2, ...
-     * 
+     *
      * Attributes:
      * - label_after: a label to show after the field column
-     * 
+     *
      * @param type $name
      * @param type $label
      * @param type $count
@@ -163,10 +198,10 @@ class NewsletterFields {
     }
 
     public function textarea($name, $label = '', $attrs = []) {
-        $attrs = $this->_merge_attrs($attrs);
+        $attrs = $this->_merge_attrs($attrs, ['width' => '100%', 'height' => '150']);
         $this->_open();
         $this->_label($label);
-        $this->controls->textarea_fixed($name, '100%', '150');
+        $this->controls->textarea_fixed($name, $attrs['width'], $attrs['height']);
         $this->_description($attrs);
         $this->_close();
     }
@@ -192,8 +227,14 @@ class NewsletterFields {
         echo '</textarea>';
 
         if (version_compare($wp_version, '4.8', '>=')) {
-            echo '<script>wp.editor.remove("options-', $name, '");';
-            echo 'wp.editor.initialize("options-', $name, '", { tinymce: {content_style: "body {background-color: #f4f4f4;}", toolbar1: "undo redo | formatselect fontselect fontsizeselect | bold italic forecolor backcolor | link unlink | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | wp_add_media | charmap | rtl ltr", fontsize_formats: "11px 12px 14px 16px 18px 24px 36px 48px", plugins: "link textcolor colorpicker lists wordpress charmap directionality", default_link_target: "_blank", relative_urls : false, convert_urls: false}});</script>';
+
+            $paragraph_style = " p { font-family: ${attrs['text_font_family']}; font-size: ${attrs['text_font_size']}px; font-weight: ${attrs['text_font_weight']}; color: ${attrs['text_font_color']}; line-height: 1.5em; }";
+            $content_style = $paragraph_style;
+
+            echo '<script>';
+            echo 'wp.editor.remove("options-', $name, '");';
+            echo 'wp.editor.initialize("options-', $name, '", { tinymce: {content_style: "' . $content_style . '", toolbar1: "undo redo | formatselect fontselect fontsizeselect | bold italic forecolor backcolor | link unlink | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | wp_add_media | charmap | rtl ltr", fontsize_formats: "11px 12px 14px 16px 18px 24px 36px 48px", plugins: "link textcolor colorpicker lists wordpress charmap directionality", default_link_target: "_blank", relative_urls : false, convert_urls: false, keep_styles: true }});';
+            echo '</script>';
         }
         $this->_description($attrs);
         $this->_close();
@@ -202,19 +243,22 @@ class NewsletterFields {
     /**
      * Attributes:
      * - realod: when true is forces a submit of the form (used to change the form fields or values for example when changing layout or color scheme)
-     * 
+     *
      * @param type $name
      * @param type $label
      * @param type $options
      * @param type $attrs
      */
     public function select($name, $label = '', $options = [], $attrs = []) {
-        $attrs = $this->_merge_attrs($attrs, ['reload' => false, 'after-rendering' => '']);
+        $attrs = $this->_merge_attrs($attrs, ['reload' => false, 'after-rendering' => '', 'class' => '']);
         $this->_open();
         $this->_label($label);
         $value = $this->controls->get_value($name);
 
         echo '<select id="', $this->_id($name), '" name="', $this->_name($name), '"';
+        if ($attrs['class']) {
+            echo ' class="', esc_attr($attrs['class']), '"';
+        }
         if ($attrs['reload']) {
             echo ' onchange="tnpc_reload_options(event)"';
         }
@@ -239,16 +283,38 @@ class NewsletterFields {
         $this->_close();
     }
 
+    public function align($name = 'align') {
+        $this->select($name,
+                __('Align', 'newsletter'),
+                ['center' => __('Center', 'newsletter'), 'left' => __('Left', 'newsletter'), 'right' => __('Right')]
+        );
+    }
+
     public function yesno($name, $label = '', $attrs = []) {
         $attrs = $this->_merge_attrs($attrs);
         $this->_open();
         $this->_label($label);
-        $this->controls->yesno($name);
+        
+        $value = isset($this->controls->data[$name]) ? (int) $this->controls->data[$name] : 0;
+
+        echo '<select style="width: 60px" name="options[', esc_attr($name), ']">';
+        echo '<option value="0"';
+        if ($value == 0) {
+            echo ' selected';
+        }
+        echo '>', __('No', 'newsletter'), '</option>';
+        echo '<option value="1"';
+        if ($value == 1) {
+            echo ' selected';
+        }
+        echo '>', __('Yes', 'newsletter'), '</option>';
+        echo '</select>';
+        
         $this->_description($attrs);
         $this->_close();
     }
 
-    public function select_number($name, $label = '', $min, $max, $attrs = []) {
+    public function select_number($name, $label = '', $min = 0, $max = 10, $attrs = []) {
         $attrs = $this->_merge_attrs($attrs);
         $this->_open();
         $this->_label($label);
@@ -257,15 +323,15 @@ class NewsletterFields {
         $this->_close();
     }
 
-    /** 
+    /**
      * General field to collect an element dimension in pixels
-     *  
+     *
      * Attributes:
      * - size: field width in pixels
      */
     public function size($name, $label = '', $attrs = []) {
         $attrs = $this->_merge_attrs($attrs, ['description' => '', 'placeholder' => '', 'size' => 0, 'label_after' => 'px']);
-        $this->_open('tnp-size');
+        $this->_open('tnpf-size');
         $this->_label($label);
         $value = $this->controls->get_value($name);
         echo '<input id="', $this->_id($name), '" placeholder="', esc_attr($attrs['placeholder']), '" name="', $this->_name($name), '" type="text"';
@@ -277,8 +343,8 @@ class NewsletterFields {
         $this->_close();
     }
 
-    /** 
-     * Collects a color in HEX format with a picker. 
+    /**
+     * Collects a color in HEX format with a picker.
      */
     public function color($name, $label, $attrs = []) {
         $this->_open('tnp-color');
@@ -288,17 +354,27 @@ class NewsletterFields {
         $this->_close();
     }
 
-    /** 
+    /**
      * Configuration for a simple button with label and color
-     *  
+     *
      * Attributes:
      * - weight: if true (default) shows the font weight selector
      * - url_paceholder: the placeholder for the URL field
      * - url: if true (default) shows the URL field (sometime the URL is produced elsewhere, for example on post list)
      */
     public function button($name, $label = '', $attrs = []) {
-        $attrs = $this->_merge_attrs($attrs, ['placeholder' => 'Label...', 'url_placeholder' => 'https://...', 'url' => true, 'weight' => true]);
-        $this->_open('tnp-button');
+        $attrs = $this->_merge_attrs($attrs,
+                [
+                    'placeholder' => 'Label...',
+                    'url_placeholder' => 'https://...',
+                    'url' => true,
+                    'weight' => true,
+                    'family_default' => false,
+                    'size_default' => false,
+                    'weight_default' => false,
+        ]);
+
+        $this->_open('tnpf-button');
         $this->_label($label);
         $value = $this->controls->get_value($name . '_label');
         $name_esc = esc_attr($name);
@@ -312,20 +388,38 @@ class NewsletterFields {
         if ($attrs['url']) {
             $value = $this->controls->get_value($name . '_url');
             echo '<div class="tnp-field-col-2">';
+            $width = isset($attrs['media']) ? '90%' : '100%';
             echo '<input id="', $this->_id($name . '_url'), '" placeholder="', esc_attr($attrs['url_placeholder']), '" name="options[',
-            $name_esc, '_url]" type="url" style="width: 100%" value="', esc_attr($value), '">';
+            $name_esc, '_url]" type="url" style="width: ', $width, '" value="', esc_attr($value), '">';
+            if (isset($attrs['media'])) {
+                echo '&nbsp;<i class="far fa-folder-open" data-field="', $this->_id($name . '_url'), '" onclick="tnp_fields_url_select(this)"></i>';
+            }
             echo '</div>';
         }
         echo '<div style="clear: both"></div>';
         echo '</div>';
-        $this->controls->css_font($name . '_font', ['weight' => $attrs['weight']]);
+        $this->controls->css_font($name . '_font', [
+            'weight' => $attrs['weight'],
+            'family_default' => $attrs['family_default'],
+            'size_default' => $attrs['size_default'],
+            'weight_default' => $attrs['weight_default']
+        ]);
         $this->controls->color($name . '_background');
+        $this->_close();
+    }
+
+    public function button_style($name, $label = '') {
+
+        $this->_open('tnp-font');
+        $this->_label($label);
+        $this->controls->css_font($name . '_font');
+        $this->controls->color($name . '_background_color');
         $this->_close();
     }
 
     /**
      * URL input field
-     * 
+     *
      * @param string $name
      * @param string $label
      * @param array $attrs
@@ -335,13 +429,16 @@ class NewsletterFields {
         $this->_open('tnp-url');
         $this->_label($label);
         $this->controls->text_url($name);
+        if (isset($attrs['media'])) {
+            echo '<i class="far fa-folder-open" onclick="tnp_fields_url_select(\'options_', $name, '\')"></i>';
+        }
         $this->_description($attrs);
         $this->_close();
     }
 
     /**
      * Provides a list of custom post types.
-     * 
+     *
      * @param string $name
      * @param string $label
      * @param array $attrs
@@ -354,13 +451,15 @@ class NewsletterFields {
         $this->_open('tnp-post-type');
         $this->_label($label);
 
-        $options = ['post' => 'Standard post'];
+        $options = ['post' => 'Standard posts', 'page' => 'Pages'];
+
         foreach ($post_types as $post_type) {
             if ($post_type->name == 'post' || $post_type->name == 'page' || $post_type->name == 'attachment') {
                 continue;
             }
             $options[$post_type->name] = $post_type->labels->name;
         }
+
         $value = $this->controls->get_value($name);
 
         echo '<select id="', $this->_id($name), '" name="options[' . esc_attr($name) . ']" onchange="tnpc_reload_options(event); return false;">';
@@ -416,10 +515,10 @@ class NewsletterFields {
     }
 
     function lists($name, $label, $attrs = []) {
-        $attrs = $this->_merge_attrs($attrs);
+        $attrs = $this->_merge_attrs($attrs, ['empty_label' => null]);
         $this->_open();
         $this->_label($label);
-        $lists = $this->controls->get_list_options($empty_label);
+        $lists = $this->controls->get_list_options($attrs['empty_label']);
         $this->controls->select($name, $lists);
         $this->_description($attrs);
         $this->_close();
@@ -428,24 +527,46 @@ class NewsletterFields {
     /**
      * Media selector using the WP media library (for images and files.
      * The field to use it the {$name}_id which contains the media id.
-     * 
+     *
      * Attributes:
      * - alt: if true shows the alternate text field for the "alt" attribute
+     * - layout: if set to "mini" the controls is shown as a mini selector, no labels
      *
      * @param string $name
      * @param string $label
      * @param array $attrs
      */
     public function media($name, $label = '', $attrs = []) {
-        $attrs = $this->_merge_attrs($attrs, ['alt' => false]);
-        $this->_open('tnp-media');
-        $this->_label($label);
-        $this->controls->media($name);
-        if ($attrs['alt']) {
-            $this->controls->text($name . '_alt', 20, 'Alternative text');
+        $attrs = $this->_merge_attrs($attrs, ['alt' => false, 'layout' => '']);
+
+        if (empty($attrs['layout'])) {
+            $this->_open('tnp-media');
+            $this->_label($label);
+            $this->controls->media($name);
+            if ($attrs['alt']) {
+                $this->controls->text($name . '_alt', 20, 'Alternative text');
+            }
+            $this->_description($attrs);
+            $this->_close();
+        } else {
+            if (isset($this->controls->data[$name]['id'])) {
+                $media_id = (int) $this->controls->data[$name]['id'];
+                $media = wp_get_attachment_image_src($media_id, 'thumbnail');
+            } else {
+                $media = false;
+                $media_id = 0;
+            }
+            echo '<div class="tnpf-media-mini-select" data-name="' . esc_attr($name) . '" style="width: 100px; height: 100px; overflow: hidden; border: 1px dashed #999; position: relative" onclick="tnp_fields_media_mini_select(this)">';
+            echo '<a style="position: absolute; top: 5px; right: 5px; background-color: #000; color: #fff; padding: 0px 5px 6px 5px; font-size: 24px; display: block; text-decoration: none" href="#" onclick="tnp_fields_media_mini_remove(\'' . esc_attr($name) . '\'); return false;">&times;</a>';
+            if ($media) {
+                echo '<img style="max-width: 100%; height: auto; display: block" id="' . esc_attr($name) . '_img" src="' . esc_attr($media[0]) . '">';
+            } else {
+                echo '<img style="max-width: 100%; height: auto; display: block" id="' . esc_attr($name) . '_img" src="">';
+            }
+
+            echo '</div>';
+            echo '<input type="hidden" id="' . esc_attr($name) . '_id" name="options[' . esc_attr($name) . '][id]" value="' . esc_attr($media_id) . '">';
         }
-        $this->_description($attrs);
-        $this->_close();
     }
 
     public function categories($name = 'categories', $label = '', $attrs = []) {
@@ -502,7 +623,7 @@ class NewsletterFields {
 
     /**
      * Shows a language selector only if the blog is multilanguage.
-     * 
+     *
      * @param string $name
      * @param string $label
      * @param array $attrs
@@ -525,20 +646,46 @@ class NewsletterFields {
     /**
      * Collects font details for a text: family, color, size and weight to be used
      * directly on CSS rules. Size is a pure number.
-     * 
+     *
      * Attributes:
+     * - family: true|false enable or not the font family field
+     * - family_default: true|false enables the default entry with an empty key value
+     * - color: true|false enable or not the color field
+     * - weight: true|false enable or not the weight field
+     * - size: true|false enable or not the size selection
      *
      * @param type $name
      * @param type $label
-     * @param type $attrs
+     * @param array $attrs
      */
     public function font($name = 'font', $label = 'Font', $attrs = []) {
         $attrs = $this->_merge_base_attrs($attrs);
-        $attrs = array_merge(array('hide_family' => false, 'hide_color' => false, 'hide_size' => false), $attrs);
+        $attrs = array_merge([
+            'hide_family' => false,
+            'family' => true,
+            'color' => true,
+            'size' => true,
+            'weight' => true,
+            'family_default' => false,
+            'size_default' => false,
+            'weight_default' => false,
+                ], $attrs);
 
         $this->_open('tnp-font');
         $this->_label($label);
-        $this->controls->css_font($name);
+
+        $this->controls->css_font_family($name . '_family', !empty($attrs['family_default']));
+
+        if ($attrs['size']) {
+            $this->controls->css_font_size($name . '_size', !empty($attrs['size_default']));
+        }
+        if ($attrs['weight']) {
+            $this->controls->css_font_weight($name . '_weight', !empty($attrs['weight_default']));
+        }
+        if ($attrs['color']) {
+            $this->controls->color($name . '_color');
+        }
+
         $this->_description($attrs);
         $this->_close();
     }
@@ -595,7 +742,6 @@ class NewsletterFields {
     }
 
     public function block_commons() {
-        $this->separator();
 
         $this->_open('tnp-block-commons');
         $this->_label('Padding and background');

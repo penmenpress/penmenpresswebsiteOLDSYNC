@@ -1,4 +1,5 @@
 <?php
+
 defined('ABSPATH') || exit;
 
 if (!defined('NEWSLETTER_LOG_DIR')) {
@@ -16,13 +17,19 @@ class NewsletterLogger {
     var $level;
     var $module;
     var $file;
+    var $is_debug = false;
 
     function __construct($module) {
         $this->module = $module;
-        if (defined('NEWSLETTER_LOG_LEVEL')) $this->level = NEWSLETTER_LOG_LEVEL;
-        else $this->level = get_option('newsletter_log_level', self::ERROR);
+        if (defined('NEWSLETTER_LOG_LEVEL')) {
+            $this->level = NEWSLETTER_LOG_LEVEL;
+        } else {
+            $this->level = (int) get_option('newsletter_log_level', self::ERROR);
+        }
 
-        $secret = get_option('newsletter_logger_secret');
+        $this->is_debug = $this->level == self::DEBUG;
+
+        $secret = get_option('newsletter_logger_secret', '');
         if (strlen($secret) < 8) {
             $secret = NewsletterModule::get_token(8);
             update_option('newsletter_logger_secret', $secret);
@@ -42,13 +49,17 @@ class NewsletterLogger {
      */
     function log($text, $level = self::ERROR) {
         global $current_user;
-        
-        if ($level != self::FATAL && $this->level < $level) return;
-        
-        if ($current_user) {
-            $user_id = $current_user->ID;
+
+        if ($level != self::FATAL && $this->level < $level) {
+            return;
+        }
+
+        if (defined('DOING_CRON') && DOING_CRON) {
+            $user = '[cron]';
+        } else if ($current_user) {
+            $user = $current_user->user_login;
         } else {
-            $user_id = 0;
+            $user = '[no user]';
         }
 
         $time = date('d-m-Y H:i:s ');
@@ -66,11 +77,15 @@ class NewsletterLogger {
             /* @var $text WP_Error */
             $text = $text->get_error_message() . ' (' . $text->get_error_code() . ') - ' . print_r($text->get_error_data(), true);
         } else {
-            if (is_array($text) || is_object($text)) $text = print_r($text, true);
+            if (is_array($text) || is_object($text)) {
+                $text = print_r($text, true);
+            }
         }
-        
+
+        $memory_limit = size_format(wp_convert_hr_to_bytes(ini_get('memory_limit')));
+
         // The "logs" dir is created on Newsletter constructor.
-        $res = @file_put_contents($this->file, $time . ' - v: ' . NEWSLETTER_VERSION . ' - m: ' . size_format(memory_get_usage(), 1) . ', u: ' . $user_id . ' - ' . $text . "\n", FILE_APPEND | FILE_TEXT);
+        $res = @file_put_contents($this->file, $time . ' - ' . NEWSLETTER_VERSION . ' - ' . size_format(memory_get_usage(), 1) . '/' . $memory_limit . ' - ' . $user . ' > ' . $text . "\n", FILE_APPEND | FILE_TEXT);
         if ($res === false) {
             //$this->level = self::NONE;
         }

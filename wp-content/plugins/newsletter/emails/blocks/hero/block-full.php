@@ -1,58 +1,58 @@
 <style>
     /* Styles which will be removed and injected in the replacing the matching "inline-class" attribute */
     .title {
-        font-size: <?php echo $title_font_size ?>px;
-        color: <?php echo $title_font_color ?>;
-        font-family: <?php echo $title_font_family ?>;
-        font-weight: <?php echo $title_font_weight ?>;
+        font-family: <?php echo $title_style->font_family ?>;
+        font-size: <?php echo $title_style->font_size ?>px;
+        font-weight: <?php echo $title_style->font_weight ?>;
+        color: <?php echo $title_style->font_color ?>;
         line-height: normal;
         margin: 0;
     }
+
     .text {
+        font-family: <?php echo $text_style->font_family ?>;
+        font-size: <?php echo $text_style->font_size ?>px;
+        font-weight: <?php echo $text_style->font_weight ?>;
+        color: <?php echo $text_style->font_color ?>;
         padding: 20px 0 0 0;
-        font-size: <?php echo $font_size ?>px;
-        line-height: 150%;
-        color: <?php echo $font_color ?>;
-        font-family: <?php echo $font_family ?>;
+        line-height: 1.5em;
         margin: 0;
     }
+
     .image {
-        max-width: 100%!important;
-        display: inline-block;
-        border: 0px;
-        margin: 0;
+        padding-bottom: 20px;
     }
-    .image-a {
-        display: block;
+
+    .button {
+        padding-top: 15px;
     }
+
 </style>
 
-<!-- layout: full -->
-
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" class="responsive" border="0" cellspacing="0" cellpadding="0">
     <?php if ($media) { ?>
         <tr>
-            <td class="padding-copy tnpc-row-edit" align="center" style="text-align: center; line-height: 0; padding-bottom: 20px;">
-	            <?php echo TNP_Composer::image( $media, [ 'class' => 'image', 'link-class' => 'image-a' ] ); ?>
+            <td align="center" inline-class="image">
+                <?php echo TNP_Composer::image($media); ?>
             </td>
         </tr>
     <?php } ?>
 
     <tr>
         <td align="center" inline-class="title">
-            <span><?php echo $options['title'] ?></span>
-        </td>
-    </tr>
-    <tr>
-        <td align="center" inline-class="text">
-            <span><?php echo $options['text'] ?></span>
+            <?php echo $options['title'] ?>
         </td>
     </tr>
 
     <tr>
-        <td align="center">
-            <br>
-            <?php echo tnpc_button($options) ?>
+        <td align="center" inline-class="text">
+            <?php echo $options['text'] ?>
+        </td>
+    </tr>
+
+    <tr>
+        <td align="center" inline-class="button">
+            <?php echo TNP_Composer::button($button_options) ?>
         </td>
     </tr>
 </table>

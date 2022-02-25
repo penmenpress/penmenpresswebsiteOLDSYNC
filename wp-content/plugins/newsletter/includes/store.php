@@ -34,7 +34,7 @@ class NewsletterStore {
     function get_field($table, $id, $field_name) {
         global $wpdb;
         $field_name = (string)$field_name;
-        if (preg_match('/^[a-zA-Z_]+$/', $field_name) == 0) {
+        if (preg_match('/^[a-zA-Z0-9_]+$/', $field_name) == 0) {
             $this->logger->fatal('Invalis field name: ' . $field_name);
             return false;
         }
@@ -57,8 +57,7 @@ class NewsletterStore {
         global $wpdb;
         $field_name = (string)$field_name;
         $field_value = (string)$field_value;
-        
-        if (preg_match('/^[a-zA-Z_]+$/', $field_name) == 0) {
+        if (preg_match('/^[a-zA-Z0-9_]+$/', $field_name) == 0) {
             $this->logger->error('Invalis field name: ' . $field_name);
             return false;
         }
@@ -134,6 +133,7 @@ class NewsletterStore {
                 if ($r === false) {
                     $this->logger->fatal($wpdb->last_error);
                     $this->logger->fatal($wpdb->last_query);
+                    $this->logger->debug($data);
                     die('Database error. If you were saving a newsletter try a table upgrade from the status panel.');
                 }
             }
@@ -143,6 +143,7 @@ class NewsletterStore {
             if ($r === false) {
                 $this->logger->fatal($wpdb->last_error);
                 $this->logger->fatal($wpdb->last_query);
+                $this->logger->debug($data);
                 die('Database error. If you were saving a newsletter try a table upgrade from the status panel.');
             }
             $id = $wpdb->insert_id;
@@ -160,7 +161,7 @@ class NewsletterStore {
         $id = (int)$id;
         $field = (string)$field;
         
-        if (preg_match('/^[a-zA-Z_]+$/', $field) == 0) {
+        if (preg_match('/^[a-zA-Z0-9_]+$/', $field) == 0) {
             $this->logger->error('Invalis field name: ' . $field);
             return false;
         }
@@ -222,7 +223,7 @@ class NewsletterStore {
         $id = (int)$id;
         $value = (string)$value;
         
-        if (preg_match('/^[a-zA-Z_]+$/', $field) == 0) {
+        if (preg_match('/^[a-zA-Z0-9_]+$/', $field) == 0) {
             $this->logger->error('Invalis field name: ' . $field_name);
             return false;
         }

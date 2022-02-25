@@ -109,6 +109,21 @@ if ($controls->is_action('create')) {
     $controls->data['id'] = $theme_id;
 }
 ?>
+<style>
+#tnp-body .tnp-emails-theme-options {
+    background-color: #fff;
+    padding: 10px;
+    margin-top: 14px;
+}
+
+#tnp-body .tnp-emails-theme-options table.form-table {
+    margin: 0;
+}
+
+#tnp-body .tnp-emails-theme-options h3 {
+    color: #000;
+}
+</style>
 
 <div class="wrap tnp-emails tnp-emails-new" id="tnp-wrap">
 
@@ -137,7 +152,7 @@ if ($controls->is_action('create')) {
                     </td>
                     <td style="text-align: left; vertical-align: top; border-bottom: 1px solid #ddd; padding-bottom: 10px">
                         <div style="float: right"><?php $controls->button_primary('create', 'Proceed to edit &raquo;', 'this.form.action=\'' . home_url('/', is_ssl() ? 'https' : 'http') . '?na=emails-create\';this.form.submit()'); ?></div>
-                        <img style="position: relative; left: 5px; top: 10px;"src="<?php echo plugins_url('newsletter') ?>/images/arrow.png" height="35">
+                        <img style="position: relative; left: 5px; top: 10px;"src="<?php echo plugins_url('newsletter') ?>/emails/images/arrow.png" height="35">
                     </td>
                 </tr>
                 <tr>

@@ -11,16 +11,28 @@ require_once __DIR__ . '/themes.php';
 
 class TNP_Media {
 
+    var $id;
     var $url;
     var $width;
     var $height;
     var $alt;
     var $link;
+    var $align = 'center';
 
     /** Sets the width recalculating the height */
     public function set_width($width) {
-        $this->height = floor($width / $this->width * $this->height);
+        $width = (int)$width;
+        if (empty($width)) return;
+        if ($this->width < $width) return;
+        $this->height = floor(($width / $this->width) * $this->height);
         $this->width = $width;
+    }
+
+    /** Sets the height recalculating the width */
+    public function set_height($height) {
+        $height = (int) $height;
+        $this->width = floor(($height / $this->height) * $this->width);
+        $this->height = $height;
     }
 
 }
@@ -250,6 +262,21 @@ class TNP_Subscription_Data {
         }
     }
 
+    /** Sets to active a set of lists. Accepts incorrect data (and ignores it).
+     * 
+     * @param array $list_ids Array of list IDs
+     */
+    function add_lists($list_ids) {
+        if (empty($list_ids) || !is_array($list_ids))
+            return;
+        foreach ($list_ids as $list_id) {
+            $list_id = (int) $list_id;
+            if ($list_id < 0 || $list_id > NEWSLETTER_LIST_MAX)
+                continue;
+            $this->lists[$list_id] = 1;
+        }
+    }
+
 }
 
 /**
@@ -262,7 +289,7 @@ class TNP_Subscription {
     const EXISTING_MERGE = 0;
 
     /**
-     * Subscriber data following the syntax of the TNP_User
+     * Subscriber's data following the syntax of the TNP_User
      * @var TNP_Subscription_Data
      */
     var $data;
@@ -283,6 +310,14 @@ class TNP_Subscription {
     public function __construct() {
         $this->data = new TNP_Subscription_Data();
     }
+    
+    public function is_single_optin() {
+        return $this->optin == 'single';
+    }
+    
+    public function is_double_optin() {
+        return $this->optin == 'double';
+    }
 
 }
 
@@ -294,6 +329,7 @@ class TNP_Subscription {
  * @property string $status The subscriber status
  * @property string $language The subscriber language code 2 chars lowercase
  * @property string $token The subscriber secret token
+ * @property string $country The subscriber country code 2 chars uppercase
  */
 class TNP_User {
 
@@ -301,22 +337,47 @@ class TNP_User {
     const STATUS_NOT_CONFIRMED = 'S';
     const STATUS_UNSUBSCRIBED = 'U';
     const STATUS_BOUNCED = 'B';
+    const STATUS_COMPLAINED = 'P';
+    
+    var $ip = '';
+
+    public static function get_status_label($status) {
+        switch ($status) {
+            case self::STATUS_NOT_CONFIRMED: return __('NOT CONFIRMED', 'newsletter');
+                break;
+            case self::STATUS_CONFIRMED: return __('CONFIRMED', 'newsletter');
+                break;
+            case self::STATUS_UNSUBSCRIBED: return __('UNSUBSCRIBED', 'newsletter');
+                break;
+            case self::STATUS_BOUNCED: return __('BOUNCED', 'newsletter');
+                break;
+            case self::STATUS_COMPLAINED: return __('COMPLAINED', 'newsletter');
+                break;
+            default:
+                return __('Unknown', 'newsletter');
+        }
+    }
 
 }
 
 /**
- * @property int $id The subscriber unique identifier
- * @property string $subject The subscriber email
- * @property string $message The subscriber name or first name
- * @property string $track The subscriber last name
- * @property array $options The subscriber status
+ * @property int $id The email unique identifier
+ * @property string $subject The email subject
+ * @property string $message The email html message
+ * @property int $track Check if the email stats should be active
+ * @property array $options Email options
+ * @property int $total Total emails to send
+ * @property int $sent Total sent emails by now
+ * @property int $open_count Total opened emails
+ * @property int $click_count Total clicked emails
  * */
-abstract class TNP_Email {
+class TNP_Email {
 
     const STATUS_DRAFT = 'new';
     const STATUS_SENT = 'sent';
     const STATUS_SENDING = 'sending';
     const STATUS_PAUSED = 'paused';
+    const STATUS_ERROR = 'error';
 
 }
 
@@ -326,6 +387,11 @@ class NewsletterModule {
      * @var NewsletterLogger
      */
     var $logger;
+
+    /**
+     * @var NewsletterLogger
+     */
+    var $admin_logger;
 
     /**
      * @var NewsletterStore
@@ -370,14 +436,15 @@ class NewsletterModule {
         array_unshift($components, '');
         $this->components = $components;
 
-
         $this->logger = new NewsletterLogger($module);
+
         $this->options = $this->get_options();
         $this->store = NewsletterStore::singleton();
 
         //$this->logger->debug($module . ' constructed');
         // Version check
         if (is_admin()) {
+            $this->admin_logger = new NewsletterLogger($module . '-admin');
             $this->old_version = get_option($this->prefix . '_version', '0.0.0');
 
             if ($this->old_version == '0.0.0') {
@@ -910,6 +977,37 @@ class NewsletterModule {
     }
 
     /**
+     * @param string $key
+     * @param mixed $value
+     * @return TNP_Email[]
+     */
+    function get_emails_by_field($key, $value) {
+        global $wpdb;
+
+        $value_placeholder = is_int($value) ? '%d' : '%s';
+
+        $query = $wpdb->prepare("SELECT * FROM " . NEWSLETTER_EMAILS_TABLE . " WHERE %1s=$value_placeholder ORDER BY id DESC", $key, $value);
+
+        $email_list = $wpdb->get_results($query);
+
+        if ($wpdb->last_error) {
+            $this->logger->error($wpdb->last_error);
+
+            return [];
+        }
+
+        //Unserialize options
+        array_walk($email_list, function ($email) {
+            $email->options = maybe_unserialize($email->options);
+            if (!is_array($email->options)) {
+                $email->options = [];
+            }
+        });
+
+        return $email_list;
+    }
+
+    /**
      * Retrieves an email from DB and unserialize the options.
      *
      * @param mixed $id
@@ -961,12 +1059,14 @@ class NewsletterModule {
         $email = $this->store->save(NEWSLETTER_EMAILS_TABLE, $email, $return_format);
         if ($return_format == OBJECT) {
             $email->options = maybe_unserialize($email->options);
-            if (!is_array($email->options))
-                $email->options = array();
+            if (!is_array($email->options)) {
+                $email->options = [];
+            }
         } else if ($return_format == ARRAY_A) {
             $email['options'] = maybe_unserialize($email['options']);
-            if (!is_array($email['options']))
-                $email['options'] = array();
+            if (!is_array($email['options'])) {
+                $email['options'] = [];
+            }
         }
         return $email;
     }
@@ -990,7 +1090,7 @@ class NewsletterModule {
 
     /**
      * Delete one or more emails identified by ID (single value or array of ID)
-     * 
+     *
      * @global wpdb $wpdb
      * @param int|array $id Single numeric ID or an array of IDs to be deleted
      * @return boolean
@@ -1041,7 +1141,7 @@ class NewsletterModule {
     }
 
     function show_email_status_label($email) {
-        echo '<span class="tnp-email-status-', $this->get_email_status_slug($email), '">', esc_html($this->get_email_status_label($email)), '</span>';
+        echo '<span class="tnp-email-status tnp-email-status--', $this->get_email_status_slug($email), '">', esc_html($this->get_email_status_label($email)), '</span>';
     }
 
     function get_email_progress($email, $format = 'percent') {
@@ -1068,7 +1168,7 @@ class NewsletterModule {
             $percent = $this->get_email_progress($email);
         }
 
-        echo '<div class="tnp-progress ', $email->status, '">';
+        echo '<div class="tnp-progress tnp-progress--' . $email->status . '">';
         echo '<div class="tnp-progress-bar" role="progressbar" style="width: ', $percent, '%;">&nbsp;', $percent, '%&nbsp;</div>';
         echo '</div>';
         if ($attrs['numbers']) {
@@ -1247,18 +1347,24 @@ class NewsletterModule {
         return $user->id . '-' . $user->token;
     }
 
-    function get_user_status_label($user) {
+    function get_user_status_label($user, $html = false) {
+        if (!$html) return TNP_User::get_status_label($user->status);
+        
+        $label = TNP_User::get_status_label($user->status);
+        $class = 'unknown';
         switch ($user->status) {
-            case 'S': return __('NOT CONFIRMED', 'newsletter');
+            case TNP_User::STATUS_NOT_CONFIRMED: $class = 'not-confirmed';
                 break;
-            case 'C': return __('CONFIRMED', 'newsletter');
+            case TNP_User::STATUS_CONFIRMED: $class = 'confirmed';
                 break;
-            case 'U': return __('UNSUBSCRIBED', 'newsletter');
+            case TNP_User::STATUS_UNSUBSCRIBED: $class = 'unsubscribed';
                 break;
-            case 'B': return __('BOUNCED', 'newsletter');
+            case TNP_User::STATUS_BOUNCED: $class = 'bounced';
+                break;
+            case TNP_User::STATUS_COMPLAINED: $class = 'complained';
                 break;
         }
-        return '';
+        return '<span class="' . $class . '">' . esc_html($label) . '</span>';
     }
 
     /**
@@ -1315,6 +1421,10 @@ class NewsletterModule {
             set_transient('newsletter_user_count', $user_count, DAY_IN_SECONDS);
         }
         return $user_count;
+    }
+
+    function get_profile($id, $language = '') {
+        return TNP_Profile_Service::get_profile_by_id($id, $language);
     }
 
     /**
@@ -1598,7 +1708,7 @@ class NewsletterModule {
      * @return TNP_User[]
      */
     function get_test_users() {
-        return $this->store->get_all(NEWSLETTER_USERS_TABLE, "where test=1");
+        return $this->store->get_all(NEWSLETTER_USERS_TABLE, "where test=1 and status in ('C', 'S')");
     }
 
     /**
@@ -1726,6 +1836,7 @@ class NewsletterModule {
     }
 
     function process_ip($ip) {
+        
         $option = Newsletter::instance()->options['ip'];
         if (empty($option)) {
             return $ip;
@@ -2022,7 +2133,6 @@ class NewsletterModule {
         $text = str_replace('{company_name}', $options['footer_title'], $text);
         $text = str_replace('{company_legal}', $options['footer_legal'], $text);
 
-
         $this->switch_language($initial_language);
 //$this->logger->debug('Replace end');
         return $text;
@@ -2218,11 +2328,26 @@ class NewsletterModule {
         if (empty($ip)) {
             return '';
         }
-        return preg_replace('/[^0-9a-fA-F:., ]/', '', $ip);
+        $ip = preg_replace('/[^0-9a-fA-F:., ]/', '', trim($ip));
+        if (strlen($ip) > 50) $ip = substr($ip, 0, 50);
+        
+        // When more than one IP is present due to firewalls, proxies, and so on. The first one should be the origin.
+        if (strpos($ip, ',') !== false) {
+            list($ip, $tail) = explode(',', $ip, 2);
+        }
+        return $ip; 
     }
 
     static function get_remote_ip() {
-        return self::sanitize_ip($_SERVER['REMOTE_ADDR']);
+        $ip = '';
+        if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+            $ip = $_SERVER['HTTP_X_REAL_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return self::sanitize_ip($ip);
     }
 
     static function get_signature($text) {
@@ -2386,6 +2511,28 @@ class NewsletterModule {
                 $this->switch_language($current_language);
             }
         }
+        return $posts;
+    }
+
+    function get_wp_query($filters, $langiage = '') {
+        if ($language) {
+            if (class_exists('SitePress')) {
+                $this->switch_language($language);
+                $filters['suppress_filters'] = false;
+            }
+            if (class_exists('Polylang')) {
+                $filters['lang'] = $language;
+            }
+        }
+
+        $posts = new WP_Query($filters);
+
+        if ($language) {
+            if (class_exists('SitePress')) {
+                $this->switch_language($current_language);
+            }
+        }
+
         return $posts;
     }
 

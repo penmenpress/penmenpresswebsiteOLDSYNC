@@ -3,7 +3,7 @@
  * Name: Html
  * Section: content
  * Description: Free HTML block
- * 
+ *
  */
 
 /* @var $options array */
@@ -15,7 +15,7 @@ $default_options = array(
     'block_padding_right' => 15,
     'block_padding_top' => 20,
     'block_padding_bottom' => 20,
-    'block_background' => '#ffffff',
+    'block_background' => '',
     'font_family' => 'Helvetica, Arial, sans-serif',
     'font_size' => 16,
     'font_color' => '#000'
@@ -31,9 +31,9 @@ $options = array_merge($default_options, $options);
         color: <?php echo $options['font_color']?>;
     }
 </style>
-<table width="100%" border="0" cellpadding="0" align="center" cellspacing="0">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
     <tr>
-        <td width="100%" valign="top" align="center" inline-class="html-td" class="html-td-global">
+        <td valign="top" align="center" inline-class="html-td" class="html-td-global">
             <?php echo $options['html'] ?>
         </td>
     </tr>

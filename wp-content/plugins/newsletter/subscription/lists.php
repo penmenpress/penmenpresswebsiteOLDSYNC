@@ -55,10 +55,12 @@ if (!$controls->is_action()) {
     }
 }
 
+$conditions = [];
 for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
     if (!isset($controls->data['list_' . $i . '_forced'])) {
         $controls->data['list_' . $i . '_forced'] = empty($this->options['preferences_' . $i]) ? 0 : 1;
     }
+    $conditions[] = "count(case list_$i when 1 then 1 else null end) list_$i";
 }
 
 $all_lang_options = $this->get_options('lists');
@@ -66,6 +68,8 @@ $all_lang_options = $this->get_options('lists');
 //echo json_encode($controls->data, JSON_PRETTY_PRINT);
 //$status = array(0 => 'Private', 1 => 'Only on profile page', 2 => 'Even on subscription forms', '3' => 'Hidden');
 $status = array(0 => __('Private', 'newsletter'), 1 => __('Public', 'newsletter'));
+
+$count = $wpdb->get_row("select " . implode(',', $conditions) . ' from ' . NEWSLETTER_USERS_TABLE);
 ?>
 <script>
     jQuery(function () {
@@ -174,7 +178,10 @@ $status = array(0 => __('Private', 'newsletter'), 1 => __('Public', 'newsletter'
                             <?php } ?>
                         <?php } ?>
 
-                        <td><?php echo $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where list_" . $i . "=1 and status='C'"); ?></td>
+                        <td>
+                            <?php //echo $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where list_" . $i . "=1 and status='C'"); ?>
+                            <?php $field = 'list_' . $i; echo $count->$field; ?>
+                        </td>
 
                         <td>
                             <?php if ($is_all_languages) { ?>

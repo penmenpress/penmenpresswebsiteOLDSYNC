@@ -468,6 +468,7 @@ class NewsletterProfile extends NewsletterModule {
 
         // Send the activation again only if we use double opt-in, otherwise it has no meaning
         if ($email_changed && $subscription_module->is_double_optin()) {
+            $user->email = $email;
             $subscription_module->send_activation_email($user);
             return $options['email_changed'];
         }

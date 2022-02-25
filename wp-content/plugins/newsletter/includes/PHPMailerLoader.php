@@ -30,10 +30,15 @@ class PHPMailerLoader {
 
 	}
 
-	public static function make_instance() {
+        /**
+         * 
+         * @param boolean $exceptions
+         * @return \PHPMailer\PHPMailer\PHPMailer
+         */
+	public static function make_instance($exceptions = false) {
 		self::load();
 
-		return new \PHPMailer( false );
+		return new \PHPMailer( $exceptions );
 	}
 
 

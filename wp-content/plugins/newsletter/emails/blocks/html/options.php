@@ -25,11 +25,15 @@ $options = array_merge($default_options, $options);
             lineNumbers: true,
             mode: 'htmlmixed',
             lineWrapping: true,
-            extraKeys: {"Ctrl-Space": "autocomplete"}
+            //extraKeys: {"Ctrl-Space": "autocomplete"}
         });
     });
 </script>
 
+<p>
+    <a href="https://www.thenewsletterplugin.com/documentation/newsletters/newsletter-tags/"
+                       target="_blank">You can use tags to inject subscriber fields</a>.
+</p>
 <table class="form-table">
     <tr>
         <td>

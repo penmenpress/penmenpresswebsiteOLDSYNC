@@ -86,6 +86,12 @@ $options_profile = get_option('newsletter_profile');
                                 <?php echo $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where status='B'"); ?>
                             </td>
                         </tr>
+                        <tr>
+                            <td><?php _e('Complained', 'newsletter') ?></td>
+                            <td>
+                                <?php echo $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where status='P'"); ?>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 
@@ -165,7 +171,7 @@ $options_profile = get_option('newsletter_profile');
                     <?php $controls->panel_help('https://www.thenewsletterplugin.com/documentation/subscribers-statistics#referrer') ?>
                 </p>
                 <?php
-                $list = $wpdb->get_results("select referrer, SUM(if(status='C', 1, 0)) as confirmed, SUM(if(status='S', 1, 0)) as unconfirmed, SUM(if(status='B', 1, 0)) as bounced, SUM(if(status='U', 1, 0)) as unsubscribed from " . NEWSLETTER_USERS_TABLE . " group by referrer order by confirmed desc");
+                $list = $wpdb->get_results("select referrer, SUM(if(status='C', 1, 0)) as confirmed, SUM(if(status='S', 1, 0)) as unconfirmed, SUM(if(status='B', 1, 0)) as bounced, SUM(if(status='U', 1, 0)) as unsubscribed, SUM(if(status='P', 1, 0)) as complained from " . NEWSLETTER_USERS_TABLE . " group by referrer order by confirmed desc");
                 ?>
                 <table class="widefat" style="width: auto">
                     <thead>
@@ -175,6 +181,7 @@ $options_profile = get_option('newsletter_profile');
                             <th><?php _e('Not confirmed', 'newsletter') ?></th>
                             <th><?php _e('Unsubscribed', 'newsletter') ?></th>
                             <th><?php _e('Bounced', 'newsletter') ?></th>
+                            <th><?php _e('Complained', 'newsletter') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -185,6 +192,7 @@ $options_profile = get_option('newsletter_profile');
                                 <td><?php echo $row->unconfirmed; ?></td>
                                 <td><?php echo $row->unsubscribed; ?></td>
                                 <td><?php echo $row->bounced; ?></td>
+                                <td><?php echo $row->complained; ?></td>
                             </tr>
                         <?php } ?>
                     </tbody>

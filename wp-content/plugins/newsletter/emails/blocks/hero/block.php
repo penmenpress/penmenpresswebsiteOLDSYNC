@@ -12,27 +12,27 @@
 $defaults = array(
     'title' => 'An Awesome Title',
     'text' => 'This is just a simple text you should change',
-    'font_family' => 'Helvetica, Arial, sans-serif',
-    'font_size' => 18,
-    'font_weight' => 'normal',
-    'font_color' => '#000000',
-    'title_font_family' => 'Helvetica, Arial, sans-serif',
-    'title_font_size' => '32',
-    'title_font_weight' => 'bold',
-    'title_font_color' => '#000000',
-    'block_background' => '#ffffff',
+    'font_family' => '',
+    'font_size' => '',
+    'font_weight' => '',
+    'font_color' => '',
+    'title_font_family' => '',
+    'title_font_size' => '',
+    'title_font_weight' => '',
+    'title_font_color' => '',
     'layout' => 'full',
     'button_url' => '',
-    'button_font_family' => 'Helvetica, Arial, sans-serif',
-    'button_label' => 'Click Here',
-    'button_font_color' => '#ffffff',
-    'button_font_weight' => 'bold',
-    'button_font_size' => 20,
-    'button_background' => '#256F9C',
+    'button_label' => __('Click Here', 'newsletter'),
+    'button_background' => '',
+    'button_font_color' => '',
+    'button_font_family' => '',
+    'button_font_size' => '',
+    'button_font_weight' => '',
     'block_padding_top' => 30,
     'block_padding_bottom' => 30,
-    'block_padding_left' => 15,
-    'block_padding_right' => 15
+    'block_padding_left' => 0,
+    'block_padding_right' => 0,
+    'block_background' => '',
 );
 
 $options = array_merge($defaults, $options);
@@ -63,33 +63,36 @@ if ($layout == 'full') {
     $options = array_merge(array('block_padding_left' => 15, 'block_padding_right' => 15), $options);
 }
 
-$font_family = $options['font_family'];
-$font_size = $options['font_size'];
-$font_weight = $options['font_weight'];
-$font_color = $options['font_color'];
-
-$title_font_family = $options['title_font_family'];
-$title_font_size = $options['title_font_size'];
-$title_font_weight = $options['title_font_weight'];
-$title_font_color = $options['title_font_color'];
+$title_style = TNP_Composer::get_title_style($options, 'title', $composer);
+$text_style = TNP_Composer::get_text_style($options, '', $composer);
 
 $layout = $options['layout'];
 
-if (!empty($options['image']['id'])) {
-    if ($layout == 'full') {
-        $media = tnp_resize_2x($options['image']['id'], array(600, 0));
-        if ($media) {
-            $media->set_width(600 - $options['block_padding_left'] - $options['block_padding_right']);
-        }
-    } else {
+$button_options = $options;
+$button_options['button_font_family'] = empty($options['button_font_family']) ? $global_button_font_family : $options['button_font_family'];
+$button_options['button_font_size'] = empty($options['button_font_size']) ? $global_button_font_size : $options['button_font_size'];
+$button_options['button_font_color'] = empty($options['button_font_color']) ? $global_button_font_color : $options['button_font_color'];
+$button_options['button_font_weight'] = empty($options['button_font_weight']) ? $global_button_font_weight : $options['button_font_weight'];
+$button_options['button_background'] = empty($options['button_background']) ? $global_button_background_color : $options['button_background'];
 
-        $media = tnp_resize_2x($options['image']['id'], array(300, 0));
-        if ($media) {
-            $media->set_width(300 - $options['block_padding_left']);
-        }
+if (!empty($options['image']['id'])) {
+    if ($layout === 'full') {
+        $image_width = 600 - $options['block_padding_left'] - $options['block_padding_right'];
+        $media = tnp_resize_2x($options['image']['id'], [$image_width, 0]);
+    } else {
+        $td_width = round((600 - $options['block_padding_left'] - $options['block_padding_right'] - 20)/2);
+        //$image_width = 300 - $options['block_padding_left'];
+        $media = tnp_resize_2x($options['image']['id'], [$td_width, 0]);
     }
     if ($media) {
-        $media->alt = $options['title'];
+        if (!empty($options['image_alt'])) {
+            $media->alt = $options['image_alt'];
+        } else if (!empty($options['title'])) {
+            $media->alt = $options['title'];
+        } else {
+            $alt_texts = array('picture', 'image', 'pic', 'photo');
+            $media->alt = $alt_texts[array_rand($alt_texts)];
+        }
         $media->link = $options['button_url'];
     }
 } else {

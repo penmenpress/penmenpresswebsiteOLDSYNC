@@ -104,7 +104,7 @@ class NewsletterUnsubscription extends NewsletterModule {
             return true;
         }
 
-        $message = $options['unsubscribed_message'];
+	    $message = do_shortcode( $options['unsubscribed_message'] );
         $subject = $options['unsubscribed_subject'];
 
         return NewsletterSubscription::instance()->mail($user, $subject, $message);
@@ -193,7 +193,7 @@ class NewsletterUnsubscription extends NewsletterModule {
      */
     function hook_add_unsubscribe_headers_to_email($headers, $email, $user) {
 
-        if (isset($this->options['disable_unsubscribe_headers']) && $this->options['disable_unsubscribe_headers'] == 1) {
+        if (!empty($this->options['disable_unsubscribe_headers'])) {
             return $headers;
         }
 

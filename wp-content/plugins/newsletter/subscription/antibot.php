@@ -8,8 +8,31 @@ $controls = new NewsletterControls();
 if ($controls->is_action()) {
 
     if ($controls->is_action('save')) {
+ // Processing IPs
+        $list = $this->to_array($controls->data['ip_blacklist']);
+        $controls->data['ip_blacklist'] = [];
+        foreach ($list as $item) {
+            $item = trim($item);
+            if (substr($item, 0, 1) === '#') {
+                $controls->data['ip_blacklist'][] = $item;
+                continue;
+            }
+            $item = preg_replace( '|[^0-9a-fA-F:./]|', '', $item);
+            if (empty($item)) {
+                continue;
+            }
+            if (strpos($item, '/', 2)) {
+                list($ip, $bits) = explode('/', $item);
+                $bits = (int)$bits;
+                if (!$bits) continue;
+                $item = $ip . '/' . $bits;
+            } else {
+                
+            }
+            $controls->data['ip_blacklist'][] = $item;
+        }
 
-        $controls->data['ip_blacklist'] = $this->to_array($controls->data['ip_blacklist']);
+        //$controls->data['ip_blacklist'] = $this->to_array($controls->data['ip_blacklist']);
         $controls->data['address_blacklist'] = $this->to_array($controls->data['address_blacklist']);
 
         $this->save_options($controls->data, 'antibot');
@@ -127,7 +150,11 @@ if ($controls->is_action()) {
                             </th>
                             <td>
                                 <?php $controls->textarea('ip_blacklist'); ?>
-                                <p class="description"><?php _e('One per line', 'newsletter') ?></p>
+                                <p class="description">
+                                    <?php _e('One per line', 'newsletter') ?>
+                                    IPv4 (aaa.bbb.ccc.ddd) supported. IPv6 supported. CIDR supported only for IPv4. Lines starting with # are
+                                    considered comments.
+                                </p>
                             </td>
                         </tr>
                         <tr>

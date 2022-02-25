@@ -67,7 +67,7 @@ $extra_type = array('text' => __('Text', 'newsletter'), 'select' => __('List', '
                         <tr>
                             <th>Email</th>
                             <td>
-                                <table class="newsletter-option-grid">
+                                <table class="tnpc-grid">
                                     <tr><th><?php _e('Field label', 'newsletter') ?></th><td><?php $controls->text('email', 50); ?></td></tr>
                                     <tr><th><?php _e('Error message', 'newsletter') ?></th><td><?php $controls->text('email_error', 50); ?></td></tr>
                                 </table>
@@ -76,11 +76,11 @@ $extra_type = array('text' => __('Text', 'newsletter'), 'select' => __('List', '
                         <tr>
                             <th><?php _e('First name', 'newsletter') ?></th>
                             <td>
-                                <table class="newsletter-option-grid">
+                                <table class="tnpc-grid">
                                     <tr><th><?php _e('Field label', 'newsletter') ?></th><td><?php $controls->text('name', 50); ?></td></tr>
                                     <?php if ($is_all_languages) { ?>
-                                    <tr><th><?php _e('When to show', 'newsletter') ?></th><td><?php $controls->select('name_status', $status); ?></td></tr>
-                                    <tr><th><?php _e('Rules', 'newsletter') ?></th><td><?php $controls->select('name_rules', $rules); ?></td></tr>
+                                        <tr><th><?php _e('When to show', 'newsletter') ?></th><td><?php $controls->select('name_status', $status); ?></td></tr>
+                                        <tr><th><?php _e('Rules', 'newsletter') ?></th><td><?php $controls->select('name_rules', $rules); ?></td></tr>
                                     <?php } ?>
                                 </table>
                                 <p class="description">
@@ -91,11 +91,11 @@ $extra_type = array('text' => __('Text', 'newsletter'), 'select' => __('List', '
                         <tr>
                             <th><?php _e('Last name', 'newsletter') ?></th>
                             <td>
-                                <table class="newsletter-option-grid">
+                                <table class="tnpc-grid">
                                     <tr><th><?php _e('Field label', 'newsletter') ?></th><td><?php $controls->text('surname', 50); ?></td></tr>
                                     <?php if ($is_all_languages) { ?>
-                                    <tr><th><?php _e('When to show', 'newsletter') ?></th><td><?php $controls->select('surname_status', $status); ?></td></tr>
-                                    <tr><th><?php _e('Rules', 'newsletter') ?></th><td><?php $controls->select('surname_rules', $rules); ?></td></tr>
+                                        <tr><th><?php _e('When to show', 'newsletter') ?></th><td><?php $controls->select('surname_status', $status); ?></td></tr>
+                                        <tr><th><?php _e('Rules', 'newsletter') ?></th><td><?php $controls->select('surname_rules', $rules); ?></td></tr>
                                     <?php } ?>
                                 </table>
                             </td>
@@ -103,18 +103,18 @@ $extra_type = array('text' => __('Text', 'newsletter'), 'select' => __('List', '
                         <tr>
                             <th><?php _e('Gender', 'newsletter') ?></th>
                             <td>
-                                <table class="newsletter-option-grid">
+                                <table class="tnpc-grid">
                                     <tr><th><?php _e('Field label', 'newsletter') ?></th><td><?php $controls->text('sex', 50); ?></td></tr>
                                     <?php if ($is_all_languages) { ?>
-                                    <tr><th><?php _e('When to show', 'newsletter') ?></th><td><?php $controls->select('sex_status', $status); ?></td></tr>
-                                    <tr><th><?php _e('Rules', 'newsletter') ?></th><td><?php $controls->select('sex_rules', $rules); ?></td></tr>
+                                        <tr><th><?php _e('When to show', 'newsletter') ?></th><td><?php $controls->select('sex_status', $status); ?></td></tr>
+                                        <tr><th><?php _e('Rules', 'newsletter') ?></th><td><?php $controls->select('sex_rules', $rules); ?></td></tr>
                                     <?php } ?>
                                     <tr>
                                         <th><?php _e('Value labels', 'newsletter') ?></th>
                                         <td>
-                                            <?php _e('not specified', 'newsletter') ?>: <?php $controls->text('sex_none'); ?>
-                                            <?php _e('female', 'newsletter') ?>: <?php $controls->text('sex_female'); ?>
-                                            <?php _e('male', 'newsletter') ?>: <?php $controls->text('sex_male'); ?>
+                                            <?php $controls->text('sex_none', 20, __('not specified', 'newsletter')); ?>
+                                            <?php $controls->text('sex_female', 20, __('female', 'newsletter')); ?>
+                                            <?php $controls->text('sex_male', 20, __('male', 'newsletter')); ?>
                                         </td>
                                     </tr>
                                     <tr>
@@ -146,9 +146,9 @@ $extra_type = array('text' => __('Text', 'newsletter'), 'select' => __('List', '
                         <tr>
                             <th><?php _e('Privacy checkbox/notice', 'newsletter') ?></th>
                             <td>
-                                <table class="newsletter-option-grid">
+                                <table>
                                     <?php if ($is_all_languages) { ?>
-                                    <tr><th><?php _e('Enabled?', 'newsletter') ?></th><td><?php $controls->select('privacy_status', array(0 => __('No', 'newsletter'), 1 => __('Yes', 'newsletter'), 2 => __('Only the notice', 'newsletter'))); ?></td></tr>
+                                        <tr><th><?php _e('Enabled?', 'newsletter') ?></th><td><?php $controls->select('privacy_status', array(0 => __('No', 'newsletter'), 1 => __('Yes', 'newsletter'), 2 => __('Only the notice', 'newsletter'))); ?></td></tr>
                                     <?php } ?>
                                     <tr><th><?php _e('Label', 'newsletter') ?></th><td><?php $controls->text('privacy', 50); ?></td></tr>
                                     <tr>
@@ -172,9 +172,9 @@ $extra_type = array('text' => __('Text', 'newsletter'), 'select' => __('List', '
                                         </td>
                                     </tr>
                                 </table>
-                                <p class="description">
+                                <div class="tnpc-hint">
                                     <?php _e('The privacy acceptance checkbox (required in many Europen countries) forces the subscriber to check it before proceeding. If an URL is specified the label becomes a link.', 'newsletter') ?>
-                                </p>
+                                </div>
                             </td>
                         </tr>
 
@@ -194,17 +194,17 @@ $extra_type = array('text' => __('Text', 'newsletter'), 'select' => __('List', '
 
                     <table class="widefat">
                         <thead>
-                        <tr>
-                            <th><?php _e('Field', 'newsletter') ?></th>
-                            <th><?php _e('Name/Label', 'newsletter') ?></th>
-                            <th><?php _e('Placeholder', 'newsletter') ?></th>
-	                        
+                            <tr>
+                                <th><?php _e('Field', 'newsletter') ?></th>
+                                <th><?php _e('Name/Label', 'newsletter') ?></th>
+                                <th><?php _e('Placeholder', 'newsletter') ?></th>
+
                                 <th><?php _e('When/Where', 'newsletter') ?></th>
                                 <th><?php _e('Type', 'newsletter') ?></th>
                                 <th><?php _e('Rule', 'newsletter') ?></th>
-	                        
-                            <th><?php _e('List values comma separated', 'newsletter') ?></th>
-                        </tr>
+
+                                <th><?php _e('List values comma separated', 'newsletter') ?></th>
+                            </tr>
                         </thead>
                         <?php for ($i = 1; $i <= NEWSLETTER_PROFILE_MAX; $i++) { ?>
                             <tr>
@@ -212,13 +212,13 @@ $extra_type = array('text' => __('Text', 'newsletter'), 'select' => __('List', '
                                 <td><?php $controls->text('profile_' . $i); ?></td>
                                 <td><?php $controls->text('profile_' . $i . '_placeholder'); ?></td>
                                 <?php if ($is_all_languages) { ?>
-                                <td><?php $controls->select('profile_' . $i . '_status', $status); ?></td>
-                                <td><?php $controls->select('profile_' . $i . '_type', $extra_type); ?></td>
-                                <td><?php $controls->select('profile_' . $i . '_rules', $rules); ?></td>
+                                    <td><?php $controls->select('profile_' . $i . '_status', $status); ?></td>
+                                    <td><?php $controls->select('profile_' . $i . '_type', $extra_type); ?></td>
+                                    <td><?php $controls->select('profile_' . $i . '_rules', $rules); ?></td>
                                 <?php } else { ?>
-                                <td><?php echo esc_html($status[$controls->get_value('profile_' . $i . '_status')]) ?></td>
-                                <td><?php echo esc_html($extra_type[$controls->get_value('profile_' . $i . '_type')]) ?></td>
-                                <td><?php echo esc_html($rules[$controls->get_value('profile_' . $i . '_rules')]) ?></td>
+                                    <td><?php echo esc_html($status[$controls->get_value('profile_' . $i . '_status')]) ?></td>
+                                    <td><?php echo esc_html($extra_type[$controls->get_value('profile_' . $i . '_type')]) ?></td>
+                                    <td><?php echo esc_html($rules[$controls->get_value('profile_' . $i . '_rules')]) ?></td>
                                 <?php } ?>
                                 <td>
                                     <?php $controls->textarea_fixed('profile_' . $i . '_options', '200px', '50px'); ?>

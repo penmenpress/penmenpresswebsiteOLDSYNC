@@ -35,8 +35,8 @@ if (!$controls->is_action()) {
         }
 
         $controls->data['scheduler_max'] = (int) $controls->data['scheduler_max'];
-        if ($controls->data['scheduler_max'] < 10)
-            $controls->data['scheduler_max'] = 10;
+        if ($controls->data['scheduler_max'] < 12)
+            $controls->data['scheduler_max'] = 12;
 
 
         if (!$this->is_email($controls->data['reply_to'], true)) {
@@ -171,7 +171,9 @@ if (!empty($return_path)) {
                             </th>
                             <td>
                                 <?php $controls->text_email('sender_email', 40); ?>
-
+                                <div class="description">
+                                    <a href="https://www.thenewsletterplugin.com/documentation/installation/newsletter-configuration/#sender" target="_blank">Emails delivered with a different address?</a>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -236,15 +238,17 @@ if (!empty($return_path)) {
                 </div>
 
                 <div id="tabs-speed">
-
+ 
                     <table class="form-table">
                         <tr>
                             <th>
                                 <?php _e('Max emails per hour', 'newsletter') ?>
-                                <?php $controls->field_help('https://www.thenewsletterplugin.com/documentation/delivery-and-spam/newsletter-delivery-engine/') ?>
+                                <?php $controls->field_help('https://www.thenewsletterplugin.com/documentation/installation/newsletter-configuration/#speed') ?>
                             </th>
                             <td>
                                 <?php $controls->text('scheduler_max', 5); ?> (min. 10)
+                                <p class="description">
+                                    <a href="?page=newsletter_system_status#tnp-speed">See the collected statistics</a>
                             </td>
                         </tr>
                     </table>
@@ -310,9 +314,9 @@ if (!empty($return_path)) {
                         </tr>
 
                         <tr>
-                            <th><?php _e('Disable standard styles', 'newsletter') ?></th>
+                            <th><?php _e('Standard styles', 'newsletter') ?></th>
                             <td>
-                                <?php $controls->yesno('css_disabled'); ?>
+                                <?php $controls->disabled('css_disabled'); ?>
                             </td>
                         </tr>
                         
@@ -364,9 +368,9 @@ if (!empty($return_path)) {
 
             </div> <!-- tabs -->
 
-            <p>
+            <div class="tnp-buttons">
                 <?php $controls->button_save(); ?>
-            </p>
+            </div>
 
         </form>
 

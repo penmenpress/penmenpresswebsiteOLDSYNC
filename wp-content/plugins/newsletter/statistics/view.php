@@ -73,7 +73,7 @@ if (empty($email->track)) {
                 <div class="tnp-widget tnp-inactive">
                     <h3>Clicked URLs</h3>
                     <div class="tnp-placeholder">
-                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin&utm_medium=link&utm_content=worldmap&utm_campaign=newsletter-reports" target="_blank">
+                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=reports&utm_medium=urls&utm_campaign=plugin" target="_blank">
                             <img src="<?php echo plugins_url('newsletter') ?>/statistics/images/clicked-urls@2x.png">
                         </a>
                     </div>
@@ -84,7 +84,7 @@ if (empty($email->track)) {
                 <div class="tnp-widget tnp-inactive">
                     <h3>World Map</h3>
                     <div class="tnp-placeholder">
-                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin&utm_medium=link&utm_content=worldmap&utm_campaign=newsletter-reports" target="_blank">
+                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=reports&utm_medium=map&utm_campaign=plugin" target="_blank">
                             <img src="<?php echo plugins_url('newsletter') ?>/statistics/images/world-map@2x.png">
                         </a>
                     </div>
@@ -96,7 +96,7 @@ if (empty($email->track)) {
                 <div class="tnp-widget tnp-inactive">
                     <h3>Interactions</h3>
                     <div class="tnp-placeholder">
-                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin&utm_medium=link&utm_content=worldmap&utm_campaign=newsletter-reports" target="_blank">
+                        <a href="https://www.thenewsletterplugin.com/premium?utm_source=reports&utm_medium=interactions&utm_campaign=plugin" target="_blank">
                             <img src="<?php echo plugins_url('newsletter') ?>/statistics/images/interactions@2x.png">
                         </a>
                     </div>

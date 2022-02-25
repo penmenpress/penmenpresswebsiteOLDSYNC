@@ -33,9 +33,8 @@ if ($controls->is_action('delete_selected')) {
     $controls->messages .= $r . ' message(s) deleted';
 }
 
-$pagination_controller = new TNP_Pagination_Controller( NEWSLETTER_EMAILS_TABLE, 'id', [ 'type' => 'message' ] );
-$emails                = $pagination_controller->get_items();
-
+$pagination_controller = new TNP_Pagination_Controller(NEWSLETTER_EMAILS_TABLE, 'id', ['type' => 'message']);
+$emails = $pagination_controller->get_items();
 ?>
 
 <div class="wrap tnp-emails tnp-emails-index" id="tnp-wrap">
@@ -53,8 +52,9 @@ $emails                = $pagination_controller->get_items();
         <form method="post" action="">
             <?php $controls->init(); ?>
 
-            <a href="<?php echo $this->get_admin_page_url('theme'); ?>" class="button-primary"><?php _e('New newsletter', 'newsletter') ?></a>
-	        <?php $controls->button_confirm('delete_selected', __('Delete selected newsletters', 'newsletter')); ?>
+            <a href="<?php echo $this->get_admin_page_url('composer'); ?>" class="button-primary"><?php _e('New newsletter', 'newsletter') ?></a>
+
+            <?php $controls->button_confirm('delete_selected', __('Delete selected newsletters', 'newsletter')); ?>
 
             <?php $pagination_controller->display_paginator(); ?>
 
@@ -76,8 +76,7 @@ $emails                = $pagination_controller->get_items();
                 </thead>
 
                 <tbody>
-                    <?php
-                    foreach ($emails as $email) { ?>
+                    <?php foreach ($emails as $email) { ?>
                         <tr>
                             <td><input type="checkbox" class="tnp-selector" name="ids[]" value="<?php echo $email->id; ?>"/></td>
                             <td><?php echo $email->id; ?></td>
@@ -93,19 +92,22 @@ $emails                = $pagination_controller->get_items();
                                 <?php $this->show_email_status_label($email) ?>
                             </td>
                             <td>
-                                <?php $this->show_email_progress_bar($email, array('numbers'=>true)) ?>
+                                <?php $this->show_email_progress_bar($email, array('numbers' => true)) ?>
                             </td>
                             <td><?php if ($email->status == 'sent' || $email->status == 'sending') echo $this->format_date($email->send_on); ?></td>
                             <td>
                                 <?php echo $this->get_edit_button($email) ?>
                             </td>
 
-                            <td>
-                                <a class="button-primary" href="<?php echo NewsletterStatistics::instance()->get_statistics_url($email->id); ?>"><i class="fas fa-chart-bar"></i> <?php _e('Statistics', 'newsletter') ?></a>
+                            <td style="white-space: nowrap">
+                                <?php $controls->button_icon_statistics(NewsletterStatistics::instance()->get_statistics_url($email->id)) ?>
+                                <?php $controls->button_icon_view(home_url('/') . '?na=view&id=' . $email->id) ?>
                             </td>
-                            <td><a class="button-primary" target="_blank" rel="noopener" href="<?php echo home_url('/')?>?na=view&id=<?php echo $email->id; ?>"><i class="fas fa-eye"></i>&nbsp;<?php _e('View', 'newsletter')?></a></td>
-                            <td><?php $controls->button_copy($email->id); ?></td>
-                            <td><?php $controls->button_delete($email->id); ?></td>
+
+                            <td style="white-space: nowrap">
+                                <?php $controls->button_icon_copy($email->id); ?>
+                                <?php $controls->button_icon_delete($email->id); ?>
+                            </td>
                         </tr>
                     <?php } ?>
                 </tbody>

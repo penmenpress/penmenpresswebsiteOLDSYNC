@@ -64,7 +64,7 @@ if (empty($emails)) {
     <?php include NEWSLETTER_DIR . '/tnp-header.php' ?>
     <div id="tnp-heading">
         <h2><?php _e('Overall basic statistics (last 20 newsletters)', 'newsletter') ?></h2>
-        <p>More details, including Automated and Autoresponder newsletter statistics are available with the <a href="https://www.thenewsletterplugin.com/reports?utm_source=plugin&utm_campaign=newsletter-reports" target="_blank">Reports Addon</a>.</p>
+        <p>More details, including Automated and Autoresponder newsletter statistics are available with the <a href="https://www.thenewsletterplugin.com/reports?utm_source=reports&utm_campaign=plugin" target="_blank">Reports Addon</a>.</p>
     </div>
 
     <div id="tnp-body" class="tnp-statistics">

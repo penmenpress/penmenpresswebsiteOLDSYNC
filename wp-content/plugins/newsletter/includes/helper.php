@@ -48,9 +48,26 @@ function tnp_post_thumbnail_src($post, $size = 'thumbnail', $alternative = '') {
  *
  * @return string
  */
-function tnp_post_excerpt($post, $length = 30) {
-    $excerpt = tnp_delete_all_shordcodes_tags(get_the_excerpt($post->ID));
-    $excerpt = wp_trim_words($excerpt, $length);
+function tnp_post_excerpt($post, $length = 30, $characters = false) {
+    if (!$length) return '';
+    
+    $excerpt = get_the_excerpt($post->ID);
+    $excerpt = tnp_delete_all_shordcodes_tags($excerpt);
+    $excerpt = trim($excerpt);
+    $excerpt = str_replace('&nbsp;', '', $excerpt);
+
+    if ($characters) {
+        if (strlen($excerpt) > $length) {
+            $excerpt = substr($excerpt, 0, $length);
+            $i = strrpos($excerpt, ' ');
+            if ($i) {
+                $excerpt = substr($excerpt, 0, $i);
+                $excerpt .= '&hellip;';
+            }
+        }
+    } else {
+        $excerpt = wp_trim_words($excerpt, $length);
+    }
 
     return $excerpt;
 }
@@ -123,6 +140,13 @@ function tnp_media_resize($media_id, $size) {
     $absolute_file = $uploads['basedir'] . '/' . $relative_file;
     // Relative and absolute name of the thumbnail.
     $pathinfo = pathinfo($relative_file);
+
+    // We don't know why, but on some systems files with non-ascii characters loose the file name (grrr...)
+    if (empty($pathinfo['filename'])) {
+        $src = wp_get_attachment_image_src($media_id, 'full');
+        return $src[0];
+    }
+
     $relative_thumb = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '-' . $width . 'x' .
             $height . ($crop ? '-c' : '') . '.' . $pathinfo['extension'];
     $absolute_thumb = $uploads['basedir'] . '/newsletter/thumbnails/' . $relative_thumb;
@@ -177,6 +201,20 @@ function _tnp_get_default_media($media_id, $size) {
         return null;
     }
     $media = new TNP_Media();
+    $media->id = $media_id;
+    $media->url = $src[0];
+    $media->width = $src[1];
+    $media->height = $src[2];
+    return $media;
+}
+
+function tnp_get_media($media_id, $size) {
+    $src = wp_get_attachment_image_src($media_id, $size);
+    if (!$src) {
+        return null;
+    }
+    $media = new TNP_Media();
+    $media->id = $media_id;
     $media->url = $src[0];
     $media->width = $src[1];
     $media->height = $src[2];
@@ -204,7 +242,7 @@ function tnp_resize($media_id, $size) {
     $uploads = wp_upload_dir();
 
     // Based on _wp_relative_upload_path() function for blog which store the
-    // full patch of media files
+    // full path of media files
     if (0 === strpos($relative_file, $uploads['basedir'])) {
         $relative_file = str_replace($uploads['basedir'], '', $relative_file);
         $relative_file = ltrim($relative_file, '/');
@@ -221,8 +259,12 @@ function tnp_resize($media_id, $size) {
 
     if (substr($relative_file, -4) === '.gif') {
         $editor = wp_get_image_editor($absolute_file);
+        if (is_wp_error($editor)) {
+            return _tnp_get_default_media($media_id, $size);
+        }
         $new_size = $editor->get_size();
         $media = new TNP_Media();
+        $media->id = $media_id;
         $media->width = $new_size['width'];
         $media->height = $new_size['height'];
         if ($media->width > $width) {
@@ -234,6 +276,12 @@ function tnp_resize($media_id, $size) {
 
     // Relative and absolute name of the thumbnail.
     $pathinfo = pathinfo($relative_file);
+
+    // We don't know why, but on some systems files with non-ascii characters loose the file name (grrr...)
+    if (empty($pathinfo['filename'])) {
+        return _tnp_get_default_media($media_id, $size);
+    }
+
     $relative_thumb = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '-' . $width . 'x' . $height . ($crop ? '-c' : '') . '.' . $pathinfo['extension'];
     $absolute_thumb = $uploads['basedir'] . '/newsletter/thumbnails/' . $relative_thumb;
 
@@ -254,10 +302,15 @@ function tnp_resize($media_id, $size) {
         }
 
         $original_size = $editor->get_size();
-        if ($width > $original_size['width'] && $height > $original_size['height']) {
+        if ($width > $original_size['width'] && ($height > $original_size['height'] || $height == 0)) {
             Newsletter::instance()->logger->error('Requested size larger than the original one');
             return _tnp_get_default_media($media_id, $size);
         }
+        
+        if ($height > $original_size['height'] && ($width > $original_size['width'] || $width == 0)) {
+            Newsletter::instance()->logger->error('Requested size larger than the original one');
+            return _tnp_get_default_media($media_id, $size);
+        }        
 
         $editor->set_quality(85);
         $resized = $editor->resize($width, $height, $crop);
@@ -291,15 +344,43 @@ function tnp_resize($media_id, $size) {
 }
 
 function tnp_resize_2x($media_id, $size) {
-	$size[0] = $size[0] * 2;
-	$size[1] = $size[1] * 2;
-	$media = tnp_resize($media_id, $size);
-	$media->set_width( $size[0] / 2 );
-	return $media;
+    $size[0] = $size[0] * 2;
+    $size[1] = $size[1] * 2;
+    $media = tnp_resize($media_id, $size);
+    if (!$media)
+        return $media;
+    $media->set_width($size[0] / 2);
+    return $media;
 }
 
-//TODO creare funzione che quando fa il resize fa anche il resize
-// al doppio della risoluzione e salva url del file in TNP_Media->url2x o urls ??
+/**
+ * @param TNP_Media[] $images
+ *
+ * @return int
+ */
+function tnp_get_max_height_of($images) {
+    $max_height = 0;
+    foreach ($images as $image) {
+        $max_height = $image->height > $max_height ? $image->height : $max_height;
+    }
+
+    return $max_height;
+}
+
+/**
+ * @param WP_Post[] $product_list
+ * @param array $size
+ *
+ * @return TNP_Media[]
+ */
+function tnp_resize_product_list_featured_image($product_list, $size) {
+    $images = [];
+    foreach ($product_list as $p) {
+        $images[$p->ID] = tnp_resize_2x(TNP_Composer::get_post_thumbnail_id($p->ID), $size);
+    }
+
+    return $images;
+}
 
 /**
  * Get media for "posts" composer block

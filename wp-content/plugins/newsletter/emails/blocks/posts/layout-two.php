@@ -1,171 +1,137 @@
 <?php
-$size = array('width' => 240, 'height' => 160, "crop" => true);
+$size = array('width' => 600, 'height' => 400, "crop" => true);
+$total_width = 600 - $options['block_padding_left'] - $options['block_padding_right'];
+$column_width = $total_width / 2 - 20;
+
+$title_style = TNP_Composer::get_style($options, 'title', $composer, 'title', ['scale' => .8]);
+$text_style = TNP_Composer::get_style($options, '', $composer, 'text');
+
+$items = [];
 ?>
 <style>
-    .post-date {
-        padding: 10px 0 0 15px;
-        font-size: 13px;
-        font-family: <?php echo $font_family ?>;
-        font-weight: normal;
-        color: #aaaaaa;
-    }
-    .post-title {
-        padding: 15px 0 0 0;
-        font-family: <?php echo $title_font_family ?>;
-        color: <?php echo $options['title_font_color'] ?>;
-        font-size: <?php echo $title_font_size ?>px;
-        font-weight: <?php echo $title_font_weight ?>;
+    .title {
+        font-family: <?php echo $title_style->font_family ?>;
+        font-size: <?php echo $title_style->font_size ?>px;
+        font-weight: <?php echo $title_style->font_weight ?>;
+        color: <?php echo $title_style->font_color ?>;
         line-height: 1.3em;
+        padding: 15px 0 0 0;
     }
-    .post-excerpt {
-        padding: 5px 0 0 0;
-        font-family: <?php echo $font_family ?>;
-        color: <?php echo $options['font_color'] ?>;
-        font-size: <?php echo $font_size ?>px;
+
+    .excerpt {
+        font-family: <?php echo $text_style->font_family ?>;
+        font-size: <?php echo $text_style->font_size ?>px;
+        font-weight: <?php echo $text_style->font_weight ?>;
+        color: <?php echo $text_style->font_color ?>;
         line-height: 1.4em;
+        padding: 5px 0 0 0;
     }
+
+    .meta {
+        font-family: <?php echo $text_style->font_family ?>;
+        color: <?php echo $text_style->font_color ?>;
+        font-size: <?php echo round($text_style->font_size * 0.9) ?>px;
+        font-weight: <?php echo $text_style->font_weight ?>;
+        padding: 10px 0 0 0;
+        font-style: italic;
+        line-height: normal !important;
+    }
+    .button {
+        padding: 15px 0;
+    }
+    .column-left {
+        padding-right: 10px; 
+        padding-bottom: 20px;
+    }
+    .column-right {
+        padding-left: 10px; 
+        padding-bottom: 20px;
+    }
+
 </style>
 
-<!-- TWO COLUMNS -->
-<table cellspacing="0" cellpadding="0" border="0" width="100%">
 
-    <?php foreach (array_chunk($posts, 2) AS $row) { ?>
+    <?php foreach ($posts AS $p) { ?>
         <?php
         $media = null;
         if ($show_image) {
-            $media = tnp_composer_block_posts_get_media($row[0], $size, $alternative_2);
-            $media->link = tnp_post_permalink($row[0]);
+            $media = tnp_composer_block_posts_get_media($p, $size, $image_placeholder_url);
+            $media->link = tnp_post_permalink($p);
+            $media->set_width($column_width);
         }
-        $options['button_url'] = tnp_post_permalink($row[0]);
+
+        $meta = [];
+
+        if ($show_date) {
+            $meta[] = tnp_post_date($p);
+        }
+
+        if ($show_author) {
+            $author_object = get_user_by('id', $p->post_author);
+            if ($author_object) {
+                $meta[] = $author_object->display_name;
+            }
+        }
+
+        $button_options['button_url'] = tnp_post_permalink($p);
+        ob_start();
         ?>
-        <tr>
-            <td valign="top" style="padding: 10px;" class="mobile-wrapper two-columns">
 
-                <!-- LEFT COLUMN -->
-                <table cellpadding="0" cellspacing="0" border="0" width="47%" align="left" class="responsive-table">
+
+
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <?php if ($media) { ?>
+                        <tr>
+                            <td align="center" valign="middle">
+                                <?php echo TNP_Composer::image($media, ['class' => 'fluid']) ?>
+                            </td>
+                        </tr>
+                    <?php } ?>
                     <tr>
-                        <td style="padding: 20px 0 40px 0;">
-                            <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                                <?php if ($media) { ?>
-                                    <tr>
-                                        <td align="center" valign="middle" class="tnpc-row-edit" data-type="image">
-                                            <?php echo TNP_Composer::image($media) ?>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                                <tr>
-                                    <td align="center"
-                                        inline-class="post-title"
-                                        class="tnpc-row-edit tnpc-inline-editable"
-                                        data-type="title" data-id="<?php echo $row[0]->ID ?>">
-                                            <?php
-                                            echo TNP_Composer::is_post_field_edited_inline($options['inline_edits'], 'title', $row[0]->ID) ?
-                                                    TNP_Composer::get_edited_inline_post_field($options['inline_edits'], 'title', $row[0]->ID) :
-                                                    tnp_post_title($row[0])
-                                            ?>
-                                    </td>
-                                </tr>
-                                <?php if (!empty($options['show_date'])) { ?>
-                                    <tr>
-                                        <td  align="center" inline-class="post-date">
-                                            <?php echo tnp_post_date($row[0]) ?>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                                <tr>
-                                    <td align="center"
-                                        inline-class="post-excerpt"
-                                        class="tnpc-row-edit tnpc-inline-editable"
-                                        data-type="text" data-id="<?php echo $row[0]->ID ?>">
-                                            <?php
-                                            echo TNP_Composer::is_post_field_edited_inline($options['inline_edits'], 'text', $row[0]->ID) ?
-                                                    TNP_Composer::get_edited_inline_post_field($options['inline_edits'], 'text', $row[0]->ID) :
-                                                    tnp_post_excerpt($row[0], $excerpt_length)
-                                            ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center">
-                                        <br>
-                                        <?php echo TNP_Composer::button($options) ?>
-                                    </td>
-                                </tr>
-                            </table>
+                        <td align="center" inline-class="title" class="title tnpc-row-edit tnpc-inline-editable" data-type="title" data-id="<?php echo $p->ID ?>">
+                            <?php
+                            echo TNP_Composer::is_post_field_edited_inline($options['inline_edits'], 'title', $p->ID) ?
+                                    TNP_Composer::get_edited_inline_post_field($options['inline_edits'], 'title', $p->ID) :
+                                    tnp_post_title($p)
+                            ?>
                         </td>
                     </tr>
-                </table>
+                    <?php if ($meta) { ?>
+                        <tr>
+                            <td align="center" inline-class="meta" class="meta">
+                                <?php echo esc_html(implode(' - ', $meta)) ?>
+                            </td>
+                        </tr>
+                    <?php } ?>
 
+
+                    <?php if ($excerpt_length) { ?>
+                        <tr>
+                            <td align="center" inline-class="excerpt" class="title tnpc-row-edit tnpc-inline-editable" data-type="text" data-id="<?php echo $p->ID ?>">
+                                <?php
+                                echo TNP_Composer::is_post_field_edited_inline($options['inline_edits'], 'text', $p->ID) ?
+                                        TNP_Composer::get_edited_inline_post_field($options['inline_edits'], 'text', $p->ID) :
+                                        tnp_post_excerpt($p, $excerpt_length)
+                                ?>
+                            </td>
+                        </tr>
+                    <?php } ?>
+
+                    <?php if ($show_read_more_button) { ?>
+                        <tr>
+                            <td align="center" inline-class="button">
+                                <?php echo TNP_Composer::button($button_options) ?>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </table>
                 <?php
-                if (!isset($row[1])) {
-                    continue;
-                }
-                $media = null;
-                if ($show_image) {
-                    $media = tnp_composer_block_posts_get_media($row[1], $size, $alternative_2);
-                    $media->link = tnp_post_permalink($row[1]);
-                }
-                $options['button_url'] = tnp_post_permalink($row[1]);
-                ?>
-                <!-- RIGHT COLUMN -->
-                <table cellpadding="0" cellspacing="0" border="0" width="47%" align="right" class="responsive-table">
-                    <tr>
-                        <td style="padding: 20px 0 40px 0;">
-                            <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                                <?php if ($media) { ?>
-
-                                    <tr>
-                                        <td align="center" valign="middle" class="tnpc-row-edit" data-type="image">
-                                            <?php echo TNP_Composer::image($media) ?>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                                <tr>
-                                    <td align="center"
-                                        inline-class="post-title"
-                                        class="tnpc-row-edit tnpc-inline-editable"
-                                        data-type="title" data-id="<?php echo $row[1]->ID ?>">
-                                            <?php
-                                            echo TNP_Composer::is_post_field_edited_inline($options['inline_edits'], 'title', $row[1]->ID) ?
-                                                    TNP_Composer::get_edited_inline_post_field($options['inline_edits'], 'title', $row[1]->ID) :
-                                                    tnp_post_title($row[1])
-                                            ?>
-                                    </td>
-                                </tr>
-                                <?php if (!empty($options['show_date'])) { ?>
-                                    <tr>
-                                        <td  align="center" inline-class="post-date">
-                                            <?php echo tnp_post_date($row[1]) ?>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                                <tr>
-                                    <td align="center"
-                                        inline-class="post-excerpt"
-                                        class="tnpc-row-edit tnpc-inline-editable"
-                                        data-type="text" data-id="<?php echo $row[1]->ID ?>">
-                                            <?php
-                                            echo TNP_Composer::is_post_field_edited_inline($options['inline_edits'], 'text', $row[1]->ID) ?
-                                                    TNP_Composer::get_edited_inline_post_field($options['inline_edits'], 'text', $row[1]->ID) :
-                                                    tnp_post_excerpt($row[1], $excerpt_length)
-                                            ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center">
-                                        <br>
-                                        <?php echo TNP_Composer::button($options) ?>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+                $items[] = ob_get_clean();
+                
+                } ?>
 
 
-            </td>
-        </tr>
+  <?php echo TNP_Composer::grid($items, ['width'=>$total_width, 'responsive'=>true, 'padding'=>5])?>
 
-    <?php } ?>
 
-</table>
 

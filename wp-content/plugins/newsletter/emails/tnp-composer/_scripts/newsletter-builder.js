@@ -45,8 +45,6 @@ jQuery.fn.perform_block_edit = function () {
         jQuery("#tnpc-edit-block .bgcolor").val(target.css("background-color"));
         jQuery("#tnpc-edit-block .font").val(target.css("font-family"));
 
-        //jQuery('.bgcolor').wpColorPicker().iris('color', target.css("background-color"));
-
         // The row container which is a global variable and used later after the options save
         container = jQuery(this).closest("table");
 
@@ -328,7 +326,7 @@ function openTab(evt, tabName) {
     }
 
     // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(tabName).style.display = "block";
+    document.getElementById(tabName).style.display = "flex";
     evt.currentTarget.className += " active";
 }
 
