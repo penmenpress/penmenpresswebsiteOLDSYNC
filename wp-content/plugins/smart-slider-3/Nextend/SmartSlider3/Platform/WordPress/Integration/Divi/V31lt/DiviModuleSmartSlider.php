@@ -84,7 +84,7 @@ class DiviModuleSmartSlider extends ET_Builder_Module {
     }
 
     public function field_smart_slider_renderer() {
-        $output = sprintf('<input type="button" class="button button-upload" value="%1$s" onclick="NextendSmartSliderSelectModal(jQuery(this).siblings(\'.regular-text\')); return false;" />', n2_('Select slider'));
+        $output = sprintf('<input type="button" class="button button-upload" value="%1$s" onclick="NextendSmartSliderSelectModal(jQuery(this).siblings(\'.regular-text\')); return false;">', n2_('Select slider'));
 
         return $output;
     }

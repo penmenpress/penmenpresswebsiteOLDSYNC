@@ -67,14 +67,13 @@ class Compatibility {
             Shortcode::forceIframe('psw');
         }
 
-        /*
-         * WP Rocket remove from exclusion
-         */
-        if (defined('WP_ROCKET_VERSION') && version_compare(WP_ROCKET_VERSION, '3.7.1.1') < 1) {
-            add_filter('rocket_excluded_inline_js_content', array(
-                $this,
-                'remove_rocket_excluded_inline_js_content'
-            ));
+        if (defined('WC_ETRANSACTIONS_PLUGIN')) {
+            /**
+             * Plugin: https://wordpress.org/plugins/e-transactions-wc/
+             *
+             * @see SSDEV-2680
+             */
+            remove_action('admin_notices', 'hmac_admin_notice');
         }
     }
 
@@ -97,14 +96,5 @@ class Compatibility {
         $shortcode_tags     = $_shortcode_tags;
 
         return $permalink;
-    }
-
-    public function remove_rocket_excluded_inline_js_content($excluded_inline) {
-
-        if (($index = array_search('SmartSliderSimple', $excluded_inline)) !== false) {
-            array_splice($excluded_inline, $index, 1);
-        }
-
-        return $excluded_inline;
     }
 }

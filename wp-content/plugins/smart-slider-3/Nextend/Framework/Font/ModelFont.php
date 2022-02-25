@@ -5,7 +5,7 @@ namespace Nextend\Framework\Font;
 use Nextend\Framework\Form\Container\ContainerTable;
 use Nextend\Framework\Form\Element\Button;
 use Nextend\Framework\Form\Element\Decoration;
-use Nextend\Framework\Form\Element\Mixed;
+use Nextend\Framework\Form\Element\MixedField;
 use Nextend\Framework\Form\Element\Radio\TextAlign;
 use Nextend\Framework\Form\Element\Select;
 use Nextend\Framework\Form\Element\Select\FontWeight;
@@ -41,7 +41,7 @@ class ModelFont extends ModelVisual {
             'alpha' => true
         ));
 
-        new Mixed\FontSize($row1, 'size', n2_('Size'), '14|*|px');
+        new MixedField\FontSize($row1, 'size', n2_('Size'), '14|*|px');
 
         new FontWeight($row1, 'weight', n2_('Font weight'), '');
         new Decoration($row1, 'decoration', n2_('Decoration'));
@@ -90,7 +90,7 @@ class ModelFont extends ModelVisual {
             )
         ));
 
-        new Mixed\TextShadow($row2, 'tshadow', n2_('Text shadow'), '0|*|0|*|1|*|000000FF');
+        new MixedField\TextShadow($row2, 'tshadow', n2_('Text shadow'), '0|*|0|*|1|*|000000FF');
 
         new Textarea($row2, 'extracss', 'CSS', '', array(
             'width'  => 200,

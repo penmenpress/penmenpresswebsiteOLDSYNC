@@ -5,7 +5,7 @@ namespace Nextend\Framework\Style;
 use Nextend\Framework\Form\Container\ContainerTable;
 use Nextend\Framework\Form\Element\Button;
 use Nextend\Framework\Form\Element\MarginPadding;
-use Nextend\Framework\Form\Element\Mixed;
+use Nextend\Framework\Form\Element\MixedField;
 use Nextend\Framework\Form\Element\Tab;
 use Nextend\Framework\Form\Element\Text\Color;
 use Nextend\Framework\Form\Element\Text\NumberAutoComplete;
@@ -69,7 +69,7 @@ class ModelStyle extends ModelVisual {
             )
         ));
 
-        new Mixed\Border($row1, 'border', n2_('Border'), '0|*|solid|*|000000ff');
+        new MixedField\Border($row1, 'border', n2_('Border'), '0|*|solid|*|000000ff');
 
         new NumberAutoComplete($row1, 'borderradius', n2_('Border radius'), '0', array(
             'values' => array(
@@ -84,7 +84,7 @@ class ModelStyle extends ModelVisual {
         ));
 
 
-        new Mixed\BoxShadow($row1, 'boxshadow', n2_('Box shadow'), '0|*|0|*|0|*|0|*|000000ff');
+        new MixedField\BoxShadow($row1, 'boxshadow', n2_('Box shadow'), '0|*|0|*|0|*|0|*|000000ff');
 
         new Textarea($row1, 'extracss', 'CSS', '', array(
             'width'  => 200,

@@ -27,14 +27,14 @@ class ItemButton extends AbstractItem {
     protected $fonts = array(
         'font' => array(
             'defaultName' => 'item-button-font',
-            'value'       => '{"data":[{"color":"ffffffff","size":"14||px","align":"center"}]}'
+            'value'       => '{"data":[{"color":"ffffffff","size":"14||px","align":"center"}, {"extra":""}]}'
         )
     );
 
     protected $styles = array(
         'style' => array(
             'defaultName' => 'item-button-style',
-            'value'       => '{"data":[{"backgroundcolor":"5cba3cff","padding":"10|*|30|*|10|*|30|*|px"}]}'
+            'value'       => '{"data":[{"backgroundcolor":"5cba3cff","padding":"10|*|30|*|10|*|30|*|px"}, {"extra":""}]}'
         )
     );
 

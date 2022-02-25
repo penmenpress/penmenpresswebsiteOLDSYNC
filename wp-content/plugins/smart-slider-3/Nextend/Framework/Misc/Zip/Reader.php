@@ -9,7 +9,7 @@ class Reader {
 
     public static function read($path) {
 
-        if (function_exists('zip_open') && function_exists('zip_read') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        if (class_exists('ZipArchive') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
             $reader = new ZipExtension();
         } else {
             $reader = new Custom();

@@ -67,7 +67,7 @@ $conflicts = $this->getConflicts();
 
         <div class="n2_help_center__search_field">
             <form target="_blank" action="https://smartslider.helpscoutdocs.com/search" method="get">
-                <input name="query" type="text" placeholder="<?php n2_e('Search in the knowledge base'); ?>"/>
+                <input name="query" type="text" placeholder="<?php n2_e('Search in the knowledge base'); ?>">
                 <button type="submit"><?php n2_e('Search'); ?></button>
             </form>
         </div>
@@ -189,6 +189,64 @@ $conflicts = $this->getConflicts();
 
                 $debug[] = '';
             }
+
+            if (function_exists('get_loaded_extensions')) {
+
+                $debug[] = 'Uncommon PHP extensions:';
+
+                $debug[] = implode(" \t", array_diff(get_loaded_extensions(), array(
+                    'Core',
+                    'openssl',
+                    'pcre',
+                    'zlib',
+                    'SPL',
+                    'session',
+                    'standard',
+                    'cgi-fcgi',
+                    'mysqlnd',
+                    'PDO',
+                    'bz2',
+                    'calendar',
+                    'filter',
+                    'hash',
+                    'Reflection',
+                    'zip',
+                    'Zend OPcache',
+                    'shmop',
+                    'sodium',
+                    'date',
+                    'dom',
+                    'ctype',
+                    'xml',
+                    'libxml',
+                    'fileinfo',
+                    'ftp',
+                    'gettext',
+                    'iconv',
+                    'intl',
+                    'json',
+                    'exif',
+                    'mysqli',
+                    'pdo_mysql',
+                    'Phar',
+                    'posix',
+                    'readline',
+                    'SimpleXML',
+                    'soap',
+                    'sockets',
+                    'sysvmsg',
+                    'sysvsem',
+                    'sysvshm',
+                    'tokenizer',
+                    'wddx',
+                    'xmlreader',
+                    'xmlwriter',
+                    'xsl'
+                )));
+
+                $debug[] = '';
+            }
+
 
             $debugConflicts = $this->getDebugConflicts();
             if (empty($debugConflicts)) {

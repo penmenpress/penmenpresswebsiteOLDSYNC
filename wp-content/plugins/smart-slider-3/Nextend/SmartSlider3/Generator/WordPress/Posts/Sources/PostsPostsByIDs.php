@@ -39,7 +39,7 @@ class PostsPostsByIDs extends AbstractGenerator {
         $i    = 0;
         $data = array();
 
-        foreach ($this->getIDs() AS $id) {
+        foreach ($this->getIDs() as $id) {
             $record = array();
             $post   = get_post($id);
             if (!$post) continue;
@@ -91,7 +91,7 @@ class PostsPostsByIDs extends AbstractGenerator {
             if (class_exists('acf')) {
                 $fields = get_fields($post->ID);
                 if (is_array($fields) && !empty($fields) && count($fields)) {
-                    foreach ($fields AS $k => $v) {
+                    foreach ($fields as $k => $v) {
                         $type = $this->getACFType($k, $post->ID);
                         $k    = str_replace('-', '', $k);
 
@@ -109,7 +109,7 @@ class PostsPostsByIDs extends AbstractGenerator {
                             if (isset($v['url'])) {
                                 $record[$k] = $v['url'];
                             } else if (is_array($v)) {
-                                foreach ($v AS $v_v => $k_k) {
+                                foreach ($v as $v_v => $k_k) {
                                     if (is_array($k_k) && isset($k_k['url'])) {
                                         $record[$k . $v_v] = $k_k['url'];
                                     }
@@ -124,6 +124,69 @@ class PostsPostsByIDs extends AbstractGenerator {
                                 $sizes          = $this->getImageSizes($type["value"], $thumbnail_meta['sizes'], $k);
                             }
                             $record = array_merge($record, $sizes);
+                        }
+                    }
+                }
+            }
+
+            $post_meta = get_post_meta($post->ID);
+
+            $excluded_metas = array(
+                'hc-editor-mode',
+                'techline-sidebar'
+            );
+
+            foreach ($excluded_metas as $excluded_meta) {
+                if (isset($post_meta[$excluded_meta])) {
+                    unset($post_meta[$excluded_meta]);
+                }
+            }
+
+            if (count($post_meta) && is_array($post_meta) && !empty($post_meta)) {
+                foreach ($post_meta as $key => $value) {
+                    if (count($value) && is_array($value) && !empty($value)) {
+                        foreach ($value as $v) {
+                            if (!empty($v) && !is_array($v) && !is_object($v)) {
+                                $key = str_replace(array(
+                                    '_',
+                                    '-'
+                                ), array(
+                                    '',
+                                    ''
+                                ), $key);
+                                if (array_key_exists($key, $record)) {
+                                    $key = 'meta' . $key;
+                                }
+                                if (is_serialized($v)) {
+                                    $unserialize_values = unserialize($v);
+                                    $unserialize_count  = 1;
+                                    if (!empty($unserialize_values) && is_array($unserialize_values)) {
+                                        foreach ($unserialize_values as $unserialize_value) {
+                                            if (!empty($unserialize_value) && is_string($unserialize_value)) {
+                                                $record['us_' . $key . $unserialize_count] = $unserialize_value;
+                                                $unserialize_count++;
+                                            } else if (is_array($unserialize_value)) {
+                                                foreach ($unserialize_value as $u_v) {
+                                                    if (is_string($u_v)) {
+                                                        $record['us_' . $key . $unserialize_count] = $u_v;
+                                                        $unserialize_count++;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    $record[$key] = $v;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!empty($record['elementordata'])) {
+                    $elementordatas = json_decode($record['elementordata']);
+                    foreach ($elementordatas as $elementordata) {
+                        foreach ($this->getElementorTextEditors($elementordata) as $elementorKey => $elementorVal) {
+                            $record[$elementorKey] = $elementorVal;
                         }
                     }
                 }
@@ -158,7 +221,7 @@ class PostsPostsByIDs extends AbstractGenerator {
         } else {
             $prefix = $prefix . "_";
         }
-        foreach ($sizes AS $size => $image) {
+        foreach ($sizes as $size => $image) {
             $imageSrc                                               = wp_get_attachment_image_src($thumbnail_id, $size);
             $data[$prefix . 'image_' . $this->clearSizeName($size)] = $imageSrc[0];
         }

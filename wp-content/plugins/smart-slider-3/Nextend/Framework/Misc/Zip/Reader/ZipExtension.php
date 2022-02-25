@@ -3,25 +3,29 @@
 namespace Nextend\Framework\Misc\Zip\Reader;
 
 use Nextend\Framework\Misc\Zip\ReaderInterface;
+use ZipArchive;
 
 class ZipExtension implements ReaderInterface {
 
     public function read($path) {
-        $zip = zip_open($path);
-        if (!is_resource($zip)) {
+
+        $zip = new ZipArchive();
+
+        if (!$zip->open($path)) {
             return array();
         }
+
         $data = array();
-        while ($entry = zip_read($zip)) {
 
-            zip_entry_open($zip, $entry, "r");
+        for ($i = 0; $i < $zip->numFiles; $i++) {
 
-            $this->recursiveRead($data, explode('/', zip_entry_name($entry)), zip_entry_read($entry, zip_entry_filesize($entry)));
+            $stat = $zip->statIndex($i);
 
-            zip_entry_close($entry);
+            $this->recursiveRead($data, explode('/', $stat['name']), $zip->getFromIndex($i));
+
         }
 
-        zip_close($zip);
+        $zip->close();
 
         return $data;
     }

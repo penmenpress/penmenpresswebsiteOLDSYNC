@@ -12,16 +12,16 @@ trait SingletonTrait {
         return isset(static::$instance) ? static::$instance : static::$instance = new static;
     }
 
-    final private function __construct() {
+    private function __construct() {
         $this->init();
     }
 
     protected function init() {
     }
 
-    final private function __wakeup() {
+    final public function __wakeup() {
     }
 
-    final private function __clone() {
+    final public function __clone() {
     }
 }

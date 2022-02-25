@@ -4,7 +4,7 @@ namespace Nextend\Framework\Form\Element;
 
 use Nextend\Framework\Form\AbstractField;
 
-class Connected extends Mixed {
+class Connected extends MixedField {
 
     protected $rowClass = 'n2_field_connected ';
 

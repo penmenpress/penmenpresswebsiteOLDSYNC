@@ -6,7 +6,7 @@ namespace Nextend\SmartSlider3\Application\Admin\Layout\Block\Slide\LayerWindow\
 
 use Nextend\Framework\Form\Container\LayerWindow\ContainerAnimation;
 use Nextend\Framework\Form\Element\Grouping;
-use Nextend\Framework\Form\Element\Mixed;
+use Nextend\Framework\Form\Element\MixedField;
 use Nextend\Framework\Form\Element\OnOff;
 use Nextend\Framework\Form\Element\Select;
 use Nextend\Framework\Form\Element\Select\Easing;

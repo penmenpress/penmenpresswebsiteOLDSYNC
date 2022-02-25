@@ -3,7 +3,7 @@
 namespace Nextend\SmartSlider3\Generator\WordPress\Posts\Sources;
 
 use Nextend\Framework\Form\Container\ContainerTable;
-use Nextend\Framework\Form\Element\Mixed\GeneratorOrder;
+use Nextend\Framework\Form\Element\MixedField\GeneratorOrder;
 use Nextend\Framework\Form\Element\Select;
 use Nextend\Framework\Form\Element\Select\Filter;
 use Nextend\Framework\Form\Element\Text;

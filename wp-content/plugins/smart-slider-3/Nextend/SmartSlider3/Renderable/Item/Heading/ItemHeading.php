@@ -8,7 +8,7 @@ use Nextend\Framework\Form\Container\ContainerTable;
 use Nextend\Framework\Form\Element\Font;
 use Nextend\Framework\Form\Element\Hidden\HiddenFont;
 use Nextend\Framework\Form\Element\Hidden\HiddenStyle;
-use Nextend\Framework\Form\Element\Mixed;
+use Nextend\Framework\Form\Element\MixedField;
 use Nextend\Framework\Form\Element\OnOff;
 use Nextend\Framework\Form\Element\Select;
 use Nextend\Framework\Form\Element\Select\LinkTarget;
@@ -30,7 +30,7 @@ class ItemHeading extends AbstractItem {
     protected $fonts = array(
         'font' => array(
             'defaultName' => 'item-heading-font',
-            'value'       => '{"data":[{"color":"ffffffff","size":"36||px","align":"inherit"}]}'
+            'value'       => '{"data":[{"color":"ffffffff","size":"36||px","align":"inherit"},{"extra":""}]}'
         )
     );
 

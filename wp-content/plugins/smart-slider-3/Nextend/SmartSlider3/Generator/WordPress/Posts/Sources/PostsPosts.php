@@ -3,7 +3,7 @@
 namespace Nextend\SmartSlider3\Generator\WordPress\Posts\Sources;
 
 use Nextend\Framework\Form\Container\ContainerTable;
-use Nextend\Framework\Form\Element\Mixed\GeneratorOrder;
+use Nextend\Framework\Form\Element\MixedField\GeneratorOrder;
 use Nextend\Framework\Form\Element\OnOff;
 use Nextend\Framework\Form\Element\Select;
 use Nextend\Framework\Form\Element\Select\Filter;
@@ -337,8 +337,8 @@ class PostsPosts extends AbstractGenerator {
             $userID                  = get_the_author_meta('ID');
             $record['author_url']    = get_author_posts_url($userID);
             $record['author_avatar'] = get_avatar_url($userID);
-            $record['date']          = get_the_date();
-            $record['modified']      = get_the_modified_date();
+            $record['date']          = get_the_date('Y-m-d H:i:s');
+            $record['modified']      = get_the_modified_date('Y-m-d H:i:s');
 
             $category = get_the_category($post->ID);
             if (isset($category[0])) {
@@ -518,6 +518,13 @@ class PostsPosts extends AbstractGenerator {
                     }
                 }
             }
+
+            /**
+             * We used 'Y-m-d H:i:s' date format, so we can get the hour, minute and second for custom date variables.
+             * but we need to set the date and modified variables back to the WordPress default date_format.
+             */
+            $record['date']     = get_the_date();
+            $record['modified'] = get_the_modified_date();
 
             if (!empty($remove_shortcode)) {
                 foreach ($remove_shortcode as $variable) {

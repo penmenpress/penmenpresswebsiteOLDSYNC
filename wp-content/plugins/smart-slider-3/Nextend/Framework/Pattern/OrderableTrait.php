@@ -4,10 +4,9 @@ namespace Nextend\Framework\Pattern;
 
 trait OrderableTrait {
 
-    protected $ordering = 1000000;
-
     public function getOrdering() {
-        return $this->ordering;
+
+        return isset($this->ordering) ? $this->ordering : 1000000;
     }
 
     /**
