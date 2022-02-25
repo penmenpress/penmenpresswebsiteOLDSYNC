@@ -5,9 +5,10 @@
 			<label for='wpo_restore_single_image_<?php echo $post_id; ?>'>
 				<span class='alignleft'>  <?php _e('Restore original', 'wp-optimize'); ?></span>
 			</label>
-			<input type='button' id='wpo_restore_single_image_<?php echo $post_id; ?>' data-blog='<?php echo get_current_blog_id(); ?>' data-id="<?php echo $post_id; ?>" class='button-primary button alignright' value="<?php _e('Restore', 'wp-optimize');?>">
+			<input type='button' id='wpo_restore_single_image_<?php echo $post_id; ?>' data-blog='<?php echo get_current_blog_id(); ?>' data-id="<?php echo $post_id; ?>" class='button-primary button alignright' value="<?php esc_attr_e('Restore', 'wp-optimize');?>">
 		</div>
-		<p id='smush_info' class='wpo_restore_single_image'> <?php echo $smush_info; ?> </p>
+		<p id='smush_info' class='wpo_restore_single_image'><?php echo $smush_info; ?></p>
+		<div id="wpo_smush_details"><?php echo $smush_details; ?></div>
 	</div>
 	<div class='wpo_smush_single_image compression_level' <?php echo $smush_display; ?>>
 		<label for="enable_lossy_compression">
@@ -26,13 +27,14 @@
 		</label>
 		<div class="smush-options custom_compression" <?php if (!$custom) echo 'style="display:none;"';?>>
 			<span class="alignleft"><?php _e('Maximum compression', 'wp-optimize');?></span>
-			<input id="custom_compression_slider" class="compression_level" data-max="Maximum Compression"  type="range" step="2" value="<?php echo intval($smush_options['image_quality']); ?>" min="89" max="100" list="number" />
+			<input id="custom_compression_slider" class="compression_level" data-max="Maximum Compression"  type="range" step="5" value="<?php echo intval($smush_options['image_quality']); ?>" min="60" max="85" list="number" />
 			<datalist id="number">
-				<option value="89"/>
-				<option value="93"/>
-				<option value="95"/>
-				<option value="97"/>
-				<option value="100"/>
+				<option value="60"/>
+				<option value="65"/>
+				<option value="70"/>
+				<option value="75"/>
+				<option value="80"/>
+				<option value="85"/>
 			</datalist>
 			<span class="alignright"><?php _e('Best image quality', 'wp-optimize');?></span>
 		</div>
@@ -79,6 +81,10 @@
 
 	$menu_page_url = menu_page_url('wpo_images', false);
 
+	if ('' === $menu_page_url && !is_multisite()) {
+		$menu_page_url = admin_url('admin.php?page=wpo_images');
+	}
+
 	if (is_multisite()) {
 		$menu_page_url = network_admin_url('admin.php?page=wpo_images');
 	}
@@ -90,12 +96,12 @@
 
 <div id="smush-information-modal" class="wp-core-ui" style="display:none;">
 	<div class="smush-information"></div>
-	<input type="button" class="wpo_primary_small button-primary information-modal-close" value="<?php _e('Close', 'wp-optimize'); ?>" />
+	<input type="button" class="wpo_primary_small button-primary information-modal-close" value="<?php esc_attr_e('Close', 'wp-optimize'); ?>" />
 </div>
 
 <div id="smush-information-modal-cancel-btn" style="display:none;">
 	<div class="smush-information"></div>
-	<input type="button" class="wpo_primary_small button-primary" value="<?php _e('Cancel', 'wp-optimize'); ?>" />
+	<input type="button" class="wpo_primary_small button-primary" value="<?php esc_attr_e('Cancel', 'wp-optimize'); ?>" />
 </div>
 
 <script type="text/javascript">jQuery(document).trigger('admin-metabox-smush-loaded');</script>

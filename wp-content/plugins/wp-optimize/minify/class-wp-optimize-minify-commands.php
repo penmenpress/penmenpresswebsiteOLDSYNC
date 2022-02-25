@@ -73,8 +73,14 @@ class WP_Optimize_Minify_Commands {
 
 		// deletes temp files and old caches incase CRON isn't working
 		WP_Optimize_Minify_Cache_Functions::cache_increment();
-		$state = WP_Optimize_Minify_Cache_Functions::purge_temp_files();
-		$old = WP_Optimize_Minify_Cache_Functions::purge_old();
+		if (wp_optimize_minify_config()->always_purge_everything()) {
+			WP_Optimize_Minify_Cache_Functions::purge();
+			$state = array();
+			$old = array();
+		} else {
+			$state = WP_Optimize_Minify_Cache_Functions::purge_temp_files();
+			$old = WP_Optimize_Minify_Cache_Functions::purge_old();
+		}
 		$others = WP_Optimize_Minify_Cache_Functions::purge_others();
 		$files = $this->get_minify_cached_files();
 
@@ -119,6 +125,14 @@ class WP_Optimize_Minify_Commands {
 			if (!isset($new_data['ignore_list'])) $new_data['ignore_list'] = array();
 			if (!isset($new_data['blacklist'])) $new_data['blacklist'] = array();
 		}
+
+		/**
+		 * Filters the data before saving it
+		 *
+		 * @param array $new_data - The original data
+		 * @return array The data, altered or not
+		 */
+		$new_data = apply_filters('wpo_save_minify_settings', $new_data);
 
 		if (!class_exists('WP_Optimize_Minify_Config')) return array(
 			'success' => false,

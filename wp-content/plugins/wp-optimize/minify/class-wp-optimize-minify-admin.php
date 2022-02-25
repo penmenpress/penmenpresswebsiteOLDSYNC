@@ -28,6 +28,9 @@ class WP_Optimize_Minify_Admin {
 		add_action('after_switch_theme', array('WP_Optimize_Minify_Cache_Functions', 'cache_increment'));
 		add_action('updraftcentral_version_updated', array('WP_Optimize_Minify_Cache_Functions', 'reset'));
 		add_action('elementor/editor/after_save', array('WP_Optimize_Minify_Cache_Functions', 'reset'));
+		add_action('fusion_cache_reset_after', array('WP_Optimize_Minify_Cache_Functions', 'reset'));
+		// Output asset preload placeholder, replaced by premium
+		add_action('wpo_minify_settings_tabs', array($this, 'output_assets_preload_placeholder'), 10, 1);
 
 		add_action('wp_optimize_register_admin_content', array($this, 'register_content'));
 	}
@@ -55,14 +58,6 @@ class WP_Optimize_Minify_Admin {
 	public function admin_enqueue_scripts($hook) {
 		$enqueue_version = (defined('WP_DEBUG') && WP_DEBUG) ? WPO_VERSION.'.'.time() : WPO_VERSION;
 		$min_or_not_internal = (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) ? '' : '-'. str_replace('.', '-', WPO_VERSION). '.min';
-		
-		wp_enqueue_script(
-			'wp-optimize-minify-admin-purge',
-			WPO_PLUGIN_URL.'js/minify-admin-purge' . $min_or_not_internal . '.js',
-			array('jquery', 'wp-optimize-send-command'),
-			$enqueue_version
-		);
-
 		if (preg_match('/wp\-optimize/i', $hook)) {
 			wp_enqueue_script('wp-optimize-min-js', WPO_PLUGIN_URL.'js/minify' . $min_or_not_internal . '.js', array('jquery', 'wp-optimize-admin-js'), $enqueue_version);
 		}
@@ -140,6 +135,10 @@ class WP_Optimize_Minify_Admin {
 	 * @return void
 	 */
 	public function output_status() {
+		if (!class_exists('WP_Optimize_Detect_Minify_Plugins')) {
+			require_once(WP_OPTIMIZE_MINIFY_DIR.'/class-wp-optimize-detect-minify-plugins.php');
+		}
+		$this->found_incompatible_plugins = WP_Optimize_Detect_Minify_Plugins::get_instance()->get_active_minify_plugins();
 		$wpo_minify_options = wp_optimize_minify_config()->get();
 		$cache_path = WP_Optimize_Minify_Cache_Functions::cache_path();
 		WP_Optimize()->include_template(
@@ -150,6 +149,7 @@ class WP_Optimize_Minify_Admin {
 				'show_information_notice' => !get_user_meta(get_current_user_id(), 'wpo-hide-minify-information-notice', true),
 				'cache_dir' => $cache_path['cachedir'],
 				'can_purge_the_cache' => WP_Optimize()->can_purge_the_cache(),
+				'active_minify_plugins' => apply_filters('wpo_minify_found_incompatible_plugins', $this->found_incompatible_plugins),
 			)
 		);
 	}
@@ -216,6 +216,21 @@ class WP_Optimize_Minify_Admin {
 			array(
 				'wpo_minify_options' => $wpo_minify_options,
 				'default_protocol' => $url['scheme']
+			)
+		);
+	}
+
+	/**
+	 * Minify - Outputs the settings tab
+	 *
+	 * @return void
+	 */
+	public function output_assets_preload_placeholder($wpo_minify_options) {
+		WP_Optimize()->include_template(
+			'minify/asset-preload.php',
+			false,
+			array(
+				'wpo_minify_options' => $wpo_minify_options
 			)
 		);
 	}

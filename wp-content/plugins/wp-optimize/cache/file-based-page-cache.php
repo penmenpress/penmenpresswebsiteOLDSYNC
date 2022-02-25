@@ -54,7 +54,7 @@ if (!preg_match('#index\.php$#i', $_SERVER['REQUEST_URI']) && !preg_match('#site
 if (!empty($_COOKIE)) {
 	$wp_cookies = array('wordpressuser_', 'wordpresspass_', 'wordpress_sec_', 'wordpress_logged_in_');
 
-	if (empty($GLOBALS['wpo_cache_config']['enable_user_caching']) || false == $GLOBALS['wpo_cache_config']['enable_user_caching']) {
+	if (!wpo_cache_loggedin_users()) {
 		foreach ($_COOKIE as $key => $value) {
 			foreach ($wp_cookies as $cookie) {
 				if (false !== strpos($key, $cookie)) {

@@ -15,6 +15,8 @@ class WP_Optimize_Options {
 		'retention-period' => '',
 		'enable-admin-menu' => 'false',
 		'enable_cache_in_admin_bar' => true,
+		'trackbacks_action' => array(),
+		'comments_action' => array(),
 		'auto' => '',
 		'logging' => '',
 		'logging-additional' => '',
@@ -163,7 +165,11 @@ class WP_Optimize_Options {
 		return $this->get_option('wpo-sites', array('all'));
 	}
 
-	
+	/**
+	 * Save options
+	 *
+	 * @return array
+	 */
 	public function save_settings($settings) {
 		$output = array('messages' => array(), 'errors' => array());
 		if (!empty($settings["enable-schedule"])) {
@@ -191,6 +197,14 @@ class WP_Optimize_Options {
 			$this->update_option('retention-period', $retention_period);
 		} else {
 			$this->update_option('retention-enabled', 'false');
+		}
+
+		if (!empty($settings["enable-revisions-retention"])) {
+			$revisions_retention_count = (int) $settings['revisions-retention-count'];
+			$this->update_option('revisions-retention-enabled', 'true');
+			$this->update_option('revisions-retention-count', $revisions_retention_count);
+		} else {
+			$this->update_option('revisions-retention-enabled', 'false');
 		}
 
 		// Get saved admin menu value before check.
@@ -269,6 +283,24 @@ class WP_Optimize_Options {
 	public function wipe_settings() {
 		global $wpdb;
 
+		wp_cache_flush();
+		
+		// Delete the user meta if user meta is set for ignores the table delete warning
+		$user_query = new WP_User_Query(array('meta_key' => 'wpo-ignores-table-delete-warning', 'meta_value' => '1', 'fields' => 'ID'));
+		$users = $user_query->get_results();
+		if (!empty($users)) {
+			foreach ($users as $user_id) {
+				delete_user_meta($user_id, 'wpo-ignores-table-delete-warning');
+			}
+		}
+
+		// disable cache and clean any information related to WP-Optimize Cache.
+		WP_Optimize()->get_page_cache()->clean_up();
+		// delete settings from .htaccess
+		WP_Optimize::get_browser_cache()->disable();
+		WP_Optimize::get_gzip_compression()->disable();
+
+		// delete settings from options table.
 		$keys = '"' . implode('", "', $this->get_additional_settings_keys()) . '"';
 
 		if (is_multisite()) {
@@ -276,14 +308,6 @@ class WP_Optimize_Options {
 		} else {
 			$result = $wpdb->query("DELETE FROM {$wpdb->options} WHERE `option_name` LIKE 'wp-optimize-%' OR `option_name` IN ({$keys})");
 		}
-
-		wp_cache_flush();
-
-		// disable cache and clean any information related to WP-Optimize Cache.
-		WPO_Page_Cache::instance()->clean_up();
-		// delete settings from .htaccess
-		WP_Optimize::get_browser_cache()->disable();
-		WP_Optimize::get_gzip_compression()->disable();
 
 		return $result;
 	}
@@ -321,7 +345,7 @@ class WP_Optimize_Options {
 			
 			$optimizations = $optimizer->get_optimizations();
 			
-			foreach ($optimizations as $optimization_id => $optimization) {
+			foreach ($optimizations as $optimization) {
 				if (empty($optimization->available_for_auto)) continue;
 				$auto_id = $optimization->get_auto_id();
 				$new_auto_options[$auto_id] = empty($options_from_user[$auto_id]) ? 'false' : 'true';

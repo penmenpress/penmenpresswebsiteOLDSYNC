@@ -2,9 +2,9 @@
 
 if (!defined('WPO_PLUGIN_MAIN_PATH')) die('No direct access allowed');
 
-if (!class_exists('Updraft_Notices_1_0')) require_once(WPO_PLUGIN_MAIN_PATH.'includes/updraft-notices.php');
+if (!class_exists('Updraft_Notices_1_1')) require_once(WPO_PLUGIN_MAIN_PATH.'includes/updraft-notices.php');
 
-class WP_Optimize_Notices extends Updraft_Notices_1_0 {
+class WP_Optimize_Notices extends Updraft_Notices_1_1 {
 
 	protected static $_instance = null;
 
@@ -59,14 +59,13 @@ class WP_Optimize_Notices extends Updraft_Notices_1_0 {
 				'validity_function' => 'is_updraftcentral_installed',
 			),
 			'rate_plugin' => array(
-				'prefix' => '',
-				'title' => __('Like WP-Optimize and can spare one minute?', 'wp-optimize'),
-				'text' => __('Please help WP-Optimize by giving a positive review at wordpress.org.', 'wp-optimize'),
-				'image' => 'notices/wp_optimize_logo.png',
+				'text' => __("Hey - We noticed WP-Optimize has kept your site running fast for a while.  If you like us, please consider leaving a positive review to spread the word.  Or if you have any issues or questions please leave us a support message", 'wp-optimize') . ' <a href="https://wordpress.org/support/plugin/wp-optimize/" target="_blank">' . __('here', 'wp-optimize') . '.</a><br>' . __('Thank you so much!', 'wp-optimize') . ' - <b>WP-Optimize</b><br>',
+				'image' => 'notices/ud_smile.png',
 				'button_link' => 'https://wordpress.org/support/plugin/wp-optimize/reviews/?rate=5#new-post',
 				'button_meta' => 'review',
-				'dismiss_time' => 'dismiss_page_notice_until',
-				'supported_positions' => $this->anywhere,
+				'dismiss_time' => 'dismiss_review_notice',
+				'supported_positions' => $this->dashboard_top,
+				'validity_function' => 'show_rate_notice'
 			),
 			'translation_needed' => array(
 				'prefix' => '',
@@ -123,6 +122,27 @@ class WP_Optimize_Notices extends Updraft_Notices_1_0 {
 				'supported_positions' => $this->anywhere,
 				'validity_function' => 'is_wpo_premium_installed',
 			),
+			'wpo-power-tweaks' => array(
+				'prefix' => '',
+				'title' => __("Power tweaks for advanced users and better site performance.", "wp-optimize"),
+				'text' => __("WP-Optimize Premium comes with the power tweaks that will enable you to improve performance by targeting specific weak points, either in WordPress Core, or in popular plugins.", "wp-optimize"),
+				'image' => 'notices/wp_optimize_logo.png',
+				'button_link' => 'https://getwpo.com/faqs/#Power-tweaks-2-',
+				'button_meta' => 'wpo-premium',
+				'dismiss_time' => 'dismiss_notice',
+				'supported_positions' => $this->anywhere,
+				'validity_function' => 'is_wpo_premium_installed',
+			),
+			'subscriben' => array(
+				'prefix' => '',
+				'title' => 'Subscriben ' .__('by', 'wp-optimize'). ' UpdraftPlus',
+				'text' => __("The WordPress subscription extension for WooCommerce store owners.", "wp-optimize"),
+				'image' => 'notices/subscriben.png',
+				'button_link' => 'https://subscribenplugin.com',
+				'button_meta' => 'read_more',
+				'dismiss_time' => 'dismiss_notice',
+				'supported_positions' => $this->anywhere,
+			),
 
 			// The sale adverts content starts here
 			'blackfriday' => array(
@@ -133,23 +153,9 @@ class WP_Optimize_Notices extends Updraft_Notices_1_0 {
 				'button_link' => 'https://getwpo.com',
 				'button_meta' => 'wp-optimize',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'blackfridaysale2020',
-				'valid_from' => '2020-11-20 00:00:00',
-				'valid_to' => '2020-11-30 23:59:59',
-				'supported_positions' => $this->dashboard_top_or_report,
-				'validity_function' => 'is_wpo_premium_installed',
-			),
-			'christmas' => array(
-				'prefix' => '',
-				'title' => __('Christmas sale - 20% off WP-Optimize Premium until December 25th', 'wp-optimize'),
-				'text' => __('To benefit, use this discount code:', 'wp-optimize').' ',
-				'image' => 'notices/christmas.png',
-				'button_link' => 'https://getwpo.com',
-				'button_meta' => 'wp-optimize',
-				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'christmassale2020',
-				'valid_from' => '2020-12-01 00:00:00',
-				'valid_to' => '2020-12-25 23:59:59',
+				'discount_code' => 'blackfridaysale2022',
+				'valid_from' => '2022-11-20 00:00:00',
+				'valid_to' => '2022-11-30 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 				'validity_function' => 'is_wpo_premium_installed',
 			),
@@ -161,23 +167,23 @@ class WP_Optimize_Notices extends Updraft_Notices_1_0 {
 				'button_link' => 'https://getwpo.com',
 				'button_meta' => 'wp-optimize',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'newyearsale2021',
-				'valid_from' => '2020-12-26 00:00:00',
-				'valid_to' => '2021-01-14 23:59:59',
+				'discount_code' => 'newyearsale2023',
+				'valid_from' => '2022-12-26 00:00:00',
+				'valid_to' => '2023-01-14 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 				'validity_function' => 'is_wpo_premium_installed',
 			),
 			'spring' => array(
 				'prefix' => '',
-				'title' => __('Spring sale - 20% off WP-Optimize Premium until May 15th', 'wp-optimize'),
+				'title' => __('Spring sale - 20% off WP-Optimize Premium until May 31st', 'wp-optimize'),
 				'text' => __('To benefit, use this discount code:', 'wp-optimize').' ',
 				'image' => 'notices/spring.png',
 				'button_link' => 'https://getwpo.com',
 				'button_meta' => 'wp-optimize',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'springsale2020',
-				'valid_from' => '2020-04-01 00:00:00',
-				'valid_to' => '2020-05-15 23:59:59',
+				'discount_code' => 'springsale2022',
+				'valid_from' => '2022-05-01 00:00:00',
+				'valid_to' => '2022-05-31 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 				'validity_function' => 'is_wpo_premium_installed',
 			),
@@ -189,9 +195,9 @@ class WP_Optimize_Notices extends Updraft_Notices_1_0 {
 				'button_link' => 'https://getwpo.com',
 				'button_meta' => 'wp-optimize',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'summersale2020',
-				'valid_from' => '2020-07-01 00:00:00',
-				'valid_to' => '2020-07-31 23:59:59',
+				'discount_code' => 'summersale2022',
+				'valid_from' => '2022-07-01 00:00:00',
+				'valid_to' => '2022-07-31 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 				'validity_function' => 'is_wpo_premium_installed',
 			),
@@ -204,9 +210,9 @@ class WP_Optimize_Notices extends Updraft_Notices_1_0 {
 				'campaign' => 'collection',
 				'button_meta' => 'collection',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'WPO2020',
-				'valid_from' => '2020-09-01 00:00:00',
-				'valid_to' => '2020-09-30 23:59:59',
+				'discount_code' => 'WPO2022',
+				'valid_from' => '2022-09-01 00:00:00',
+				'valid_to' => '2022-09-30 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 			)
 		);
@@ -278,6 +284,24 @@ class WP_Optimize_Notices extends Updraft_Notices_1_0 {
 	}
 
 	/**
+	 * This function will check if we should display the rate notice or not
+	 *
+	 * @return boolean - to indicate if we should show the notice or not
+	 */
+	protected function show_rate_notice() {
+		
+		$options = WP_Optimize()->get_options();
+		$installed = $options->get_option('installed-for', 0);
+		$installed_for = time() - $installed;
+		
+		if ($installed && $installed_for > 28*86400) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * This method calls the parent verson and will work out if the user is using a non english language and if so returns true so that they can see the translation advert.
 	 *
 	 * @param  String $plugin_base_dir the plugin base directory
@@ -297,7 +321,7 @@ class WP_Optimize_Notices extends Updraft_Notices_1_0 {
 	 * @param  String  $website_home a string to be displayed
 	 * @return String                returns a string of the completed url
 	 */
-	protected function url_start($html_allowed = false, $url, $https = false, $website_home = 'updraftplus.com/wp-optimize') {
+	protected function url_start($html_allowed, $url, $https = false, $website_home = 'getwpo.com') {
 		return parent::url_start($html_allowed, $url, $https, $website_home);
 	}
 

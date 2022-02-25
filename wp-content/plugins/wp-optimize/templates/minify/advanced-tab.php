@@ -70,8 +70,31 @@
 		</div>		
 		
 	</div>
-	<h3><?php _e('Development options', 'wp-optimize'); ?></h3>
+
+	<form method="post" action="#">
+
+	<h3><?php _e('Advanced options', 'wp-optimize'); ?></h3>
 	<div class="wpo-fieldgroup">
+		<div class="wpo-fieldgroup__subgroup">
+			<label for="wpo_min_cache_lifespan">
+				<?php _e('Cache lifespan', 'wp-optimize'); ?>
+			</label>
+			<p>
+				<input
+					name="cache_lifespan"
+					id="wpo_min_cache_lifespan"
+					class="cache_lifespan wpo-save-setting"
+					type="number"
+					min="0"
+					value="<?php echo intval($wpo_minify_options['cache_lifespan']);?>"
+				> <?php _e('days', 'wp-optimize'); ?>
+			</p>
+			<p>
+				<?php _e('In order to prevent broken pages when using a third party page caching, WP-Optimize keeps the stale minified cache for 30 days.', 'wp-optimize'); ?>
+				<br><?php _e('Enter 0 to never keep stale cache.', 'wp-optimize'); ?>
+			</p>
+		</div>
+
 		<div class="switch-container">
 			<label class="switch">
 				<input
@@ -90,9 +113,6 @@
 		</div>
 		<p><?php _e('Enabling the debug mode will add various comments and show more information in the files list.', 'wp-optimize'); ?> <?php _e('It also adds extra actions in the status tab.', 'wp-optimize'); ?></p>
 	</div>
-
-	<form method="post" action="#">
-
 	<h3><?php _e('Default exclusions', 'wp-optimize'); ?></h3>
 	<div class="wpo-fieldgroup">
 		<div class="switch-container">
@@ -220,43 +240,13 @@
 						class="large-text code"
 						placeholder="https://cdn.example.com"
 						disabled
-					><?php echo $wpo_minify_options['hpreconnect']; ?></textarea>
+					><?php echo esc_textarea($wpo_minify_options['hpreconnect']); ?></textarea>
 					<p>
 						<?php _e('Use the complete scheme (http:// or https://) followed by the domain name only (no file paths).', 'wp-optimize'); ?>
 					</p>
 					<p>
 						<?php _e('Examples: https://fonts.googleapis.com, https://fonts.gstatic.com', 'wp-optimize'); ?>
 					</p>
-				</fieldset>
-			</div>
-	
-			<h3><?php _e('Preload Headers', 'wp-optimize'); ?></h3>
-			<div class="wpo-fieldgroup">
-				<fieldset>
-					<legend class="screen-reader-text">
-					<?php _e('Preload Headers', 'wp-optimize'); ?>
-					</legend>
-					<label for="hpreload">
-						<span class="wpo_min-label-pad">
-							<?php _e('Insert your "complete PHP header code" here:', 'wp-optimize'); ?>
-						</span>
-					</label>
-					<textarea
-						name="hpreload"
-						rows="7"
-						cols="50"
-						id="hpreload"
-						class="large-text code"
-						disabled
-						placeholder="Link: &lt;https://cdn.example.com/s/font/v15/somefile.woff&gt;; rel=preload; as=font; crossorigin"
-					><?php echo $wpo_minify_options['hpreload']; ?></textarea>
-					<p>
-						<?php _e('Example of a "complete PHP header code" to paste above', 'wp-optmize'); ?>
-					</p>
-					<p>
-						<?php _e('Link: &lt;https://fonts.gstatic.com/s/opensans/v15/mem8YaGs126MiZpBA-UFVZ0d.woff&gt;; rel=preload; as=font; crossorigin</p>', 'wp-optmize'); ?>
-					<p>
-						<?php _e('Link: &lt;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2&gt;; rel=preload; as=font; crossorigin</p>', 'wp-optmize'); ?>
 				</fieldset>
 			</div>
 	
@@ -274,7 +264,7 @@
 						id="merge_allowed_urls"
 						class="large-text code"
 						placeholder="<?php esc_attr_e('e.g.: example.com', 'wp-optimize'); ?>"
-					><?php echo $wpo_minify_options['merge_allowed_urls']; ?></textarea>
+					><?php echo esc_textarea($wpo_minify_options['merge_allowed_urls']); ?></textarea>
 				</fieldset>
 			</div>
 	
@@ -293,7 +283,7 @@
 								type="text"
 								name="cdn_url"
 								id="cdn_url"
-								value="<?php echo isset($wpo_minify_options['cdn_url']) ? $wpo_minify_options['cdn_url'] : ''; ?>"
+								value="<?php echo isset($wpo_minify_options['cdn_url']) ? esc_attr($wpo_minify_options['cdn_url']) : ''; ?>"
 								size="80"
 							/>
 						</p>
