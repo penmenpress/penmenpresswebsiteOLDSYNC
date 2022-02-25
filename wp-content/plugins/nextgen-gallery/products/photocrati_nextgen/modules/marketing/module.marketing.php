@@ -28,7 +28,10 @@ class M_Marketing extends C_Base_Module
 
     public static function is_plus_or_pro_enabled()
     {
-        return defined('NGG_PRO_PLUGIN_BASENAME') || defined('NGG_PLUS_PLUGIN_BASENAME') || is_multisite();
+        return defined('NGG_PRO_PLUGIN_BASENAME')
+            || defined('NGG_PLUS_PLUGIN_BASENAME')
+            || defined('NGG_STARTER_PLUGIN_BASENAME')
+            || is_multisite();
     }
 
     /**
@@ -109,6 +112,8 @@ class M_Marketing extends C_Base_Module
 
             $forms->add_form(NGG_OTHER_OPTIONS_SLUG, 'marketing_image_protection');
         });
+
+        add_action('in_admin_header', [$this, 'admin_header']);
     }
 
     function _register_utilities()
@@ -171,7 +176,40 @@ class M_Marketing extends C_Base_Module
 
     function initialize()
     {
-        
+    }
+
+    public function admin_header()
+    {
+        if (self::is_plus_or_pro_enabled())
+            return;
+
+        if (empty($_REQUEST['page']))
+            return;
+
+        // The following detects if we are viewing a NextGEN admin page.
+        $is_modern_page = FALSE;
+        $keys = ['ngg', 'nggallery', 'nextgen-gallery'];
+        foreach ($keys as $key) {
+            $search = strpos($_REQUEST['page'], $key) !== FALSE;
+            if ($search)
+                $is_modern_page = TRUE;
+        }
+
+        if (!M_NextGen_Admin::is_ngg_legacy_page() && !$is_modern_page)
+            return;
+
+        $url = self::get_utm_link('https://www.imagely.com/wordpress-gallery-plugin/nextgen-pro/', 'topbar', 'getnextgenpro');
+
+        $message = sprintf(
+            __('You are using NextGEN Gallery. To unlock more features, consider <a href="%s" target="_blank">upgrading to NextGEN Pro</a>.', 'nggallery'),
+            $url
+        );
+
+        $view = new C_MVC_View('photocrati-marketing#admin-header-banner', [
+            'message' => $message
+        ]);
+
+        print $view->render(TRUE);
     }
 
     /**
@@ -186,7 +224,15 @@ class M_Marketing extends C_Base_Module
     {
         if (!empty($hash))
             $hash = '#' . $hash;
-        return 'https://www.imagely.com' . $path . '?utm_source=' . $src . '&utm_medium=' . $medium . '&utm_campaign=' . $campaign . $hash;
+
+        $url = M_Marketing::get_utm_link(
+            'https://www.imagely.com' . $path ,
+            $medium,
+            $campaign,
+            $src
+        );
+
+        return $url . $hash;
     }
 
     /**
@@ -269,6 +315,30 @@ class M_Marketing extends C_Base_Module
         self::$big_hitters_block_two_cache[$medium] = $block->render();
 
         return self::$big_hitters_block_two_cache[$medium];
+    }
+
+    /**
+     * Get UTM link filtered through the ngg_marketing_parameters filter
+     * @param string $url
+     * @param string $medium
+     * @param string $campaign
+     * @param string $source
+     * @return string
+     */
+    public static function get_utm_link($url, $medium = 'default', $campaign = 'default', $source = 'ngg')
+    {
+        $params = apply_filters('ngg_marketing_parameters', [
+            'url'      => $url,
+            'medium'   => $medium,
+            'campaign' => $campaign,
+            'source'   => $source
+        ]);
+
+        $url .=  '?utm_source='  . $params['source'];
+        $url .= '&utm_medium='   . $params['medium'];
+        $url .= '&utm_campaign=' . $params['campaign'];
+
+        return $url;
     }
 
     public static function enqueue_blocks_style()

@@ -204,7 +204,6 @@ class nggAdminPanel{
 		wp_register_script('ngg-progressbar', NGGALLERY_URLPATH .'admin/js/ngg.progressbar.js', array('jquery'), NGG_SCRIPT_VERSION);
 
 		wp_enqueue_script('wp-color-picker');
-        wp_enqueue_style('imagely-admin-font', 'https://fonts.googleapis.com/css?family=Lato:300,400,700,900', array(), NGG_SCRIPT_VERSION );
 
 		switch ($_GET['page']) {
 			case NGGFOLDER :
@@ -223,7 +222,11 @@ class nggAdminPanel{
     						'imageCount' => '1'
     			) );
     			wp_enqueue_script( 'shutter' );
-    			add_thickbox();
+
+    			// Thickbox is used to display images being managed
+                wp_dequeue_script('thickbox');
+                C_Lightbox_Library_Manager::get_instance()->enqueue('thickbox');
+
 			break;
 			case "nggallery-manage-album" :
                 wp_enqueue_script( 'jquery-ui-dialog' );

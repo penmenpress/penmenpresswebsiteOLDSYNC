@@ -4,6 +4,7 @@
  * @var string $cache_confirmation
  * @var string $cache_label
  * @var string $disable_fontawesome_field
+ * @var string $disable_ngg_tags_page_field
  * @var string $galleries_in_feeds
  * @var string $galleries_in_feeds_help
  * @var string $galleries_in_feeds_label
@@ -18,6 +19,7 @@
  * @var string $random_widget_cache_ttl_field
  * @var string $slug_field
  * @var string $update_legacy_featured_images_field
+ * @var string $dynamic_image_filename_separator_use_dash
  */
 ?>
 <table>
@@ -114,4 +116,8 @@
     <?php print $alternate_random_method_field; ?>
 
     <?php print $disable_fontawesome_field; ?>
+
+    <?php print $disable_ngg_tags_page_field; ?>
+
+    <?php print $dynamic_image_filename_separator_use_dash; ?>
 </table>
