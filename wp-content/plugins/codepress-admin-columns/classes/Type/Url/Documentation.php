@@ -11,6 +11,8 @@ class Documentation implements Type\Url {
 	const URL = 'https://docs.admincolumns.com';
 
 	const ARTICLE_ACTIONS_FILTERS = '/article/15-hooks-and-filters';
+	const ARTICLE_CUSTOM_FIELD = '/article/59-custom-field-columns';
+	const ARTICLE_CUSTOM_FIELD_EDITING = '/article/68-enable-editing-for-custom-field-columns';
 	const ARTICLE_INLINE_EDITING = '/article/27-how-to-use-inline-editing';
 	const ARTICLE_SORTING = '/article/34-how-to-enable-sorting';
 	const ARTICLE_LOCAL_STORAGE = '/article/58-how-to-setup-local-storage';
@@ -35,6 +37,14 @@ class Documentation implements Type\Url {
 
 	public function get_url() {
 		return self::URL . $this->get_path();
+	}
+
+	public static function create_with_path( $path ) {
+		return new self( $path );
+	}
+
+	public function __toString() {
+		return $this->get_url();
 	}
 
 }

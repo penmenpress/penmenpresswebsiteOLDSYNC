@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Admin Columns - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-04-15 09:06:03+0000\n"
+"PO-Revision-Date: 2021-10-13 22:46:57+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,231 +11,614 @@ msgstr ""
 "Language: tr\n"
 "Project-Id-Version: Plugins - Admin Columns - Stable (latest release)\n"
 
+#: templates/admin/page/settings-section-restore.php:4
+msgid "Restore settings"
+msgstr "Ayarları geri yükle"
+
+#: templates/admin/page/settings-section-pro-cta.php:159
+msgid "Upgrade to Admin Columns Pro"
+msgstr "Admin Columns Pro'ya yükselt"
+
+#: templates/admin/page/settings-section-pro-cta.php:153
+msgid "View all Pro features"
+msgstr "Tüm Pro özellikleri gör"
+
+#: templates/admin/page/settings-section-pro-cta.php:147
+msgid "Insert a post, user or anything really directly from the overview."
+msgstr "Genel görünüm ekranından yazı, kullanıcı ya da istediğiniz öğeyi ekleyin."
+
+#: templates/admin/page/settings-section-pro-cta.php:140
+msgid "Get access to all our integrations for popular WordPress plugins"
+msgstr "En sevilen WordPress eklentilerimiz ile bütünleştirmelerimizi edinin"
+
+#: templates/admin/page/settings-section-pro-cta.php:139
+msgid "All integration add-ons"
+msgstr "Tüm bütünleştirme eklentileri"
+
+#: templates/admin/page/settings-section-pro-cta.php:133
+msgid "Manage columns for your Taxonomy overview pages"
+msgstr "Sınıflandırma genel görünüm sayfalarının sütunlarını yönetin"
+
+#: templates/admin/page/settings-section-pro-cta.php:132
+msgid "Taxonomy Support"
+msgstr "Sınıflandırma desteği"
+
+#: templates/admin/page/settings-section-pro-cta.php:126
+msgid "Create a better user experience when visiting the list table by setting preferences and hiding the functionality you do not need."
+msgstr "Tercihleri ayarlayarak ve ihtiyacınız olmayan işlevselliği gizleyerek liste tablosunu ziyaret ederken daha iyi bir kullanıcı deneyimi oluşturun."
+
+#: templates/admin/page/settings-section-pro-cta.php:125
+msgid "Customize List Table"
+msgstr "Liste tablosunu özelleştir"
+
+#: templates/admin/page/settings-section-pro-cta.php:118
+msgid "And of course, all network sites can use Admin Columns."
+msgstr "Ve elbette, tüm ağ siteleri Admin Columns'u kullanabilir."
+
+#: templates/admin/page/settings-section-pro-cta.php:117
+msgid "Get insights about your entire network of sites."
+msgstr "Tüm site ağınız hakkında içgörüler alın."
+
+#: templates/admin/page/settings-section-pro-cta.php:114
+msgid "Multisite Support"
+msgstr "Çoklu site desteği"
+
+#: templates/admin/page/settings-section-pro-cta.php:107
+msgid "Admin Columns can generate a fully customized and downloadable CSV."
+msgstr "Admin Columns tamamen özelleştirilmiş ve indirilebilir bir CSV oluşturabilir."
+
+#: templates/admin/page/settings-section-pro-cta.php:106
+msgid "Want to import content in Excel, Mailchimp or anything else?"
+msgstr "Excel, Mailchimp veya başka bir yerden içerik aktarmak ister misiniz?"
+
+#: templates/admin/page/settings-section-pro-cta.php:103
+msgid "Export Table to CSV"
+msgstr "Tabloyu CSV'ye aktar"
+
+#: templates/admin/page/settings-section-pro-cta.php:96
+msgid "Simply scroll through your columns horizontally so your overview can be complete and functional."
+msgstr "Genel bakışınızın eksiksiz ve işlevsel olabilmesi için sütunlarınızda yatay olarak gezinmeniz yeterlidir."
+
+#: templates/admin/page/settings-section-pro-cta.php:95
+msgid "Need more columns than the size of your screen?"
+msgstr "Ekranınızın boyutundan daha fazla sütuna mı ihtiyacınız var?"
+
+#: templates/admin/page/settings-section-pro-cta.php:85
+msgid "With Bulk Edit you can update thousands of values at once."
+msgstr "Toplu düzenleme ile aynı anda binlerce değeri güncelleyebilirsiniz."
+
+#: templates/admin/page/settings-section-pro-cta.php:84
+msgid "Need to update multiple values at once?"
+msgstr "Aynı anda birden çok değeri güncelleştirmeniz mi gerekiyor?"
+
+#: templates/admin/page/settings-section-pro-cta.php:73
+msgid "No need to open your post, page, order, user or anything else."
+msgstr "Yazınızı, sayfanızı, siparişinizi, kullanıcınızı veya başka bir şeyi açmanıza gerek yok."
+
+#: templates/admin/page/settings-section-pro-cta.php:63
+msgid "Craft overviews in minutes that display precisely what you want to see."
+msgstr "Görmek istedikleriniz dakikalar içinde kolayca hazırlayın."
+
+#: templates/admin/page/settings-section-pro-cta.php:62
+msgid "Choose from a well designed set of columns or create your own."
+msgstr "İyi tasarlanmış bir sütun kümesi arasından seçim yapın veya kendiniz oluşturun."
+
+#: templates/admin/page/settings-section-pro-cta.php:59
+msgid "Unlimited Columns"
+msgstr "Sınırsız sütun"
+
+#: templates/admin/page/settings-section-pro-cta.php:52
+msgid "Switching between sets is easy and can be done from any list table."
+msgstr "Kümeler arasında geçiş yapmak kolaydır ve herhangi bir liste tablosundan yapılabilir."
+
+#: templates/admin/page/settings-section-pro-cta.php:51
+msgid "Create multiple columns presets."
+msgstr "Birden çok hazır sütun ayarı oluşturun."
+
+#: templates/admin/page/settings-section-pro-cta.php:50
+msgid "Need certain columns for certain tasks?"
+msgstr "Belirli görevler için belirli sütunlara mı ihtiyacınız var?"
+
+#: templates/admin/page/settings-section-pro-cta.php:47
+msgid "Multiple Table Views"
+msgstr "Birden çok tablo görünümü"
+
+#: templates/admin/page/settings-section-pro-cta.php:41
+msgid "Keep your column names on top of the screen when scrolling down the page"
+msgstr "Sayfayı aşağı kaydırırken sütun adlarınızı ekranın üstünde tutun"
+
+#: templates/admin/page/settings-section-pro-cta.php:40
+msgid "Sticky Headers"
+msgstr "Sabit başlıklar"
+
+#: templates/admin/page/settings-section-pro-cta.php:33
+msgid "Filters help you to get valuable insights about orders, users, posts, anything really."
+msgstr "Filtreler size siparişler, kullanıcılar, yazılar ve daha bir çok şey için çok değerli içgörüler sağlar."
+
+#: templates/admin/page/settings-section-pro-cta.php:32
+msgid "Only show the content that matches the rules you set."
+msgstr "Yalnızca belirlediğiniz kurallarla eşleşen içeriği gösterin."
+
+#: templates/admin/page/settings-section-pro-cta.php:22
+msgid "Sort on numbers, names, prices or anything else."
+msgstr "Sayılara, isimlere, fiyatlara ya da istediğiniz herhangi başka bir şeye göre sıralayın."
+
+#: templates/admin/page/settings-section-pro-cta.php:21
+msgid "Any column can be turned into an ordered list."
+msgstr "Herhangi bir sütun sıralı bir listeye dönüştürülebilir."
+
+#: templates/admin/page/settings-section-pro-cta.php:18
+msgid "Sortable Columns"
+msgstr "Sıralanabilir Sütunlar"
+
+#: templates/admin/page/component/addon/network-activate-disabled.php:2
+#: templates/admin/page/component/addon/network-install.php:2
+msgid "Network Enable"
+msgstr "Ağı etkinleştir"
+
+#: templates/admin/page/component/addon/missing-license.php:3
+msgid "Activate license"
+msgstr "Lisansı etkinleştir"
+
+#: templates/admin/page/component/addon/activate-disabled.php:2
+#: templates/admin/page/component/addon/install.php:2
+msgid "Enable"
+msgstr "Etkinleştir"
+
+#: templates/admin/list-screen-settings-mockup.php:123
+msgid "No public saved filters available."
+msgstr "Herkese açık kaydedilmiş filtre yok."
+
+#: templates/admin/list-screen-settings-mockup.php:119
+msgid "Pre-applied Filters"
+msgstr "Önceden uygulanmış filtreler"
+
+#: templates/admin/list-screen-settings-mockup.php:87
+#: templates/admin/page/settings-section-pro-cta.php:92
+msgid "Horizontal Scrolling"
+msgstr "Yatay kaydırma"
+
+#: templates/admin/list-screen-settings-mockup.php:81
+msgid "Set default settings that users will see when they visit the list table."
+msgstr "Kullanıcıların liste tablosunu ziyaret ettiklerinde görecekleri varsayılan ayarları ayarlayın."
+
+#: templates/admin/list-screen-settings-mockup.php:80
+msgid "Preferences"
+msgstr "Tercihler"
+
+#: templates/admin/list-screen-settings-mockup.php:65
+msgid "Bulk Actions"
+msgstr "Toplu İşlemler"
+
+#: templates/admin/list-screen-settings-mockup.php:64
+msgid "Search"
+msgstr "Etkinlik Ara"
+
+#: templates/admin/list-screen-settings-mockup.php:63
+msgid "Status (Quick Links)"
+msgstr "Durum (Hızlı bağlantılar)"
+
+#: templates/admin/list-screen-settings-mockup.php:62
+#: templates/admin/page/settings-section-pro-cta.php:146
+msgid "Quick Add"
+msgstr "Hızlı ekle"
+
+#: templates/admin/list-screen-settings-mockup.php:59
+msgid "Filters"
+msgstr "Filtreler"
+
+#: templates/admin/list-screen-settings-mockup.php:57
+msgid "Inline Edit"
+msgstr "Dahili düzenleme"
+
+#: templates/admin/list-screen-settings-mockup.php:49
+msgid "Select items to hide from the list table screen."
+msgstr "Liste tablosu ekranından gizleyecek öğeleri seçin."
+
+#: templates/admin/list-screen-settings-mockup.php:48
+msgid "Hide on screen"
+msgstr "Ekranda gizle"
+
+#: templates/admin/list-screen-settings-mockup.php:30
+msgid "Make this column set available only for specific users or roles."
+msgstr "Bu sütun kümesini yalnızca belirli kullanıcılar veya roller için kullanılabilir hale getirin."
+
+#: templates/admin/list-screen-settings-mockup.php:29
+msgid "Conditionals"
+msgstr "Koşullular"
+
+#: templates/admin/list-screen-settings-mockup.php:21
+msgid "Unlock with Admin Columns Pro"
+msgstr "Admin Columns Pro ile kilidini açın"
+
+#: templates/admin/list-screen-settings-mockup.php:14
+#: templates/admin/list-screen-settings-mockup.php:37
+msgid "optional"
+msgstr "isteğe bağlı"
+
+#: templates/admin/edit-addon.php:17
+msgid "More details"
+msgstr "Daha fazla ayrıntı"
+
+#: classes/Integration/YoastSeo.php:19
+msgid "Display, inline- and bulk-edit, export, smart filter and sort your Yoast SEO contents on any admin list table."
+msgstr "Yoast SEO içeriğinizi herhangi bir yönetici listesi tablosunda görüntüleyin, satır içi ve toplu olarak düzenleyin, dışa aktarın, akıllı filtreleyin ve sıralayın."
+
+#: classes/Integration/YoastSeo.php:18 classes/Integration/YoastSeo.php:19
+msgid "Yoast SEO"
+msgstr "Yoast SEO"
+
+#: classes/Integration/WooCommerce.php:21
+msgid "Display, inline- and bulk-edit, smart filter and sort your Products, Variations, Orders and Customers"
+msgstr "Ürünlerinizi, Varyasyonlarınızı, Siparişlerinizi ve Müşterilerinizi görüntüleyin, satır içi ve toplu düzenleme, akıllı filtreleyin ve sıralayın"
+
+#: classes/Integration/NinjaForms.php:21
+msgid "Display, inline- and bulk-edit, export, smart filter and sort your %s Submissions."
+msgstr "%s gönderimlerinizi görüntüleyin, satır içi ve toplu olarak düzenleyin, dışa aktarın, akıllı filtreleyin ve sıralayın."
+
+#: classes/Integration/MetaBox.php:19 classes/Integration/Pods.php:19
+#: classes/Integration/Types.php:19
+msgid "Display, inline- and bulk-edit, export, smart filter and sort your %s contents on any admin list table."
+msgstr "Herhangi bir yönetici liste tablosunda %s içeriklerini görüntüleyin, satır içi ve toplu olarak düzenleyin, dışa aktarın, akıllı filtreleyin ve sıralayın."
+
+#: classes/Integration/GravityForms.php:21
+msgid "Display, inline- and bulk-edit, export, smart filter and sort your %s Entries."
+msgstr "%s girdilerinizi görüntüleyin, satır içi ve toplu olarak düzenleyin, dışa aktarın, akıllı filtreleyin ve sıralayın."
+
+#: classes/Integration/GravityForms.php:20
+#: classes/Integration/GravityForms.php:21
+msgid "Gravity Forms"
+msgstr "Gravity Forms"
+
+#: classes/Integration/EventsCalendar.php:21
+msgid "Display, inline- and bulk-edit, export, smart filter and sort your Events, Organizers and Venues."
+msgstr "Etkinliklerinizi, organizatörlerinizi ve mekanlarınızı görüntüleyin, satır içi ve toplu olarak düzenleyin, dışa aktarın, akıllı filtreleyin ve sıralayın."
+
+#: classes/Integration/BuddyPress.php:20
+msgid "Display, inline- and bulk-edit, export, smart filter and sort your BuddyPress data fields on the Users page."
+msgstr "Kullanıcı sayfasındaki BuddyPress veri alanlarını görüntüleyin, satır içi ve toplu olarak düzenleyin, dışa aktarın, akıllı filtreleyin ve sıralayın."
+
+#: classes/Integration/BuddyPress.php:19
+#: classes/Integration/EventsCalendar.php:20
+#: classes/Integration/GravityForms.php:20 classes/Integration/MetaBox.php:18
+#: classes/Integration/NinjaForms.php:20 classes/Integration/Pods.php:18
+#: classes/Integration/Types.php:18 classes/Integration/WooCommerce.php:20
+#: classes/Integration/YoastSeo.php:18
+msgid "Integrates %s with Admin Columns."
+msgstr "%s için Admin Columns bütünleştirmesi."
+
+#: classes/Integration/ACF.php:19
+msgid "Display, inline- and bulk-edit, export, smart filter and sort your ACF contents on any admin list table."
+msgstr "Herhangi bir yönetici liste tablosundaki ACF içeriklerini görüntüleyin, satır içi ve toplu olarak düzenleyin, dışa aktarın, akıllı filtreleyin ve sıralayın."
+
+#: classes/Integration/ACF.php:18
+msgid "Integrates ACF with Admin Columns."
+msgstr "ACF ve Admin Columns bütünleştirmesi."
+
+#: classes/Admin/Section/ProCta.php:19
+msgid "Upgrade to Admin Columns Pro and unlock all the awesome features."
+msgstr "Admin Columns Pro'ya yükseltin ve tüm harika özellikleri açın."
+
+#: classes/Admin/Asset/Addons.php:18
+msgid "The Add-on %s is activated."
+msgstr "%s eklentisi etkinleştirildi."
+
+#: classes/Column/Media/Album.php:14
+msgid "Album"
+msgstr "Albüm"
+
+#: classes/Column/Media/Artist.php:14
+msgid "Artist"
+msgstr "Artist"
+
+#: templates/admin/page/component/addon/network-active-label.php:3
+msgid "Network Active"
+msgstr "Ağ etkin"
+
+#: classes/Column/User/LastPost.php:15
+msgid "Last Post"
+msgstr "Son yazı"
+
+#: classes/Column/User/FirstPost.php:15
+msgid "First Post"
+msgstr "İlk yazı"
+
+#: classes/Settings/Column/PostStatus.php:33
+msgid "Post Status"
+msgstr "Yazı durumu"
+
+#: classes/Column/Placeholder.php:40
+msgid "Download & install the %s add-on from the <a href='%s'>add-ons tab</a>."
+msgstr "<a href='%s'>Eklentiler</a> sekmesinden %s eklentisini indirin ve kurun."
+
+#: classes/Column/Placeholder.php:38
+msgid "The %s column is only available if you have installed the add-on."
+msgstr "%s sütunu sadece eklentiyi yüklediyseniz kullanılabilir."
+
+#: templates/settings/setting-label-icons.php:51
+msgid "Misc"
+msgstr "Çeşitli"
+
+#: templates/settings/setting-label-icons.php:50
+msgid "Notifications"
+msgstr "Bildirimler"
+
+#: templates/settings/setting-label-icons.php:49
+msgid "Widgets"
+msgstr "Bileşenler"
+
+#: templates/settings/setting-label-icons.php:47
+msgid "Products"
+msgstr "Ürünler"
+
+#: templates/settings/setting-label-icons.php:46
+msgid "Buddicons"
+msgstr "Buddsimgeler"
+
+#: templates/settings/setting-label-icons.php:45
+msgid "WordPress.org"
+msgstr "WordPress.org"
+
+#: templates/settings/setting-label-icons.php:44
+msgid "Social"
+msgstr "Sosyal"
+
+#: templates/settings/setting-label-icons.php:42
+msgid "Posts Screen"
+msgstr "Yazılar ekranı"
+
+#: templates/settings/setting-label-icons.php:41
+msgid "TinyMCE"
+msgstr "TinyMCE"
+
+#: templates/settings/setting-label-icons.php:40
+msgid "Block Editor"
+msgstr "Blok düzenleyici"
+
+#: templates/settings/setting-label-icons.php:39
+msgid "Databases"
+msgstr "Veritabanları"
+
+#: templates/settings/setting-label-icons.php:38
+msgid "Image Editing"
+msgstr "Görsel düzenleme"
+
+#: templates/settings/setting-label-icons.php:36
+msgid "Post Formats"
+msgstr "Yazı biçimleri"
+
+#: templates/settings/setting-label-icons.php:35
+msgid "Welcome Screen"
+msgstr "Hoş geldiniz ekranı"
+
+#: templates/settings/setting-label-icons.php:34
+msgid "Admin Menu"
+msgstr "Yönetici menüsü"
+
 #: templates/admin/edit-actions.php:40
 msgid "Key"
-msgstr ""
+msgstr "Anahtar"
 
 #: templates/admin/side-banner.php:47
 msgid "Export table contents to CSV"
-msgstr ""
+msgstr "Tablo içeriğini CSV'ye aktar"
 
-#: templates/tooltip/export.php:25 templates/tooltip/export-disabled.php:17
-#: templates/tooltip/smart-filtering.php:28 templates/tooltip/sorting.php:29
-#: templates/tooltip/bulk-editing.php:25
+#: templates/tooltip/bulk-editing.php:25 templates/tooltip/custom-field.php:15
+#: templates/tooltip/export-disabled.php:17 templates/tooltip/export.php:25
 #: templates/tooltip/inline-editing.php:25
+#: templates/tooltip/smart-filtering.php:28 templates/tooltip/sorting.php:29
 msgid "Learn more &raquo;"
-msgstr ""
-
-#: classes/Integration/YoastSeo.php:16
-msgid "Enrich the Yoast SEO columns with amazing pro features!"
-msgstr ""
+msgstr "Daha fazla bilgi edinin &raquo;"
 
 #: classes/Column/User/Login.php:24
 msgid "Super Admin"
-msgstr ""
+msgstr "Süper yönetici"
 
 #: classes/Column/User/Nicename.php:11
 msgid "Author Slug"
-msgstr ""
+msgstr "Yazar kısa ismi"
 
 #: classes/Admin/ScreenOption/ColumnId.php:32
 msgid "Column Name"
-msgstr ""
+msgstr "Sütun adı"
 
 #: classes/Admin/ScreenOption/ListScreenType.php:32
 msgid "List Screen Key"
-msgstr ""
+msgstr "Liste ekran anahtarı"
 
 #: classes/Admin/ScreenOption/ListScreenId.php:32
 msgid "List Screen ID"
-msgstr ""
+msgstr "Liste ekran kimliği"
 
-#: classes/Settings/Column/User.php:78 classes/Column/User/FullName.php:11
+#: classes/Column/User/FullName.php:11 classes/Settings/Column/User.php:78
 msgid "Full Name"
-msgstr ""
+msgstr "Ad soyad"
 
 #: templates/tooltip/export-disabled.php:13
 msgid "Third-party columns and some custom columns cannot be exported unless there is build-in support for that specific column."
-msgstr ""
+msgstr "Özellikle ilgili sütun için dahili bir destek yoksa üçüncü parti sütunlar ve bazı özel sütunlar dışarı aktarılamaz."
 
 #: templates/tooltip/export-disabled.php:10
 msgid "Unfortunately not every column can be exported."
-msgstr ""
+msgstr "Ne yazık ki her bir sütun dışarı aktarılamıyor."
 
 #: templates/tooltip/export-disabled.php:7
 msgid "Export Unavailable"
-msgstr ""
+msgstr "Dışarı aktarım mümkün değil"
 
+#: templates/admin/list-screen-settings-mockup.php:58
 #: templates/tooltip/bulk-editing.php:19
 msgid "Bulk Edit"
-msgstr ""
+msgstr "Toplu düzenleme"
 
 #: templates/tooltip/bulk-editing.php:18
 msgid "Clicking the %s button will display a popup that allows you to add or change the current value of all selected items."
-msgstr ""
+msgstr "%s düğmesine tıklarsanız seçili tüm öğelerin mevcut değerine ekleme, değeri değiştirme yapabileceğiniz bir dahili pencere açılacaktır."
 
 #: templates/tooltip/bulk-editing.php:13
 msgid "Select more than one row from the list table to show the bulk edit buttons."
-msgstr ""
+msgstr "Toplu düzenleme düğmelerini göstermek için liste tablosundan birden fazla satır seçin."
 
 #: templates/tooltip/bulk-editing.php:10
 msgid "Bulk Edit allows you to update multiple values at once."
-msgstr ""
+msgstr "Toplu düzenleme birden çok değeri topluca düzenlemenize olanak sağlar."
 
 #: templates/tooltip/sorting.php:25
 msgid "You can change the default sorted column in the optional settings below."
-msgstr ""
+msgstr "Varsayılan sıralanmış sütunu aşağıdaki tercihe bağlı ayarlardan değiştirebilirsiniz."
 
 #: templates/tooltip/sorting.php:20
 msgid "Reset Sorting"
-msgstr ""
+msgstr "Sıralamayı sıfırla"
 
 #: templates/tooltip/sorting.php:19
 msgid "Reset the sorting by clicking the %s button."
-msgstr ""
+msgstr "%s düğmesine basarak sıralamayı sıfırlayın."
 
 #: templates/tooltip/sorting.php:15
 msgid "When you come back the content is sorted just the way you left it."
-msgstr ""
+msgstr "Geri döndüğünüzde içerik daha önce bıraktığınız gibi sıralanmış olacak."
 
 #: templates/tooltip/sorting.php:14
 msgid "The sorted column is saved as your personal preference."
-msgstr ""
+msgstr "Sıralanmış sütun kişisel tercihiniz olarak kaydedilir."
 
 #: templates/tooltip/sorting.php:10
 msgid "Sort by clicking the column header on the list table. Click the column header again to switch between <em>ascending</em> and <em>descending</em>."
-msgstr ""
+msgstr "Liste tablosundaki sütun başlığına tıklayarak sıralayın. Sütun başlığına tekrar tıklayarak <em>azalan</em> ve <em>artan</em> sıralama arasında geçiş yapın."
 
-#: templates/tooltip/filtering.php:19
+#: templates/admin/list-screen-settings-mockup.php:60
+#: templates/admin/page/settings-section-pro-cta.php:29
+#: templates/tooltip/filtering.php:13
 msgid "Smart Filters"
-msgstr ""
-
-#: templates/tooltip/filtering.php:19
-msgid "We recommend using %s"
-msgstr ""
-
-#: templates/tooltip/filtering.php:16
-msgid "%s also has better support for all the different types of fields, such as text, numbers and dates."
-msgstr ""
-
-#: templates/tooltip/filtering.php:14
-msgid "Finding the right content will be much easier with the use of conditionals, such as %s."
-msgstr ""
+msgstr "Akıllı filtreler"
 
 #: templates/tooltip/filtering.php:13
+msgid "We recommend using %s"
+msgstr "Biz %s öneriyoruz"
+
+#: templates/tooltip/filtering.php:20
+msgid "%s also has better support for all the different types of fields, such as text, numbers and dates."
+msgstr "%s ayrıca metinler, sayılar ve tarihler gibi farklı tipler için daha iyi bir desteğe sahiptir."
+
+#: templates/tooltip/filtering.php:17
+msgid "Finding the right content will be much easier with the use of conditionals, such as %s."
+msgstr "Koşullu ifadeler kullanarak doğru içeriği bulmak çok daha kolay, örneğin %s."
+
+#: templates/tooltip/filtering.php:16
 msgid "%s is an improved version of %s."
-msgstr ""
+msgstr "%s, %s için daha gelişmiş bir sürümdür."
 
 #: templates/tooltip/filtering.php:10
 msgid "Filters vs Smart Filters"
-msgstr ""
+msgstr "Süzgeçler ile Akıllı süzgeçler"
 
 #: templates/tooltip/filtering.php:6
 msgid "You can filter the contents by selecting the column value from the filter dropdown menu."
-msgstr ""
+msgstr "Süzgeç açılır menüsünden sütun değerini seçerek içeriğe süzgeç ekleyebilirsiniz."
 
 #: templates/tooltip/filtering.php:5
 msgid "This will allow the column to be filtered."
-msgstr ""
+msgstr "Bu, sütundaki verinin süzülebilmesine izin verir."
 
 #: templates/tooltip/smart-filtering.php:23
 msgctxt "smart filtering help"
 msgid "When you return to your list table you can easily select them again from the menu."
-msgstr ""
+msgstr "Liste tablonuza döndüğünüzde, bunları menüden kolayca tekrar seçebilirsiniz."
 
 #: templates/tooltip/smart-filtering.php:22
 msgctxt "smart filtering help"
 msgid "You can save your filters for later use."
-msgstr ""
+msgstr "Filtrelerinizi daha sonra kullanmak üzere kaydedebilirsiniz."
 
 #: templates/tooltip/smart-filtering.php:14
 msgid "Add Filter"
-msgstr ""
+msgstr "Süzgeç ekle"
 
 #: templates/tooltip/smart-filtering.php:8
 msgctxt "smart filtering help"
 msgid "Smart filtering allows you to segment your data by different criteria."
-msgstr ""
+msgstr "Akıllı filtreleme verinizi farklı kriterlere göre segmente etmenizi sağlar."
 
 #: templates/tooltip/export.php:21
 msgid "You can use filters to segment your list before exporting."
-msgstr ""
+msgstr "Dışa aktarmadan önce listenizi segmentlere ayıracak süzgeçleri kullanabilirsiniz."
 
 #: templates/tooltip/export.php:17
 msgid "The result is a CSV file."
-msgstr ""
+msgstr "Sonuç bir CSV dosyasıdır."
 
 #: templates/tooltip/export.php:13
 msgid "Click the export button and all items will be exported to CSV."
-msgstr ""
+msgstr "Dışarı aktar düğmesine tıklayın ve tüm öğeler CSV olarak dışarı aktarılsın."
 
 #: templates/tooltip/export.php:10
 msgid "Export for Admin Columns Pro, allows you to export the contents of your columns to CSV."
-msgstr ""
+msgstr "Admin Columns Pro için dışarı aktar, sütunlarınızın içeriğini CSV olarak dışarı aktarmanızı sağlar."
 
 #: templates/tooltip/inline-editing.php:21
 msgid "It is possible to undo and redo all changes made with Inline Editing, so using it is without risk."
-msgstr ""
+msgstr "Yerinde düzenlemede yapılan tüm işlemlerde geri alma, tekrarlama becerisi var, yani korkusuzca kullanın."
 
 #: templates/tooltip/inline-editing.php:17
 msgid "Click on the pencil icon to start editing the value of a field."
-msgstr ""
+msgstr "Bir alanın değerini düzenlemeye başlamak için kalem simgesine tıklayın."
 
+#: templates/tooltip/custom-field.php:10
 #: templates/tooltip/inline-editing.php:13
 msgid "To start inline editing, toggle the “Inline Edit” button on top of the list table."
-msgstr ""
+msgstr "Yerinde düzenlemeye başlamak için liste tablosunun üstünde yer alan \"Yerinde düzenle\" düğmesine tıklayın."
 
 #: templates/tooltip/inline-editing.php:10
 msgid "With Inline Edit, you can update your content quick and easy, without having to open each %s one at the time."
-msgstr ""
+msgstr "Yerine düzenleme ile içeriğinizi kolay ve hızlı bir şekilde düzenleyebilirsiniz, her seferinde %s açmanıza gerek kalmadan."
 
 #: templates/admin/modal-pro.php:26
 msgid "Create multiple list table views with different columns."
-msgstr ""
+msgstr "Farklı sütunlarla bir çok listeleme tablo görünümü oluşturun."
 
 #: templates/admin/modal-pro.php:24
 msgid "Quick edit any content with Inline Editing, including custom fields."
-msgstr ""
+msgstr "Özel alanlar dahil tüm alanları yerinde düzenleme ile hızlıca düzenleyin."
 
 #: templates/admin/modal-pro.php:22
 msgid "Search the contents of your columns."
-msgstr ""
+msgstr "Sütunlarınızın içeriğini arayın."
 
-#: classes/Integration/MetaBox.php:16
-msgid "Instantly generate columns for your Meta Box custom fields!"
-msgstr ""
-
-#: classes/Integration/MetaBox.php:14
+#: classes/Integration/MetaBox.php:14 classes/Integration/MetaBox.php:18
+#: classes/Integration/MetaBox.php:19
 msgid "Meta Box"
-msgstr ""
+msgstr "Meta kutusu"
 
 #: classes/Admin/ScreenOption/ColumnType.php:32
 msgid "Column Type"
-msgstr ""
+msgstr "Sütun tipi"
 
-#: classes/Admin/Page/Help.php:155
+#: classes/Admin/Page/Help.php:165
 msgid "No deprecated hooks or filters found."
-msgstr ""
+msgstr "Kullanımdan kaldırılmış kanca veya filtre bulunamadı."
 
 #: classes/Settings/Column/Pro/SmartFiltering.php:11
-#: templates/tooltip/filtering.php:13 templates/tooltip/filtering.php:16
+#: templates/tooltip/filtering.php:16 templates/tooltip/filtering.php:20
 #: templates/tooltip/smart-filtering.php:6
 msgid "Smart Filtering"
-msgstr ""
+msgstr "Akıllı filtreleme"
 
 #: classes/Settings/Column/Pro/BulkEditing.php:11
+#: templates/admin/page/settings-section-pro-cta.php:81
 #: templates/tooltip/bulk-editing.php:7
 msgid "Bulk Editing"
-msgstr ""
+msgstr "Toplu düzenleme"
 
 #: classes/Settings/Column/Pro/InlineEditing.php:11
+#: templates/admin/page/settings-section-pro-cta.php:70
 #: templates/tooltip/inline-editing.php:7
 msgid "Inline Editing"
-msgstr ""
+msgstr "Dahili düzenleme"
 
 #: classes/Settings/Column/PostType.php:35
 msgid "All Post Types"
-msgstr ""
+msgstr "Tüm yazı tipleri"
 
 #: templates/admin/modal-pro.php:23
 msgid "Bulk edit any content, including custom fields."
@@ -309,21 +692,13 @@ msgstr "%s fazla"
 msgid "View Comment"
 msgstr "Yorumu görüntüle"
 
-#: classes/Admin/Asset/Columns.php:66
+#: classes/Admin/Asset/Columns.php:60
 msgid "The column could not be loaded because of an unknown error"
 msgstr "Sütun bilinmeyen bir hata nedeniyle yüklenemedi"
 
-#: classes/Admin/Asset/Columns.php:65
+#: classes/Admin/Asset/Columns.php:59
 msgid "There was an error during saving the column settings."
 msgstr "Sütun ayarlarını kaydederken bir hata oluştu."
-
-#: classes/Integration/ACF.php:16
-msgid "Display and edit ACF fields in the posts overview in seconds!"
-msgstr "Yazılar genel bakışta saniyeler içinde ACF alanlarını gösterin ve düzenleyin!"
-
-#: classes/Integration/Pods.php:16
-msgid "Display and edit Pods fields in the posts overview in seconds!"
-msgstr "Yazılar genel bakışta saniyeler içinde Pods alanlarını gösterin ve düzenleyin!"
 
 #: templates/admin/side-banner.php:60
 msgid "Includes special integrations for:"
@@ -349,7 +724,7 @@ msgstr "Herhangi bir içeriği toplu düzenleyin"
 msgid "Search any content"
 msgstr "Herhangi bir içeriği arayın"
 
-#: templates/settings/setting-label-icons.php:69
+#: templates/settings/setting-label-icons.php:72
 msgid "Select"
 msgstr "Seç"
 
@@ -362,14 +737,15 @@ msgid "Local Path"
 msgstr "Yerel yol"
 
 #: classes/Integration/EventsCalendar.php:16
+#: classes/Integration/EventsCalendar.php:20
 msgid "Events Calendar"
 msgstr "Etkinlik takvimi"
 
-#: classes/Settings/Column/CustomFieldType.php:88
+#: classes/Settings/Column/CustomFieldType.php:91
 msgid "Uses one or more %s IDs to display information about it."
 msgstr "Bir ya da daha çok %s no kullanarak hakkında bilgi gösterir."
 
-#: classes/Check/Review.php:181
+#: classes/Check/Review.php:193
 msgid "You can also use your admincolumns.com account to access support through %s!"
 msgstr "%s üzerinden desteğe erişmek için admincolumns.com hesabınızı da kullanabilirsiniz!"
 
@@ -381,7 +757,7 @@ msgstr "Değer: Bir ya da daha çok Kullanıcı no içermelidir, virgül ile ayr
 msgid "Value: Should contain a URL."
 msgstr "Değer: Bir adres içermelidir."
 
-#: classes/Settings/Column/CustomFieldType.php:122
+#: classes/Settings/Column/CustomFieldType.php:125
 #: templates/admin/help-tab/custom-fields.php:54
 msgid "URL"
 msgstr "URL"
@@ -402,25 +778,26 @@ msgstr "Değer: Bir ya da daha çok görsel adresi ya da ek dosyası numarası i
 msgid "Value: This will show if the field has content or not."
 msgstr "Değer: Bu alanın içeriği olup olmadığını gösterir."
 
-#: classes/Integration/NinjaForms.php:18
-msgid "Add Ninja Forms columns that can be sorted, filtered and directly edited!"
-msgstr "Sıralanabilecek, filtrelenebilecek ve direkt düzenlenebilecek bir Ninja Forms sütunu ekleyin!"
-
-#: classes/Integration/EventsCalendar.php:18
-msgid "Manage columns for your event, organizer or venue overviews."
-msgstr "Etkinliğiniz, organizatör ya da mekan genel bakış alanları için sütunları yönetin."
-
-#: classes/Settings/Column/Pro/Sorting.php:11 templates/tooltip/sorting.php:7
+#: classes/Settings/Column/Pro/Sorting.php:11
+#: templates/admin/list-screen-settings-mockup.php:101
+#: templates/settings/setting-label-icons.php:43
+#: templates/tooltip/sorting.php:7
 msgid "Sorting"
 msgstr "Sıralama"
 
-#: templates/tooltip/filtering.php:2 templates/tooltip/filtering.php:13
+#: templates/tooltip/filtering.php:2 templates/tooltip/filtering.php:16
 msgid "Filtering"
 msgstr "Filtreleme"
 
-#: classes/Settings/Column/Pro/Export.php:11 templates/tooltip/export.php:7
+#: classes/Settings/Column/Pro/Export.php:11
+#: templates/admin/list-screen-settings-mockup.php:61
+#: templates/tooltip/export.php:7
 msgid "Export"
 msgstr "Dışa aktar"
+
+#: templates/admin/page/settings-section-pro-cta.php:74
+msgid "Edit your content directly from the overview."
+msgstr "İçeriğinizi direkt olarak genel bakış alanında düzenleyin."
 
 #: templates/admin/modal-pro.php:33
 msgid "Only %s for 1 site"
@@ -432,11 +809,11 @@ msgstr "ACF, WooCommerce ve çok daha fazlası için eklentiler edinin"
 
 #: templates/admin/modal-pro.php:25
 msgid "Export all column data to CSV."
-msgstr ""
+msgstr "Tüm sütun verisini CSV olarak dışarı aktar"
 
 #: templates/admin/modal-pro.php:21
 msgid "Sort & Filter on all your content."
-msgstr ""
+msgstr "Tüm içeriğinizi sıralayın ve filtreleyin."
 
 #: templates/admin/modal-pro.php:18
 msgid "Upgrade to PRO, and take Admin Columns to the next level:"
@@ -474,8 +851,8 @@ msgstr "Metni belirli sayıda karakter ya da kelime ile sınırlandır"
 msgid "Text Limit"
 msgstr "Metin sınırı"
 
-#: classes/Settings/Column/MediaLink.php:64
-#: classes/Column/Media/Download.php:11 classes/Table/Screen.php:134
+#: classes/Column/Media/Download.php:11
+#: classes/Settings/Column/MediaLink.php:64 classes/Table/Screen.php:134
 #: classes/Table/Screen.php:136
 msgid "Download"
 msgstr "İndir"
@@ -504,7 +881,7 @@ msgstr "%s yazısını düzenle"
 msgid "Use an icon instead of text for displaying."
 msgstr "Görüntüleme için metin yerine bir simge kullanın."
 
-#: classes/Settings/Column/Post.php:94
+#: classes/Settings/Column/Post.php:102
 msgctxt "post"
 msgid "Featured Image"
 msgstr "Öne çıkan görsel"
@@ -529,13 +906,13 @@ msgstr "Eksik boyutlar dahil edilsin mi?"
 msgid "Site Options"
 msgstr "Site seçenekleri"
 
-#: classes/Settings/Column/Meta.php:129
 #: classes/Helper/Select/Group/CustomField/MultiSite.php:31
+#: classes/Settings/Column/Meta.php:129
 msgid "current"
 msgstr "geçerli"
 
-#: classes/Settings/Column/Meta.php:126
 #: classes/Helper/Select/Group/CustomField/MultiSite.php:28
+#: classes/Settings/Column/Meta.php:126
 msgid "Network Site:"
 msgstr "Ağ sitesi:"
 
@@ -567,11 +944,11 @@ msgstr "Toplam"
 msgid "Thumbnails"
 msgstr "Küçük resimler"
 
-#: classes/Helper/Post.php:144
+#: classes/Helper/Post.php:145
 msgid "Missed schedule"
 msgstr "Zamanlama kaçırıldı"
 
-#: classes/Helper/Post.php:140
+#: classes/Helper/Post.php:141
 msgid "Scheduled"
 msgstr "Zamanlanmış"
 
@@ -587,7 +964,7 @@ msgstr "Yorumlara İzin Ver"
 msgid "More Tag"
 msgstr "Daha fazla etiketi"
 
-#: classes/Column/Menu.php:17
+#: classes/Column/Menu.php:18
 msgid "Menu"
 msgstr "Menü"
 
@@ -611,7 +988,8 @@ msgstr "orijinal"
 msgid "Alternative Text"
 msgstr "Alternatif metin"
 
-#: classes/Integration/NinjaForms.php:16
+#: classes/Integration/NinjaForms.php:16 classes/Integration/NinjaForms.php:20
+#: classes/Integration/NinjaForms.php:21
 msgid "Ninja Forms"
 msgstr "Ninja Forms"
 
@@ -619,19 +997,19 @@ msgstr "Ninja Forms"
 msgid "Password protected"
 msgstr "Parola korumalı"
 
-#: classes/Helper/Post.php:137
+#: classes/Helper/Post.php:138
 msgid "Pending for review"
 msgstr "İncelenmeyi bekliyor"
 
-#: classes/Helper/Post.php:134
+#: classes/Helper/Post.php:135
 msgid "Draft"
 msgstr "Taslak"
 
-#: classes/Helper/Post.php:131
+#: classes/Helper/Post.php:132
 msgid "Published"
 msgstr "Yayımlanmış"
 
-#: classes/Helper/Post.php:128
+#: classes/Helper/Post.php:129
 msgid "Private"
 msgstr "Özel"
 
@@ -639,8 +1017,8 @@ msgstr "Özel"
 msgid "Use an icon instead of text for displaying the status."
 msgstr "Durumu görüntülemek için metin yerine bir simge kullanın."
 
-#: classes/Settings/Column/StatusIcon.php:29
 #: classes/Settings/Column/PostFormatIcon.php:29
+#: classes/Settings/Column/StatusIcon.php:29
 msgid "Use an icon?"
 msgstr "Simge kullanılsın mı?"
 
@@ -668,11 +1046,7 @@ msgstr "İndirimi bana gönder"
 msgid "Prices starting from %s"
 msgstr "%s başlayan ücretlerle"
 
-#: classes/Integration/BuddyPress.php:17
-msgid "Display any of your Profile Fields for BuddyPress on your users overview."
-msgstr "Buddypress için kullanıcılarınızın genel görünümünde herhangi bir profil alanı görüntüleyin."
-
-#: classes/Integration/BuddyPress.php:15
+#: classes/Integration/BuddyPress.php:15 classes/Integration/BuddyPress.php:19
 msgid "BuddyPress"
 msgstr "BuddyPress"
 
@@ -709,10 +1083,10 @@ msgstr "Kelime sınırı"
 msgid "Auto"
 msgstr "Otomatik"
 
-#: classes/Admin.php:150 classes/Settings/Column/User.php:54
+#: classes/Admin/AdminLoader.php:107
 #: classes/Settings/Column/AttachmentDisplay.php:42
-#: classes/Settings/Column/Term.php:36 classes/Settings/Column/Comment.php:115
-#: classes/Settings/Column/Post.php:82
+#: classes/Settings/Column/Comment.php:113 classes/Settings/Column/Post.php:90
+#: classes/Settings/Column/Term.php:36 classes/Settings/Column/User.php:54
 msgid "Display"
 msgstr "Göster"
 
@@ -744,8 +1118,8 @@ msgstr "Virgül ile ayrılmış"
 msgid "Plain text"
 msgstr "Düz yazı"
 
-#: classes/Settings/Column/Password.php:23
 #: classes/Column/Post/PasswordProtected.php:21
+#: classes/Settings/Column/Password.php:23
 msgid "Password"
 msgstr "Şifre"
 
@@ -817,46 +1191,46 @@ msgstr "Fark insan tarafından okunabilir bir biçimde geri gönderilir."
 msgid "Time Difference"
 msgstr "Zaman farkı"
 
-#: classes/Settings/Column/CustomFieldType.php:170
+#: classes/Settings/Column/CustomFieldType.php:173
 msgid "Multiple"
 msgstr "Çoklu"
 
-#: classes/Settings/Column/CustomFieldType.php:169
+#: classes/Settings/Column/CustomFieldType.php:172
 msgid "Choice"
 msgstr "Seçim"
 
-#: classes/Settings/Column/CustomFieldType.php:168
+#: classes/Settings/Column/CustomFieldType.php:171
 msgid "Relational"
 msgstr "İlişkisel"
 
-#: classes/Settings/Column/CustomFieldType.php:167
+#: classes/Settings/Column/CustomFieldType.php:170
 msgid "Basic"
 msgstr "Temel"
 
-#: classes/Settings/Column/CustomFieldType.php:135
+#: classes/Settings/Column/CustomFieldType.php:138
 msgid "Number of Fields"
 msgstr "Alan sayısı"
 
-#: classes/Settings/Column/CustomFieldType.php:127
+#: classes/Settings/Column/CustomFieldType.php:130
 #: templates/admin/help-tab/custom-fields.php:50
 msgid "True / False"
 msgstr "Doğru / Yanlış"
 
-#: classes/Settings/Column/CustomFieldType.php:126
+#: classes/Settings/Column/CustomFieldType.php:129
 #: templates/admin/help-tab/custom-fields.php:26
 msgid "Has Content"
 msgstr "İçeriğe sahip"
 
-#: classes/Settings/Column/CustomFieldType.php:123
+#: classes/Settings/Column/CustomFieldType.php:126
 #: templates/admin/help-tab/custom-fields.php:42
 msgid "Number"
 msgstr "Rakam"
 
-#: classes/Settings/Column/CustomFieldType.php:120
+#: classes/Settings/Column/CustomFieldType.php:123
 msgid "Text"
 msgstr "Yazı"
 
-#: classes/Settings/Column/CustomFieldType.php:89
+#: classes/Settings/Column/CustomFieldType.php:92
 msgid "Multiple IDs should be separated by commas."
 msgstr "Birden çok numara virgül ile ayrılmalıdır."
 
@@ -875,8 +1249,8 @@ msgstr "Limit olmaması için boş bırakın"
 msgid "Maximum number of characters"
 msgstr "En fazla karakter sayısı"
 
-#: classes/Settings/Column/StringLimit.php:36
 #: classes/Settings/Column/CharacterLimit.php:28
+#: classes/Settings/Column/StringLimit.php:36
 msgid "Character Limit"
 msgstr "Karakter sınırı"
 
@@ -908,9 +1282,9 @@ msgstr "Araç çubuğunu göster"
 msgid "Shortlink"
 msgstr "Kısa bağlantı"
 
-#: classes/Settings/Column/CustomFieldType.php:219
-#: classes/Settings/Column/CustomFieldType.php:221
-#: classes/Settings/Column/CustomFieldType.php:305
+#: classes/Settings/Column/CustomFieldType.php:222
+#: classes/Settings/Column/CustomFieldType.php:224
+#: classes/Settings/Column/CustomFieldType.php:308
 msgid ", "
 msgstr ", "
 
@@ -926,17 +1300,9 @@ msgstr "Tam yol"
 msgid "Discount is valid until %s"
 msgstr "İndirim %s kadar geçerli olacaktır"
 
-#: classes/Admin/Section/Partial/ShowEditButton.php:25
+#: classes/Admin/Section/Partial/ShowEditButton.php:21
 msgid "Show %s button on table screen."
 msgstr "Tablo ekranında %s düğmesi göster."
-
-#: classes/Admin/Section/Partial/ShowEditButton.php:26
-msgid "Default is %s."
-msgstr "Varsayılan %s."
-
-#: classes/Admin/Section/Partial/ShowEditButton.php:26
-msgid "on"
-msgstr "açık"
 
 #: classes/Admin/Tooltip.php:29
 msgid "Notice"
@@ -946,49 +1312,49 @@ msgstr "Bildirim"
 msgid "Instructions"
 msgstr "Talimatlar"
 
-#: classes/Admin/Page/Help.php:143
+#: classes/Admin/Page/Help.php:153
 msgid "our documentation"
 msgstr "belgelerimiz"
 
-#: classes/Admin/Page/Help.php:140
+#: classes/Admin/Page/Help.php:150
 msgid "This site is using some actions or filters that have changed. Please read %s to resolve them."
 msgstr "Bu site değişmiş olan bazı filtre ve işlemleri kullanıyor. Bunları çözmek için lütfen %s okuyun."
 
-#: classes/Admin/Page/Help.php:136
+#: classes/Admin/Page/Help.php:146
 msgid "The Admin Columns plugin has undergone some major changes in version 4."
 msgstr "Admin Columns eklentisi 4. sürümde bazı önemli değişiklikler geçirdi."
 
-#: classes/Admin/Page/Help.php:59
+#: classes/Admin/Page/Help.php:69
 msgid "The callback used is %s."
 msgid_plural "The callbacks used are %s."
 msgstr[0] "Kullanılan geri bildirim %s."
 msgstr[1] "Kullanılan geri bildirimler %s."
 
-#: classes/Admin/Page/Help.php:45
+#: classes/Admin/Page/Help.php:55
 msgid "View documentation"
 msgstr "Dökümantasyonu görüntüle"
 
-#: classes/Admin/Page/Help.php:77
+#: classes/Admin/Page/Help.php:87
 msgid "The action %s used on this website is deprecated since %s."
 msgstr "Bu sitede kullanılan %s eylemi %s tarihinden beri kullanımda değil."
 
-#: classes/Admin/Page/Help.php:106
+#: classes/Admin/Page/Help.php:116
 msgid "The filter %s used on this website is deprecated since %s."
 msgstr "Bu sitede kullanılan %s filtre %s tarihinden beri kullanımda değil."
 
-#: classes/Admin/Page/Help.php:73
+#: classes/Admin/Page/Help.php:83
 msgid "Deprecated Actions"
 msgstr "Kullanımdan kaldırılan işlemler"
 
-#: classes/Admin/Page/Help.php:102
+#: classes/Admin/Page/Help.php:112
 msgid "Deprecated Filters"
 msgstr "Kullanımdan kaldırılan filtreler"
 
-#: classes/Admin/Page/Help.php:29 classes/Admin/Page/Help.php:134
+#: classes/Admin/MenuFactory.php:71 classes/Admin/Page/Help.php:144
 msgid "Help"
 msgstr "Yardım"
 
-#: templates/admin/edit-column.php:55 templates/admin/edit-column.php:90
+#: templates/admin/edit-column.php:36 templates/admin/edit-column.php:80
 msgid "Close"
 msgstr "Kapat"
 
@@ -1020,27 +1386,25 @@ msgstr "%s indirim alın!"
 msgid "Pro"
 msgstr "Pro"
 
-#: classes/Controller/ListScreen/Save.php:25
+#: classes/Controller/ListScreen/Save.php:31
 msgid "You need at least one column"
 msgstr "En az bir sütun gerekiyor"
 
-#: classes/Admin/Page/Addons.php:196
+#: classes/Admin/Page/Addons.php:143
 msgid "Available"
 msgstr "Uygun"
 
-#: classes/Admin/Page/Addons.php:180
+#: classes/Admin/Page/Addons.php:127
 msgid "Recommended"
 msgstr "Önerilen"
 
-#: classes/Integration/Types.php:16
-msgid "Display and edit Toolset Types fields in the posts overview in seconds!"
-msgstr "Saniyeler içinde yazı genel bakışında Toolset Types alanlarını görüntüleyin ve düzenleyin!"
-
-#: classes/Integration/Types.php:14
+#: classes/Integration/Types.php:14 classes/Integration/Types.php:18
+#: classes/Integration/Types.php:19
 msgid "Toolset Types"
 msgstr "Araç seti türleri"
 
-#: classes/Integration/Pods.php:14
+#: classes/Integration/Pods.php:14 classes/Integration/Pods.php:18
+#: classes/Integration/Pods.php:19
 msgid "Pods"
 msgstr "Kapsüller"
 
@@ -1056,11 +1420,11 @@ msgstr "Admin Columns eklentisini bir sonraki seviyeye taşıyın:"
 msgid "Upgrade to"
 msgstr "Yükselt"
 
-#: classes/Admin/Page/Columns.php:67
+#: classes/Admin/Notice/ReadOnly.php:18
 msgid "The columns for %s are read only and can therefore not be edited."
-msgstr ""
+msgstr "%s sütunları salt okunurdur ve bu nedenle düzenlenemez."
 
-#: classes/Controller/ColumnRequest.php:30
+#: classes/Controller/ColumnRequest.php:28
 msgid "Please visit the %s screen once to load all available columns"
 msgstr "Kullanılabilir tüm sütunları yüklemek için lütfen %s ekranını ziyaret edin"
 
@@ -1072,11 +1436,11 @@ msgstr "Sütunları geri yükle"
 msgid "Settings for %s restored successfully."
 msgstr "%s ayarları başarıyla geri yüklendi."
 
-#: classes/Controller/ListScreen/Save.php:64
+#: classes/Controller/ListScreen/Save.php:62
 msgid "View %s screen"
 msgstr "%s ekranını görüntüle"
 
-#: classes/Admin/Asset/Columns.php:63
+#: classes/Admin/Asset/Columns.php:57
 msgid "Invalid response."
 msgstr "Geçersiz istek."
 
@@ -1096,7 +1460,7 @@ msgstr "eklentiler sayfası"
 msgid "Did you know Admin Columns Pro has an integration addon for %s? With the proper Admin Columns Pro license, you can download them from %s!"
 msgstr "Admin Columns Pro'nun %s için bir entegrasyon eklentisi olduğunu biliyor muydunuz? Admin Columns Pro lisansı ile bunları %s'dan indirebilirsiniz!"
 
-#: classes/Admin/HelpTab/CustomField.php:11 classes/ColumnGroups.php:15
+#: classes/ColumnGroups.php:15
 msgid "Custom Fields"
 msgstr "Ek alanlar"
 
@@ -1113,26 +1477,28 @@ msgstr "Yazı (türleri), sayfalar, ortam, yorumlar, bağlantılar ve kullanıc�
 msgid "https://www.admincolumns.com"
 msgstr "https://www.admincolumns.com"
 
-#: classes/Admin/Section/Partial/ShowEditButton.php:25
+#: classes/Admin/Section/Partial/ShowEditButton.php:21
 #: classes/Table/Screen.php:203
 msgid "Edit columns"
 msgstr "Sütunları düzenle"
 
+#: templates/admin/list-screen-settings-mockup.php:23
 #: templates/admin/modal-pro.php:31
 msgid "Upgrade"
 msgstr "Yükselt"
 
-#: classes/Controller/ListScreen/Save.php:61
+#: classes/Controller/ListScreen/Save.php:59
 msgid "Settings for %s updated successfully."
 msgstr "%s ayarları başarıyla güncellendi."
 
-#: classes/ListScreenGroups.php:14 classes/ListScreen/User.php:14
+#: classes/ListScreen/User.php:15 classes/ListScreenGroups.php:14
 msgid "Users"
 msgstr "Kullanıcılar"
 
-#: classes/Settings/Column/CustomFieldType.php:130
-#: classes/ListScreenGroups.php:15 classes/ListScreen/Media.php:18
+#: classes/ListScreen/Media.php:19 classes/ListScreenGroups.php:15
+#: classes/Settings/Column/CustomFieldType.php:133
 #: templates/admin/help-tab/custom-fields.php:34
+#: templates/settings/setting-label-icons.php:37
 msgid "Media"
 msgstr "Ortam"
 
@@ -1140,32 +1506,25 @@ msgstr "Ortam"
 msgid "Links"
 msgstr "Bağlantılar"
 
-#: classes/Settings/Column/Comment.php:124 classes/ListScreen/Comment.php:18
+#: classes/ListScreen/Comment.php:16 classes/Settings/Column/Comment.php:122
 msgid "Comment"
 msgstr "Yorum"
 
-#: classes/ListScreenGroups.php:16 classes/Column/User/CommentCount.php:14
-#: classes/ListScreen/Comment.php:17
+#: classes/Column/User/CommentCount.php:14 classes/ListScreen/Comment.php:15
+#: classes/ListScreenGroups.php:16
 msgid "Comments"
 msgstr "Yorumlar"
 
-#: classes/Admin/Page/Addons.php:105
+#: templates/admin/page/component/addon/more-info.php:2
 msgid "Get this add-on"
 msgstr "Bu eklentiyi edinin"
 
-#: classes/Admin/Page/Addons.php:102
-msgid "Download & Install"
-msgstr "İndir & yükle"
-
-#: classes/Admin/Page/Addons.php:96
-msgid "Activate"
-msgstr "Etkinleştir"
-
-#: classes/Admin/Page/Addons.php:92
+#: templates/admin/page/component/addon/deactivate.php:2
 msgid "Deactivate"
 msgstr "Devre dışı bırak"
 
-#: classes/Admin/Page/Addons.php:89 classes/Admin/Page/Addons.php:188
+#: classes/Admin/Page/Addons.php:135
+#: templates/admin/page/component/addon/active-label.php:3
 msgid "Active"
 msgstr "Etkin"
 
@@ -1173,13 +1532,9 @@ msgstr "Etkin"
 msgid "Add Column"
 msgstr "Sütun ekle"
 
-#: templates/admin/side-support.php:17
+#: templates/admin/side-support.php:14
 msgid "For full documentation, bug reports, feature suggestions and other tips <a href='%s'>visit the Admin Columns website</a>."
 msgstr "Belgelerin tamamı, hata raporları, özellik önerileri ve diğer ipuçları için <a href='%s'>Admin Columns web sitesini</a> ziyaret edin."
-
-#: templates/admin/side-support.php:14
-msgid "Check the <strong>Help</strong> section in the top-right screen."
-msgstr "Sağ üst ekrandaki <strong>Yardım</strong> bölümünü kontrol edin."
 
 #: templates/admin/side-support.php:10
 msgid "Support"
@@ -1229,25 +1584,35 @@ msgstr "Admin Columns eklentisinden memnun musunuz?"
 msgid "Get Admin Columns Pro"
 msgstr "Admin Columns Pro edinin"
 
-#: classes/Admin/Page/Columns.php:180
+#: classes/Admin/MenuFactory.php:57
+msgid "Columns"
+msgstr "Sütunlar"
+
+#: classes/Admin/Page/Columns.php:211
 msgid "Warning! The %s columns data will be deleted. This cannot be undone. 'OK' to delete, 'Cancel' to stop"
 msgstr "Uyarı %s sütun verileri silinecek. Bu geri alınamaz. Silme işlemi için 'tamam', durdurmak için 'İptal et'"
 
-#: templates/admin/edit-columns.php:38 templates/admin/edit-actions.php:23
+#: templates/admin/edit-actions.php:23 templates/admin/edit-columns.php:38
 msgid "Update"
 msgstr "Güncelle"
 
-#: classes/Admin/Page/Columns.php:171
+#: classes/Admin/Page/Columns.php:202
 msgid "Store settings"
 msgstr "Ayarları kaydet"
 
-#: classes/Admin/Page/Addons.php:29
+#: classes/Admin/MenuFactory.php:59
 msgid "Add-ons"
 msgstr "Eklentiler"
 
-#: classes/Admin/Page/Settings.php:22 classes/PluginActionLinks.php:40
+#: classes/Admin/MenuFactory.php:58 classes/PluginActionLinks.php:40
+#: templates/admin/list-screen-settings-mockup.php:13
+#: templates/admin/page/settings.php:6
 msgid "Settings"
 msgstr "Ayarlar"
+
+#: templates/settings/setting-label-icons.php:48
+msgid "Taxonomies"
+msgstr "Taksonomiler"
 
 #: classes/Settings/Column/Image.php:90
 msgid "Others"
@@ -1257,30 +1622,20 @@ msgstr "Diğerleri"
 msgid "Warning! ALL saved admin columns data will be deleted. This cannot be undone. 'OK' to delete, 'Cancel' to stop"
 msgstr "Uyarı. Tüm kayıtlı Admin Columns verileri silinecek. Bu geri alınamaz. Silme işlemi için 'tamam', durdurmak için 'İptal et'"
 
-#: templates/admin/page/settings-section-restore.php:4
-msgid "Restore default settings"
-msgstr "Varsayılan ayarları geri yükle"
-
 #: classes/Admin/Section/Restore.php:21
-msgid "This will delete all column settings and restore the default settings."
-msgstr "Bu, tüm sütun ayarlarını silecek ve varsayılan ayarları geri yükleyecektir."
+msgid "Delete all column settings and restore the default settings."
+msgstr "Tüm sütun ayarlarını sil ve varsayılan ayarları geri yükle."
 
 #: classes/Admin/Section/Restore.php:20
 msgid "Restore Settings"
 msgstr "Ayarları geri yükle"
 
-#: templates/admin/edit-columns.php:39
-#: templates/admin/page/settings-section-general.php:10
-#: templates/admin/edit-actions.php:24
+#: templates/admin/edit-actions.php:24 templates/admin/edit-columns.php:39
 msgid "Save"
 msgstr "Kaydet"
 
-#: classes/Admin/Section/General.php:37
-msgid "Customize your Admin Columns settings."
-msgstr "Admin Columns ayarlarınızı özelleştirin."
-
-#: classes/Settings/Column/DateTimeFormat.php:45
 #: classes/Admin/Section/General.php:36
+#: classes/Settings/Column/DateTimeFormat.php:45
 msgid "General Settings"
 msgstr "Genel ayarlar"
 
@@ -1298,7 +1653,7 @@ msgstr "Değer: 1 (bir) ya da 0 (sıfır) olmalı."
 
 #: classes/Column/User/Login.php:11
 msgid "Username"
-msgstr ""
+msgstr "Kullanıcı adı"
 
 #: templates/admin/help-tab/custom-fields.php:19
 msgid "Value: Can be unix time stamp or a date format as described in the <a href='%s'>Codex</a>. You can change the outputted date format at the <a href='%s'>general settings</a> page."
@@ -1348,95 +1703,79 @@ msgstr "Sütunları sürükleyerek, gösterilecek sırayı değiştirebilirsiniz
 msgid "Change order"
 msgstr "Sıralamayı değiştir"
 
-#: classes/Admin/HelpTab/Basics.php:11
-msgid "Basics"
-msgstr "Temel"
-
 #: templates/admin/help-tab/introduction.php:2
 msgid "This plugin is for adding and removing additional columns to the administration screens for post(types), pages, media library, comments, links and users. Change the column's label and reorder them."
 msgstr "Bu eklenti, yazı (türleri), sayfalar, ortam kütüphanesi, yorumlar, bağlantılar ve kullanıcılar için yönetim ekranlarına ek sütun ekleme ve kaldırma içindir. Sütun etiketini değiştirin ve yeniden düzenleyin."
 
-#: classes/Admin/HelpTab/Introduction.php:11
-msgid "Overview"
-msgstr "Genel bakış"
-
-#: classes/Controller/RestoreSettingsRequest.php:37
+#: classes/Controller/RestoreSettingsRequest.php:42
 msgid "Default settings successfully restored."
 msgstr "Varsayılan ayar başarıyla geri yüklendi."
 
-#: classes/Admin/Asset/Columns.php:62 classes/Controller/ColumnRequest.php:41
+#: classes/Admin/Asset/Columns.php:56 classes/Controller/ColumnRequest.php:39
 msgid "%s column is already present and can not be duplicated."
 msgstr "%s sütunu zaten mevcut ve çoğaltılamaz."
 
-#: classes/Admin.php:125
+#: classes/Admin/WpMenuFactory.php:18 classes/Admin/WpMenuFactory.php:33
 msgid "Admin Columns Settings"
 msgstr "Admin Columns ayarları"
 
-#: classes/Check/Review.php:188
+#: classes/Check/Review.php:200
 msgid "find answers to frequently asked questions"
 msgstr "sıkça sorulan soruların cevaplarını bulun"
 
-#: classes/Check/Review.php:187
+#: classes/Check/Review.php:199
 msgid "Admin Columns forum on WordPress.org"
 msgstr "WordPress.org forumlarında Admin Columns"
 
-#: classes/Check/Review.php:186
+#: classes/Check/Review.php:198
 msgid "You can also find help on the %s, and %s."
 msgstr "Ayrıca %s ve %s hakkında yardım bulabilirsiniz."
 
-#: classes/Check/Review.php:182
+#: classes/Check/Review.php:194
 msgid "our forum"
 msgstr "forumlarımız"
 
-#: classes/Check/Review.php:176
+#: classes/Check/Review.php:188
 msgid "documentation page"
 msgstr "dökümantasyon sayfası"
 
-#: classes/Check/Review.php:174
+#: classes/Check/Review.php:186
 msgid "We're sorry to hear that; maybe we can help! If you're having problems properly setting up %s or if you would like help with some more advanced features, please visit our %s."
 msgstr "Bunu duyduğumuz için özür dileriz; Belki yardım edebiliriz %s ayarlarını düzgün bir şekilde ayarlamakta sorun yaşıyorsanız veya daha gelişmiş bazı özellikler ile ilgili yardım almak isterseniz lütfen %s adresimizi ziyaret edin."
 
-#: classes/Check/Review.php:165
+#: classes/Check/Review.php:177
 msgid "Permanently hide notice"
 msgstr "Bildirimi kalıcı olarak gizle"
 
-#: classes/Check/Review.php:164
+#: classes/Check/Review.php:176
 msgid "Leave a review!"
 msgstr "Bir inceleme yapın!"
 
-#: classes/Check/Review.php:160
+#: classes/Check/Review.php:172
 msgid "click here"
 msgstr "buraya tıkla"
 
-#: classes/Check/Review.php:156
+#: classes/Check/Review.php:168
 msgid "We don't mean to bug you, but you've been using %s for some time now, and we were wondering if you're happy with the plugin. If so, could you please leave a review at wordpress.org? If you're not happy with %s, please %s."
 msgstr "Seni rahatsız etmek istemiyoruz, ancak bir süredir %s kullanıyorsunuz ve eklentiden memnun olup olmadığınızı merak ediyoruz. Eğer memnunsanız lütfen wordpress.org'da bir inceleme bırakır mısınız? %s memnun değilseniz, lütfen %s."
 
-#: classes/Check/Review.php:147
+#: classes/Check/Review.php:159
 msgid "Admin Columns Pro"
 msgstr "Admin Columns Pro"
 
 #. Plugin Name of the plugin
-#: classes/Admin.php:126 classes/Admin/Page/Columns.php:57
-#: classes/Check/Review.php:148 classes/Table/Screen.php:449
+#: classes/Admin/WpMenuFactory.php:19 classes/Admin/WpMenuFactory.php:34
+#: classes/Check/Review.php:160 classes/Table/Screen.php:454
 msgid "Admin Columns"
 msgstr "Admin Columns"
 
-#: classes/Column/Placeholder.php:50
+#: classes/Column/Placeholder.php:47
 msgid "Find out more"
 msgstr "Daha fazlasını bul"
 
-#: classes/Column/Placeholder.php:47
+#: classes/Column/Placeholder.php:43
 msgid "Admin Columns Pro offers full %s integration, allowing you to easily display and edit %s fields from within your overview."
 msgstr "Admin Columns Pro,%s alanlarını genel bakış ile kolayca görüntülemenizi ve düzenlemenizi sağlayan %s entegrasyonunu sunar."
-
-#: classes/Column/Placeholder.php:43
-msgid "If you have a business or developer licence please download & install your %s add-on from the <a href='%s'>add-ons tab</a>."
-msgstr "Bir iş veya geliştirici lisansınız varsa lütfen %s eklentinizi <a href='%s'>eklentiler sekmesinden</a> indirip yükleyin."
-
-#: classes/Column/Placeholder.php:39
-msgid "The %s column is only available in Admin Columns Pro - Business or Developer."
-msgstr "%s sütunu yalnızca Admin Columns Pro - İşletme veya Geliştirici'de kullanılabilir."
 
 #: classes/Settings/Column/PostLink.php:72
 msgid "View Public Post Author Page"
@@ -1454,23 +1793,23 @@ msgstr "Yazıyı görüntüle"
 msgid "Edit Post"
 msgstr "Yazıyı düzenle"
 
-#: classes/Settings/Column/Label.php:30
+#: classes/Settings/Column/Label.php:31
 msgid "This is the name which will appear as the column header."
 msgstr "Bu, sütun başlığı olarak görünecek olan addır."
 
-#: classes/Settings/Column/Label.php:29
+#: classes/Settings/Column/Label.php:30
 msgid "Label"
 msgstr "Etiket"
 
-#: classes/Settings/Column/Type.php:36 templates/admin/edit-column.php:52
+#: classes/Settings/Column/Type.php:44 templates/admin/edit-column.php:30
 msgid "Name"
 msgstr "İsim"
 
-#: classes/Settings/Column/Type.php:30
+#: classes/Settings/Column/Type.php:38
 msgid "Choose a column type."
 msgstr "Sütun türü seçin."
 
-#: templates/admin/edit-column.php:57 templates/admin/edit-column.php:92
+#: templates/admin/edit-column.php:38 templates/admin/edit-column.php:82
 msgid "Clone"
 msgstr "Kopyala"
 
@@ -1478,7 +1817,7 @@ msgstr "Kopyala"
 msgid "Display format"
 msgstr "Görüntüleme formatı"
 
-#: classes/Settings/Column/UserLink.php:70 classes/Settings/Column/User.php:83
+#: classes/Settings/Column/User.php:83 classes/Settings/Column/UserLink.php:77
 msgid "User Email"
 msgstr "Kullanıcı e-posta"
 
@@ -1486,15 +1825,15 @@ msgstr "Kullanıcı e-posta"
 msgid "User Login"
 msgstr "Kullanıcı girişi"
 
-#: classes/Settings/Column/User.php:79 classes/Column/User/LastName.php:14
+#: classes/Column/User/LastName.php:14 classes/Settings/Column/User.php:79
 msgid "Last Name"
 msgstr "Soyad"
 
-#: classes/Settings/Column/User.php:77 classes/Column/User/FirstName.php:14
+#: classes/Column/User/FirstName.php:14 classes/Settings/Column/User.php:77
 msgid "First Name"
 msgstr "İsim"
 
-#: classes/Settings/Column/User.php:76 classes/Column/User/DisplayName.php:14
+#: classes/Column/User/DisplayName.php:14 classes/Settings/Column/User.php:76
 msgid "Display Name"
 msgstr "Görünen ad"
 
@@ -1510,12 +1849,12 @@ msgstr "Bu metin sütun değerinden önce görünecektir."
 msgid "Before"
 msgstr "Önce"
 
-#: classes/Settings/Column/Width.php:63
+#: classes/Settings/Column/Width.php:65
 msgid "width"
 msgstr "genişlik"
 
+#: classes/ColumnGroups.php:16 classes/Settings/Column/CustomFieldType.php:174
 #: classes/Settings/Column/Image.php:112
-#: classes/Settings/Column/CustomFieldType.php:171 classes/ColumnGroups.php:16
 msgid "Custom"
 msgstr "Özel"
 
@@ -1547,8 +1886,9 @@ msgstr "Görsel editör"
 msgid "Registered"
 msgstr "Kayıtlı"
 
-#: classes/Settings/Column/CustomFieldType.php:99
-#: classes/Settings/Column/PostType.php:43 classes/ListScreenGroups.php:13
+#: classes/ListScreenGroups.php:13
+#: classes/Settings/Column/CustomFieldType.php:102
+#: classes/Settings/Column/PostType.php:43
 msgid "Post Type"
 msgstr "Yazı türü"
 
@@ -1556,7 +1896,7 @@ msgstr "Yazı türü"
 msgid "Post Count"
 msgstr "Yazı sayısı"
 
-#: classes/Settings/Column/User.php:80 classes/Column/User/Nickname.php:14
+#: classes/Column/User/Nickname.php:14 classes/Settings/Column/User.php:80
 msgid "Nickname"
 msgstr "Takma isim"
 
@@ -1564,11 +1904,11 @@ msgstr "Takma isim"
 msgid "Comment Count"
 msgstr "Yorum sayısı"
 
-#: templates/admin/edit-column.php:59 templates/admin/edit-column.php:94
+#: templates/admin/edit-column.php:40 templates/admin/edit-column.php:84
 msgid "Remove"
 msgstr "Kaldır"
 
-#: classes/Settings/Column/User.php:84 classes/Column/User/ID.php:14
+#: classes/Column/User/ID.php:14 classes/Settings/Column/User.php:84
 msgid "User ID"
 msgstr "Kullanıcı ID"
 
@@ -1580,7 +1920,7 @@ msgstr "Başlığın menüye bağlantısını sağlar."
 msgid "Link to menu"
 msgstr "Menüye bağlantı"
 
-#: classes/Settings/Column/Taxonomy.php:51 classes/Column/Taxonomy.php:18
+#: classes/Column/Taxonomy.php:18 classes/Settings/Column/Taxonomy.php:51
 msgid "Taxonomy"
 msgstr "Taksonomi"
 
@@ -1588,11 +1928,11 @@ msgstr "Taksonomi"
 msgid "Sticky"
 msgstr "Sabit"
 
-#: classes/Column/Post/Status.php:12 classes/Column/Comment/Status.php:14
+#: classes/Column/Comment/Status.php:14 classes/Column/Post/Status.php:12
 msgid "Status"
 msgstr "Durum"
 
-#: classes/Settings/Column/Term.php:31 classes/Column/Post/Slug.php:14
+#: classes/Column/Post/Slug.php:14 classes/Settings/Column/Term.php:31
 msgid "Slug"
 msgstr "Kısa isim"
 
@@ -1601,6 +1941,7 @@ msgid "Shortcodes"
 msgstr "Kısa kodlar"
 
 #: classes/Settings/Column/User.php:81
+#: templates/admin/list-screen-settings-mockup.php:36
 msgid "Roles"
 msgstr "Roller"
 
@@ -1612,7 +1953,7 @@ msgstr "Ping durumu"
 msgid "Permalink"
 msgstr "Kalıcı bağlantı"
 
-#: classes/Column/Post/Path.php:15 classes/Column/Media/FullPath.php:15
+#: classes/Column/Media/FullPath.php:15 classes/Column/Post/Path.php:15
 msgid "Path"
 msgstr "Yol"
 
@@ -1680,13 +2021,13 @@ msgstr "Görüntülemek istediğiniz yorum durumunu seçin."
 msgid "Comment status"
 msgstr "Yorum durumu"
 
-#: classes/Settings/Column/CommentCount.php:58
 #: classes/Column/Comment/Status.php:33
+#: classes/Settings/Column/CommentCount.php:58
 msgid "Spam"
 msgstr "İstenmeyen"
 
-#: classes/Settings/Column/CommentCount.php:57
 #: classes/Column/Comment/Status.php:35
+#: classes/Settings/Column/CommentCount.php:57
 msgid "Pending"
 msgstr "Onay Bekleyen"
 
@@ -1694,32 +2035,32 @@ msgstr "Onay Bekleyen"
 msgid "Total"
 msgstr "Toplam"
 
-#: classes/Settings/Column/UserLink.php:72
+#: classes/Settings/Column/UserLink.php:79
 msgid "View Public Author Page"
 msgstr "Genel yazar sayfasını görüntüle"
 
-#: classes/Settings/Column/UserLink.php:71
+#: classes/Settings/Column/UserLink.php:78
 msgid "View User Posts"
 msgstr "Kullanıcı yazılarını görüntüle"
 
-#: classes/Settings/Column/UserLink.php:69
+#: classes/Settings/Column/UserLink.php:76
 msgid "Edit User Profile"
 msgstr "Kullanıcı profili düzenle"
 
-#: classes/Settings/Column/TermLink.php:36
-#: classes/Settings/Column/UserLink.php:78
-#: classes/Settings/Column/PostLink.php:68
 #: classes/Settings/Column/CommentLink.php:65
-#: classes/Settings/Column/Separator.php:28
 #: classes/Settings/Column/MediaLink.php:62
+#: classes/Settings/Column/PostLink.php:68
+#: classes/Settings/Column/Separator.php:28
+#: classes/Settings/Column/TermLink.php:36
+#: classes/Settings/Column/UserLink.php:85
 msgid "None"
 msgstr "Hiçbiri"
 
-#: classes/Settings/Column/TermLink.php:27
-#: classes/Settings/Column/UserLink.php:60
-#: classes/Settings/Column/PostLink.php:58
 #: classes/Settings/Column/CommentLink.php:56
 #: classes/Settings/Column/MediaLink.php:53
+#: classes/Settings/Column/PostLink.php:58
+#: classes/Settings/Column/TermLink.php:27
+#: classes/Settings/Column/UserLink.php:67
 msgid "Link To"
 msgstr "Bağlantı ver"
 
@@ -1731,8 +2072,8 @@ msgstr "Dosya ekleri"
 msgid "Preview"
 msgstr "Önizleme"
 
-#: classes/Settings/Column/Image.php:41 classes/Settings/Column/Width.php:53
-#: classes/Column/Media/Width.php:16
+#: classes/Column/Media/Width.php:16 classes/Settings/Column/Image.php:41
+#: classes/Settings/Column/Width.php:55
 msgid "Width"
 msgstr "Genişlik"
 
@@ -1740,7 +2081,7 @@ msgstr "Genişlik"
 msgid "Mime Type"
 msgstr "Mime türü"
 
-#: classes/Settings/Column/Image.php:47 classes/Column/Media/Height.php:16
+#: classes/Column/Media/Height.php:16 classes/Settings/Column/Image.php:47
 msgid "Height"
 msgstr "Yükseklik"
 
@@ -1768,8 +2109,8 @@ msgstr "Dosya boyutu"
 msgid "Filename"
 msgstr "Dosya ismi"
 
-#: classes/Settings/Column/ExifData.php:81 classes/Settings/Column/Term.php:30
-#: classes/Settings/Column/Post.php:91
+#: classes/Settings/Column/ExifData.php:81 classes/Settings/Column/Post.php:99
+#: classes/Settings/Column/Term.php:30
 msgid "Title"
 msgstr "Başlık"
 
@@ -1809,7 +2150,7 @@ msgstr "EXIF Bilgisi"
 msgid "Dimensions"
 msgstr "Boyutlar"
 
-#: classes/Settings/Column/ExifData.php:75 classes/Column/Media/Caption.php:14
+#: classes/Column/Media/Caption.php:14 classes/Settings/Column/ExifData.php:75
 msgid "Caption"
 msgstr "Altyazı"
 
@@ -1821,8 +2162,8 @@ msgstr "Uygun boyutlar"
 msgid "View"
 msgstr "Görüntüle"
 
-#: classes/Settings/Column/CommentCount.php:59
 #: classes/Column/Comment/Status.php:31 classes/Column/Comment/Status.php:32
+#: classes/Settings/Column/CommentCount.php:59
 msgid "Trash"
 msgstr "Çöp"
 
@@ -1831,20 +2172,20 @@ msgstr "Çöp"
 msgid "Description"
 msgstr "Açıklama"
 
-#: classes/Settings/Column/CustomFieldType.php:74
+#: classes/Settings/Column/CustomFieldType.php:77
 msgid "This will determine how the value will be displayed."
 msgstr "Bu, değerin nasıl görüntüleneceğini belirleyecektir."
 
-#: classes/Settings/Column/CustomFieldType.php:81
+#: classes/Settings/Column/CustomFieldType.php:84
 msgid "Field Type"
 msgstr "Alan türü"
 
-#: classes/Settings/Column/CustomFieldType.php:136
+#: classes/Settings/Column/CustomFieldType.php:139
 #: templates/admin/help-tab/custom-fields.php:38
 msgid "Multiple Values"
 msgstr "Çoklu değer"
 
-#: classes/Settings/Column/CustomFieldType.php:121
+#: classes/Settings/Column/CustomFieldType.php:124
 #: templates/admin/help-tab/custom-fields.php:30
 msgid "Image"
 msgstr "Görsel"
@@ -1858,38 +2199,40 @@ msgstr "Kısa yazı"
 msgid "Counter"
 msgstr "Sayaç"
 
-#: classes/Settings/Column/CustomFieldType.php:118
+#: classes/Settings/Column/CustomFieldType.php:121
 #: templates/admin/help-tab/custom-fields.php:10
 msgid "Color"
 msgstr "Renk"
 
-#: classes/Settings/Column/Image.php:72
-#: classes/Settings/Column/CustomFieldType.php:186
-#: classes/Settings/Column/Separator.php:25
-#: classes/Settings/Column/NumberFormat.php:88 classes/ColumnGroups.php:13
+#: classes/ColumnGroups.php:13
 #: classes/Helper/Select/Group/CustomField/MultiSite.php:53
+#: classes/Settings/Column/CustomFieldType.php:189
+#: classes/Settings/Column/Image.php:72
+#: classes/Settings/Column/NumberFormat.php:88
+#: classes/Settings/Column/Separator.php:25
 #: templates/admin/help-tab/custom-fields.php:6
 msgid "Default"
 msgstr "Varsayılan"
 
-#: classes/Column/CustomField.php:19
+#: classes/Column/CustomField.php:19 templates/tooltip/custom-field.php:7
 msgid "Custom Field"
 msgstr "Özel alan"
 
-#: classes/Column/Post/WordCount.php:14 classes/Column/Comment/WordCount.php:14
+#: classes/Column/Comment/WordCount.php:14 classes/Column/Post/WordCount.php:14
 msgid "Word Count"
 msgstr "Kelime sayısı"
 
-#: classes/Settings/Column/CustomFieldType.php:103
-#: classes/Settings/Column/CustomFieldType.php:132
-#: classes/Column/Comment/User.php:15 classes/ListScreen/User.php:15
+#: classes/Column/Comment/User.php:15 classes/ListScreen/User.php:16
+#: classes/Settings/Column/CustomFieldType.php:106
+#: classes/Settings/Column/CustomFieldType.php:135
 #: templates/admin/help-tab/custom-fields.php:58
 msgid "User"
 msgstr "Kullanıcı"
 
-#: classes/Settings/Column/CustomFieldType.php:77
-#: classes/Settings/Column/Type.php:33 classes/Settings/Column/Type.php:42
-#: classes/Column/Comment/Type.php:14 templates/admin/edit-column.php:53
+#: classes/Column/Comment/Type.php:14
+#: classes/Settings/Column/CustomFieldType.php:80
+#: classes/Settings/Column/Type.php:41 classes/Settings/Column/Type.php:50
+#: templates/admin/edit-column.php:31
 msgid "Type"
 msgstr "Tür"
 
@@ -1897,32 +2240,33 @@ msgstr "Tür"
 msgid "In Reply To"
 msgstr "Cevapla"
 
-#: classes/Settings/Column/CustomFieldType.php:131
 #: classes/Column/Comment/Post.php:15
+#: classes/Settings/Column/CustomFieldType.php:134
 #: templates/admin/help-tab/custom-fields.php:46
 msgid "Post"
 msgstr "Yazı"
 
-#: classes/Column/Post/Content.php:15 classes/Column/Comment/Excerpt.php:15
+#: classes/Column/Comment/Excerpt.php:15 classes/Column/Post/Content.php:15
 msgid "Content"
 msgstr "İçerik"
 
-#: classes/Settings/Column/CustomFieldType.php:119
-#: classes/Settings/Column/Comment.php:128
+#: classes/Settings/Column/Comment.php:126
+#: classes/Settings/Column/CustomFieldType.php:122
+#: classes/Settings/Column/Post.php:103
 #: templates/admin/help-tab/custom-fields.php:18
 msgid "Date"
 msgstr "Tarih"
 
-#: classes/Column/Comment/DateGmt.php:20
+#: classes/Column/Comment/DateGmt.php:17
 msgid "Submitted on <a href=\"%1$s\">%2$s at %3$s</a>"
 msgstr "Gönderim <a href=\"%1$s\">%2$s at %3$s</a>"
 
-#: classes/Column/Comment/DateGmt.php:14
+#: classes/Column/Comment/DateGmt.php:11
 msgid "Date GMT"
 msgstr "Tarih GMT"
 
-#: classes/Settings/Column/Comment.php:126 classes/Settings/Column/Post.php:93
 #: classes/Column/Post/AuthorName.php:18
+#: classes/Settings/Column/Comment.php:124 classes/Settings/Column/Post.php:101
 msgid "Author"
 msgstr "Yazar"
 
@@ -1938,8 +2282,8 @@ msgstr "Yazar ismi"
 msgid "Author IP"
 msgstr "Yazar ip"
 
-#: classes/Settings/Column/Comment.php:127
 #: classes/Column/Comment/AuthorEmail.php:14
+#: classes/Settings/Column/Comment.php:125
 msgid "Author Email"
 msgstr "Yazar e-posta"
 
@@ -1947,8 +2291,8 @@ msgstr "Yazar e-posta"
 msgid "Avatar"
 msgstr "Avatar"
 
+#: classes/Column/Comment/Approved.php:14 classes/Column/Comment/Status.php:34
 #: classes/Settings/Column/CommentCount.php:56
-#: classes/Column/Comment/Status.php:34 classes/Column/Comment/Approved.php:14
 msgid "Approved"
 msgstr "Onaylandı"
 
@@ -1956,7 +2300,7 @@ msgstr "Onaylandı"
 msgid "Agent"
 msgstr "Ajan"
 
-#: templates/admin/edit-column.php:54
+#: templates/admin/edit-column.php:35
 msgid "Edit"
 msgstr "Düzenle"
 
@@ -1964,27 +2308,29 @@ msgstr "Düzenle"
 msgid "Edit Comment"
 msgstr "Yorumu Düzenle"
 
-#: classes/Settings/Column/Term.php:32 classes/Settings/Column/Comment.php:125
-#: classes/Settings/Column/Post.php:92 classes/Column/Post/ID.php:15
-#: classes/Column/Media/ID.php:14 classes/Column/Comment/ID.php:14
+#: classes/Column/Comment/ID.php:14 classes/Column/Media/ID.php:14
+#: classes/Column/Post/ID.php:15 classes/Settings/Column/Comment.php:123
+#: classes/Settings/Column/Post.php:100 classes/Settings/Column/Term.php:32
 #: templates/admin/edit-actions.php:41
 msgid "ID"
 msgstr "No"
 
-#: classes/Settings/Column/ActionIcons.php:23
-#: classes/Settings/Column/Toggle.php:15
-#: classes/Settings/Column/StatusIcon.php:25 classes/Settings/Column/Pro.php:24
+#: classes/Helper/Icon.php:62 classes/Settings/Column/ActionIcons.php:23
 #: classes/Settings/Column/MissingImageSize.php:23
-#: classes/Settings/Column/PostFormatIcon.php:25 classes/Helper/Icon.php:62
+#: classes/Settings/Column/PostFormatIcon.php:25
+#: classes/Settings/Column/Pro.php:24 classes/Settings/Column/StatusIcon.php:25
+#: classes/Settings/Column/Toggle.php:15
+#: templates/admin/list-screen-settings-mockup.php:93
 #: templates/admin/side-feedback.php:14
 msgid "No"
 msgstr "Hayır"
 
-#: classes/Settings/Column/ActionIcons.php:22
-#: classes/Settings/Column/Toggle.php:14
-#: classes/Settings/Column/StatusIcon.php:24 classes/Settings/Column/Pro.php:23
+#: classes/Helper/Icon.php:46 classes/Settings/Column/ActionIcons.php:22
 #: classes/Settings/Column/MissingImageSize.php:22
-#: classes/Settings/Column/PostFormatIcon.php:24 classes/Helper/Icon.php:46
+#: classes/Settings/Column/PostFormatIcon.php:24
+#: classes/Settings/Column/Pro.php:23 classes/Settings/Column/StatusIcon.php:24
+#: classes/Settings/Column/Toggle.php:14
+#: templates/admin/list-screen-settings-mockup.php:92
 #: templates/admin/side-feedback.php:13
 msgid "Yes"
 msgstr "Evet"
@@ -2001,11 +2347,8 @@ msgstr "Simgeler kullanılsın mı?"
 msgid "Actions"
 msgstr "İşlemler"
 
-#: classes/Integration/WooCommerce.php:18
-msgid "Enhance the products, orders and coupons overviews with new columns and inline editing."
-msgstr "Yeni sütunlar ve satır içi düzenleme ile ürünleri, siparişleri ve kupon özetlerini geliştirin."
-
 #: classes/Integration/WooCommerce.php:16
+#: classes/Integration/WooCommerce.php:20
 msgid "WooCommerce"
 msgstr "WooCommerce"
 

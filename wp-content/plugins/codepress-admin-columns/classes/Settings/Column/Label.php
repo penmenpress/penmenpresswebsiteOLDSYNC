@@ -2,6 +2,7 @@
 
 namespace AC\Settings\Column;
 
+use AC\Sanitize\Kses;
 use AC\Settings;
 use AC\View;
 
@@ -59,7 +60,9 @@ class Label extends Settings\Column {
 	 * @param string $label
 	 */
 	public function set_label( $label ) {
-		$this->label = $label;
+		$sanitize = new Kses();
+
+		$this->label = apply_filters( 'ac/column/label', $sanitize->sanitize( $label ), $label );
 	}
 
 	/**

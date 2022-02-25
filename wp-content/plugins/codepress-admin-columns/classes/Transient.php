@@ -17,10 +17,10 @@ class Transient implements Expirable {
 	 */
 	protected $timestamp;
 
-	public function __construct( $key ) {
+	public function __construct( $key, $network_only = false ) {
 		$this->option = new Storage\Option( $key );
 		$this->timestamp = new Storage\Timestamp(
-			new Storage\Option( $key . '_timestamp' )
+			( new Storage\OptionFactory() )->create( $key . '_timestamp', $network_only )
 		);
 	}
 
@@ -31,6 +31,13 @@ class Transient implements Expirable {
 	 */
 	public function is_expired( $value = null ) {
 		return $this->timestamp->is_expired( $value );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function has_expiration_time() {
+		return false !== $this->timestamp->get();
 	}
 
 	/**

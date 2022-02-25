@@ -4,11 +4,15 @@ namespace AC\Settings\Column;
 
 use AC;
 use AC\Groups;
-use AC\Integration;
 use AC\Settings\Column;
 use AC\View;
 
 class Type extends Column {
+
+	/**
+	 * @var string
+	 */
+	private $read_more_url;
 
 	/**
 	 * @var string
@@ -19,6 +23,10 @@ class Type extends Column {
 		return [
 			'type' => $this->column->get_type(),
 		];
+	}
+
+	public function set_read_more( $url ) {
+		$this->read_more_url = $url;
 	}
 
 	public function create_view() {
@@ -37,13 +45,17 @@ class Type extends Column {
 			}
 		}
 
-		$view = new View( [
+		$args = [
 			'setting' => $type,
 			'label'   => __( 'Type', 'codepress-admin-columns' ),
 			'tooltip' => $tooltip,
-		] );
+		];
 
-		return $view;
+		if ( $this->read_more_url ) {
+			$args['read_more'] = $this->read_more_url;
+		}
+
+		return new View( $args );
 	}
 
 	/**

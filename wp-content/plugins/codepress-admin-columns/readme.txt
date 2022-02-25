@@ -2,10 +2,10 @@
 Contributors: codepress, tschutter, davidmosterd, engelen, dungengronovius
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZDZRSYLQ4Z76J
 Tags: plugins, wordpress, admin, column, columns, custom columns, custom fields, image, dashboard, sortable, filters, posts, media, users, pages, posttypes, manage columns, wp-admin
-Requires at least: 4.7
-Tested up to: 5.6
+Requires at least: 4.7.1
+Tested up to: 5.8.1
 Requires PHP: 5.6.20
-Stable tag: 4.2.5
+Stable tag: 4.4.5
 
 Customise columns on the administration screens for post(types), pages, media, comments, links and users with an easy to use drag-and-drop interface.
 
@@ -208,6 +208,75 @@ You can find a list of the available actions and filters (and examples on how to
 8. Posts Screen with custom fields.
 
 == Changelog ==
+
+= 4.4.5 =
+Release Date: December 6th, 2021
+
+* [Hotfix] The ReadOnly class is renamed because it gave fatal error in PHP 8.1
+
+= 4.4.4 =
+Release Date: November 8th, 2021
+
+* [Improved] UI Improvements
+
+= 4.4.3 =
+Release Date: October 26th, 2021
+
+* [Improved] The Menu Order column has no restriction anymore
+
+= 4.4.2 =
+Release Date: October 12th, 2021
+
+* [Fixed] The setting to hide the 'Edit Columns' button did not always store the settings
+* [Improved] Do not force showing notices with the hidden classes
+* [Added] JetEngine integration banner added
+
+= 4.4.1 =
+Release Date: September 28th, 2021
+
+* [Improved] Small optimizations for the Add-on page
+* [Improved] Give an idea of the available pro settings
+
+= 4.4 =
+Release Date: September 21st, 2021
+
+* [Added] Complete restyling of the Admin interface
+* [Fixed] Load a default column set when the preferred column set was restricted in the meantime
+* [Fixed] Gravatar display option did not work anymore since the value sanitation
+* [Fixed] Possible namespace clash in Admin class
+
+= 4.3.2 =
+Release Date: June 18th, 2021
+
+* [Added] Added Media columns: Artist and Album
+* [Fixed] Column date setting gave an error when the default date format was empty
+
+= 4.3.1 =
+Release Date: June 11th, 2021
+
+* [Added] Gravity Forms integration banner added
+* [Fixed] Changing the screen options on the column settings page is not persisted
+* [Fixed] Fixed data formatted labels with sanitation
+* [Fixed] The column value is now sanitized
+
+= 4.3 =
+Release Date: April 29th, 2021
+
+* [Fixed] Graceful handle corrupt column settings in order to prevent a fatal error
+* [Fixed] The date setting was not working correctly a second time you store a custom date format
+* [Fixed] Graceful handle corrupt column settings in order to prevent a fatal error
+* [Fixed] The column label in settings will now be sanitized
+
+= 4.2.7 =
+Release Date: February 8th, 2021
+
+* [Fixed] Some settings were not saved correctly on the admin settings page
+
+= 4.2.6 =
+Release Date: February 3rd, 2021
+
+* [Added] User Column: First and Last Post(type)
+* [Improved] It's now possible to select a post status for the Post Count column (User)
 
 = 4.2.5 =
 Release Date: December 15th, 2020

@@ -17,8 +17,10 @@ class Site implements Type\Url {
 	const PAGE_FORUM_BETA = '/forums/forum/beta-feedback/';
 	const PAGE_ADDON_ACF = '/advanced-custom-fields';
 	const PAGE_ADDON_BUDDYPRESS = '/buddypress';
+	const PAGE_ADDON_GRAVITYFORMS = '/gravity-forms';
 	const PAGE_ADDON_EVENTS_CALENDAR = '/events-calendar';
 	const PAGE_ADDON_METABOX = '/meta-box-integration';
+	const PAGE_ADDON_JETENGINE = '/jetengine';
 	const PAGE_ADDON_NINJA_FORMS = '/ninja-forms';
 	const PAGE_ADDON_PODS = '/pods';
 	const PAGE_ADDON_TOOLSET_TYPES = '/toolset-types';

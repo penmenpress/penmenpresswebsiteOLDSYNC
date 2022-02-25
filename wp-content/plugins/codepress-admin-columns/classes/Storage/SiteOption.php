@@ -4,8 +4,6 @@ namespace AC\Storage;
 
 class SiteOption extends Option {
 
-	const OPTION_DEFAULT = 'default';
-
 	/**
 	 * @param array $args
 	 *
