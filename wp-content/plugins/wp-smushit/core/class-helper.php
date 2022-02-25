@@ -25,6 +25,24 @@ if ( ! defined( 'WPINC' ) ) {
 class Helper {
 
 	/**
+	 * Check if user is a WPMU DEV admin.
+	 *
+	 * @since 3.9.3
+	 *
+	 * @return bool
+	 */
+	public static function is_wpmu_dev_admin() {
+		if ( class_exists( '\WPMUDEV_Dashboard' ) ) {
+			if ( method_exists( '\WPMUDEV_Dashboard_Site', 'allowed_user' ) ) {
+				$user_id = get_current_user_id();
+				return \WPMUDEV_Dashboard::$site->allowed_user( $user_id );
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get mime type for file.
 	 *
 	 * @since 3.1.0  Moved here as a helper function.
@@ -85,7 +103,7 @@ class Helper {
 	 *
 	 * @param int $attachment_id  Attachment ID.
 	 *
-	 * @return bool|false|string
+	 * @return bool|string
 	 */
 	public static function get_attached_file( $attachment_id ) {
 		if ( empty( $attachment_id ) ) {
@@ -94,10 +112,20 @@ class Helper {
 
 		do_action( 'smush_s3_integration_fetch_file' );
 
-		$file_path = get_attached_file( $attachment_id );
-		if ( ! empty( $file_path ) && strpos( $file_path, 's3' ) !== false ) {
-			$file_path = get_attached_file( $attachment_id, true );
+		if ( function_exists( 'wp_get_original_image_path' ) ) {
+			$file_path = wp_get_original_image_path( $attachment_id );
+			if ( ! empty( $file_path ) && strpos( $file_path, 's3' ) !== false ) {
+				$file_path = wp_get_original_image_path( $attachment_id, true );
+			}
+		} else {
+			$file_path = get_attached_file( $attachment_id );
+			if ( ! empty( $file_path ) && strpos( $file_path, 's3' ) !== false ) {
+				$file_path = get_attached_file( $attachment_id, true );
+			}
 		}
+
+		// Turn the filter off again. We'll call this method when we want the file to be downloaded.
+		add_filter( 'as3cf_get_attached_file_copy_back_to_local', '__return_false' );
 
 		return $file_path;
 	}
@@ -122,7 +150,7 @@ class Helper {
 			return $savings;
 		}
 
-		$pngjpg_savings = get_post_meta( $attachment_id, WP_SMUSH_PREFIX . 'pngjpg_savings', true );
+		$pngjpg_savings = get_post_meta( $attachment_id, 'wp-smush-pngjpg_savings', true );
 		if ( empty( $pngjpg_savings ) || ! is_array( $pngjpg_savings ) ) {
 			return $savings;
 		}
@@ -147,15 +175,10 @@ class Helper {
 	 *
 	 * @return bool
 	 */
-	public static function file_exists( $id, $file_path ) {
+	public static function file_exists( $id, $file_path = '' ) {
 		// If not attachment id is given return false.
 		if ( empty( $id ) ) {
 			return false;
-		}
-
-		// Get file path, if not provided.
-		if ( empty( $file_path ) ) {
-			$file_path = self::get_attached_file( $id );
 		}
 
 		$s3 = WP_Smush::get_instance()->core()->s3;
@@ -164,10 +187,48 @@ class Helper {
 		if ( is_object( $s3 ) && method_exists( $s3, 'is_image_on_s3' ) && $s3->is_image_on_s3( $id ) ) {
 			$file_exists = true;
 		} else {
+			// Get file path, if not provided.
+			if ( empty( $file_path ) ) {
+				$file_path = self::get_attached_file( $id );
+			}
 			$file_exists = file_exists( $file_path );
 		}
 
 		return $file_exists;
+	}
+
+	/**
+	 * Removes the main file from an attachement when S3 is enabled and the file is on S3.
+	 *
+	 * The method @see self::get_attached_file() downloads the main image
+	 * from S3 into the server. That method is called for certain process.
+	 * This method should clean up the local file after those processes are done.
+	 *
+	 * @since 3.8.3
+	 *
+	 * @param int $attachment_id Image ID.
+	 */
+	public static function remove_main_file_from_server_when_in_s3( $attachment_id ) {
+		// Skip if the image wasn't downloaded.
+		if ( 0 === did_action( 'smush_s3_integration_fetch_file' ) ) {
+			return;
+		}
+
+		$s3 = WP_Smush::get_instance()->core()->s3;
+
+		// If S3 is enabled.
+		if ( is_object( $s3 ) && method_exists( $s3, 'is_image_on_s3' ) && $s3->is_image_on_s3( $attachment_id ) ) {
+			global $as3cf;
+
+			// Remove the local file only when S3 is removing them.
+			if ( '1' !== $as3cf->get_setting( 'remove-local-file' ) ) {
+				return;
+			}
+			$file_path = get_attached_file( $attachment_id );
+			if ( file_exists( $file_path ) ) {
+				unlink( $file_path );
+			}
+		}
 	}
 
 	/**
@@ -327,7 +388,7 @@ class Helper {
 		}
 
 		if ( $count > 1 ) {
-			update_post_meta( $id, WP_SMUSH_PREFIX . 'animated', true );
+			update_post_meta( $id, 'wp-smush-animated', true );
 		}
 	}
 
@@ -345,4 +406,46 @@ class Helper {
 		return path_join( $upload_path, $original_file );
 	}
 
+	/**
+	 * Gets the WPMU DEV API key.
+	 *
+	 * @since 3.8.6
+	 *
+	 * @return string|false
+	 */
+	public static function get_wpmudev_apikey() {
+		// If API key defined manually, get that.
+		if ( defined( 'WPMUDEV_APIKEY' ) && WPMUDEV_APIKEY ) {
+			return WPMUDEV_APIKEY;
+		}
+
+		// If dashboard plugin is active, get API key from db.
+		if ( class_exists( 'WPMUDEV_Dashboard' ) ) {
+			return get_site_option( 'wpmudev_apikey' );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get upsell URL.
+	 *
+	 * @since 3.9.1
+	 *
+	 * @param string $utm_campaign  Campaing string.
+	 *
+	 * @return string
+	 */
+	public static function get_url( $utm_campaign = '' ) {
+		$upgrade_url = 'https://wpmudev.com/project/wp-smush-pro/';
+
+		return add_query_arg(
+			array(
+				'utm_source'   => 'smush',
+				'utm_medium'   => 'plugin',
+				'utm_campaign' => $utm_campaign,
+			),
+			$upgrade_url
+		);
+	}
 }

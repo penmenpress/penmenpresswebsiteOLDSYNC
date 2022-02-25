@@ -193,7 +193,7 @@ class Admin extends NextGen {
 				'utm_medium'   => 'plugin',
 				'utm_campaign' => 'smush_bulksmush_issues_filesizelimit_notice',
 			),
-			'https://premium.wpmudev.org/project/wp-smush-pro/'
+			'https://wpmudev.com/project/wp-smush-pro/'
 		);
 
 		if ( WP_Smush::is_pro() ) {
@@ -201,7 +201,7 @@ class Admin extends NextGen {
 		} else {
 			$error_in_bulk = sprintf(
 				/* translators: %1$s - opening link tag, %2$s - </a> */
-				esc_html__( '{{smushed}}/{{total}} images were successfully compressed, {{errors}} encountered issues. Are you hitting the 5MB "size limit exceeded" warning? %1$sUpgrade to Smush Pro for FREE%2$s to optimize image files up to 32MB.', 'wp-smushit' ),
+				esc_html__( '{{smushed}}/{{total}} images were successfully compressed, {{errors}} encountered issues. Are you hitting the 5MB "size limit exceeded" warning? %1$sUpgrade to Smush Pro for FREE%2$s to optimize unlimited image files.', 'wp-smushit' ),
 				'<a href="' . esc_url( $upgrade_url ) . '" target="_blank">',
 				'</a>'
 			);
@@ -214,7 +214,6 @@ class Admin extends NextGen {
 			'all_resmushed' => esc_html__( 'All images are fully optimized.', 'wp-smushit' ),
 			'restore'       => esc_html__( 'Restoring image...', 'wp-smushit' ),
 			'smushing'      => esc_html__( 'Smushing image...', 'wp-smushit' ),
-			'checking'      => esc_html__( 'Checking images...', 'wp-smushit' ),
 		);
 
 		wp_localize_script( $handle, 'wp_smush_msgs', $wp_smush_msgs );
@@ -434,17 +433,17 @@ class Admin extends NextGen {
 			$this->resmush_ids = get_option( 'wp-smush-nextgen-resmush-list', array() );
 		}
 
-		// I fwe have images to be resmushed, exclude it.
-		if ( ! empty( $this->resmush_ids ) ) {
+		// Includes the count of different sizes an image might have.
+		$this->image_count = $this->get_image_count( $smushed_images, false );
+
+		// If we have images to be resmushed, exclude it.
+		if ( ! empty( $this->resmush_ids ) && is_array( $smushed_images ) ) {
 			// Get the Smushed images, exlude resmush ids.
 			$smushed_images = array_diff_key( $smushed_images, array_flip( $this->resmush_ids ) );
 		}
 
 		// Set the counts.
 		$this->total_count = $this->ng_stats->total_count();
-
-		// Includes the count of different sizes an image might have.
-		$this->image_count = $this->get_image_count( $smushed_images );
 
 		// Count of images ( Attachments ), Does not includes additioanl sizes that might have been created.
 		$this->smushed_count = isset( $smushed_images ) && is_array( $smushed_images ) ? count( $smushed_images ) : $smushed_images;
