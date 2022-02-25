@@ -149,6 +149,7 @@ class Admin_Apple_JSON extends Apple_News {
 			'apple_news_index',
 			__( 'Customize Apple News JSON', 'apple-news' ),
 			__( 'Customize JSON', 'apple-news' ),
+			/** This filter is documented in admin/class-admin-apple-settings.php */
 			apply_filters( 'apple_news_settings_capability', 'manage_options' ),
 			$this->json_page_name,
 			array( $this, 'page_json_render' )
@@ -161,6 +162,7 @@ class Admin_Apple_JSON extends Apple_News {
 	 * @access public
 	 */
 	public function page_json_render() {
+		/** This filter is documented in admin/class-admin-apple-settings.php */
 		if ( ! current_user_can( apply_filters( 'apple_news_settings_capability', 'manage_options' ) ) ) {
 			wp_die( esc_html__( 'You do not have permissions to access this page.', 'apple-news' ) );
 		}
@@ -337,9 +339,7 @@ class Admin_Apple_JSON extends Apple_News {
 			// Ensure the value exists.
 			$key = 'apple_news_json_' . $spec->key_from_name( $spec->name );
 			if ( isset( $_POST[ $key ] ) ) {
-				$custom_spec = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
-				$result      = $spec->save( $custom_spec, $theme );
-				if ( true === $result ) {
+				if ( true === $spec->save( wp_unslash( $_POST[ $key ] ), $theme ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					$updates[] = $spec->label;
 				}
 			}

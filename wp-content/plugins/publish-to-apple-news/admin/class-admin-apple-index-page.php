@@ -65,12 +65,18 @@ class Admin_Apple_Index_Page extends Apple_News {
 	 * @access public
 	 */
 	public function setup_admin_page() {
-		// Set up main page. This page reads parameters and handles actions.
-		// accordingly.
+		/**
+		 * Modifies the capability required to view the list of Apple News articles.
+		 *
+		 * @param string $capability The capability required to view the list of Apple News articles. Defaults to `manage_options`.
+		 */
+		$capability = apply_filters( 'apple_news_list_capability', 'manage_options' );
+
+		// Set up main page. This page reads parameters and handles actions accordingly.
 		add_menu_page(
 			__( 'Apple News', 'apple-news' ),
 			__( 'Apple News', 'apple-news' ),
-			apply_filters( 'apple_news_list_capability', 'manage_options' ),
+			$capability,
 			$this->plugin_slug . '_index',
 			array( $this, 'admin_page' ),
 			'dashicons-format-aside'
@@ -80,7 +86,7 @@ class Admin_Apple_Index_Page extends Apple_News {
 			$this->plugin_slug . '_index',
 			__( 'Articles', 'apple-news' ),
 			__( 'Articles', 'apple-news' ),
-			apply_filters( 'apple_news_list_capability', 'manage_options' ),
+			$capability,
 			$this->plugin_slug . '_index',
 			array( $this, 'admin_page' )
 		);
@@ -284,8 +290,17 @@ class Admin_Apple_Index_Page extends Apple_News {
 			return;
 		}
 
+		global $wp_scripts;
+
 		// Enable jQuery datepicker for the export table date filter.
 		wp_enqueue_script( 'jquery-ui-datepicker' );
+		$jquery_ui = $wp_scripts->query( 'jquery-ui-core' );
+		wp_enqueue_style(
+			'apple-news-jquery-ui-autocomplete',
+			'https://ajax.googleapis.com/ajax/libs/jqueryui/' . $jquery_ui->ver . '/themes/smoothness/jquery-ui.min.css',
+			[],
+			$jquery_ui->ver
+		);
 
 		// Add the export table script and style.
 		wp_enqueue_style(

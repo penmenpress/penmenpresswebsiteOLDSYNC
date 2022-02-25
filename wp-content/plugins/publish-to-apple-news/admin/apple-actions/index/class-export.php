@@ -17,7 +17,8 @@ use Apple_Exporter\Exporter as Exporter;
 use Apple_Exporter\Exporter_Content as Exporter_Content;
 use Apple_Exporter\Exporter_Content_Settings as Exporter_Content_Settings;
 use Apple_Exporter\Third_Party\Jetpack_Tiled_Gallery as Jetpack_Tiled_Gallery;
-use \Admin_Apple_Sections;
+use Admin_Apple_Sections;
+use Apple_News;
 
 /**
  * A class to handle an export request from the admin.
@@ -69,16 +70,25 @@ class Export extends Action {
 	}
 
 	/**
+	 * Sets the exporting flag.
+	 *
+	 * @param bool $exporting The new value of the exporting flag.
+	 */
+	public static function set_exporting( $exporting ) {
+		self::$exporting = (bool) $exporting;
+	}
+
+	/**
 	 * Perform the export and return the results.
 	 *
 	 * @return string The JSON data
 	 * @access public
 	 */
 	public function perform() {
-		self::$exporting = true;
-		$exporter        = $this->fetch_exporter();
-		$json            = $exporter->export();
-		self::$exporting = false;
+		self::set_exporting( true );
+		$exporter = $this->fetch_exporter();
+		$json     = $exporter->export();
+		self::set_exporting( false );
 
 		return $json;
 	}
@@ -93,6 +103,11 @@ class Export extends Action {
 
 		global $post;
 
+		/**
+		 * Actions to be fired before the Exporter class is created and returned.
+		 *
+		 * @param int $post_id The ID of the post being exported.
+		 */
 		do_action( 'apple_news_do_fetch_exporter', $this->id );
 
 		/**
@@ -123,6 +138,12 @@ class Export extends Action {
 				$cover_caption = wp_get_attachment_caption( $thumb_id );
 			}
 			if ( ! empty( $post_thumb_url ) ) {
+				// If the post thumb URL is root-relative, convert it to fully-qualified.
+				if ( 0 === strpos( $post_thumb_url, '/' ) ) {
+					$post_thumb_url = site_url( $post_thumb_url );
+				}
+
+				// Compile the post_thumb object using the URL and caption from the featured image.
 				$post_thumb = [
 					'caption' => ! empty( $cover_caption ) ? $cover_caption : '',
 					'url'     => $post_thumb_url,
@@ -141,8 +162,17 @@ class Export extends Action {
 		// Build the byline.
 		$byline = $this->format_byline( $post );
 
+		// Build the author.
+		$author = $this->format_author( $post );
+
+		// Build the publication date.
+		$date = $this->format_date( $post );
+
 		// Get the content.
 		$content = $this->get_content( $post );
+
+		// Get the slug.
+		$slug = get_post_meta( $post->ID, 'apple_news_slug', true );
 
 		/*
 		 * If the excerpt looks too similar to the content, remove it.
@@ -159,22 +189,106 @@ class Export extends Action {
 			}
 		}
 
-		// Filter each of our items before passing into the exporter class.
-		$title     = apply_filters( 'apple_news_exporter_title', $post->post_title, $post->ID );
-		$excerpt   = apply_filters( 'apple_news_exporter_excerpt', $excerpt, $post->ID );
+		/**
+		 * Filters the title of an article before it is sent to Apple News.
+		 *
+		 * @param string $title   The title of the post.
+		 * @param int    $post_id The ID of the post.
+		 */
+		$title = apply_filters( 'apple_news_exporter_title', $post->post_title, $post->ID );
+
+		/**
+		 * Filters the excerpt of an article before it is sent to Apple News.
+		 *
+		 * The excerpt is used for the Intro component, if it is active.
+		 *
+		 * @param string $excerpt The excerpt of the post.
+		 * @param int    $post_id The ID of the post.
+		 */
+		$excerpt = apply_filters( 'apple_news_exporter_excerpt', $excerpt, $post->ID );
+
+		/**
+		 * Filters the cover image URL of an article before it is sent to Apple News.
+		 *
+		 * The cover image URL is used for the Cover component, if it is active.
+		 *
+		 * @param string|null $url     The cover image URL for the post.
+		 * @param int         $post_id The ID of the post.
+		 */
 		$cover_url = apply_filters( 'apple_news_exporter_post_thumb', ! empty( $post_thumb['url'] ) ? $post_thumb['url'] : null, $post->ID );
-		$byline    = apply_filters( 'apple_news_exporter_byline', $byline, $post->ID );
-		$content   = apply_filters( 'apple_news_exporter_content', $content, $post->ID );
+
+		/**
+		 * Filters the byline of an article before it is sent to Apple News.
+		 *
+		 * The byline is used for the Byline component, if it is active.
+		 *
+		 * @param string $byline  The byline for the post.
+		 * @param int    $post_id The ID of the post.
+		 */
+		$byline = apply_filters( 'apple_news_exporter_byline', $byline, $post->ID );
+
+		/**
+		 * Filters the author of an article before it is sent to Apple News.
+		 *
+		 * The author is used for the Author component, if it is active.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param string $author  The author for the post.
+		 * @param int    $post_id The ID of the post.
+		 */
+		$author = apply_filters( 'apple_news_exporter_author', $author, $post->ID );
+
+		/**
+		 * Filters the date of an article before it is sent to Apple News.
+		 *
+		 * The date is used for the Date component, if it is active.
+		 *
+		 * @since 2.3.0
+		 *
+		 * @param string $ date   The date for the post.
+		 * @param int    $post_id The ID of the post.
+		 */
+		$date = apply_filters( 'apple_news_exporter_date', $date, $post->ID );
+
+		/**
+		 * Filters the slug of an article before it is sent to Apple News.
+		 *
+		 * The slug is used for the Slug component, if it is active.
+		 *
+		 * @since 2.2.0
+		 *
+		 * @param string $slug    The slug for the post.
+		 * @param int    $post_id The ID of the post.
+		 */
+		$slug = apply_filters( 'apple_news_exporter_slug', $slug, $post->ID );
+
+		/**
+		 * Filters the HTML of a post after `the_content` filter is called, but
+		 * before the HTML is parsed into Apple News Format.
+		 *
+		 * This filter could be useful to remove content known to be incompatible
+		 * with Apple News, or to add content stored in other areas of the
+		 * database, such as postmeta or custom database tables.
+		 *
+		 * @param string $content The HTML content of the post, after the_content filter has been run.
+		 * @param int    $post_id The ID of the post.
+		 */
+		$content = apply_filters( 'apple_news_exporter_content', $content, $post->ID );
 
 		// Re-apply the cover URL after filtering.
 		if ( ! empty( $cover_url ) ) {
 			$cover_caption = ! empty( $post_thumb['caption'] ) ? $post_thumb['caption'] : '';
 
 			/**
-			 * Filters the cover caption.
+			 * Filters the cover image caption of an article before it is sent to Apple News.
+			 *
+			 * The cover image caption is used for the Cover component, if it is
+			 * active, and if support for cover image captions is turned on in theme
+			 * settings.
 			 *
 			 * @param string $caption The caption to use for the cover image.
-			 * @param int    $post_id The post ID.
+			 * @param int    $post_id The ID of the post.
 			 *
 			 * @since 2.1.0
 			 */
@@ -196,7 +310,10 @@ class Export extends Action {
 			$excerpt,
 			$post_thumb,
 			$byline,
-			$this->fetch_content_settings()
+			$this->fetch_content_settings(),
+			$slug,
+			$author,
+			$date
 		);
 
 		return new Exporter( $base_content, null, $this->settings );
@@ -214,19 +331,12 @@ class Export extends Action {
 	 * @return string
 	 */
 	public function format_byline( $post, $author = '', $date = '' ) {
-
 		// Get information about the currently used theme.
 		$theme = \Apple_Exporter\Theme::get_used();
 
 		// Get the author.
 		if ( empty( $author ) ) {
-
-			// Try to get the author information from Co-Authors Plus.
-			if ( function_exists( 'coauthors' ) ) {
-				$author = coauthors( null, null, null, null, false );
-			} else {
-				$author = ucfirst( get_the_author_meta( 'display_name', $post->post_author ) );
-			}
+			$author = Apple_News::get_authors();
 		}
 
 		// Get the date.
@@ -268,6 +378,90 @@ class Export extends Action {
 		}
 
 		return $byline;
+	}
+
+	/**
+	 * Formats the author.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param \WP_Post $post   The post to use.
+	 * @param string   $author Optional. Overrides author information. Defaults to author of the post.
+	 * @access public
+	 * @return string
+	 */
+	public function format_author( $post, $author = '' ) {
+		// Get information about the currently used theme.
+		$theme = \Apple_Exporter\Theme::get_used();
+
+		// Get the author.
+		if ( empty( $author ) ) {
+			$author = Apple_News::get_authors();
+		}
+
+		// Check for a custom byline format.
+		$byline_format = $theme->get_value( 'author_format' );
+		if ( ! empty( $byline_format ) ) {
+			/**
+			 * Find and replace the author format placeholder name with a temporary placeholder.
+			 * This is because some bylines could contain hashtags!
+			 */
+			$temp_byline_placeholder = 'AUTHOR';
+			$byline                  = str_replace( '#author#', $temp_byline_placeholder, $byline_format );
+
+			// Replace the temporary placeholder with the actual byline.
+			$byline = str_replace( $temp_byline_placeholder, $author, $byline );
+
+		} else {
+			// Use the default format.
+			$byline = sprintf(
+				'by %1$s',
+				$author
+			);
+		}
+
+		return $byline;
+	}
+
+	/**
+	 * Formats the publication date
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param \WP_Post $post   The post to use.
+	 * @param string   $date   Optional. Overrides the date. Defaults to the date of the post.
+	 * @access public
+	 * @return string
+	 */
+	public function format_date( $post, $date = '' ) {
+		// Get information about the currently used theme.
+		$theme = \Apple_Exporter\Theme::get_used();
+
+		// Get the date.
+		if ( empty( $date ) && ! empty( $post->post_date ) ) {
+			$date = $post->post_date;
+		}
+
+		// Check for a custom byline format.
+		$date_format = $theme->get_value( 'date_format' );
+
+		if ( ! empty( $date_format ) ) {
+			// Attempt to parse the date format from the remaining string.
+			$matches = array();
+			preg_match( '/#(.*?)#/', $date_format, $matches );
+			if ( ! empty( $matches[1] ) ) {
+				// Set the date using the custom format.
+				$date = apple_news_date( $matches[1], strtotime( $date ) );
+			}
+		} else {
+			// Use the default format.
+			$date = sprintf(
+				'%1$s',
+				apple_news_date( $date_format, strtotime( $date ) )
+			);
+		}
+
+		return $date;
 	}
 
 	/**
@@ -387,15 +581,33 @@ class Export extends Action {
 	 */
 	private function get_content( $post ) {
 		/**
+		 * Filters the HTML of a post before `the_content` filter is called, and
+		 * before the HTML is parsed into Apple News Format.
+		 *
+		 * This filter could be useful to remove content known to be incompatible
+		 * with Apple News, or to add content stored in other areas of the
+		 * database which should be run through `the_content` filter, such as
+		 * shortcodes stored in postmeta or custom database tables.
+		 *
+		 * @param string $content The post_content for the post, before the_content filter has been run.
+		 * @param int    $post_id The ID of the post.
+		 */
+		$content = apply_filters( 'apple_news_exporter_content_pre', $post->post_content, $post->ID );
+
+		// Replace Brightcove shortcodes and Gutenberg blocks with video tags.
+		$content = $this->format_brightcove( $content );
+
+		/**
 		 * The post_content is not raw HTML, as WordPress editor cleans up
 		 * paragraphs and new lines, so we need to transform the content to
 		 * HTML. We use 'the_content' filter for that.
 		 */
-		$content = apply_filters( 'apple_news_exporter_content_pre', $post->post_content, $post->ID );
-		$content = $this->format_brightcove( $content );
 		$content = apply_filters( 'the_content', $content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+
+		// Clean up the HTML a little.
 		$content = $this->remove_tags( $content );
 		$content = $this->remove_entities( $content );
+
 		return $content;
 	}
 
@@ -445,6 +657,15 @@ class Export extends Action {
 				$settings->set( $name, $value );
 			}
 		}
+
+		/**
+		 * Filters the Exporter_Content_Settings object for this article.
+		 *
+		 * Before this filter is called, the Exporter_Content_Settings object is
+		 * initialized and merged with settings stored in postmeta for this post.
+		 *
+		 * @param Apple_Exporter\Exporter_Content_Settings $settings The content settings for this article.
+		 */
 		return apply_filters( 'apple_news_content_settings', $settings );
 	}
 

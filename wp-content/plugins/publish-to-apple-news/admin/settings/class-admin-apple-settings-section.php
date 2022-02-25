@@ -101,18 +101,23 @@ class Admin_Apple_Settings_Section extends Apple_News {
 	 * @access public
 	 */
 	public static $allowed_html = array(
-		'select' => array(
+		'select'   => array(
 			'class'    => array(),
 			'name'     => array(),
 			'multiple' => array(),
 			'id'       => array(),
 			'size'     => array(),
 		),
-		'option' => array(
+		'textarea' => array(
+			'class' => array(),
+			'name'  => array(),
+			'id'    => array(),
+		),
+		'option'   => array(
 			'value'    => array(),
 			'selected' => array(),
 		),
-		'input'  => array(
+		'input'    => array(
 			'class'       => array(),
 			'name'        => array(),
 			'value'       => array(),
@@ -123,34 +128,34 @@ class Admin_Apple_Settings_Section extends Apple_News {
 			'size'        => array(),
 			'id'          => array(),
 		),
-		'br'     => array(),
-		'b'      => array(),
-		'strong' => array(),
-		'i'      => array(),
-		'em'     => array(),
-		'a'      => array(
+		'br'       => array(),
+		'b'        => array(),
+		'strong'   => array(),
+		'i'        => array(),
+		'em'       => array(),
+		'a'        => array(
 			'href'   => array(),
 			'target' => array(),
 		),
-		'div'    => array(
+		'div'      => array(
 			'class' => array(),
 		),
-		'h1'     => array(
+		'h1'       => array(
 			'class' => array(),
 		),
-		'h2'     => array(
+		'h2'       => array(
 			'class' => array(),
 		),
-		'h3'     => array(
+		'h3'       => array(
 			'class' => array(),
 		),
-		'h4'     => array(
+		'h4'       => array(
 			'class' => array(),
 		),
-		'h5'     => array(
+		'h5'       => array(
 			'class' => array(),
 		),
-		'h6'     => array(
+		'h6'       => array(
 			'class' => array(),
 		),
 	);
@@ -171,9 +176,26 @@ class Admin_Apple_Settings_Section extends Apple_News {
 		$base_settings             = new \Apple_Exporter\Settings();
 		self::$base_settings       = $base_settings->all();
 		self::$loaded_settings     = get_option( self::$section_option_name );
-		$this->settings            = apply_filters( 'apple_news_section_settings', $this->settings, $page );
-		$this->groups              = apply_filters( 'apple_news_section_groups', $this->groups, $page );
-		$this->hidden              = $hidden;
+
+		/**
+		 * Modifies the setting values for the settings page.
+		 *
+		 * @param array  $settings An array of settings for this section.
+		 * @param string $page     The name of the settings page.
+		 */
+		$this->settings = apply_filters( 'apple_news_section_settings', $this->settings, $page );
+
+		/**
+		 * Modifies the groups for the settings page.
+		 *
+		 * This could be used to add or remove a group or reorder them.
+		 *
+		 * @param array  $groups An array of groups for this section.
+		 * @param string $page   The name of the settings page.
+		 */
+		$this->groups = apply_filters( 'apple_news_section_groups', $this->groups, $page );
+
+		$this->hidden = $hidden;
 
 		// Save settings if necessary.
 		$this->save_settings();
@@ -294,6 +316,10 @@ class Admin_Apple_Settings_Section extends Apple_News {
 			$field = '<input type="password" id="%s" name="%s" value="%s" size="%s" %s>';
 		} elseif ( 'hidden' === $type ) {
 			$field = '<input type="hidden" id="%s" name="%s" value="%s">';
+		} elseif ( 'file' === $type ) {
+			$field = '<input type="file" id="%s" name="%s">';
+		} elseif ( 'textarea' === $type ) {
+			$field = '<textarea id="%s" name="%s">%s</textarea>';
 		} else {
 			// If nothing else matches, it's a string.
 			$field = '<input type="text" id="%s" name="%s" value="%s" size="%s" %s>';
@@ -302,6 +328,12 @@ class Admin_Apple_Settings_Section extends Apple_News {
 		// Add a description, if set.
 		$description = $this->get_description_for( $name );
 		if ( ! empty( $description ) && 'hidden' !== $type ) {
+			/**
+			 * Modifies the HTML output for the description of any field.
+			 *
+			 * @param string $html The HTML for the field description.
+			 * @param string $name The name of the field.
+			 */
 			$field .= apply_filters( 'apple_news_field_description_output_html', '<br/><i>' . $description . '</i>', $name );
 		}
 
@@ -314,6 +346,19 @@ class Admin_Apple_Settings_Section extends Apple_News {
 				intval( $size )
 			);
 		} elseif ( 'hidden' === $type ) {
+			return sprintf(
+				$field,
+				esc_attr( $name ),
+				esc_attr( $name ),
+				esc_attr( $value )
+			);
+		} elseif ( 'file' === $type ) {
+			return sprintf(
+				$field,
+				esc_attr( $name ),
+				esc_attr( $name )
+			);
+		} elseif ( 'textarea' === $type ) {
 			return sprintf(
 				$field,
 				esc_attr( $name ),

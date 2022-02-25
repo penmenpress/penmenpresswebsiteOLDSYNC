@@ -62,7 +62,7 @@ class Components extends Builder {
 		 * could change depending on the above body processing, such as if a
 		 * thumbnail was used from the body.
 		 */
-		$components = array_merge( $this->meta_components(), $components );
+		$components = array_values( array_filter( array_merge( $this->meta_components(), $components ) ) );
 
 		// Group body components to improve text flow at all orientations.
 		$components = $this->group_body_components( $components );
@@ -544,6 +544,13 @@ class Components extends Builder {
 		 * image-rotated.jpg, for example, and will return image.jpg.
 		 */
 		$normalized_path = preg_replace( '/-(?:\d+x\d+|scaled|rotated)(\.[^.]+)$/', '$1', $url_parts['path'] );
+
+		// Remove the Jetpack CDN domain.
+		if ( preg_match( '/^i[0-9]\.wp\.com$/', $url_parts['host'] ) ) {
+			$path_parts        = explode( '/', $normalized_path );
+			$url_parts['host'] = array_shift( $path_parts );
+			$normalized_path   = implode( '/', $path_parts );
+		}
 
 		// Put Humpty Dumpty back together again.
 		return sprintf(

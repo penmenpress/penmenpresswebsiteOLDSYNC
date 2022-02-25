@@ -287,7 +287,7 @@ abstract class Component {
 		$dom = new \DOMDocument();
 		libxml_use_internal_errors( true );
 		$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $html );
-		libxml_clear_errors( true );
+		libxml_clear_errors();
 
 		// Find the first-level nodes of the body tag.
 		$element = $dom->getElementsByTagName( 'body' )->item( 0 )->childNodes->item( 0 );
@@ -308,6 +308,11 @@ abstract class Component {
 			$this->json['text'] = wp_kses( $this->json['text'], $this->allowed_html );
 		}
 
+		/**
+		 * Filters the final JSON for a specific component.
+		 *
+		 * @param array $json A PHP array representation of the JSON for this component.
+		 */
 		return apply_filters( 'apple_news_' . $this->get_component_name() . '_json', $this->json );
 	}
 
@@ -770,6 +775,33 @@ abstract class Component {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Given a DOMElement, recursively traverses its children looking for iframe
+	 * nodes and returns the first one it finds.
+	 *
+	 * @param \DOMElement $node The node to examine.
+	 *
+	 * @return \DOMElement|null The iframe DOMElement if found, null if not.
+	 */
+	public static function get_iframe_from_node( $node ) {
+		// If this node is an iframe, return it.
+		if ( 'iframe' === $node->nodeName ) {
+			return $node;
+		}
+
+		// If this node has children, loop over them and process each.
+		if ( $node->hasChildNodes() ) {
+			foreach ( $node->childNodes as $child_node ) {
+				$maybe_iframe = self::get_iframe_from_node( $child_node );
+				if ( null !== $maybe_iframe ) {
+					return $maybe_iframe;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
