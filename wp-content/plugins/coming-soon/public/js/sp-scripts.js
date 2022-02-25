@@ -126,7 +126,9 @@ function sp_send_request(token, id) {
     dataType: "json",
     timeout: 5000,
     data: data
-  }); //var j2 = jQuery.ajax( "/" );
+  }); // add ajax class
+
+  jQuery("#sp-optin-form-" + id + ' .sp-optin-submit').addClass('sp-ajax-striped sp-ajax-animated'); //var j2 = jQuery.ajax( "/" );
 
   var j2 = jQuery.ajax({
     url: sp_subscriber_callback_url,
@@ -147,9 +149,12 @@ function sp_send_request(token, id) {
     if (action === "2") {
       var redirect = jQuery("#sp-optin-form-" + id + " input[name^='redirect_url']").val();
       window.location.href = redirect;
-    } // alert( "We got what we came for!" );
+    }
 
+    jQuery("#sp-optin-form-" + id + ' .sp-optin-submit').removeClass('sp-ajax-striped sp-ajax-animated'); // alert( "We got what we came for!" );
   }).fail(function (jqXHR, textStatus, errorThrown) {
+    jQuery("#sp-optin-form-" + id + ' .sp-optin-submit').removeClass('sp-ajax-striped sp-ajax-animated');
+
     if (seeprod_enable_recaptcha === 1) {
       grecaptcha.reset(sp_emplacementRecaptcha[id]);
     } // var response = JSON.parse(j1.responseText);
@@ -158,10 +163,9 @@ function sp_send_request(token, id) {
     //     errorString +=  value ;
     // });
     // alert(errorString);
+    // console.log(j1);
+    // console.log(j2);
 
-
-    console.log(j1);
-    console.log(j2);
   });
   return;
 } // countdown
@@ -173,12 +177,12 @@ function countdown(type, ts, id, action, redirect) {
   var now = new Date().getTime();
 
   if (type == 'vt') {
-    ts = ts + now; //console.log(ts);
-
+    ts = ts + now;
     var seedprod_enddate = seedprodCookies.get('seedprod_enddate_' + id);
 
     if (seedprod_enddate != undefined) {
       ts = seedprod_enddate;
+    } else {
       seedprodCookies.set('seedprod_enddate_' + id, ts, {
         expires: 360
       });
@@ -215,12 +219,32 @@ function countdown(type, ts, id, action, redirect) {
       } // redirect
 
 
-      if (action === "2") {
+      if (action == "2") {
+        jQuery("#sp-countdown-" + id + " .sp-countdown-group").hide();
         window.location.href = redirect;
       }
     }
   }, 1000);
 }
+
+function seedprod_animatedheadline(blockId, infiniteLoop, animationDuration, animationDelay) {
+  //let animatewrapper = jQuery("#sp-animated-head-"+blockId+" .sp-title-highlight .sp-highlighted-text-wrapper");
+  if (infiniteLoop == "true") {
+    window.setInterval(function () {
+      jQuery('#sp-animated-head-' + blockId + ' .sp-title-highlight .sp-title--headline.sp-animated').addClass('sp-hide-highlight'); //jQuery("#sp-animated-head-"+blockId+" .sp-title-highlight .sp-highlighted-text-wrapper").addClass("sp-highlighted-hide-text-wrapper");
+
+      setTimeout(function () {
+        jQuery('#sp-animated-head-' + blockId + ' .sp-title-highlight .sp-title--headline.sp-animated').removeClass('sp-hide-highlight'); //jQuery("#sp-animated-head-"+blockId+" .sp-title-highlight .sp-highlighted-text-wrapper").removeClass("sp-highlighted-hide-text-wrapper");
+      }, 200);
+    }, animationDelay);
+  }
+}
+
+function seedprod_rotateheadline(blockId, continueLoop, animationDuration) {
+  jQuery("#sp-animated-head-" + blockId + ' .preview-sp-title').seedprod_responsive_title_shortcode();
+}
+/* end of rotate js code */
+
 
 function pad(n, width, z) {
   z = z || "0";
@@ -232,119 +256,514 @@ function pad(n, width, z) {
 jQuery(document).ready(function ($) {
   $('link[href*="/wp-content/themes/"]').remove();
 }); // Dynamic Text
-// jQuery(document).ready(function ($) {
-// 	var default_format = "{MM}/{dd}/{yyyy}";
-// 	var html = $("#sp-page").html();
-// 	var newTxt = html.split("[#");
-// 	for (var i = 1; i < newTxt.length; i++) {
-// 		var format = default_format;
-// 		var tag = newTxt[i].split("]")[0];
-// 		var parts = tag.split(":");
-// 		if (parts.length > 1) {
-// 			format = parts[1];
-// 		} else {
-// 			format = default_format;
-// 		}
-// 		var d = Date.create(parts[0]);
-// 		var regex = "\\[#" + tag + "]";
-// 		var re = new RegExp(regex, "g");
-// 		$("#sp-page *").replaceText(re, d.format(format));
-// 	}
-// });
 
-/*!-----------------------------------------------------------------------------
- * easy_background
- * v2.0 - built 2017-10-30
- * Licensed under the MIT License.
- * http://www.testersite.it/github/easy_background/v3/
- * ----------------------------------------------------------------------------
- * Copyright (C) 2017 Eugenio Segala
- * --------------------------------------------------------------------------*/
+jQuery(document).ready(function ($) {
+  var default_format = "{MM}/{dd}/{yyyy}";
+  var html = $("body").html();
+  var newTxt = html.split("[#");
 
-function easy_background(selector, sld_args) {
-  function empty_img(x) {
-    if (x) {
-      return "<img src='" + x + "'>";
+  for (var i = 1; i < newTxt.length; i++) {
+    var format = default_format;
+    var tag = newTxt[i].split("]")[0];
+    var parts = tag.split(":");
+
+    if (parts.length > 1) {
+      format = parts[1];
     } else {
-      return "";
-    }
-  } //use object same as arrays in php {nameofindex:variable} inside object you can use arrays [value1,val2] (variable in object can be as array
-  //var sld_args={i:["img/555.jpg","img/44.jpg","img/33.jpg","img/22.jpg","img/11.jpg","img/1.jpg","img/2.jpg","img/3.jpg","img/4.jpg","img/5.jpg"],d:[3000,3000,3000,3000,3000] };
-  //if delay is empty or forgotten then use this default value
-
-
-  var def_del = 5000;
-  var p = document.createElement("div");
-  p.innerHTML = " ";
-  p.classList.add("easy_slider");
-  document.body.insertBefore(p, document.body.firstChild); //switch all values in object -- objectname.index in you case sld_args is object and i is index of array which keep images (i). We use this function for fill div with img tags
-  //and for insert delays into empty or forgotten places in object
-
-  sld_args.slide.forEach(function (v, i) {
-    if (v) {
-      document.querySelector(".easy_slider").innerHTML += empty_img(v);
-
-      if (typeof sld_args.delay[i] == 'undefined' || typeof sld_args.delay[i] == '' || sld_args.delay[i] == 0) {
-        sld_args.delay[i] = def_del;
-      }
-    }
-  }); //add various style on selector
-
-  document.querySelector(".easy_slider").style.display = "none"; //add various style on selector
-
-  document.querySelector(selector).style.backgroundSize = "cover";
-  document.querySelector(selector).style.backgroundRepeat = "no-repeat";
-  document.querySelector(selector).style.backgroundPosition = "center center";
-  setTimeout(function () {
-    //add various style on selector
-    if (typeof sld_args.transition_timing === 'undefined') {
-      sld_args.transition_timing = "ease-in";
+      format = default_format;
     }
 
-    if (typeof sld_args.transition_duration === 'undefined') {
-      sld_args.transition_duration = 500;
-    }
-
-    var transition = "all " + sld_args.transition_duration + 'ms ' + sld_args.transition_timing;
-    document.querySelector(selector).style.WebkitTransition = transition;
-    document.querySelector(selector).style.MozTransition = transition;
-    document.querySelector(selector).style.MsTransition = transition;
-    document.querySelector(selector).style.OTransition = transition;
-    document.querySelector(selector).style.transition = transition;
-  }, 100); //this n is number of row  in object - if first row one function if more than 1 then other
-
-  var n = 1; //li collection previous delays from previous slides
-
-  var li = 0;
-
-  function slider() {
-    //switching all images one by one
-    sld_args.slide.forEach(function (vvv, iii) {
-      //here go all slides except first
-      if (n > 1) {
-        //set delay from collected number from previous slides
-        var delay = li;
-        setTimeout(function () {
-          document.querySelector(selector).style.backgroundImage = "url('" + vvv + "')";
-        }, delay); // >1
-        //collecting delays from curent
-
-        li = li + sld_args.delay[iii];
-      } else {
-        //this function for only  first slide
-        //next row
-        n++; //collect delay first time
-
-        li = sld_args.delay[iii];
-        document.querySelector(selector).style.backgroundImage = "url('" + vvv + "')";
-      }
-    });
+    var d = Date.create(parts[0]);
+    var regex = "\\[#" + tag + "]";
+    var re = new RegExp(regex, "g");
+    $("body *").replaceText(re, d.format(format));
   }
 
-  ;
-  slider();
-  setInterval(function () {
-    // REPEAT
-    slider(); //here used length of array of delays in object instead you tot_time variable
-  }, sld_args.delay.length);
+  $(".sp-dynamic-text").contents().unwrap();
+}); // Dynamic Query Parameter
+
+jQuery(document).ready(function ($) {
+  var default_value = "";
+  var html = $("body").html();
+  var newTxt = html.split("[q:");
+
+  for (var i = 1; i < newTxt.length; i++) {
+    var def_val = default_value;
+    var tag = newTxt[i].split("]")[0];
+    var parts = tag.split("=");
+
+    if (parts.length > 1) {
+      def_val = parts[1];
+    } else {
+      def_val = default_value;
+    }
+
+    var d = parts[0]; //Date.create(parts[0]);
+
+    var regex = "\\[q:" + tag + "]";
+    var re = new RegExp(regex, "g");
+    var searchParams = new URLSearchParams(window.location.search);
+    var paramdata = searchParams.get(d);
+
+    if (paramdata != null) {
+      def_val = paramdata;
+    } // console.log(re);
+    // console.log(def_val);
+    //  console.log(d);
+    //  console.log(def_val);
+    //  console.log(paramdata);
+    //$("body *").replaceText(re,seedprod_escapeHtml(def_val));
+
+
+    var replaced = $("body").html().replace(re, seedprod_escapeHtml(def_val));
+    $("body").html(replaced);
+  }
+
+  $(".sp-dynamic-text").contents().unwrap();
+});
+
+function seedprod_escapeHtml(unsafe) {
+  return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
+/*!-----------------------------------------------------------------------------
+ * seedprod_bg_slideshow()
+ * ----------------------------------------------------------------------------
+ * Example:
+ * seedprod_bg_slideshow('body', ['IMG_URL', 'IMG_URL', 'IMG_URL'], 3000);
+ * --------------------------------------------------------------------------*/
+
+
+function seedprod_bg_slideshow(selector, slides) {
+  var delay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5000;
+  var transition_timing = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'ease-in';
+  var transition_duration = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 500;
+  document.querySelector(selector).style.backgroundSize = "cover";
+  document.querySelector(selector).style.backgroundRepeat = "no-repeat";
+  document.querySelector(selector).style.backgroundPosition = "center center"; // Set transitions
+
+  var transition = "all " + transition_duration + 'ms ' + transition_timing;
+  document.querySelector(selector).style.WebkitTransition = transition;
+  document.querySelector(selector).style.MozTransition = transition;
+  document.querySelector(selector).style.MsTransition = transition;
+  document.querySelector(selector).style.OTransition = transition;
+  document.querySelector(selector).style.transition = transition;
+  var currentSlideIndex = 0; // Load first slide
+
+  document.querySelector(selector).style.backgroundImage = "url('" + slides[currentSlideIndex] + "')";
+  currentSlideIndex++; // Load next slide every interval
+
+  setInterval(function () {
+    document.querySelector(selector).style.backgroundImage = "url('" + slides[currentSlideIndex] + "')";
+    currentSlideIndex++; // Reset counter
+
+    if (currentSlideIndex >= slides.length) {
+      currentSlideIndex = 0;
+    }
+  }, delay); // Preload slideshow images
+
+  var preloadImages = new Array();
+  slides.forEach(function (val, i) {
+    preloadImages[i] = new Image();
+    preloadImages[i].src = val;
+  });
+}
+
+jQuery('.sp-testimonial-nav button').click(function () {
+  var currentId = '#' + jQuery(this).parents('.sp-testimonials-wrapper').attr('id');
+  var currentButtonIndex = jQuery(currentId + ' .sp-testimonial-nav button').index(this);
+  var currentIndex = 0;
+  var testimonials = jQuery('.sp-testimonial-wrapper', jQuery(this).parents(currentId));
+  jQuery(testimonials).each(function (index) {
+    var o = jQuery(this).css('opacity');
+
+    if (o == 1) {
+      currentIndex = index;
+    }
+  });
+  var buttonsLength = jQuery(currentId + ' .sp-testimonial-nav button').length - 1;
+  var currentButtonIndexData = jQuery(currentId + ' .sp-testimonial-nav button').eq(currentButtonIndex).attr('data-index'); // check for previous button click
+
+  if (currentButtonIndex == 0) {
+    if (0 == currentIndex) {
+      currentIndex = testimonials.length - 1;
+    } else {
+      currentIndex--;
+    }
+  } // check for next button click
+
+
+  if (currentButtonIndex == buttonsLength) {
+    if (testimonials.length - 1 == currentIndex) {
+      currentIndex = 0;
+    } else {
+      currentIndex++;
+    }
+  } // reset states
+
+
+  testimonials.css({
+    'opacity': 0,
+    'height': '0',
+    'position': 'absolute'
+  });
+  jQuery(currentId + ' .sp-testimonial-nav button[data-index]').css({
+    'opacity': 0.25
+  }); // select testimonial and button
+
+  if (currentButtonIndexData !== undefined) {
+    currentIndex = currentButtonIndexData;
+    jQuery(testimonials).eq(currentIndex).css({
+      'opacity': 1,
+      'height': 'auto',
+      'position': 'initial'
+    });
+    jQuery(currentId + ' .sp-testimonial-nav button').eq(currentButtonIndex).css({
+      'opacity': 1
+    });
+  } else {
+    jQuery(testimonials).eq(currentIndex).css({
+      'opacity': 1,
+      'height': 'auto',
+      'position': 'initial'
+    });
+    jQuery(currentId + ' .sp-testimonial-nav button').eq(currentIndex + 1).css({
+      'opacity': 1
+    });
+  }
+});
+var testimonial_timers = {};
+jQuery(".sp-testimonials-wrapper").each(function (index) {
+  var currentId = '#' + jQuery(this).attr('id');
+  var autoPlay = jQuery(this).attr('data-autoplay');
+  var speed = jQuery(this).attr('data-speed');
+
+  if (speed === '') {
+    speed = 5000;
+  } else {
+    speed = parseInt(speed) * 1000;
+  }
+
+  if (autoPlay !== undefined) {
+    testimonial_timers[currentId] = setInterval(function () {
+      jQuery(currentId + ' .sp-testimonial-nav button:last-child').trigger('click');
+    }, speed);
+  }
+});
+jQuery(".sp-testimonials-wrapper").hover(function () {
+  var id = '#' + jQuery(this).attr('id');
+  clearInterval(testimonial_timers[id]);
+});
+jQuery(".sp-testimonials-wrapper").mouseleave(function () {
+  var currentId = '#' + jQuery(this).attr('id');
+  var autoPlay = jQuery(this).attr('data-autoplay');
+  var speed = jQuery(this).attr('data-speed');
+
+  if (speed === '') {
+    speed = 5000;
+  } else {
+    speed = parseInt(speed) * 1000;
+  }
+
+  if (autoPlay !== undefined) {
+    testimonial_timers[currentId] = setInterval(function () {
+      jQuery(currentId + ' .sp-testimonial-nav button:last-child').trigger('click');
+    }, speed);
+  }
+});
+/* start  of twitter timline js code */
+
+function seedprod_twitterembedtimeline(blockId, timelineid, showReplies, width, height, chrome, align, borderColors, colorScheme, lang) {
+  //jQuery("#sp-animated-head-"+blockId+' .preview-sp-title' ).seedprod_responsive_title_shortcode();
+  twttr.ready(function (twttr) {
+    window.twttr.widgets.createTimeline({
+      sourceType: "profile",
+      screenName: timelineid
+    }, document.getElementById('sp-twitterembedtimeline-preview-' + blockId), {
+      showReplies: showReplies,
+      width: width,
+      height: height,
+      chrome: chrome,
+      align: align,
+      borderColor: borderColors,
+      theme: colorScheme,
+      lang: lang
+    }).then(function (el) {//console.log('Tweet added.'); 
+    });
+  });
+}
+
+function seedprod_twittertweetbutton(blockId, tweetUrl, buttonSize, tweetText, tweetHashTag, viaHandle, relatedTweet, lang) {
+  twttr.ready(function (twttr) {
+    window.twttr.widgets.createShareButton(tweetUrl, document.getElementById('sp-twittertweetbutton-preview-' + blockId), {
+      size: buttonSize,
+      text: tweetText,
+      hashtags: tweetHashTag,
+      via: viaHandle,
+      related: relatedTweet,
+      lang: lang
+    });
+  });
+}
+/* end of twitter timline js code */
+
+/* this is image carousel block code */
+
+
+jQuery('.sp-imagecarousel-nav button').click(function () {
+  var currentId = '#' + jQuery(this).parents('.sp-imagecarousels-wrapper').attr('id');
+  var currentButtonIndex = jQuery(currentId + ' .sp-imagecarousel-nav button').index(this);
+  var currentIndex = 0;
+  var imagecarousels = jQuery('.sp-imagecarousel-wrapper', jQuery(this).parents(currentId));
+  jQuery(imagecarousels).each(function (index) {
+    var o = jQuery(this).css('opacity');
+
+    if (o == 1) {
+      currentIndex = index;
+    }
+  });
+  var buttonsLength = jQuery(currentId + ' .sp-imagecarousel-nav button').length - 1;
+  var currentButtonIndexData = jQuery(currentId + ' .sp-imagecarousel-nav button').eq(currentButtonIndex).attr('data-index'); // check for previous button click
+
+  if (currentButtonIndex == 0) {
+    if (0 == currentIndex) {
+      currentIndex = imagecarousels.length - 1;
+    } else {
+      currentIndex--;
+    }
+  } // check for next button click
+
+
+  if (currentButtonIndex == buttonsLength) {
+    if (imagecarousels.length - 1 == currentIndex) {
+      currentIndex = 0;
+    } else {
+      currentIndex++;
+    }
+  } // reset states
+
+
+  imagecarousels.css({
+    'opacity': 0,
+    'height': '0',
+    'position': 'absolute'
+  });
+  jQuery(currentId + ' .sp-imagecarousel-nav button[data-index]').css({
+    'opacity': 0.25
+  }); // select imagecarousel and button
+
+  if (currentButtonIndexData !== undefined) {
+    currentIndex = currentButtonIndexData;
+    jQuery(imagecarousels).eq(currentIndex).css({
+      'opacity': 1,
+      'height': 'auto',
+      'position': 'initial'
+    });
+    jQuery(currentId + ' .sp-imagecarousel-nav button').eq(currentButtonIndex).css({
+      'opacity': 1
+    });
+  } else {
+    jQuery(imagecarousels).eq(currentIndex).css({
+      'opacity': 1,
+      'height': 'auto',
+      'position': 'initial'
+    });
+    jQuery(currentId + ' .sp-imagecarousel-nav button').eq(currentIndex + 1).css({
+      'opacity': 1
+    });
+  }
+});
+var imagecarousel_timers = {};
+jQuery(".sp-imagecarousels-wrapper").each(function (index) {
+  var currentId = '#' + jQuery(this).attr('id');
+  var autoPlay = jQuery(this).attr('data-autoplay');
+  var speed = jQuery(this).attr('data-speed');
+
+  if (speed === '') {
+    speed = 5000;
+  } else {
+    speed = parseInt(speed) * 1000;
+  }
+
+  if (autoPlay !== undefined) {
+    imagecarousel_timers[currentId] = setInterval(function () {
+      jQuery(currentId + ' .sp-imagecarousel-nav button:last-child').trigger('click');
+    }, speed);
+  }
+});
+jQuery(".sp-imagecarousels-wrapper").hover(function () {
+  var id = '#' + jQuery(this).attr('id');
+  clearInterval(imagecarousel_timers[id]);
+});
+jQuery(".sp-imagecarousels-wrapper").mouseleave(function () {
+  var currentId = '#' + jQuery(this).attr('id');
+  var autoPlay = jQuery(this).attr('data-autoplay');
+  var speed = jQuery(this).attr('data-speed');
+
+  if (speed === '') {
+    speed = 5000;
+  } else {
+    speed = parseInt(speed) * 1000;
+  }
+
+  if (autoPlay !== undefined) {
+    imagecarousel_timers[currentId] = setInterval(function () {
+      jQuery(currentId + ' .sp-imagecarousel-nav button:last-child').trigger('click');
+    }, speed);
+  }
+});
+
+function PureDropdown(dropdownParent) {
+  var PREFIX = 'seedprod-',
+      ACTIVE_CLASS_NAME = PREFIX + 'menu-active',
+      ARIA_ROLE = 'role',
+      ARIA_HIDDEN = 'aria-hidden',
+      MENU_OPEN = 0,
+      MENU_CLOSED = 1,
+      MENU_ACTIVE_SELECTOR = '.menu-item-active',
+      MENU_LINK_SELECTOR = '.menu-item a',
+      MENU_SELECTOR = '.sub-menu',
+      DISMISS_EVENT = window.hasOwnProperty && window.hasOwnProperty('ontouchstart') ? 'touchstart' : 'mousedown',
+      ARROW_KEYS_ENABLED = true,
+      ddm = this; // drop down menu
+
+  this._state = MENU_CLOSED;
+
+  this.show = function () {
+    if (this._state !== MENU_OPEN) {
+      this._dropdownParent.classList.add(ACTIVE_CLASS_NAME);
+
+      this._menu.setAttribute(ARIA_HIDDEN, false);
+
+      this._state = MENU_OPEN;
+    }
+  };
+
+  this.hide = function () {
+    if (this._state !== MENU_CLOSED) {
+      this._dropdownParent.classList.remove(ACTIVE_CLASS_NAME);
+
+      this._menu.setAttribute(ARIA_HIDDEN, true);
+
+      this._link.focus();
+
+      this._state = MENU_CLOSED;
+    }
+  };
+
+  this.toggle = function () {
+    this[this._state === MENU_CLOSED ? 'show' : 'hide']();
+  };
+
+  this.halt = function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
+  this._dropdownParent = dropdownParent;
+  this._link = this._dropdownParent.querySelector(MENU_LINK_SELECTOR);
+  this._menu = this._dropdownParent.querySelector(MENU_SELECTOR);
+  this._firstMenuLink = this._menu.querySelector(MENU_LINK_SELECTOR); // Set ARIA attributes
+
+  this._link.setAttribute('aria-haspopup', 'true');
+
+  this._menu.setAttribute(ARIA_ROLE, 'menu');
+
+  this._menu.setAttribute('aria-labelledby', this._link.getAttribute('id'));
+
+  this._menu.setAttribute('aria-hidden', 'true');
+
+  [].forEach.call(this._menu.querySelectorAll('li'), function (el) {
+    el.setAttribute(ARIA_ROLE, 'presentation');
+  });
+  [].forEach.call(this._menu.querySelectorAll('a'), function (el) {
+    el.setAttribute(ARIA_ROLE, 'menuitem');
+  }); // Toggle on click
+
+  this._link.addEventListener('click', function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    ddm.toggle();
+  }); // Keyboard navigation
+
+
+  document.addEventListener('keydown', function (e) {
+    var currentLink, previousSibling, nextSibling, previousLink, nextLink; // if the menu isn't active, ignore
+
+    if (ddm._state !== MENU_OPEN) {
+      return;
+    } // if the menu is the parent of an open, active submenu, ignore
+
+
+    if (ddm._menu.querySelector(MENU_ACTIVE_SELECTOR)) {
+      return;
+    }
+
+    currentLink = ddm._menu.querySelector(':focus'); // Dismiss an open menu on ESC
+
+    if (e.keyCode === 27) {
+      /* Esc */
+      ddm.halt(e);
+      ddm.hide();
+    } // Go to the next link on down arrow
+    else if (ARROW_KEYS_ENABLED && e.keyCode === 40) {
+        /* Down arrow */
+        ddm.halt(e); // get the nextSibling (an LI) of the current link's LI
+
+        nextSibling = currentLink ? currentLink.parentNode.nextSibling : null; // if the nextSibling is a text node (not an element), go to the next one
+
+        while (nextSibling && nextSibling.nodeType !== 1) {
+          nextSibling = nextSibling.nextSibling;
+        }
+
+        nextLink = nextSibling ? nextSibling.querySelector('.menu-item a') : null; // if there is no currently focused link, focus the first one
+
+        if (!currentLink) {
+          ddm._menu.querySelector('.menu-item a').focus();
+        } else if (nextLink) {
+          nextLink.focus();
+        }
+      } // Go to the previous link on up arrow
+      else if (ARROW_KEYS_ENABLED && e.keyCode === 38) {
+          /* Up arrow */
+          ddm.halt(e); // get the currently focused link
+
+          previousSibling = currentLink ? currentLink.parentNode.previousSibling : null;
+
+          while (previousSibling && previousSibling.nodeType !== 1) {
+            previousSibling = previousSibling.previousSibling;
+          }
+
+          previousLink = previousSibling ? previousSibling.querySelector('.menu-item a') : null; // if there is no currently focused link, focus the last link
+
+          if (!currentLink) {
+            ddm._menu.querySelector('.menu-item:last-child .menu-item a').focus();
+          } // else if there is a previous item, go to the previous item
+          else if (previousLink) {
+              previousLink.focus();
+            }
+        }
+  }); // Dismiss an open menu on outside event
+
+  document.addEventListener(DISMISS_EVENT, function (e) {
+    var target = e.target;
+
+    if (target !== ddm._link && !ddm._menu.contains(target)) {
+      ddm.hide();
+
+      ddm._link.blur();
+    }
+  });
+}
+
+function initDropdowns() {
+  var dropdownParents = document.querySelectorAll('.menu-item-has-children');
+
+  for (var i = 0; i < dropdownParents.length; i++) {
+    var ddm = new PureDropdown(dropdownParents[i]);
+  }
+}
+
+jQuery('.hamburger').click(function () {
+  jQuery(this).toggleClass("active");
+  jQuery(this).next('.nav-menu').toggleClass("active");
+});
