@@ -15,19 +15,66 @@ if ( ! class_exists('TagGroups_Activation_Deactivation') ) {
 
 
     /**
-    * This script is executed when the (inactive) plugin is deleted through the admin backend.
+    *   Initializes values and prevents errors that stem from wrong values, e.g. based on earlier bugs.
+    *   Runs when plugin is activated.
     *
-    *It removes the plugin settings from the option table and all tag groups. It does not change the term_group field of the taxonomies.
+    * @param void
+    * @return void
     */
-    public static function on_uninstall() {
+    static function on_activation() {
 
       if ( ! current_user_can( 'activate_plugins' ) ) {
 
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+        TagGroups_Error::log( '[Tag Groups] Insufficient permissions to activate plugin.' );
 
-          error_log( '[Tag Groups] Insufficient permissions to uninstall plugin.' );
+        return;
 
-        }
+      }
+
+      if ( TAG_GROUPS_PLUGIN_IS_KERNL ) {
+
+        register_uninstall_hook( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH, array( 'TagGroups_Activation_Deactivation', 'on_uninstall' ) );
+
+      }
+
+
+      $tag_groups_loader = new TagGroups_Loader( __FILE__ );
+
+
+      $tag_groups_loader->set_version();
+
+      $tag_groups_loader->register_CRON();
+
+      if ( $tag_groups_loader->is_version_update() ) {
+
+        TagGroups_Error::verbose_log( '[Tag Groups] Version update from %s to %s detected', $tag_groups_loader->get_saved_version(), $tag_groups_loader->get_version() );
+
+        $update_scripts = new TagGroups_Update( $tag_groups_loader->get_saved_version(), $tag_groups_loader->get_version() );
+        
+        $update_scripts->update_version_number(); // update early so that parallel thread will not run this again (anyway cron jobs avoid overlaps)
+
+        $update_scripts->run_specific_scripts();
+
+        $update_scripts->run_general_scripts();
+
+      }
+
+    }
+
+
+    /**
+    * This script is executed when the (inactive) plugin is deleted through the admin backend.
+    *
+    *It removes the plugin settings from the option table and all tag groups. It does not change the term_group field of the taxonomies.
+    *
+    * @param void
+    * @return void
+    */
+    public static function on_uninstall() {
+
+      if ( ! current_user_can( 'install_plugins' ) ) {
+
+        TagGroups_Error::log( '[Tag Groups] Insufficient permissions to uninstall plugin.' );
 
         return;
 
@@ -41,73 +88,39 @@ if ( ! class_exists('TagGroups_Activation_Deactivation') ) {
       */
       // Note: WP_UNINSTALL_PLUGIN is not defined when using the deinstallation hook
 
-      if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+      TagGroups_Error::log( '[Tag Groups] Starting uninstall routine.' );
 
-        error_log( '[Tag Groups] Starting uninstall routine.' );
+      if ( ! file_exists( dirname( __FILE__ ) . '/class.options.php' ) ) {
+
+        TagGroups_Error::log( '[Tag Groups] Options class not available.' );
+
+        return;
 
       }
+
+      require_once dirname( __FILE__ ) . '/class.options.php';
+
+
+      if ( ! file_exists( dirname( __FILE__ ) . '/cache/class.object_cache.php' ) ) {
+
+        TagGroups_Error::log( '[Tag Groups] Cache class not available.' );
+
+        return;
+
+      }
+
+      require_once dirname( __FILE__ ) . '/cache/class.object_cache.php';
 
       /**
       * Purge cache
       */
-      if ( file_exists( dirname( __FILE__ ) . '/class.cache.php' ) ) {
-
-        require_once dirname( __FILE__ ) . '/class.cache.php';
-
-        if ( class_exists( 'TagGroups_Cache' ) ) {
-          $cache = new TagGroups_Cache();
-          $cache
-          ->type( get_option( 'tag_group_object_cache', TagGroups_Cache::WP_OPTIONS ) )
-          ->path( WP_CONTENT_DIR . '/chatty-mango/cache/' )
-          ->purge_all();
-        }
-
+      if ( class_exists( 'TagGroups_Object_Cache' ) ) {
+        $cache = new TagGroups_Object_Cache();
+        $cache
+        ->type( TagGroups_Options::get_option( 'tag_group_object_cache', TagGroups_Object_Cache::WP_TRANSIENTS ) )
+        ->path( WP_CONTENT_DIR . '/chatty-mango/cache/' )
+        ->purge_all();
       }
-
-      $tag_group_reset_when_uninstall = get_option( 'tag_group_reset_when_uninstall', 0 );
-
-      $option_count = 0;
-
-      if ( $tag_group_reset_when_uninstall && file_exists( dirname( __FILE__ ) . '/class.options.php' ) ) {
-
-        require_once dirname( __FILE__ ) . '/class.options.php';
-
-        $tagGroups_options = new TagGroups_Options();
-
-        $option_names = $tagGroups_options->get_option_names();
-
-        if ( isset( $option_names[ 'tag_group_group_languages' ] ) ) {
-
-          foreach ( $option_names[ 'tag_group_group_languages' ] as $language ) {
-
-            if ( delete_option( 'term_group_labels_' . $language ) ) {
-
-              $option_count++;
-
-            }
-
-          }
-
-        }
-
-        foreach ( $option_names as $key => $value ) {
-
-          if ( delete_option( $key ) ) {
-
-            $option_count++;
-
-          }
-
-        }
-
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-
-          error_log( sprintf( '[Tag Groups] %d options deleted.', $option_count ) );
-
-        }
-
-      }
-
 
       /**
       * Erase /chatty-mango/cache/ directory
@@ -130,50 +143,42 @@ if ( ! class_exists('TagGroups_Activation_Deactivation') ) {
 
       }
 
+
       /**
       * Remove transients
       *
+      * Do this before deleting options, because we need to know the array in 'tag_group_used_transient_names'
       * Don't call the method clear_term_cache since we don't know if it is still available.
       */
-      if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+      TagGroups_Error::log( '[Tag Groups] Removing transients.' );
 
-        error_log( '[Tag Groups] Removing transients.' );
+      TagGroups_Transients::delete_all_transients();
 
-      }
 
-      global $wpdb;
+      /**
+       * Maybe delete options
+       */
+      $tag_group_reset_when_uninstall = TagGroups_Options::get_option( 'tag_group_reset_when_uninstall', 0 );
 
-      $transients = $wpdb->get_col(
-        "
-        SELECT REPLACE(option_name, '_transient_', '') AS transient_name
-        FROM {$wpdb->options}
-        WHERE option_name LIKE '_transient_tag_groups_%'
-        "
-      );
+      $option_count = 0;
 
-      foreach( $transients as $transient ) {
+      if ( $tag_group_reset_when_uninstall ) {
 
-        delete_transient( $transient );
+        $option_count = TagGroups_Options::delete_all();
 
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-
-          error_log( sprintf( '[Tag Groups Premium] Deleted the transient %s.', $transient ) );
-
-        }
+        TagGroups_Error::log( '[Tag Groups] %d options deleted.', $option_count );
 
       }
+
 
       /**
       * Remove regular crons
       */
+      wp_clear_scheduled_hook( 'tag_groups_check_tag_migration' );
+
       wp_clear_scheduled_hook( 'tag_groups_purge_expired_transients' );
 
-
-      if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-
-        error_log( '[Tag Groups] Finished uninstall routine.' );
-
-      }
+      TagGroups_Error::log( '[Tag Groups] Finished uninstall routine.' );
 
     }
 

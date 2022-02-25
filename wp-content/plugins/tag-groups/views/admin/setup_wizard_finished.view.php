@@ -3,7 +3,7 @@
   <h3><?php _e( 'Well done!', 'tag-groups' ) ?></h3>
 
   <?php if ( ! empty( $groups_admin_link ) ) : ?>
-    <p><a  href="<?php echo esc_url( $groups_admin_link ) ?>" target="_blank"><?php _e( 'Now see the sample groups that we just created.', 'tag-groups' ) ?></a></p>
+    <p><a  href="<?php echo esc_url( $groups_admin_link ) ?>" target="_blank"><?php _e( 'Now go the Tag Group Administration.', 'tag-groups' ) ?></a></p>
   <?php endif; ?>
 
   <?php if ( ! empty( $tag_group_sample_page_id ) ) : ?>

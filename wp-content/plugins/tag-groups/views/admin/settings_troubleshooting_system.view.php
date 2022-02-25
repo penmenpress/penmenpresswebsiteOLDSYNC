@@ -183,6 +183,9 @@ echo  ini_get( 'max_execution_time' ) ;
       <tr><td>PHP Post Max Size</td><td><?php 
 echo  ini_get( 'post_max_size' ) ;
 ?></td></tr>
+      <tr><td>Database</td><td><?php 
+echo  $db_info ;
+?></td></tr>
     </table>
   </div>
 

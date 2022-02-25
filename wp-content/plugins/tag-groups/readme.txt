@@ -1,49 +1,49 @@
-=== Tag Groups ===
+=== WordPress Tag Cloud Plugin - Tag Groups ===
 Contributors: camthor
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FD5ZU4EEBGSC8
-Tags: alphabet, tags, tag cloud, tabs, accordion, taxonomy, tag, woocommerce, first letter
+Tags: alphabet, tags, tag cloud, tabs, accordion, taxonomy, tag, woocommerce, first letter, initials
 Requires at least: 4.9
-Tested up to: 5.3.2
-Stable tag: 1.25.2
-Requires PHP: 5.6
+Tested up to: 5.8.2
+Stable tag: 1.43.10
+Requires PHP: 7.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 
+The best WordPress plugin to organize your tags and display them in highly customizable tag clouds.
+
 == Description ==
 
-Organize your WordPress tags in groups. Use customizable tag clouds (tabs, accordion or alphabet) or a tag index in a post, page or widget.
+Tag Groups lets you organize your WordPress tags in groups or by alphabet and display them in tag clouds (tabs or accordion) or tag lists. You can customize them with a huge number of options and use them in posts, pages or widgets.
 
 ## <a href="https://demo.chattymango.com/tag-groups-free-demo-page/?pk_campaign=tg&pk_kwd=readme" target="_blank">★ Try The Demo ★</a> ##
 
-<a href="https://chattymango.com/tag-groups/?pk_campaign=tg&pk_kwd=readme" target="_blank">Features</a> | <a href="https://documentation.chattymango.com/documentation/tag-groups/?pk_campaign=tg&pk_kwd=readme" target="_blank">Documentation</a> | <a href="https://chattymango.com/?redirect_to=latest&cat=3&pk_campaign=tg&pk_kwd=readme" target="_blank">Latest Development Blog Post</a> | <a href="https://chattymango.com/tag-groups-base-premium-comparison/?pk_campaign=tg&pk_kwd=readme" target="_blank">Compare</a>
+<a href="https://chattymango.com/tag-groups/?pk_campaign=tg&pk_kwd=readme" target="_blank">Features</a> | <a href="https://documentation.chattymango.com/documentation/tag-groups/?pk_campaign=tg&pk_kwd=readme" target="_blank">Documentation</a> | <a href="https://chattymango.com/?redirect_to=latest&cat=3&pk_campaign=tg&pk_kwd=readme" target="_blank">Latest Development Blog Post</a> | <a href="https://chattymango.com/tag-groups-plans-and-pricing/?pk_campaign=tg&pk_kwd=readme" target="_blank">Compare</a>
 
 == Finally, the end of messy tags ==
 
-Organize your tags in groups
+This plugin comes with the following features:
 
-* Display tag clouds where tags are sorted into **smaller, manageable groups**.
-* Display a list where tags appear in "chapters" under groups.
-* **Filter posts and tags** by tag group in your admin.
+* **Tabbed Tag Cloud:** A tag cloud where tags are sorted into groups that appear in tabs.
+* **Accordion Tag Cloud:** A tag cloud where tags are sorted into vertically stacked groups.
+* **Tag List:** Tags are appear in columns, sorted into groups.
+* **Alphabetical Tag Cloud:** Tag are sorted alphabetically by first letter under tabs.
+* **Alphabetical Tag Index:** Tag appear in columns, sorted alphabetically by first letter.
 
-Sort tags alphabetically
+All features are available as **shortcodes** and as **Gutenberg blocks**. Choose whatever suits you best!
 
-* Automatically sort your tags in a tag cloud or in a list by their **first letters**.
+Tag clouds and lists work out of the box, but you can also customize them, append or prepend something to each tag, set a separator, set the link target, set the smallest and the largest font size, display the post count and much more.
 
-== Why you need tag groups ==
+== Why your web site will benefit from organizing your tags into groups ==
 
-Most websites mix up tags that should actually be separated by topics: places, people, features, activities and more.
+Most WordPress sites mix up tags that should actually be separated by topics: places, people, features, years and more.
 
-Your tags, however, will become much more useful if you organize them in groups. Imagine a tag cloud where all town names appear in a "Towns" group or where you keep all tags for product sizes under "Sizes" and all tags for colors under "Colors". The Tag Groups plugin lets you do exactly that.
+Your tags, however, will become much more useful if you organize them in groups. Imagine a tag cloud where all places appear in a "Places" group, all names under "Names" and all years under "Years". The Tag Groups plugin lets you do exactly that.
 
 == How to use tag groups ==
 
 After activating the plugin, you will be guided by an optional **setup wizard**.
 
-First you create groups that will contain your tags. Then you sort your tags into these groups. You can later always come back and modify the groups or change the tags.
-
-The plugin comes with two tag clouds where tags are sorted by groups and one alphabetical tag cloud where tags are sorted by first letters. These tag clouds can be customized with numerous parameters, and you can insert them as shortcodes into post, pages and widgets or as Gutenberg blocks.
-
-You can also list your tags in an index: Sorted under group names as headings or alphabetically under first letters. These lists can be shown in columns.
+First you create groups that will contain your tags. Then you sort your tags into these groups. You can later always come back and modify the groups or change the tags. You don't even need any groups if you prefer to show your tags sorted by alphabet.
 
 Filters and bulk actions make your work with tags much easier, and you can even filter the list of posts in your backend by the groups that their tags belong to.
 
@@ -58,7 +58,7 @@ The plugin does not support hierarchical taxonomies like categories.
 
 * Display your tags grouped by language or by topic.
 * Create an alphabetical index of your tags - think of a phone book for your tags.
-* Display only specific tags in your tag cloud.
+* Display only tags of selected groups in a tag cloud.
 * Choose which tags to display in different sections of your blog.
 * Change the sorting order in your tag cloud.
 * Customize the links, the text, the font size or the separator of your tag cloud items.
@@ -78,6 +78,7 @@ Please find more information on the [plugin website](https://chattymango.com/tag
 
 https://www.youtube.com/watch?v=iHaWq6Gi0cA
 
+
 **If you find this plugin useful, please give it a [5-star rating](https://wordpress.org/support/plugin/tag-groups/reviews/?filter=5 "reviews"). Thank you!**
 
 ### Extra Features
@@ -87,7 +88,8 @@ https://www.youtube.com/watch?v=iHaWq6Gi0cA
 > Premium features include:
 >
 > ✔ an animated and searchable tag cloud: Click a group or type a tag name and see only matching tags
-> ✔ a Dynamic Post Filter for the frontend: Your visitors can pick tags from groups and see all matching posts in a list;
+> ✔ a live post filter for the frontend: Let your visitors search for posts by tags or by text in real time;
+> ✔ a search field to filter tag clouds by tag name;
 > ✔ a meta box for the post edit screen so that you can enter and edit post tags segmented by groups;
 > ✔ the option to bulk-add all tags of a group to a post with one click;
 > ✔ add the same tag to multiple groups;
@@ -112,11 +114,16 @@ https://www.youtube.com/watch?v=xonGSR9VswQ
 >
 > You can test the plugin in a 7-day free trial.
 
+
 Follow us on [Facebook](https://www.facebook.com/chattymango/) or [Twitter](https://twitter.com/ChattyMango).
 
 = Other Notes =
 
 Find the licenses of 3rd party software in the About section.
+
+= Check out my other plugins =
+
+* [Redirect URL to Post](https://wordpress.org/plugins/redirect-url-to-post/)
 
 == Installation ==
 
@@ -137,9 +144,9 @@ Extensive information, examples and help for troubleshooting are listed [here](h
 
 Please use one of the shortcodes or Gutenberg blocks that come with the Tag Groups plugin. Since we cannot change the code of templates or other plugins, there is no possibility to make them aware of the new structure where tags are organized in groups.
 
-= When I use the shortcode I can see the content but the tags are not displayed in tabs. =
+= Do I need to opt-in to Freemius? =
 
-Make sure you have "Use jQuery" checked on the settings page. If you use a plugin for caching pages, purge the cache and see if that helps. If you use plugins for minifying scripts or style sheets, turn them off and purge their caches.
+No. You can safely skip it and it doesn't affect the features of the free plugin version.
 
 = How can I use one of these tag clouds in a widget? =
 
@@ -155,7 +162,7 @@ No. Hierarchical taxonomies such as categories are not officially supported.
 
 = Does this plugin work with my special custom taxonomy XY? =
 
-We cannot tell unless you try.
+They only way to find out is to install the plugin and try.
 
 = I need the plugin for a very special purpose - can you help? =
 
@@ -184,122 +191,108 @@ This plugin does not collect or process any personal user data unless you expres
 == Changelog ==
 
 
-= 1.25.2 =
+### 1.43.10 ###
 
-OTHER
+= Bug Fixes =
 
-* Illustrated shortcodes in settings with images.
+* Tabs and Accordions: Fix for parameter "active".
 
-= 1.25.1 =
+= Other =
 
-BUG FIXES
+* Disable Gutenberg blocks on Appearance > Widgets until some issues can be resolved.
 
-* Fixed bug in import and improved export.
+### 1.43.9 ###
 
-= 1.25.0 =
+= Bug Fixes =
 
-FEATURES
+* Fixed missing jQuery UI script in backend.
 
-* Added jQuery UI theme "delta".
-* Added button in First Aid to reset filter on tags page.
+### 1.43.8 ###
 
-OTHER
+Premium version only
 
-* Minor performance and design tweaks.
+### 1.43.7 ###
 
-= 1.24.2 =
+= Bug Fixes =
 
-BUG FIXES
+* Tag clouds: Setting to sanitize HTML in title attributes disabled filter `tag_groups_tag_title`.
 
-* Fixed wrong message after activation.
+= Other =
 
-= 1.24.1 =
+* Improved sanitation of tag descriptions even if you want to keep HTML; can be disabled with a [constant](https://documentation.chattymango.com/documentation/tag-groups/for-developers-tag-groups/constants-2/#tag-groups-allow-all-html-in-term-description).
 
-BUG FIXES
+### 1.43.6 ###
 
-* Fixing wrong file in earlier commit.
+= Other =
 
-= 1.24.0 =
+* Tag Groups Admin page: Added filter by group label.
+* Tag Groups Admin page: Improved resilience against interference.
+* Tag Groups Admin page: Improved message in case of Ajax errors.
+* Front End settings: Easier option to keep or strip HTML tags in tag description.
 
-FEATURES
+### 1.43.5 ###
 
-* New shortcode: tag_groups_tag_list displays your tags in a list, optionally in columns.
-* New shortcode: tag_groups_alphabetical_index displays your tags in an alphabetical index under first letters, optionally in columns.
-* Added "First Aid" tab to "Troubleshooting" in the Tag Groups settings.
+= Bug Fixes =
 
-BUG FIXES
+* Fixed loading of unnecessary scripts when Gutenberg is active.
 
-* Fixed: Post filter not working for tags that appeared only in unpublished posts.
+= Other =
 
-OTHER
+* Added jQuery UI's Base theme.
 
-* Tag group is now saved in the term meta. This will run a migration routine.
-* Updated Freemius SDK to version 2.3.2.
+### 1.43.4 ###
 
-= 1.23.2 =
+= Other =
 
-BUG FIXES
+* Background processes are now processed in chunks to avoid timeouts on sites with many posts or tags.
 
-* Fixed: Bulk delete of tags stopped working.
+### 1.43.3 ###
 
-OTHER
+= Other =
 
-* Better protection against interference when updating term_group.
+* More consistent permissions: Editors can now assign tags to groups.
 
-= 1.23.1 =
+### 1.43.2 ###
 
-BUG FIXES
+= Other =
 
-* Fixed rare error "A variable mismatch has been detected" when switching group filter on tags page.
-* Fixed: deleting group didn't delete corresponding translation (with WPML).
+* jQuery UI themes "Delta" and "Aristo": Removed non-essential styling in order to reduce risk of conflicts with 3rd party extensions.
+* Performance improvements
 
-OTHER
+### 1.43.1 ###
 
-* Alphabetical Tag Cloud: Made sorting locale-sensitive if Collator not available.
-* Raised minimum WP version to 4.9.
+= Other =
 
-= 1.23.0 =
+* CSS fixes on admin page.
+* Removed unused code.
 
-FEATURES
+### 1.43.0 ###
 
-* New filters for developers to modify tags and tag clouds before output: tag_groups_cloud_tag_inner, tag_groups_cloud_tag_outer, tag_groups_cloud_html. See the documentation for more details
-* Added benchmark in Troubleshooting -> System Information
+= Other =
 
-BUG FIXES
+* Developers: New filter `tag_groups_allow_duplicate_group_names` to allow duplicate group names.
 
-* Fixed a bug when deleting a tag group
+### 1.42.1 ###
 
-OTHER
+= Other =
 
-* Speed improvements
+* Developers: New filter `tag_groups_custom_title` to filter title attribute of tags in tag clouds per tag.
 
-= 1.22.4 =
+### 1.42.0 ###
 
-OTHER
+Premium version only
 
-* Improved resilience against Ajax errors
+### 1.41.0 ###
 
-= 1.22.1 =
+= Features =
 
-BUG FIXES
-
-* Fixed wrong reference of styling for Gutenberg
-
-OTHER
-
-* Improved filter menus on posts page (@ebabinet)
-* Updated Freemius' SDK
-
-= 1.22.0 =
-
-OTHER
-
-* Updated Freemius SDK to version 2.3.0
+* Tag Clouds: New placeholder `{name}` for custom title parameter that displays the tag's name.
+* Tag Clouds: New parameters `custom_title_zero` and `custom_title_plural`. They work like `custom_title` for tags with a post count of 0 or >1.
 
 
 = Older Versions =
 
-The complete changelog is available [here](https://chattymango.com/tag-groups/tag-groups-changelog/?pk_campaign=tg&pk_kwd=readme).
+The complete changelog is available [here](https://chattymango.com/changelog/tag-groups-free/?pk_campaign=tg&pk_kwd=readme).
 
 
 

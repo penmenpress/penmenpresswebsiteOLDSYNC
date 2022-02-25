@@ -1,218 +1,35 @@
 <?php
 /**
-* @package     Tag Groups
-* @author      Christoph Amthor
-* @copyright   2019 Christoph Amthor (@ Chatty Mango, chattymango.com)
-* @license     GPL-3.0+
-*/
+ * @package     Tag Groups
+ *
+ * @author      Christoph Amthor
+ * @copyright   2019 Christoph Amthor (@ Chatty Mango, chattymango.com)
+ * @license     GPL-3.0+
+ */
 
-if ( ! class_exists( 'ChattyMango_Error' ) ) {
+if ( ! class_exists( 'TagGroups_Error' ) ) {
 
   /**
-  * Error processing
-  *
-  */
-  class ChattyMango_Error {
+   * Error processing
+   *
+   */
+  class TagGroups_Error {
 
     /**
-    * binary values for bitmasks
-    */
-    const INFO = 1;
-    const WARNING = 2;
-    const ERROR = 4;
-
-    private $reporting_level = ChattyMango_Error::INFO;
-
-
-    public static function init() {
-
-      return new ChattyMango_Error();
-
-    }
+     * verbosity
+     */
+    const NORMAL  = 'normal';
+    const VERBOSE = 'verbose';
 
     /**
-    * setter for $this->reporting_level
-    *
-    * @param integer $level
-    * @return object $this
-    */
-    public function set_reporting_level( $reporting_level )
-    {
-
-      $this->reporting_level = $reporting_level;
-
-      return $this;
-
-    }
-
-    /**
-    * getter for $this->reporting_level
-    *
-    * @param void
-    * @return integer
-    */
-    public function get_reporting_level()
-    {
-
-      return $this->reporting_level;
-
-    }
-
-
-    /**
-    * Dumps a message to the error log or on the screen
-    *
-    * @param string $source
-    * @param mixed $message
-    * @param boolean $add_trace
-    * @param integer $severity
-    * @return boolean
-    */
-    public function dump( $source = '', $message = '', $add_trace = false, $severity = ChattyMango_Error::INFO )
-    {
-
-      if ( $severity < $this->reporting_level ) {
-
-        return false;
-
-      }
-
-      if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! wp_doing_ajax() ) {
-
-        if ( ! empty( $source ) ) {
-
-          echo '[' . $source . ']' . "<br/>\n";
-
-        }
-
-        echo '<pre>';
-
-        if ( is_string( $message ) ) {
-
-          echo $message;
-
-        } else {
-
-          var_dump( $message );
-
-        }
-
-        echo '</pre>';
-
-        if ( $add_trace ) {
-
-          echo 'backtrace';
-
-          echo '<pre>';
-
-          echo nl2br( self::get_backtrace() );
-
-          echo '</pre>';
-
-        }
-
-        echo '</pre>';
-
-        return true;
-
-      } else {
-
-        return $this->log( $source, $message, $add_trace, $severity );
-
-      }
-
-    }
-
-    /**
-    * Dumps a message to the error log or on the screen
-    *
-    * @param string $source
-    * @param mixed $message
-    * @param boolean $add_trace
-    * @param integer $severity
-    * @return boolean
-    */
-    public function dump_and_die( $source = '', $message = '', $add_trace = false, $severity = ChattyMango_Error::INFO )
-    {
-
-      $this->dump( $source, $message, $add_trace, $severity );
-
-      die();
-
-    }
-
-
-    /**
-    * Logs a message do debug.log
-    *
-    * @param string $source
-    * @param mixed $message
-    * @param boolean $add_trace
-    * @param integer $severity
-    * @return boolean
-    */
-    public function log( $source = '', $message = '', $add_trace = false, $severity = ChattyMango_Error::INFO )
-    {
-
-      if ( $severity < $this->reporting_level ) {
-
-        return false;
-
-      }
-
-      $log = '';
-
-      if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
-
-        return false;
-
-      }
-
-      if ( ! empty( $source ) ) {
-
-        $source = '[' . $source . '] ';
-
-      }
-
-      if ( is_string( $message ) ) {
-
-        $log .= $source . $message;
-
-      } else {
-
-        ob_start();
-
-        var_dump( $message );
-
-        $caught_dump = ob_get_clean();
-
-        $log .= $source . $caught_dump;
-
-      }
-
-      if ( $add_trace ) {
-
-        $log .= "\nbacktrace:\n" . self::get_backtrace();
-
-      }
-
-      error_log( $log );
-
-      return true;
-
-    }
-
-
-    /**
-    * Creates a HTML presentation of the backtrace
-    *
-    * based on http://php.net/manual/en/function.debug-backtrace.php#112238
-    *
-    * @param void
-    * @return string
-    */
-    public function get_backtrace()
-    {
+     * Creates a HTML presentation of the backtrace
+     *
+     * based on http://php.net/manual/en/function.debug-backtrace.php#112238
+     *
+     * @param  void
+     * @return string
+     */
+    public static function get_backtrace() {
 
       $path = ABSPATH; //get_home_path();
 
@@ -221,7 +38,7 @@ if ( ! class_exists( 'ChattyMango_Error' ) ) {
       $trace = explode( "\n", $e->getTraceAsString() );
 
       // reverse array to make steps line up chronologically
-      $trace = array_reverse($trace);
+      $trace = array_reverse( $trace );
 
       array_shift( $trace ); // remove {main}
 
@@ -233,7 +50,7 @@ if ( ! class_exists( 'ChattyMango_Error' ) ) {
 
       for ( $i = 0; $i < $length; $i++ ) {
 
-        if ( strpos( $trace[$i], 'ChattyMango_Error::' ) !== false ) {
+        if ( strpos( $trace[$i], 'TagGroups_Error::' ) !== false ) {
 
           continue;
 
@@ -242,7 +59,7 @@ if ( ! class_exists( 'ChattyMango_Error' ) ) {
         // remove home path
         $output = str_replace( $path, '', substr( $trace[$i], strpos( $trace[$i], ' ' ) ) );
 
-        $result[] = ($i + 1)  . ')' . $output;
+        $result[] = ( $i + 1 ) . ')' . $output;
 
       }
 
@@ -250,6 +67,230 @@ if ( ! class_exists( 'ChattyMango_Error' ) ) {
 
     }
 
+
+    /**
+     * Logs a message about a deprecated function and a backtrace
+     *
+     * @return void
+     */
+    public static function deprecated() {
+
+      if ( ! self::is_debug() ) {
+
+        return false;
+
+      }
+
+
+      if ( ! self::is_verbose() ) {
+
+        return false;
+
+      }
+      
+      self::log('[Tag Groups] Called a deprecated function.');
+
+      error_log( TagGroups_Error::get_backtrace() );
+
+    }
+
+
+    /**
+     * Alias for debug()
+     *
+     * @param mixed ...$params
+     * @return boolean
+     */
+    public static function dump( ...$params ) {
+
+      return self::debug( ...$params );
+
+    }
+
+
+    /**
+     * Logs one or more variables, if debugging is on
+     *
+     * @return void
+     */
+    public static function debug() {
+
+      if ( ! self::is_debug() ) {
+
+        return false;
+
+      }
+
+      $number_of_arguments = func_num_args();
+
+      if ( 0 == $number_of_arguments ) {
+
+        error_log( TagGroups_Error::get_backtrace() );
+
+        return true;
+
+      }
+
+      $args = func_get_args();
+
+      foreach ( $args as $arg ) {
+
+        error_log( var_export( $arg, true ) );
+
+      }
+
+      return true;
+
+    }
+
+    /**
+     * wrapper for log(), additionally checks if verbose logging is on
+     * 
+     * Optionally just a message, or a formatted message followed by the parameters
+     *
+     * @param mixed ...$params
+     * @return void
+     */
+    public static function verbose_log( ...$params ) {
+
+      if ( ! self::is_verbose() ) {
+
+        return false;
+
+      }
+
+      self::log( ...$params );
+
+    }
+
+
+    /**
+     * Logs a formatted message, if debugging is on
+     * 
+     * Parameters can be:
+     * - none: writes backtrace
+     * - a string
+     * - a formatted message for sprintf(), followed by the parameters
+     *
+     * @return void
+     */
+    public static function log() {
+
+      if ( ! self::is_debug() ) {
+
+        return false;
+
+      }
+
+      $number_of_arguments = func_num_args();
+
+      if ( 0 == $number_of_arguments ) {
+
+        error_log( TagGroups_Error::get_backtrace() );
+
+        return true;
+
+      }
+
+      $args = func_get_args();
+
+      if ( 1 == $number_of_arguments ) {
+
+        if ( ! is_integer( $args[0] ) && ! is_string( $args[0] ) ) {
+
+          $args[0] = print_r( $args[0], true );
+
+        }
+
+        error_log( $args[0] );
+
+      } else {
+
+        $format = $args[0];
+
+        unset( $args[0] );
+
+        foreach ( $args as &$arg ) {
+
+          if ( ! is_integer( $arg ) && ! is_string( $arg ) ) {
+
+            $arg = var_export( $arg, true );
+
+          }
+
+        }
+
+        error_log( vsprintf( $format, $args ) );
+
+      }
+
+      if ( defined( 'CM_DEBUG' ) ) {
+
+        $debug_level = (int) CM_DEBUG;
+
+      } else {
+
+        $debug_level = 1;
+
+      }
+
+      if ( $debug_level > 1 ) {
+
+        error_log( TagGroups_Error::get_backtrace() );
+
+      }
+
+      return true;
+
+    }
+
+
+    /**
+     * Whether WP debug mode is on
+     *
+     * @return boolean
+     */
+    static function is_debug() {
+
+      if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+
+        return true;
+
+      }
+
+      if ( defined( 'CM_DEBUG' ) ) {
+
+        return true;
+
+      }
+
+      return false;
+
+    }
+
+
+    /**
+     * Whether verbose debugging is on
+     *
+     * @return boolean
+     */
+    static function is_verbose() {
+
+      if ( defined( 'CM_DEBUG' ) && strtolower( CM_DEBUG ) == self::VERBOSE ) {
+
+        return true;
+
+      }
+
+      if ( TagGroups_Options::get_option( 'tag_group_verbose_debug', 0 ) ) {
+
+        return true;
+
+      }
+
+      return false;
+
+    }
 
   }
 

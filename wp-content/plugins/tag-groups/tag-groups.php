@@ -1,17 +1,17 @@
 <?php
 
 /**
-*
-* Plugin Name: Tag Groups
-* Plugin URI: https://chattymango.com/tag-groups/
-* Description: Organize your tags in groups and display them in highly customizable tag clouds (tabs, accordion and more).
-* Author: Chatty Mango
-* Author URI: https://chattymango.com/
-* Version: 1.25.2
-* License: GNU GENERAL PUBLIC LICENSE, Version 3
-* Text Domain: tag-groups
-* Domain Path: /languages
-*/
+ *
+ * Plugin Name: Tag Groups
+ * Plugin URI: https://chattymango.com/tag-groups/
+ * Description: Organize your tags in groups or by alphabet. Show tag clouds with many options in posts, pages or widgets (tabs, accordion or list).
+ * Author: Chatty Mango
+ * Author URI: https://chattymango.com/
+ * Version: 1.43.10
+ * License: GNU GENERAL PUBLIC LICENSE, Version 3
+ * Text Domain: tag-groups
+ * Domain Path: /languages
+ */
 // keep the following line for automatic processing
 // define( "CM_TGP_KERNL_UUID", '' );
 // Don't call this file directly
@@ -29,7 +29,7 @@ if ( !defined( 'TAG_GROUPS_PLUGIN_IS_FREE' ) ) {
     if ( plugin_basename( __FILE__ ) == 'tag-groups/tag-groups.php' ) {
         define( 'TAG_GROUPS_PLUGIN_IS_FREE', true );
     } else {
-        // Don't define the constant! If the premium plugin runs earlier, the free plugin still needs a chance to define it.
+        // Don't define the constant! If the premium plugin runs earlier, the free plugin still needs to define it.
     }
 
 }
@@ -51,11 +51,11 @@ if ( !defined( 'TAG_GROUPS_PLUGIN_BASENAME' ) ) {
     /**
      * The required minimum version of WordPress.
      */
-    define( "TAG_GROUPS_MINIMUM_VERSION_WP", "4.0" );
+    define( "TAG_GROUPS_MINIMUM_VERSION_WP", "4.9" );
     /**
      * Comma-separated list of default themes that come bundled with this plugin.
      */
-    define( "TAG_GROUPS_BUILT_IN_THEMES", "delta,ui-gray,ui-lightness,ui-darkness,blitzer,aristo" );
+    define( "TAG_GROUPS_BUILT_IN_THEMES", "delta,base,ui-gray,ui-lightness,ui-darkness,blitzer,aristo" );
     /**
      * The theme that is selected by default. Must be among TAG_GROUPS_BUILT_IN_THEMES.
      */
@@ -84,15 +84,15 @@ if ( !defined( 'TAG_GROUPS_PLUGIN_BASENAME' ) ) {
 }
 
 /**
-* Make scope of $tag_groups_loader global for wp-cli
-*/
+ * Make scope of $tag_groups_loader global for wp-cli
+ */
 global  $tag_groups_loader ;
 require_once dirname( __FILE__ ) . '/include/class.loader.php';
 $tag_groups_loader = new TagGroups_Loader( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH );
 $tag_groups_loader->require_classes();
 // Load the Freemius SDK only if we don't have the Kernl update SDK
 
-if ( !TAG_GROUPS_PLUGIN_IS_KERNL && !function_exists( 'tag_groups_premium_fs_sdk' ) ) {
+if ( (!TAG_GROUPS_PLUGIN_IS_KERNL || !file_exists( TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/vendor/kernl/class.fs_sdk_kernl.php' )) && !function_exists( 'tag_groups_premium_fs_sdk' ) ) {
     // Create a helper function for easy SDK access.
     function tag_groups_premium_fs_sdk()
     {
@@ -130,22 +130,37 @@ if ( !TAG_GROUPS_PLUGIN_IS_KERNL && !function_exists( 'tag_groups_premium_fs_sdk
     // Signal that SDK was initiated.
     do_action( 'tag_groups_premium_fs_sdk_loaded' );
     global  $tag_groups_premium_fs_sdk ;
-    $tag_groups_premium_fs_sdk->add_filter( 'show_first_trial_after_n_sec', array( 'TagGroups_Base', 'change_time_show_first_trial' ) );
-    $tag_groups_premium_fs_sdk->add_filter( 'reshow_trial_after_every_n_sec', array( 'TagGroups_Base', 'change_time_reshow_trial' ) );
+    /**
+     * Set time when first to show trial promotion
+     */
+    $tag_groups_premium_fs_sdk->add_filter( 'show_first_trial_after_n_sec', array( 'TagGroups_Freemius', 'change_time_show_first_trial' ) );
+    /**
+     * Set time to reshow trial promotion
+     */
+    $tag_groups_premium_fs_sdk->add_filter( 'reshow_trial_after_every_n_sec', array( 'TagGroups_Freemius', 'change_time_reshow_trial' ) );
+    /**
+     * Show trial promotion only on own pages
+     */
     $tag_groups_premium_fs_sdk->add_filter(
         'show_admin_notice',
-        array( 'TagGroups_Base', 'change_show_admin_notice' ),
+        array( 'TagGroups_Freemius', 'change_show_admin_notice' ),
         10,
         2
     );
     if ( !TAG_GROUPS_PLUGIN_IS_KERNL ) {
         $tag_groups_premium_fs_sdk->add_action( 'after_uninstall', array( 'TagGroups_Activation_Deactivation', 'on_uninstall' ) );
     }
+    // if ( $tag_groups_premium_fs_sdk->is_free_plan() ) {
+    TagGroups_Freemius::remove_deactivation_feedback_form();
+    // }
 } else {
     global  $tag_groups_premium_fs_sdk ;
+    
     if ( empty($tag_groups_premium_fs_sdk) ) {
+        require_once TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . '/vendor/kernl/class.fs_sdk_kernl.php';
         $tag_groups_premium_fs_sdk = new FS_SDK_Kernl();
     }
+
 }
 
 
@@ -154,15 +169,16 @@ if ( !function_exists( 'tag_groups_init' ) ) {
      * Do all initial stuff: register hooks, check dependencies
      *
      *
-     * @param void
+     * @param  void
      * @return void
      */
     function tag_groups_init()
     {
         global  $tag_groups_premium_fs_sdk, $tag_groups_loader ;
         if ( plugin_basename( __FILE__ ) != 'tag-groups/tag-groups.php' ) {
-            // TGP-Codester or TGP-Freemius
-            // Keep for Codester/Kernl
+            /**
+             *  TGP-Codester or TGP-Freemius
+             */
             
             if ( defined( 'TAG_GROUPS_PLUGIN_IS_FREE' ) && TAG_GROUPS_PLUGIN_IS_FREE ) {
                 /**
@@ -203,67 +219,13 @@ if ( !function_exists( 'tag_groups_init' ) ) {
     }
     
     add_action( 'plugins_loaded', 'tag_groups_init' );
-    register_activation_hook( __FILE__, array( $tag_groups_loader, 'on_activation' ) );
+    register_activation_hook( __FILE__, array( 'TagGroups_Activation_Deactivation', 'on_activation' ) );
 }
 
-if ( !function_exists( 'tag_groups_cloud' ) && class_exists( 'TagGroups_Shortcode_Tabs' ) ) {
-    /**
-     *
-     * Wrapper for the static method tag_groups_cloud
-     *
-     * @param array $atts
-     * @param bool $return_array
-     * @return string
-     */
-    function tag_groups_cloud( $atts = array(), $return_array = false )
-    {
-        return TagGroups_Shortcode_Tabs::tag_groups_cloud( $atts, $return_array );
-    }
-
-}
-if ( !function_exists( 'tag_groups_accordion' ) && class_exists( 'TagGroups_Shortcode_Accordion' ) ) {
-    /**
-     *
-     * Wrapper for the static method tag_groups_accordion
-     *
-     * @param array $atts
-     * @return string
-     */
-    function tag_groups_accordion( $atts = array() )
-    {
-        return TagGroups_Shortcode_Accordion::tag_groups_accordion( $atts );
-    }
-
-}
-if ( !function_exists( 'post_in_tag_group' ) ) {
-    /**
-     * Checks if the post with $post_id has a tag that is in the tag group with $tag_group_id.
-     *
-     * @param int $post_id
-     * @param int $tag_group_id
-     * @return boolean
-     */
-    function post_in_tag_group( $post_id, $tag_group_id )
-    {
-        global  $tag_groups_premium_fs_sdk ;
-        
-        if ( class_exists( 'TagGroups_Premium_Post' ) ) {
-        } else {
-            $tag_group_taxonomy = TagGroups_Taxonomy::get_enabled_taxonomies();
-            $tags = get_the_terms( $post_id, $tag_group_taxonomy );
-            if ( $tags ) {
-                foreach ( $tags as $tag ) {
-                    if ( $tag->term_group == $tag_group_id ) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    
-    }
-
-}
 /**
-* guess what - the end
-*/
+ * aliases for common functions, for backwards compatibility
+ */
+require_once 'aliases.php';
+/**
+ * guess what - the end
+ */

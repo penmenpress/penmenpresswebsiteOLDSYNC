@@ -4,7 +4,7 @@
   <h3><?php printf( __( 'Welcome to %s!', 'tag-groups' ), $title ) ?></h3>
   <p><?php _e( 'The plugin is ready for use. If you need some assistance, we can walk you through the basic steps.', 'tag-groups' ) ?></p>
   <div style="margin: 50px 0; width: 500px;">
-    <a href="<?php echo $settings_setup_wizard_link ?>" class="tg_premium_promotion_call_to_action_button"><span class="dashicons dashicons-lightbulb"></span>&nbsp;<?php _e( 'Start the Setup Wizard', 'tag-groups' ) ?></a>
+    <a href="<?php echo $settings_setup_wizard_link ?>" class="tg_premium_backend_call_to_action_button"><span class="dashicons dashicons-lightbulb"></span>&nbsp;<?php _e( 'Start the Setup Wizard', 'tag-groups' ) ?></a>
   </div>
   <div style="clear:both; height: 50px;"></div>
   <div id="tag_groups_onboarding_accordion">

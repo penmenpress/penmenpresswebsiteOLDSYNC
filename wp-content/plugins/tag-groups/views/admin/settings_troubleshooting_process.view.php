@@ -1,4 +1,6 @@
 <div class="tg_settings_tabs_content">
+  
+  <h2><?php echo $task_set_name ?></h2>
 
   <p><?php _e( "Please stay on this page until all processes have finished.", 'tag-groups' ) ?></p>
 
@@ -61,19 +63,13 @@ jQuery(document).ready(function(){
 });
 
 function tagGroupsTasksAjax() {
-  var percentage, resultText;
+  var percentage;
 
   if ( tagGroupsTaskCompleted ) {
     tagGroupsTaskCompleted = false;
     tagGroupsChunkWaiting = false;
 
-    // Add info about the result
-    if (tagGroupsTasks[tagGroupsRunningTaskIndex]=='migratepostmeta' || tagGroupsTasks[tagGroupsRunningTaskIndex].substring(0,16)=='rebuildpostcount') {
-      resultText = "<?php _e( 'Number of processed items: ', 'tag-groups' ) ?>"+tagGroupsAffected;
-    } else {
-      resultText = "<?php _e( 'Number of changed items: ', 'tag-groups' ) ?>"+tagGroupsAffected;
-    }
-    jQuery("#tag_groups_task_result_"+tagGroupsTasks[tagGroupsRunningTaskIndex]).html(resultText);
+    tagGroupsWriteResult();
 
     if (tagGroupsRunningTaskIndex<tagGroupsTasksLength-1) {
       // switch to next task
@@ -88,6 +84,8 @@ function tagGroupsTasksAjax() {
     } else {
       // We are done
       window.clearInterval(tagGroupsInterval);
+      tagGroupsProcessChunkOffset = tagGroupsTasksTotals[tagGroupsTasks[tagGroupsRunningTaskIndex]];
+      tagGroupsWriteResult();
       if (tagGroupsProcessErrors) {
         jQuery("#tag_groups_tasks_final_words_error").show();
       } else {
@@ -122,11 +120,23 @@ function tagGroupsTasksAjax() {
 
 }
 
+function tagGroupsWriteResult() {
+  var resultText
+
+  // Add info about the result
+  if (tagGroupsTasks[tagGroupsRunningTaskIndex]=='migratepostmeta' || tagGroupsTasks[tagGroupsRunningTaskIndex].substring(0,16)=='rebuildpostcount') {
+    resultText = "<?php _e( 'Number of processed items: ', 'tag-groups' ) ?>"+tagGroupsProcessChunkOffset + "/" + tagGroupsTasksTotals[tagGroupsTasks[tagGroupsRunningTaskIndex]];
+  } else {
+    resultText = "<?php _e( 'Number of changed items: ', 'tag-groups' ) ?>"+tagGroupsAffected + "/" + tagGroupsTasksTotals[tagGroupsTasks[tagGroupsRunningTaskIndex]];
+  }
+  jQuery("#tag_groups_task_result_"+tagGroupsTasks[tagGroupsRunningTaskIndex]).html(resultText);
+}
+
 function tagGroupsTaskAjax(task,offset,length) {
 
   jQuery.ajax({
     url: "<?php echo $ajax_link ?>",
-    dataType: "xml",
+    dataType: "text",
     data: {
       action: "tg_free_ajax_process",
       task: task,
@@ -136,10 +146,19 @@ function tagGroupsTaskAjax(task,offset,length) {
       nonce: "<?php echo wp_create_nonce( 'tag-groups-process-nonce' ) ?>"
     },
     method: "post",
-    success: function(data) {
-
-      var done = JSON.parse(jQuery(data).find("done").text());
-      var affected = JSON.parse(jQuery(data).find("affected").text());
+    success: function(rawData) {
+      try {
+        var data = JSON.parse(rawData.trim());
+      } catch (e) {
+        console.log(
+          '[Tag Groups Premium] Error parsing data from server',
+          e.message,
+          ', data:"'+rawData.toString()+'"'
+        );
+        return false;
+      }
+      var done = data.done;
+      var affected = data.affected;
 
       var total = tagGroupsTasksTotals[tagGroupsTasks[tagGroupsRunningTaskIndex]];
 

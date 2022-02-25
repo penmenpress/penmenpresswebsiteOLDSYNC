@@ -7,21 +7,14 @@
   <p>&nbsp;</p>
 
   <h2><?php _e( 'Latest Posts', 'tag-groups' ) ?></h2>
-  <table class="widefat fixed" cellspacing="0">
-    <thead>
-      <tr>
-        <th style="min-width: 200px; width: 30%;"></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="tg_feed_container">
-      <tr>
-        <td colspan="2" style="text-align: center;">
-          <?php _e( 'Loading...', 'tag-groups') ?>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div style="display:block; background-color:white; border:1px solid #ccc; padding:10px;">
+    <div id="tg_feed_container">
+        <div style="text-align: center;">
+          <?php _e( 'Loading...', 'tag-groups-premium' ) ?>
+        </div>
+    </div>
+    <div style="clear:both"></div>
+  </div>
 </div>
 
 <script>
@@ -34,11 +27,7 @@ jQuery(document).ready(function(){
   };
 
   jQuery.post("<?php echo $admin_url ?>", data, function (data) {
-    var status = jQuery(data).find("response_data").text();
-    if (status == "success") {
-      var output = jQuery(data).find("output").text();
-      jQuery("#tg_feed_container").html(output);
-    }
+    jQuery("#tg_feed_container").html(JSON.parse(data));
   });
 });
 </script>

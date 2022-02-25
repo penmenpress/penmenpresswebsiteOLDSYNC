@@ -1,15 +1,11 @@
-
 <fieldset>
   <div class="inline-edit-col">
     <label><span class="title"><?php _e( 'Groups', 'tag-groups' ) ?></span>
       <span class="input-text-wrap">
 
-        <select id="term-group-option" name="term-group<?php if ( class_exists( 'TagGroups_Premium_Group' ) ) echo '[]' ?>" class="ptitle"<?php if ( class_exists( 'TagGroups_Premium_Group' ) ) echo ' multiple' ?>>
-          <?php if ( ! class_exists( 'TagGroups_Premium_Group' ) ) : ?>
-            <option value="0" ><?php _e( 'not assigned', 'tag-groups' ) ?></option>
-          <?php endif;
-          
-          foreach ( $data as $term_group ) :
+        <select id="term-group-option" name="term-group" class="ptitle" autocomplete="off">
+          <option value="0" ><?php _e( 'not assigned', 'tag-groups' ) ?></option>
+          <?php foreach ( $term_groups as $term_group ) :
             ?>
             <option value="<?php echo $term_group['term_group']; ?>"><?php echo htmlentities( $term_group['label'], ENT_QUOTES, "UTF-8" ); ?></option>
           <?php endforeach; ?>

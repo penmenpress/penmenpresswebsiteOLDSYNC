@@ -26,18 +26,16 @@ if ( ! class_exists( 'TagGroups_Admin_Notice' ) ) {
     }
 
     /**
-    * undocumented function summary
-    *
-    * Undocumented function long description
-    *
-    * @param string $type One of: error, info
-    * @param string $content with HTML
-    * @return void
-    */
+     * Add an admin notice to the queue
+     *
+     * @param string $type One of: error, info
+     * @param string $content with HTML
+     * @return void
+     */
     public static function add( $type, $content )
     {
 
-      $notices = get_option( 'tag_group_admin_notice', array() );
+      $notices = TagGroups_Options::get_option( 'tag_group_admin_notice', array() );
 
       /**
       * Avoid duplicate entries
@@ -63,7 +61,7 @@ if ( ! class_exists( 'TagGroups_Admin_Notice' ) ) {
           'content' => $content
         );
 
-        update_option( 'tag_group_admin_notice', $notices );
+        TagGroups_Options::update_option( 'tag_group_admin_notice', $notices );
 
       }
 
@@ -71,20 +69,17 @@ if ( ! class_exists( 'TagGroups_Admin_Notice' ) ) {
 
 
     /**
-    * Checks if an admin notice is pending and, if necessary, display it
-    *
-    *
-    * @param void
-    * @return void
-    */
+     * Check if an admin notice is pending and, if necessary, display it
+     *
+     * @param void
+     * @return void
+     */
     public static function display() {
 
-      $notices = get_option( 'tag_group_admin_notice', array() );
+      $notices = TagGroups_Options::get_option( 'tag_group_admin_notice', array() );
 
 
       if ( ! empty( $notices ) ) {
-
-        $html = '';
 
         foreach ( $notices as $notice ) {
 
@@ -109,7 +104,7 @@ if ( ! class_exists( 'TagGroups_Admin_Notice' ) ) {
 
           }
 
-          $view = new TagGroups_View( 'admin/admin_notice' );
+          $view = new TagGroups_View( 'partials/admin_notice' );
 
           $view->set( array(
             'ajax_link' => $ajax_link,

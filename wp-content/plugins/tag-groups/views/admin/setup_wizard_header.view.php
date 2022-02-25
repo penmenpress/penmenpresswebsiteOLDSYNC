@@ -1,5 +1,5 @@
 <h1><span class="dashicons dashicons-lightbulb"></span>&nbsp;<?php _e( 'Tag Groups Setup Wizard', 'tag-groups' ) ?></h1>
-<div class="wizard-box">
+<div class="tag-groups-wizard-box">
 <ul class="tag-groups-steps">
   <?php foreach ( $steps as $key => $step_info ) : ?>
     <?php if ( ! empty( $step_info['title'] ) ) : ?>
@@ -28,4 +28,4 @@
 <?php endforeach; ?>
 </ul>
 </div>
-<div class="wizard-box">
+<div class="tag-groups-wizard-box">

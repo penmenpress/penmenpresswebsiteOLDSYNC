@@ -12,10 +12,6 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
      */
     class TagGroups_Settings
     {
-        function __construct()
-        {
-        }
-        
         /**
          * renders the top of all setting pages
          *
@@ -90,25 +86,25 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
             global  $tag_group_groups ;
             // Make very sure that only administrators can access this page
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
             $enabled_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
             self::add_header();
-            $html = '';
-            $tg_group = new TagGroups_Group();
+            // $html = '';
+            // $tg_group = new TagGroups_Group;
             $group_count = $tag_group_groups->get_number_of_term_groups();
-            $tag_group_base_first_activation_time = get_option( 'tag_group_base_first_activation_time', 0 );
-            $tag_group_premium_first_activation_time = get_option( 'tag_group_base_first_activation_time', 0 );
+            $tag_group_base_first_activation_time = TagGroups_Options::get_option( 'tag_group_base_first_activation_time', 0 );
+            $tag_group_premium_first_activation_time = TagGroups_Options::get_option( 'tag_group_base_first_activation_time', 0 );
             $absolute_first_activation_time = ( $tag_group_base_first_activation_time < $tag_group_premium_first_activation_time ? $tag_group_base_first_activation_time : $tag_group_premium_first_activation_time );
             self::add_settings_help();
             $alerts = array();
             
-            if ( defined( 'ICL_LANGUAGE_CODE' ) && ICL_LANGUAGE_CODE == 'all' ) {
+            if ( 'all' == TagGroups_WPML::get_current_language() ) {
                 $view = new TagGroups_View( 'partials/language_notice' );
                 $view->render();
             }
             
-            if ( time() - $absolute_first_activation_time < 60 * 60 * 24 * 7 || $group_count < 2 ) {
+            if ( time() - $absolute_first_activation_time < 60 * 60 * 24 * 7 || $group_count < 1 ) {
                 $alerts[] = sprintf( __( 'See the <a %s>First Steps</a> for some basic instructions on how to get started.', 'tag-groups' ), 'href="' . menu_page_url( 'tag-groups-settings-first-steps', false ) . '"' );
             }
             
@@ -121,7 +117,7 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
             $alerts = apply_filters( 'tag_groups_settings_alerts', $alerts );
             
             if ( !empty($alerts) ) {
-                $view = new TagGroups_View( 'admin/settings_alerts' );
+                $view = new TagGroups_View( 'partials/settings_alerts' );
                 $view->set( 'alerts', $alerts );
                 $view->render();
             }
@@ -139,11 +135,12 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                 if ( is_object( $term_count ) ) {
                     continue;
                 }
+                $tag_groups_info_obj = new TagGroups_Shortcode_Info();
                 $taxonomy_infos[] = array(
                     'slug'            => $taxonomy,
                     'tag_group_admin' => TagGroups_Taxonomy::get_tag_group_admin_url( $taxonomy ),
                     'name'            => TagGroups_Taxonomy::get_name_from_slug( $taxonomy ),
-                    'info_html'       => TagGroups_Shortcode_Info::tag_groups_info( array(
+                    'info_html'       => $tag_groups_info_obj->tag_groups_info( array(
                     'taxonomy'   => $taxonomy,
                     'group_id'   => 'all',
                     'html_class' => 'widefat fixed striped',
@@ -170,7 +167,7 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
         {
             // Make very sure that only administrators can access this page
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
             $enabled_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
             $public_taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
@@ -210,19 +207,25 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
         {
             // Make very sure that only administrators can access this page
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
-            $show_filter_posts = get_option( 'tag_group_show_filter', 1 );
-            $show_filter_tags = get_option( 'tag_group_show_filter_tags', 1 );
             self::add_header();
             self::add_settings_help();
             $tabs = array();
             $tabs['filters'] = __( 'Filters', 'tag-groups' );
+            if ( TagGroups_Gutenberg::is_gutenberg_active() ) {
+                $tabs['gutenberg'] = __( 'Gutenberg', 'tag-groups' );
+            }
+            if ( TagGroups_WPML::is_multilingual() ) {
+                $tabs['multilingual'] = __( 'Multilingual', 'tag-groups' );
+            }
             $tabs = apply_filters( 'tag_groups_settings_back_end_tabs', $tabs );
             $active_tab = self::get_active_tab( $tabs );
             self::add_tabs( 'tag-groups-settings-back-end', $tabs, $active_tab );
             switch ( $active_tab ) {
                 case 'filters':
+                    $show_filter_posts = TagGroups_Options::get_option( 'tag_group_show_filter', 1 );
+                    $show_filter_tags = TagGroups_Options::get_option( 'tag_group_show_filter_tags', 1 );
                     $view = new TagGroups_View( 'admin/settings_back_end_filters' );
                     $view->set( array(
                         'show_filter_posts' => $show_filter_posts,
@@ -232,6 +235,26 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     break;
                     // filters
                 // filters
+                case 'gutenberg':
+                    $tag_group_server_side_render = TagGroups_Options::get_option( 'tag_group_server_side_render', 1 );
+                    $view = new TagGroups_View( 'admin/settings_back_end_gutenberg' );
+                    $view->set( array(
+                        'tag_group_server_side_render' => $tag_group_server_side_render,
+                    ) );
+                    $view->render();
+                    break;
+                    // gutenberg
+                // gutenberg
+                case 'multilingual':
+                    $tag_group_multilingual_sync_groups = TagGroups_Options::get_option( 'tag_group_multilingual_sync_groups', 1 );
+                    $view = new TagGroups_View( 'admin/settings_back_end_multilingual' );
+                    $view->set( array(
+                        'tag_group_multilingual_sync_groups' => $tag_group_multilingual_sync_groups,
+                    ) );
+                    $view->render();
+                    break;
+                    // gutenberg
+                // gutenberg
                 default:
                     if ( class_exists( 'TagGroups_Premium_Settings' ) ) {
                         TagGroups_Premium_Settings::get_content( $active_tab );
@@ -249,18 +272,19 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
          */
         public static function settings_page_front_end()
         {
+            global  $tag_groups_premium_fs_sdk ;
             // Make very sure that only administrators can access this page
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
             $default_themes = explode( ',', TAG_GROUPS_BUILT_IN_THEMES );
-            $tag_group_theme = get_option( 'tag_group_theme', TAG_GROUPS_STANDARD_THEME );
-            $tag_group_mouseover = get_option( 'tag_group_mouseover', '' );
-            $tag_group_collapsible = get_option( 'tag_group_collapsible', '' );
-            $tag_group_enqueue_jquery = get_option( 'tag_group_enqueue_jquery', 1 );
-            $tag_group_html_description = get_option( 'tag_group_html_description', 0 );
-            $tag_group_shortcode_widget = get_option( 'tag_group_shortcode_widget' );
-            $tag_group_shortcode_enqueue_always = get_option( 'tag_group_shortcode_enqueue_always', 1 );
+            $tag_group_theme = TagGroups_Options::get_option( 'tag_group_theme', TAG_GROUPS_STANDARD_THEME );
+            $tag_group_mouseover = TagGroups_Options::get_option( 'tag_group_mouseover', 0 );
+            $tag_group_collapsible = TagGroups_Options::get_option( 'tag_group_collapsible', 0 );
+            $tag_group_enqueue_jquery = TagGroups_Options::get_option( 'tag_group_enqueue_jquery', 1 );
+            $tag_group_html_description = TagGroups_Options::get_option( 'tag_group_html_description', 0 );
+            $tag_group_shortcode_widget = TagGroups_Options::get_option( 'tag_group_shortcode_widget' );
+            $tag_group_shortcode_enqueue_always = TagGroups_Options::get_option( 'tag_group_shortcode_enqueue_always', 1 );
             self::add_header();
             self::add_settings_help();
             $tabs = array();
@@ -276,22 +300,30 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                      */
                     $premium_shortcode_info = apply_filters( 'tag_groups_hook_shortcodes', '' );
                     $view = new TagGroups_View( 'admin/settings_front_end_shortcodes' );
+                    $gutenberg_documentation_link = 'https://documentation.chattymango.com/documentation/tag-groups/tag-clouds-and-groups-info/using-gutenberg/?pk_campaign=tg&pk_kwd=settings';
                     $view->set( array(
                         'premium_shortcode_info'             => $premium_shortcode_info,
                         'tag_group_shortcode_enqueue_always' => $tag_group_shortcode_enqueue_always,
                         'tag_group_shortcode_widget'         => $tag_group_shortcode_widget,
+                        'gutenberg_documentation_link'       => $gutenberg_documentation_link,
                     ) );
                     $view->render();
                     break;
                 case 'themes':
+                    $tag_group_html_description_options = array(
+                        0 => __( 'remove', 'tag-groups' ) . ' ' . __( '(recommended)', 'tag-groups' ),
+                        1 => __( 'keep', 'tag-groups' ),
+                        2 => __( 'use unfiltered_html filter', 'tag-groups' ),
+                    );
                     $view = new TagGroups_View( 'admin/settings_front_end_themes' );
                     $view->set( array(
-                        'default_themes'             => $default_themes,
-                        'tag_group_theme'            => $tag_group_theme,
-                        'tag_group_enqueue_jquery'   => $tag_group_enqueue_jquery,
-                        'tag_group_mouseover'        => $tag_group_mouseover,
-                        'tag_group_collapsible'      => $tag_group_collapsible,
-                        'tag_group_html_description' => $tag_group_html_description,
+                        'default_themes'                     => $default_themes,
+                        'tag_group_theme'                    => $tag_group_theme,
+                        'tag_group_enqueue_jquery'           => $tag_group_enqueue_jquery,
+                        'tag_group_mouseover'                => $tag_group_mouseover,
+                        'tag_group_collapsible'              => $tag_group_collapsible,
+                        'tag_group_html_description'         => $tag_group_html_description,
+                        'tag_group_html_description_options' => $tag_group_html_description_options,
                     ) );
                     $view->render();
                     break;
@@ -314,9 +346,9 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
         {
             // Make very sure that only administrators can access this page
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
-            $tag_group_reset_when_uninstall = get_option( 'tag_group_reset_when_uninstall', 0 );
+            $tag_group_reset_when_uninstall = TagGroups_Options::get_option( 'tag_group_reset_when_uninstall', 0 );
             self::add_header();
             self::add_settings_help();
             $tabs = array();
@@ -355,7 +387,7 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
             global  $tag_group_groups, $tag_groups_premium_fs_sdk ;
             // Make very sure that only administrators can access this page
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
             self::add_header();
             self::add_settings_help();
@@ -365,6 +397,7 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
             $tabs['documentation'] = __( 'Documentation', 'tag-groups' );
             $tabs['support'] = __( 'Get Support', 'tag-groups' );
             $tabs['system'] = __( 'System Information', 'tag-groups' );
+            $tabs['debug'] = __( 'Debugging', 'tag-groups' );
             $tabs = apply_filters( 'tag_groups_settings_troubleshooting_tabs', $tabs );
             $active_tab = self::get_active_tab( $tabs );
             self::add_tabs( 'tag-groups-settings-troubleshooting', $tabs, $active_tab );
@@ -376,8 +409,8 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     } else {
                         $view = new TagGroups_View( 'admin/settings_troubleshooting_first_aid' );
                         $view->set( 'tasks_migration', 'migratetermmeta' );
-                        $view->set( 'tasks_maintenance', 'fixgroups,fixmissinggroups' );
-                        $view->set( 'tag_group_show_filter_tags', get_option( 'tag_group_show_filter_tags', true ) );
+                        $view->set( 'tasks_maintenance', 'fixgroups,fixmissinggroups,sortgroups' );
+                        $view->set( 'tag_group_show_filter_tags', TagGroups_Options::get_option( 'tag_group_show_filter_tags', 1 ) );
                         $view->render();
                     }
                     
@@ -446,30 +479,50 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     /**
                      * Prepare the cache here so that we can test if it persists beyond seesions
                      */
-                    $tag_group_object_cache = get_option( 'tag_group_object_cache', TagGroups_Cache::WP_OPTIONS );
+                    $tag_group_object_cache = TagGroups_Options::get_option( 'tag_group_object_cache', TagGroups_Object_Cache::WP_TRANSIENTS );
                     $object_cache_options = array(
-                        1 => __( 'Database', 'tag-groups' ),
+                        1 => __( 'Transients', 'tag-groups' ),
+                        2 => __( 'Database', 'tag-groups' ),
                         3 => __( 'Filesystem', 'tag-groups' ),
                         9 => __( 'WP Object Cache', 'tag-groups' ),
                     );
                     $cache_key = md5( 'benchmark' );
                     foreach ( $object_cache_options as $object_cache_option_id => $object_cache_option_name ) {
-                        update_option( 'tag_group_object_cache', $object_cache_option_id );
-                        do_action( 'tag_groups_hook_cache_set', $cache_key, '' );
+                        TagGroups_Options::update_option( 'tag_group_object_cache', $object_cache_option_id );
+                        do_action( 'tag_groups_hook_cache_set', $cache_key . '-efficacy-test', '' );
                     }
-                    update_option( 'tag_group_object_cache', $tag_group_object_cache );
+                    TagGroups_Options::update_option( 'tag_group_object_cache', $tag_group_object_cache );
                     if ( !defined( 'TAG_GROUPS_PLUGIN_IS_FREE' ) || !TAG_GROUPS_PLUGIN_IS_FREE ) {
+                    }
+                    global  $wpdb ;
+                    $db_info = $wpdb->db_server_info();
+                    if ( empty($db_info) ) {
+                        $db_info = 'unknown';
                     }
                     $view = new TagGroups_View( 'admin/settings_troubleshooting_system' );
                     $view->set( array(
                         'phpversion'                 => $phpversion,
                         'php_upgrade_recommendation' => $php_upgrade_recommendation,
+                        'db_info'                    => $db_info,
                         'wp_constants'               => $wp_constants,
                         'constants'                  => $constants,
                         'ajax_test_url'              => $ajax_test_url,
                         'active_theme'               => $active_theme,
                         'benchmarks'                 => $benchmarks,
                         'tag_groups_premium_fs_sdk'  => $tag_groups_premium_fs_sdk,
+                    ) );
+                    $view->render();
+                    break;
+                case 'debug':
+                    $help_url = 'https://documentation.chattymango.com/documentation/tag-groups/troubleshooting/how-to-use-the-debug-log-2/?pk_campaign=tg&pk_kwd=settings';
+                    $view = new TagGroups_View( 'admin/settings_troubleshooting_debug' );
+                    $verbose_is_on_hardcoded = defined( 'CM_DEBUG' ) && strtolower( CM_DEBUG ) == 'verbose';
+                    $verbose_is_on_option = (bool) TagGroups_Options::get_option( 'tag_group_verbose_debug', 0 );
+                    $view->set( array(
+                        'debug_is_on'             => defined( 'WP_DEBUG' ) && WP_DEBUG,
+                        'verbose_is_on'           => defined( 'CM_DEBUG' ) && $verbose_is_on_hardcoded || $verbose_is_on_option,
+                        'help_url'                => $help_url,
+                        'verbose_is_on_hardcoded' => $verbose_is_on_hardcoded,
                     ) );
                     $view->render();
                     break;
@@ -483,26 +536,6 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
         }
         
         /**
-         * Runs selected routines for benchmarking
-         *
-         *
-         * @param void
-         * @return string HTML
-         * @since 1.23.0
-         */
-        public static function ajax_benchmark()
-        {
-            global  $tag_groups_premium_fs_sdk ;
-            $benchmark = array();
-            switch ( $_POST['task'] ) {
-                case "cache":
-                    break;
-            }
-            echo  json_encode( $benchmark ) ;
-            exit;
-        }
-        
-        /**
          * renders a settings page: premium
          *
          * @param void
@@ -513,7 +546,7 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
             global  $tag_groups_premium_fs_sdk ;
             // Make very sure that only administrators can access this page
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
             self::add_header();
             $view = new TagGroups_View( 'admin/settings_premium' );
@@ -532,7 +565,7 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
         {
             // Make very sure that only administrators can access this page
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
             self::add_header();
             self::add_settings_help();
@@ -569,469 +602,6 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
         }
         
         /**
-         * renders a menu-less settings page: onboarding
-         *
-         * @param void
-         * @return void
-         */
-        public static function settings_page_onboarding()
-        {
-            // Make very sure that only administrators can access this page
-            if ( !current_user_can( 'manage_options' ) ) {
-                return;
-            }
-            global  $tag_groups_premium_fs_sdk ;
-            self::add_header();
-            $settings_taxonomy_link = admin_url( 'admin.php?page=tag-groups-settings-taxonomies' );
-            $settings_home_link = admin_url( 'admin.php?page=tag-groups-settings' );
-            $settings_premium_link = admin_url( 'admin.php?page=tag-groups-settings-premium' );
-            $settings_setup_wizard_link = admin_url( 'admin.php?page=tag-groups-settings-setup-wizard' );
-            
-            if ( defined( 'TAG_GROUPS_PLUGIN_IS_FREE' ) && TAG_GROUPS_PLUGIN_IS_FREE ) {
-                $title = 'Tag Groups';
-                $documentation_link = 'https://documentation.chattymango.com/documentation/tag-groups/';
-                $logo = '<img src="' . TAG_GROUPS_PLUGIN_URL . '/assets/images/cm-tg-icon-64x64.png" alt="Tag Groups logo" class="tg_onboarding_logo"/>';
-            } else {
-                $title = 'Tag Groups Premium';
-                $documentation_link = 'https://documentation.chattymango.com/documentation/tag-groups-premium/';
-                $logo = '<img src="' . TAG_GROUPS_PLUGIN_URL . '/assets/images/cm-tgp-icon-64x64.png" alt="Tag Groups Premium logo" class="tg_onboarding_logo"/>';
-            }
-            
-            $view = new TagGroups_View( 'admin/onboarding' );
-            $view->set( array(
-                'logo'                       => $logo,
-                'title'                      => $title,
-                'settings_taxonomy_link'     => $settings_taxonomy_link,
-                'settings_home_link'         => $settings_home_link,
-                'documentation_link'         => $documentation_link,
-                'settings_premium_link'      => $settings_premium_link,
-                'settings_setup_wizard_link' => $settings_setup_wizard_link,
-            ) );
-            $view->render();
-            self::add_footer();
-        }
-        
-        /**
-         * renders a menu-less settings page: onboarding
-         *
-         * @param void
-         * @return void
-         */
-        public static function settings_page_setup_wizard()
-        {
-            // Make very sure that only administrators can access this page
-            if ( !current_user_can( 'manage_options' ) ) {
-                return;
-            }
-            global  $tag_groups_premium_fs_sdk, $tag_group_groups ;
-            self::add_header();
-            $step = ( isset( $_GET['step'] ) && $_GET['step'] > 0 ? (int) $_GET['step'] : 1 );
-            $setup_wizard_next_link = add_query_arg( 'step', $step + 1, admin_url( 'admin.php?page=tag-groups-settings-setup-wizard' ) );
-            
-            if ( defined( 'TAG_GROUPS_PLUGIN_IS_FREE' ) && TAG_GROUPS_PLUGIN_IS_FREE ) {
-                $title = 'Tag Groups';
-                $is_premium = false;
-                $documentation_link = 'https://documentation.chattymango.com/documentation/tag-groups/';
-            } else {
-                $title = 'Tag Groups Premium';
-                $is_premium = true;
-                $documentation_link = 'https://documentation.chattymango.com/documentation/tag-groups-premium/';
-            }
-            
-            
-            if ( $is_premium && $tag_groups_premium_fs_sdk->is_plan_or_trial( 'premium' ) && class_exists( 'TagGroups_Premium_View' ) ) {
-            } else {
-                $steps = array(
-                    1 => array(
-                    'id'    => 'start',
-                    'title' => 'Start',
-                ),
-                    2 => array(
-                    'id'    => 'taxonomies',
-                    'title' => 'Taxonomies',
-                ),
-                    3 => array(
-                    'id'    => 'sample_content',
-                    'title' => 'Sample Content',
-                ),
-                    4 => array(
-                    'id'    => 'finished',
-                    'title' => null,
-                ),
-                );
-            }
-            
-            $view = new TagGroups_View( 'admin/setup_wizard_header' );
-            $view->set( array(
-                'title' => $title,
-                'step'  => $step,
-                'steps' => $steps,
-            ) );
-            $view->render();
-            switch ( $steps[$step]['id'] ) {
-                case 'sample_content':
-                    $view = new TagGroups_View( 'admin/setup_wizard_sample_content' );
-                    $group_names = array( 'Sample Group A', 'Sample Group B', 'Sample Group C' );
-                    /**
-                     * Make sure they don't yet exist
-                     */
-                    $group_names = array_map( function ( $original_name ) {
-                        $tg_group = new TagGroups_Group();
-                        $name = $original_name;
-                        $i = 0;
-                        while ( $tg_group->find_by_label( $name ) !== false ) {
-                            $i++;
-                            $name = $original_name . ' - ' . $i;
-                        }
-                        return $name;
-                    }, $group_names );
-                    $tag_names = array( 'First Sample Tag', 'Second Sample Tag', 'Third Sample Tag' );
-                    $enabled_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
-                    $taxonomy = array_shift( $enabled_taxonomies );
-                    /**
-                     * Make sure they don't yet exist
-                     */
-                    $tag_names = array_map( function ( $original_name ) use( $taxonomy ) {
-                        $name = $original_name;
-                        $i = 0;
-                        while ( get_term_by( 'name', $name, $taxonomy ) !== false ) {
-                            $i++;
-                            $name = $original_name . ' - ' . $i;
-                        }
-                        return $name;
-                    }, $tag_names );
-                    $view->set( array(
-                        'title'                  => $title,
-                        'group_names'            => $group_names,
-                        'tag_names'              => $tag_names,
-                        'setup_wizard_next_link' => $setup_wizard_next_link,
-                    ) );
-                    break;
-                case 'post_tags':
-                    break;
-                case 'meta_box':
-                    break;
-                case 'taxonomies':
-                    $view = new TagGroups_View( 'admin/setup_wizard_taxonomies' );
-                    $view->set( array(
-                        'title'                  => $title,
-                        'public_taxonomies'      => TagGroups_Taxonomy::get_public_taxonomies(),
-                        'enabled_taxonomies'     => TagGroups_Taxonomy::get_enabled_taxonomies(),
-                        'setup_wizard_next_link' => $setup_wizard_next_link,
-                    ) );
-                    break;
-                case 'finished':
-                    $view = new TagGroups_View( 'admin/setup_wizard_finished' );
-                    $documentation_link = ( $is_premium ? 'https://documentation.chattymango.com/documentation/tag-groups-premium/?pk_campaign=tgp&pk_kwd=wizard' : 'https://documentation.chattymango.com/documentation/tag-groups/?pk_campaign=tg&pk_kwd=wizard' );
-                    $enabled_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
-                    $taxonomy = array_shift( $enabled_taxonomies );
-                    $view->set( array(
-                        'groups_admin_link'        => TagGroups_Taxonomy::get_tag_group_admin_url( $taxonomy ),
-                        'documentation_link'       => $documentation_link,
-                        'settings_home_link'       => admin_url( 'admin.php?page=tag-groups-settings' ),
-                        'tag_group_sample_page_id' => get_option( 'tag_group_sample_page_id', 0 ),
-                    ) );
-                    break;
-                case 'start':
-                default:
-                    $view = new TagGroups_View( 'admin/setup_wizard_start' );
-                    $view->set( array(
-                        'title'                  => $title,
-                        'setup_wizard_next_link' => $setup_wizard_next_link,
-                        'is_premium'             => $is_premium,
-                    ) );
-                    break;
-            }
-            $view->render();
-            $view = new TagGroups_View( 'admin/setup_wizard_footer' );
-            $view->render();
-            self::add_footer();
-        }
-        
-        /**
-         * Processes form submissions from the settings page
-         *
-         * @param void
-         * @return void
-         */
-        static function settings_page_actions_wizard()
-        {
-            global  $tag_group_groups, $tag_groups_premium_fs_sdk ;
-            if ( empty($_REQUEST['tg_action_wizard']) ) {
-                return;
-            }
-            // Make very sure that only administrators can do actions
-            if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
-            }
-            if ( !isset( $_POST['tag-groups-setup-wizard-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-setup-wizard-nonce'], 'tag-groups-setup-wizard-nonce' ) ) {
-                die( "Security check failed" );
-            }
-            $enabled_taxonomies = TagGroups_Taxonomy::get_enabled_taxonomies();
-            $taxonomy = array_shift( $enabled_taxonomies );
-            switch ( $_REQUEST['tg_action_wizard'] ) {
-                case 'taxonomy':
-                    
-                    if ( isset( $_POST['taxonomies'] ) ) {
-                        $taxonomies = $_POST['taxonomies'];
-                        
-                        if ( is_array( $taxonomies ) ) {
-                            $taxonomies = array_map( 'sanitize_text_field', $taxonomies );
-                            $taxonomies = array_map( 'stripslashes', $taxonomies );
-                        } else {
-                            $taxonomies = array( 'post_tag' );
-                        }
-                    
-                    } else {
-                        $taxonomies = array( 'post_tag' );
-                    }
-                    
-                    $public_taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
-                    foreach ( $taxonomies as $taxonomy_item ) {
-                        if ( !in_array( $taxonomy_item, $public_taxonomies ) ) {
-                            return;
-                        }
-                    }
-                    
-                    if ( update_option( 'tag_group_taxonomy', $taxonomies ) ) {
-                        // trigger actions
-                        do_action( 'taxonomies_saved', $taxonomies );
-                        if ( class_exists( 'TagGroups_Premium_Post' ) && (!defined( 'TAG_GROUPS_DISABLE_CACHE_REBUILD' ) || TAG_GROUPS_DISABLE_CACHE_REBUILD) ) {
-                            // schedule rebuild of cache
-                            wp_schedule_single_event( time() + 2, 'tag_groups_rebuild_post_terms' );
-                        }
-                    }
-                    
-                    break;
-                case 'meta-box':
-                    
-                    if ( isset( $_POST['taxonomies'] ) ) {
-                        $selected_taxonomies = $_POST['taxonomies'];
-                    } else {
-                        $selected_taxonomies = array();
-                    }
-                    
-                    $taxonomies = TagGroups_Taxonomy::get_public_taxonomies();
-                    foreach ( $selected_taxonomies as $taxonomy_item ) {
-                        $taxonomy_item = stripslashes( sanitize_text_field( $taxonomy_item ) );
-                        if ( !in_array( $taxonomy_item, $taxonomies ) ) {
-                            die( "Security check: taxonomies" );
-                        }
-                    }
-                    update_option( 'tag_group_meta_box_taxonomy', $selected_taxonomies );
-                    
-                    if ( isset( $_POST['tag_group_meta_box_include'] ) ) {
-                        $tag_group_meta_box_include = array_map( 'intval', array_values( $_POST['tag_group_meta_box_include'] ) );
-                    } else {
-                        // We don't allow here to select none
-                        $tag_groups = $tag_group_groups->get_all_with_position_as_key();
-                        $tag_group_ids = array_keys( $tag_groups );
-                        $tag_group_meta_box_include = $tag_group_ids;
-                        update_option( 'tag_group_meta_box_include', $tag_group_ids );
-                        
-                        if ( isset( $_POST['tag_group_meta_box_open_all'] ) ) {
-                            $tag_group_meta_box_open_all = ( $_POST['tag_group_meta_box_open_all'] ? 1 : 0 );
-                        } else {
-                            $tag_group_meta_box_open_all = 0;
-                        }
-                        
-                        update_option( 'tag_group_meta_box_open_all', $tag_group_meta_box_open_all );
-                        
-                        if ( isset( $_POST['tag_group_meta_box_add_term'] ) ) {
-                            $tag_group_meta_box_add_term = ( $_POST['tag_group_meta_box_add_term'] ? 1 : 0 );
-                        } else {
-                            $tag_group_meta_box_add_term = 0;
-                        }
-                        
-                        update_option( 'tag_group_meta_box_add_term', $tag_group_meta_box_add_term );
-                        
-                        if ( isset( $_POST['tag_group_hide_tagsdiv'] ) ) {
-                            $tag_group_hide_tagsdiv = ( $_POST['tag_group_hide_tagsdiv'] ? 1 : 0 );
-                        } else {
-                            $tag_group_hide_tagsdiv = 1;
-                        }
-                        
-                        update_option( 'tag_group_hide_tagsdiv', $tag_group_hide_tagsdiv );
-                        
-                        if ( isset( $_POST['tag_group_meta_box_change_group'] ) ) {
-                            $tag_group_meta_box_change_group = ( $_POST['tag_group_meta_box_change_group'] ? 1 : 0 );
-                        } else {
-                            $tag_group_meta_box_change_group = 0;
-                        }
-                        
-                        update_option( 'tag_group_meta_box_change_group', $tag_group_meta_box_change_group );
-                        
-                        if ( isset( $_POST['tag_group_open_all_with_terms'] ) ) {
-                            $tag_group_open_all_with_terms = ( $_POST['tag_group_open_all_with_terms'] ? 1 : 0 );
-                        } else {
-                            $tag_group_open_all_with_terms = 0;
-                        }
-                        
-                        $return = update_option( 'tag_group_open_all_with_terms', $tag_group_open_all_with_terms );
-                        TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.', 'tag-groups' ) );
-                    }
-                    
-                    do_action( 'tag_groups_metabox_saved' );
-                    break;
-                case 'post-tags':
-                    
-                    if ( isset( $_POST['tag_group_display_groups_under_posts_title'] ) ) {
-                        $tag_group_display_groups_under_posts_title = sanitize_text_field( $_POST['tag_group_display_groups_under_posts_title'] );
-                    } else {
-                        $tag_group_display_groups_under_posts_title = __( 'Tags', 'tag-groups' );
-                    }
-                    
-                    update_option( 'tag_group_display_groups_under_posts_title', $tag_group_display_groups_under_posts_title );
-                    
-                    if ( isset( $_POST['tag_group_display_groups_under_posts_priority'] ) ) {
-                        $tag_group_display_groups_under_posts_priority = intval( $_POST['tag_group_display_groups_under_posts_priority'] );
-                    } else {
-                        $tag_group_display_groups_under_posts_priority = 10;
-                    }
-                    
-                    update_option( 'tag_group_display_groups_under_posts_priority', $tag_group_display_groups_under_posts_priority );
-                    
-                    if ( isset( $_POST['tag_group_display_groups_under_posts_separator'] ) ) {
-                        // preserving space
-                        $tag_group_display_groups_under_posts_separator = wp_kses( $_POST['tag_group_display_groups_under_posts_separator'], array() );
-                        // sanitize_textarea_field() trims spaces
-                    } else {
-                        $tag_group_display_groups_under_posts_separator = '&nbsp;|&nbsp;';
-                    }
-                    
-                    update_option( 'tag_group_display_groups_under_posts_separator', $tag_group_display_groups_under_posts_separator );
-                    
-                    if ( isset( $_POST['tag_group_display_groups_under_posts_single'] ) ) {
-                        $tag_group_display_groups_under_posts_single = intval( $_POST['tag_group_display_groups_under_posts_single'] );
-                    } else {
-                        $tag_group_display_groups_under_posts_single = array();
-                    }
-                    
-                    update_option( 'tag_group_display_groups_under_posts_single', $tag_group_display_groups_under_posts_single );
-                    
-                    if ( isset( $_POST['tag_group_display_groups_under_posts_home'] ) ) {
-                        $tag_group_display_groups_under_posts_home = intval( $_POST['tag_group_display_groups_under_posts_home'] );
-                    } else {
-                        $tag_group_display_groups_under_posts_home = array();
-                    }
-                    
-                    update_option( 'tag_group_display_groups_under_posts_home', $tag_group_display_groups_under_posts_home );
-                    
-                    if ( isset( $_POST['tag_group_display_groups_under_posts_archive'] ) ) {
-                        $tag_group_display_groups_under_posts_archive = intval( $_POST['tag_group_display_groups_under_posts_archive'] );
-                    } else {
-                        $tag_group_display_groups_under_posts_archive = array();
-                    }
-                    
-                    update_option( 'tag_group_display_groups_under_posts_archive', $tag_group_display_groups_under_posts_archive );
-                    
-                    if ( isset( $_POST['tag_group_display_groups_under_posts_feed'] ) ) {
-                        $tag_group_display_groups_under_posts_feed = intval( $_POST['tag_group_display_groups_under_posts_feed'] );
-                    } else {
-                        $tag_group_display_groups_under_posts_feed = array();
-                    }
-                    
-                    update_option( 'tag_group_display_groups_under_posts_feed', $tag_group_display_groups_under_posts_feed );
-                    
-                    if ( isset( $_POST['tag_group_remove_the_post_terms'] ) ) {
-                        $tag_group_remove_the_post_terms = intval( $_POST['tag_group_remove_the_post_terms'] );
-                    } else {
-                        $tag_group_remove_the_post_terms = array();
-                    }
-                    
-                    update_option( 'tag_group_remove_the_post_terms', $tag_group_remove_the_post_terms );
-                    
-                    if ( isset( $_POST['tag_group_display_groups_under_posts'] ) ) {
-                        $tag_group_display_groups_under_posts = array_map( 'intval', array_values( $_POST['tag_group_display_groups_under_posts'] ) );
-                    } else {
-                        $tag_group_display_groups_under_posts = array();
-                    }
-                    
-                    // Evaluate "empty" as "all" if any of the page types was selected
-                    if ( count( $tag_group_display_groups_under_posts ) == 0 && ($tag_group_display_groups_under_posts_single || $tag_group_display_groups_under_posts_home || $tag_group_display_groups_under_posts_archive || $tag_group_display_groups_under_posts_feed) ) {
-                        $tag_group_display_groups_under_posts = $tag_group_groups->get_group_ids();
-                    }
-                    update_option( 'tag_group_display_groups_under_posts', $tag_group_display_groups_under_posts );
-                    do_action( 'tag_groups_post_tags_saved' );
-                    break;
-                case 'sample-content':
-                    $created_groups = array();
-                    /**
-                     * Create groups
-                     */
-                    if ( isset( $_POST['tag-groups-create-sample-groups'] ) && $_POST['tag-groups-create-sample-groups'] ) {
-                        foreach ( $_POST['tag_groups_group_names'] as $group_name ) {
-                            $tg_group = new TagGroups_Group();
-                            $tg_group->create( null, sanitize_text_field( $group_name ) );
-                            $created_groups[] = $tg_group->get_group_id();
-                        }
-                    }
-                    /**
-                     * Create tags
-                     */
-                    if ( isset( $_POST['tag-groups-create-sample-tags'] ) && $_POST['tag-groups-create-sample-tags'] ) {
-                        foreach ( $_POST['tag_groups_tag_names'] as $tag_name ) {
-                            $tag_name = sanitize_text_field( $tag_name );
-                            
-                            if ( !term_exists( $tag_name, $taxonomy ) ) {
-                                $term_array = wp_insert_term( $tag_name, $taxonomy );
-                                $tg_term = new TagGroups_Term( $term_array['term_id'] );
-                                
-                                if ( empty($created_groups) ) {
-                                    $group_ids = $tag_group_groups->get_group_ids();
-                                    unset( $group_ids[0] );
-                                } else {
-                                    $group_ids = $created_groups;
-                                }
-                                
-                                
-                                if ( $tag_groups_premium_fs_sdk->can_use_premium_code() ) {
-                                    $amount = mt_rand( 2, count( $group_ids ) );
-                                } else {
-                                    // add one group
-                                    $amount = 1;
-                                }
-                                
-                                
-                                if ( 1 == $amount ) {
-                                    $random_group_ids = $group_ids[array_rand( $group_ids )];
-                                } else {
-                                    $random_group_ids = array_intersect_key( $group_ids, array_rand( $group_ids, $amount ) );
-                                }
-                                
-                                $tg_term->add_group( $random_group_ids )->save();
-                            }
-                        
-                        }
-                    }
-                    
-                    if ( isset( $_POST['tag-groups-create-sample-page'] ) && $_POST['tag-groups-create-sample-page'] ) {
-                        $view = new TagGroups_View( 'admin/sample_page' );
-                        $current_user = wp_get_current_user();
-                        $view->set( array(
-                            'enabled_taxonomies'        => $enabled_taxonomies,
-                            'author_display_name'       => $current_user->display_name,
-                            'tag_groups_premium_fs_sdk' => $tag_groups_premium_fs_sdk,
-                        ) );
-                        $content = $view->return_html();
-                        $post_data = array(
-                            'post_title'   => wp_strip_all_tags( 'Tag Groups Sample Page' ),
-                            'post_content' => $content,
-                            'post_status'  => 'draft',
-                            'post_type'    => 'page',
-                            'post_author'  => get_current_user_id(),
-                        );
-                        $post_id = wp_insert_post( $post_data );
-                        update_option( 'tag_group_sample_page_id', $post_id );
-                    } else {
-                        delete_option( 'tag_group_sample_page_id' );
-                    }
-                    
-                    break;
-            }
-        }
-        
-        /**
          * Processes form submissions from the settings page
          *
          * @param void
@@ -1049,15 +619,8 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
             
             // Make very sure that only administrators can do actions
             if ( !current_user_can( 'manage_options' ) ) {
-                die( "Capability check failed" );
+                wp_die( "Capability check failed" );
             }
-            
-            if ( isset( $_GET['id'] ) ) {
-                $tag_groups_id = (int) $_GET['id'];
-            } else {
-                $tag_groups_id = 0;
-            }
-            
             
             if ( isset( $_POST['ok'] ) ) {
                 $ok = $_POST['ok'];
@@ -1069,6 +632,10 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                 case 'shortcode':
                     if ( !isset( $_POST['tag-groups-shortcode-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-shortcode-nonce'], 'tag-groups-shortcode' ) ) {
                         die( "Security check" );
+                    }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
                     }
                     
                     if ( isset( $_POST['widget'] ) && $_POST['widget'] == '1' ) {
@@ -1090,6 +657,10 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     if ( !isset( $_POST['tag-groups-reset-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-reset-nonce'], 'tag-groups-reset' ) ) {
                         die( "Security check" );
                     }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
+                    }
                     
                     if ( $ok == 'yes' ) {
                         $tag_group_groups->reset_groups();
@@ -1105,6 +676,10 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     if ( !isset( $_POST['tag-groups-uninstall-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-uninstall-nonce'], 'tag-groups-uninstall' ) ) {
                         die( "Security check" );
                     }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
+                    }
                     
                     if ( $ok == 'yes' ) {
                         update_option( 'tag_group_reset_when_uninstall', 1 );
@@ -1115,35 +690,38 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.', 'tag-groups' ) );
                     break;
                 case 'theme':
-                    
-                    if ( isset( $_POST['theme-name'] ) ) {
-                        $theme_name = stripslashes( sanitize_text_field( $_POST['theme-name'] ) );
-                    } else {
-                        $theme_name = '';
-                    }
-                    
-                    
-                    if ( isset( $_POST['theme'] ) ) {
-                        $theme = stripslashes( sanitize_text_field( $_POST['theme'] ) );
-                    } else {
-                        $theme = '';
-                    }
-                    
-                    if ( $theme == 'own' ) {
-                        $theme = $theme_name;
-                    }
                     if ( !isset( $_POST['tag-groups-settings-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-settings-nonce'], 'tag-groups-settings' ) ) {
                         die( "Security check" );
                     }
-                    update_option( 'tag_group_theme', $theme );
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
+                    }
+                    $theme = '';
+                    if ( isset( $_POST['theme'] ) ) {
+                        switch ( $_POST['theme'] ) {
+                            case 'own':
+                                if ( isset( $_POST['theme-name'] ) ) {
+                                    $theme = stripslashes( sanitize_text_field( $_POST['theme-name'] ) );
+                                }
+                                break;
+                            case 'none':
+                                $theme = '';
+                                break;
+                            default:
+                                $theme = stripslashes( sanitize_text_field( $_POST['theme'] ) );
+                                break;
+                        }
+                    }
+                    TagGroups_Options::update_option( 'tag_group_theme', $theme );
                     $mouseover = ( isset( $_POST['mouseover'] ) && $_POST['mouseover'] == '1' ? 1 : 0 );
                     $collapsible = ( isset( $_POST['collapsible'] ) && $_POST['collapsible'] == '1' ? 1 : 0 );
-                    $html_description = ( isset( $_POST['html_description'] ) && $_POST['html_description'] == '1' ? 1 : 0 );
-                    update_option( 'tag_group_mouseover', $mouseover );
-                    update_option( 'tag_group_collapsible', $collapsible );
-                    update_option( 'tag_group_html_description', $html_description );
+                    $html_description = ( isset( $_POST['html_description'] ) ? (int) $_POST['html_description'] : 0 );
+                    TagGroups_Options::update_option( 'tag_group_mouseover', $mouseover );
+                    TagGroups_Options::update_option( 'tag_group_collapsible', $collapsible );
+                    TagGroups_Options::update_option( 'tag_group_html_description', $html_description );
                     $tag_group_enqueue_jquery = ( isset( $_POST['enqueue-jquery'] ) && $_POST['enqueue-jquery'] == '1' ? 1 : 0 );
-                    update_option( 'tag_group_enqueue_jquery', $tag_group_enqueue_jquery );
+                    TagGroups_Options::update_option( 'tag_group_enqueue_jquery', $tag_group_enqueue_jquery );
                     // TagGroups_Admin::clear_cache();
                     TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.', 'tag-groups' ) );
                     do_action( 'tag_groups_theme_saved' );
@@ -1151,6 +729,10 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                 case 'taxonomy':
                     if ( !isset( $_POST['tag-groups-taxonomy-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-taxonomy-nonce'], 'tag-groups-taxonomy' ) ) {
                         die( "Security check" );
+                    }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
                     }
                     
                     if ( isset( $_POST['taxonomies'] ) ) {
@@ -1173,32 +755,55 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                             die( "Security check: taxonomies" );
                         }
                     }
-                    
-                    if ( update_option( 'tag_group_taxonomy', $taxonomies ) ) {
-                        // trigger actions
-                        do_action( 'taxonomies_saved', $taxonomies );
-                        if ( class_exists( 'TagGroups_Premium_Post' ) && (!defined( 'TAG_GROUPS_DISABLE_CACHE_REBUILD' ) || TAG_GROUPS_DISABLE_CACHE_REBUILD) ) {
-                            // schedule rebuild of cache
-                            wp_schedule_single_event( time() + 2, 'tag_groups_rebuild_post_terms' );
-                        }
-                    }
-                    
+                    TagGroups_Taxonomy::update_enabled( $taxonomies );
                     TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.', 'tag-groups' ) );
                     break;
                 case 'backend':
                     if ( !isset( $_POST['tag-groups-backend-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-backend-nonce'], 'tag-groups-backend' ) ) {
                         die( "Security check" );
                     }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
+                    }
                     $show_filter_posts = ( isset( $_POST['filter_posts'] ) ? 1 : 0 );
-                    update_option( 'tag_group_show_filter', $show_filter_posts );
+                    TagGroups_Options::update_option( 'tag_group_show_filter', $show_filter_posts );
                     $show_filter_tags = ( isset( $_POST['filter_tags'] ) ? 1 : 0 );
-                    update_option( 'tag_group_show_filter_tags', $show_filter_tags );
+                    TagGroups_Options::update_option( 'tag_group_show_filter_tags', $show_filter_tags );
+                    TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.', 'tag-groups' ) );
+                    break;
+                case 'gutenberg':
+                    if ( !isset( $_POST['tag-groups-gutenberg-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-gutenberg-nonce'], 'tag-groups-gutenberg' ) ) {
+                        die( "Security check" );
+                    }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
+                    }
+                    $tag_group_server_side_render = ( isset( $_POST['tag_group_server_side_render'] ) ? 1 : 0 );
+                    TagGroups_Options::update_option( 'tag_group_server_side_render', $tag_group_server_side_render );
+                    TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.', 'tag-groups' ) );
+                    break;
+                case 'multilingual':
+                    if ( !isset( $_POST['tag-groups-multilingual-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-multilingual-nonce'], 'tag-groups-multilingual' ) ) {
+                        die( "Security check" );
+                    }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
+                    }
+                    $tag_group_multilingual_sync_groups = ( isset( $_POST['tag_group_multilingual_sync_groups'] ) ? 1 : 0 );
+                    TagGroups_Options::update_option( 'tag_group_multilingual_sync_groups', $tag_group_multilingual_sync_groups );
                     TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.', 'tag-groups' ) );
                     break;
                 case 'reset-tag-filter':
                     // check nonce
                     if ( !isset( $_POST['tag-groups-reset-tag-filter-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-reset-tag-filter-nonce'], 'tag-groups-reset-tag-filter' ) ) {
                         die( "Security check" );
+                    }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
                     }
                     /**
                      * Reset the group filter above the tags list
@@ -1210,68 +815,15 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     if ( !isset( $_POST['tag-groups-export-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-export-nonce'], 'tag-groups-export' ) ) {
                         die( "Security check" );
                     }
-                    $options = array(
-                        'name'    => 'tag_groups_options',
-                        'version' => TAG_GROUPS_VERSION,
-                        'date'    => current_time( 'mysql' ),
-                    );
-                    $tg_options = new TagGroups_Options();
-                    $option_names = $tg_options->get_option_names();
-                    foreach ( $option_names as $key => $value ) {
-                        if ( $option_names[$key]['export'] ) {
-                            $options[$key] = get_option( $key );
-                        }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
                     }
-                    // generate array of all terms
-                    $terms = get_terms( array(
-                        'hide_empty' => false,
-                        'taxonomy'   => TagGroups_Taxonomy::get_enabled_taxonomies(),
-                    ) );
-                    $cm_terms = array(
-                        'name'    => 'tag_groups_terms',
-                        'version' => TAG_GROUPS_VERSION,
-                        'date'    => current_time( 'mysql' ),
-                    );
-                    $cm_terms['terms'] = array();
-                    foreach ( $terms as $term ) {
-                        $tg_term = new TagGroups_Term( $term->term_id );
-                        $cm_terms['terms'][] = array(
-                            'term_id'          => $term->term_id,
-                            'name'             => $term->name,
-                            'slug'             => $term->slug,
-                            'term_group'       => $tg_term->get_groups(),
-                            'term_taxonomy_id' => $term->term_taxonomy_id,
-                            'taxonomy'         => $term->taxonomy,
-                            'description'      => $term->description,
-                            'parent'           => $term->parent,
-                            'count'            => $term->count,
-                            'filter'           => $term->filter,
-                            'meta'             => $term->meta,
-                        );
-                    }
-                    /**
-                     * Writing file
-                     */
-                    try {
-                        // misusing the password generator to get a hash
-                        $hash = wp_generate_password( 10, false );
-                        /*
-                         * Write settings/groups and tags separately
-                         */
-                        $fp = fopen( WP_CONTENT_DIR . '/uploads/tag_groups_settings-' . $hash . '.json', 'w' );
-                        fwrite( $fp, json_encode( $options ) );
-                        fclose( $fp );
-                        $fp = fopen( WP_CONTENT_DIR . '/uploads/tag_groups_terms-' . $hash . '.json', 'w' );
-                        fwrite( $fp, json_encode( $cm_terms ) );
-                        fclose( $fp );
-                        TagGroups_Admin_Notice::add( 'success', __( 'Your settings/groups and your terms have been exported. Please download the resulting files with right-click or ctrl-click:', 'tag-groups' ) . '  <p>
-          <a href="' . get_bloginfo( 'wpurl' ) . '/wp-content/uploads/tag_groups_settings-' . $hash . '.json" target="_blank">tag_groups_settings-' . $hash . '.json</a>
-          </p>' . '  <p>
-          <a href="' . get_bloginfo( 'wpurl' ) . '/wp-content/uploads/tag_groups_terms-' . $hash . '.json" target="_blank">tag_groups_terms-' . $hash . '.json</a>
-          </p>' );
-                    } catch ( Exception $e ) {
-                        TagGroups_Admin_Notice::add( 'error', __( 'Writing of the exported settings failed.', 'tag-groups' ) );
-                    }
+                    $export = new TagGroups_Export();
+                    $export->process_options_for_export();
+                    $export->process_terms_for_export();
+                    $export->write_files();
+                    $export->show_download_links();
                     break;
                 case 'import':
                     if ( !isset( $_POST['tag-groups-import-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-import-nonce'], 'tag-groups-import' ) ) {
@@ -1279,153 +831,34 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                     }
                     // Make very sure that only administrators can upload stuff
                     if ( !current_user_can( 'manage_options' ) ) {
-                        die( "Capability check failed" );
-                    }
-                    if ( !isset( $_FILES['settings_file'] ) ) {
-                        die( "File missing" );
+                        wp_die( "Capability check failed" );
                     }
                     if ( !function_exists( 'wp_handle_upload' ) ) {
                         require_once ABSPATH . 'wp-admin/includes/file.php';
                     }
-                    $settings_file = $_FILES['settings_file'];
-                    // Check file name, but allow for some additional characters in file name since downloading multiple times may add something to the original name.
-                    // Allow extension txt for backwards compatibility
-                    preg_match( '/^tag_groups_settings-\\w{10}[\\w,\\s-]*\\.((txt)|(json))$/', $_FILES['settings_file']['name'], $matches_settings );
-                    preg_match( '/^tag_groups_terms-\\w{10}[\\w,\\s-]*\\.json$/', $_FILES['settings_file']['name'], $matches_terms );
+                    $import = new TagGroups_Import();
+                    $import->determine_file_type();
+                    $import->read_file();
+                    $import->parse_and_save();
+                    break;
+                case 'debug':
+                    if ( !isset( $_POST['tag-groups-debug-nonce'] ) || !wp_verify_nonce( $_POST['tag-groups-debug-nonce'], 'tag-groups-debug' ) ) {
+                        die( "Security check" );
+                    }
+                    // Make sure that only administrators can save settings
+                    if ( !current_user_can( 'manage_options' ) ) {
+                        wp_die( "Capability check failed" );
+                    }
+                    $verbose_debug = ( '1' == $_POST['verbose_debug'] ? 1 : 0 );
+                    TagGroups_Options::update_option( 'tag_group_verbose_debug', $verbose_debug );
                     
-                    if ( !empty($matches_settings) && !empty($matches_settings[0]) && $matches_settings[0] == $_FILES['settings_file']['name'] ) {
-                        $contents = @file_get_contents( $settings_file['tmp_name'] );
-                        
-                        if ( $contents === false ) {
-                            TagGroups_Admin_Notice::add( 'error', __( 'Error reading the file.', 'tag-groups' ) );
-                        } else {
-                            $options = @json_decode( $contents, true );
-                            
-                            if ( empty($options) || !is_array( $options ) || $options['name'] != 'tag_groups_options' ) {
-                                TagGroups_Admin_Notice::add( 'error', __( 'Error parsing the file.', 'tag-groups' ) );
-                            } else {
-                                $tg_options = new TagGroups_Options();
-                                $option_names = $tg_options->get_option_names();
-                                $changed = 0;
-                                // import only whitelisted options
-                                foreach ( $option_names as $key => $value ) {
-                                    if ( isset( $options[$key] ) ) {
-                                        $changed += ( update_option( $key, $options[$key] ) ? 1 : 0 );
-                                    }
-                                }
-                                if ( !isset( $options['date'] ) ) {
-                                    $options['date'] = ' - ' . __( 'date unknown', 'tag-groups' ) . ' - ';
-                                }
-                                TagGroups_Admin_Notice::add( 'success', sprintf(
-                                    __( 'Your settings and groups have been imported from the file %1$s (created with plugin version %2$s on %3$s).', 'tag-groups' ),
-                                    '<b>' . $_FILES['settings_file']['name'] . '</b>',
-                                    $options['version'],
-                                    $options['date']
-                                ) . '</p><p>' . sprintf( _n(
-                                    '%d option was added or changed.',
-                                    '%d options were added or changed.',
-                                    $changed,
-                                    'tag-groups'
-                                ), $changed ) );
-                                do_action( 'tag_groups_settings_imported' );
-                            }
-                        
-                        }
-                    
-                    } elseif ( !empty($matches_terms) && !empty($matches_terms[0]) && $matches_terms[0] == $_FILES['settings_file']['name'] ) {
-                        $contents = @file_get_contents( $settings_file['tmp_name'] );
-                        
-                        if ( $contents === false ) {
-                            TagGroups_Admin_Notice::add( 'error', __( 'Error reading the file.', 'tag-groups' ) );
-                            return;
-                        }
-                        
-                        $terms = @json_decode( $contents, true );
-                        
-                        if ( empty($terms) || !is_array( $terms ) || $terms['name'] != 'tag_groups_terms' ) {
-                            TagGroups_Admin_Notice::add( 'error', __( 'Error parsing the file.', 'tag-groups' ) );
-                            return;
-                        }
-                        
-                        $changed = 0;
-                        $processed = 0;
-                        foreach ( $terms['terms'] as $term ) {
-                            // change only terms with the same name, else create new one
-                            
-                            if ( !term_exists( $term['term_id'], $term['taxonomy'] ) ) {
-                                // check by name
-                                $term_by_name = get_term_by( 'name', $term['name'], $term['taxonomy'] );
-                                
-                                if ( $term_by_name && is_object( $term_by_name ) ) {
-                                    $term['term_id'] = $term_by_name->term_id;
-                                } else {
-                                    $inserted_term = wp_insert_term( $term['name'], $term['taxonomy'] );
-                                    
-                                    if ( is_array( $inserted_term ) ) {
-                                        $term['term_id'] = $inserted_term['term_id'];
-                                    } else {
-                                        // an error occured
-                                        error_log( '[Tag Groups] Problem inserting ' . $term['name'] );
-                                        continue;
-                                    }
-                                
-                                }
-                            
-                            }
-                            
-                            $tg_term = new TagGroups_Term( $term['term_id'] );
-                            
-                            if ( !$tg_term->has_exactly_groups( $term['term_group'] ) ) {
-                                $tg_term->set_group( $term['term_group'] )->save();
-                                $changed++;
-                            }
-                            
-                            // We also update the default term data, except for term_group
-                            unset( $term['term_group'] );
-                            remove_all_actions( 'edit_terms' );
-                            remove_all_actions( 'edited_terms' );
-                            remove_all_actions( 'edit_term_taxonomy' );
-                            remove_all_actions( 'edited_term_taxonomy' );
-                            remove_all_actions( 'edit_term' );
-                            remove_all_actions( "edit_{$term['taxonomy']}" );
-                            remove_all_actions( 'edited_term' );
-                            remove_all_actions( "edited_{$term['taxonomy']}" );
-                            $result = wp_update_term( $term['term_id'], $term['taxonomy'], $term );
-                            if ( is_array( $result ) ) {
-                                $processed++;
-                            }
-                        }
-                        if ( !isset( $terms['date'] ) ) {
-                            $terms['date'] = ' - ' . __( 'date unknown', 'tag-groups' ) . ' - ';
-                        }
-                        TagGroups_Admin_Notice::add( 'success', sprintf(
-                            __( 'Your terms have been imported from the file %1$s (created with plugin version %2$s on %3$s).', 'tag-groups' ),
-                            '<b>' . $_FILES['settings_file']['name'] . '</b>',
-                            $terms['version'],
-                            $terms['date']
-                        ) . '</p><p>' . sprintf( _n(
-                            'We saved %d term.',
-                            'We saved %d terms.',
-                            $processed,
-                            'tag-groups'
-                        ), $processed ) . '</p><p>' . sprintf( _n(
-                            'The group info of %d term was updated.',
-                            'The group info of %d terms was updated.',
-                            $changed,
-                            'tag-groups'
-                        ), $changed ) );
-                        do_action( 'tag_groups_terms_imported' );
+                    if ( $verbose_debug ) {
+                        TagGroups_Error::log( '[Tag Groups] Verbose logging has been turned on.' );
                     } else {
-                        
-                        if ( !empty($_FILES['settings_file']['name']) ) {
-                            $file_info = ' ' . $_FILES['settings_file']['name'];
-                        } else {
-                            $file_info = '';
-                        }
-                        
-                        TagGroups_Admin_Notice::add( 'error', __( 'Error uploading the file.', 'tag-groups' ) . $file_info );
+                        TagGroups_Error::log( '[Tag Groups] Verbose logging has been turned off.' );
                     }
                     
+                    TagGroups_Admin_Notice::add( 'success', __( 'Your settings have been saved.', 'tag-groups' ) );
                     break;
                 default:
                     // hook for premium plugin
@@ -1560,7 +993,20 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                 __( 'Ajax Test', 'tag-groups' ),
                 __( 'troubleshooting', 'tag-groups' ),
                 __( 'benchmarks', 'tag-groups' ),
-                __( 'speed test', 'tag-groups' )
+                __( 'speed test', 'tag-groups' ),
+                __( 'error', 'tag-groups' ),
+                __( 'testing', 'tag-groups' )
+            ),
+            ),
+                'debug'           => array(
+                'title'    => __( 'Debugging', 'tag-groups' ),
+                'page'     => 'tag-groups-settings-troubleshooting',
+                'keywords' => array(
+                __( 'debugging', 'tag-groups' ),
+                __( 'troubleshooting', 'tag-groups' ),
+                __( 'error', 'tag-groups' ),
+                __( 'testing', 'tag-groups' ),
+                __( 'help', 'tag-groups' )
             ),
             ),
                 'premium'         => array(
@@ -1572,6 +1018,11 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                 __( 'posts', 'tag-groups' ),
                 __( 'tag cloud', 'tag-groups' ),
                 __( 'filter', 'tag-groups' ),
+                __( 'animated', 'tag-groups' ),
+                __( 'searchable', 'tag-groups' ),
+                'Shuffle Box',
+                'Toggle Post Filter',
+                'Dynamic Post Filter',
                 'WooCommerce'
             ),
             ),
@@ -1617,6 +1068,20 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
             ),
             ),
             );
+            if ( TagGroups_Gutenberg::is_gutenberg_active() ) {
+                $topics['gutenberg'] = array(
+                    'title'    => __( 'Gutenberg', 'tag-groups' ),
+                    'page'     => 'tag-groups-settings-back-end',
+                    'keywords' => array( __( 'live block preview', 'tag-groups' ) ),
+                );
+            }
+            if ( TagGroups_WPML::is_multilingual() ) {
+                $topics['multilingual'] = array(
+                    'title'    => __( 'Multilingual', 'tag-groups' ),
+                    'page'     => 'tag-groups-settings-back-end',
+                    'keywords' => array( 'WPML', 'Polylang', __( 'translation', 'tag-groups' ) ),
+                );
+            }
             $topics = apply_filters( 'tag_groups_setting_topics', $topics );
             return $topics;
         }
@@ -1644,19 +1109,25 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
          */
         public static function add_html_process()
         {
-            // global $tag_group_terms;
             $tasks_whitelist = array(
                 'migratetermmeta'  => __( 'Migrating the term meta', 'tag-groups' ),
                 'fixgroups'        => __( 'Fixing incorrect tag groups', 'tag-groups' ),
-                'fixmissinggroups' => __( 'Fixing incorrect groups in tags', 'tag-groups' ),
+                'fixmissinggroups' => __( 'Fixing incorrect groups in term meta', 'tag-groups' ),
+                'sortgroups'       => __( 'Sorting groups in term meta', 'tag-groups' ),
                 'checkbadterms'    => __( 'Checking the tag names', 'tag-groups' ),
             );
-            $progress = array();
             $totals = array();
             $languages = array();
             $tasks = explode( ',', $_GET['process-tasks'] );
             $tasks = array_map( 'sanitize_title', $tasks );
             $tasks = array_intersect( $tasks, array_keys( $tasks_whitelist ) );
+            
+            if ( !empty($_GET['task-set-name']) ) {
+                $task_set_name = sanitize_text_field( $_GET['task-set-name'] );
+            } else {
+                $task_set_name = '';
+            }
+            
             $task_html = '';
             foreach ( $tasks as $key => $task ) {
                 $totals[$task] = TagGroups_Process::get_task_total( $task );
@@ -1711,6 +1182,7 @@ if ( !class_exists( 'TagGroups_Settings' ) ) {
                 'timeout_task'  => $timeout_task,
                 'timeout_chunk' => $timeout_chunk,
                 'chunk_length'  => $chunk_length,
+                'task_set_name' => $task_set_name,
             ) );
             $view->render();
         }

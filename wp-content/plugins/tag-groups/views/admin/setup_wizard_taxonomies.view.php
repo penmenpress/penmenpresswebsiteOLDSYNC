@@ -1,5 +1,5 @@
 <div style="margin: 50px 0 0;">
-  <p><?php _e( 'Choose the taxonomies for which you want to use tag groups.', 'tag-groups' ) ?> <?php _e( "In most cases the default taxonomy <b>Tags (post_tag)</b> will do the job.", 'tag-groups' ) ?><span class="dashicons dashicons-editor-help chatty-mango-help-icon" data-topic="taxonomies"></span></p>
+  <p><?php _e( 'Choose the taxonomies for which you want to use tag groups.', 'tag-groups' ) ?> <?php _e( "In most cases the default taxonomy <b>Tags (post_tag)</b> will do the job.", 'tag-groups' ) ?><span class="dashicons dashicons-editor-help chatty-mango-help-icon" data-topic="taxonomies" title="<?php _e('Click for more information', 'tag-groups-premium') ?>"></span></p>
 
   <div class="chatty-mango-help-container chatty-mango-help-container-taxonomies" style="display:none;">
     <p><?php _e( "The default texonomy is <b>Tags (post_tag)</b>. Please note that the tag clouds might not work with all taxonomies and that some taxonomies listed here may not be accessible in the admin backend. If you don't understand what is going on here, just leave the default.", 'tag-groups' ) ?></p>
@@ -15,9 +15,8 @@
               checked
             <?php endif; ?>
             />&nbsp;<span class="dashicons dashicons-index-card tg_no_underline<?php if ( strpos( $taxonomy, '_tag' ) === false ) :?> tg_faded<?php endif; ?>"></span>
-            <label for="<?php echo $taxonomy ?>" class="tg_unhide_trigger">
+              <label for="<?php echo $taxonomy ?>" class="tg_unhide_trigger" title="<?php _e( 'post type', 'tag-groups') ?>: <?php echo implode( ', ', TagGroups_Taxonomy::post_types_from_taxonomies( $taxonomy ) ) ?>">
               <?php echo TagGroups_Taxonomy::get_name_from_slug( $taxonomy ) ?> (<?php echo $taxonomy ?>)
-              <span style="display:none; color:#999;">(<?php _e( 'post type', 'tag-groups') ?>: <?php echo implode( ', ', TagGroups_Taxonomy::post_types_from_taxonomies( $taxonomy ) ) ?>)</span>
             </label>
           </li>
         <?php endforeach; ?>
@@ -35,10 +34,10 @@
 
 <script>
 jQuery(document).ready(function () {
-  jQuery(".tg_unhide_trigger").mouseover(function () {
+  jQuery(".tg_unhide_trigger").on('mouseover', function () {
     jQuery(this).find("span").show();
   });
-  jQuery(".tg_unhide_trigger").mouseout(function () {
+  jQuery(".tg_unhide_trigger").on('mouseout', function () {
     jQuery(this).find("span").hide();
   });
 });

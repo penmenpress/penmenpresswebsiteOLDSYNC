@@ -21,7 +21,7 @@
     </p>
 
     <p>
-      <input disabled type="checkbox" autocomplete="off" value=1 id="tag-groups-create-sample-page" name="tag-groups-create-sample-page" >&nbsp;<label for="tag-groups-create-sample-page"><?php _e( 'Create a draft sample page with shortcodes.', 'tag-groups' ) ?></label>
+      <input type="checkbox" autocomplete="off" value=1 id="tag-groups-create-sample-page" name="tag-groups-create-sample-page" checked>&nbsp;<label for="tag-groups-create-sample-page"><?php echo $create_sample_page_label ?></label>
     </p>
 
     <?php foreach( $group_names as $group_name ) : ?>
@@ -37,14 +37,14 @@
 </div>
 <script>
   jQuery(document).ready(function(){
-    jQuery('#tag-groups-create-sample-groups').change(function(){
-      if ( jQuery('#tag-groups-create-sample-groups').attr('checked') ) {
+    jQuery('#tag-groups-create-sample-groups').on('change', function(){
+      if ( jQuery('#tag-groups-create-sample-groups').prop('checked') ) {
         jQuery('#tag-groups-create-sample-tags').prop('disabled', false);
-        jQuery('#tag-groups-create-sample-page').prop('disabled', false);
+        // jQuery('#tag-groups-create-sample-page').prop('disabled', false);
       } else {
         jQuery('#tag-groups-create-sample-tags').prop('disabled', true);
-        // jQuery('#tag-groups-create-sample-tags').prop('checked', false);
-        jQuery('#tag-groups-create-sample-page').prop('disabled', true);
+        jQuery('#tag-groups-create-sample-tags').prop('checked', false);
+        // jQuery('#tag-groups-create-sample-page').prop('disabled', true);
       }
     });
   });

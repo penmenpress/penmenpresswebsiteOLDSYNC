@@ -7,7 +7,7 @@
 </p>
 
 <p>
-  <?php _e( 'Please find links to the documentation in the Tag Groups settings.', 'tag-groups' ) ?>
+  <?php printf( __( 'Please find links to the documentation in the <a %s>Tag Groups settings</a>.', 'tag-groups' ), 'href="' . $tag_groups_settings_link .'"' ) ?>
 </p>
 <hr />
 
@@ -25,22 +25,20 @@
 
 <h2><?php _e( 'Alphabetical Tag Cloud', 'tag-groups' ) ?></h2>
 <p>
-  [tag_groups_alphabet_tabs exclude_letters="äöüß" hide_empty=0]
+  [tag_groups_alphabet_tabs exclude_letters="äöüß" hide_empty=0 smallest=16 largest=24]
 </p>
 <hr />
 
 <h2><?php _e( 'Tag List', 'tag-groups' ) ?></h2>
 <p>
-  [tag_groups_tag_list prepend="#" hide_empty=0]
+  [tag_groups_tag_list prepend="#" hide_empty=0 smallest=16 largest=16]
 </p>
 <hr />
 
 <h2><?php _e( 'Alphabetical Tag Index', 'tag-groups' ) ?></h2>
 <p>
-  [tag_groups_alphabetical_index exclude_letters="äöüß" hide_empty=0]
+  [tag_groups_alphabetical_index exclude_letters="0123456789" hide_empty=0 smallest=16 largest=16]
 </p>
 <hr />
 
-
-<div style="clear:both;"></div>
 <p>Created by <a href="https://chattymango.com/tag-groups/" target="_blank">Chatty Mango's Tag Groups plugin</a></p>

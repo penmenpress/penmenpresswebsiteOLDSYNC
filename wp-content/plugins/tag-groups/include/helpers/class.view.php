@@ -17,6 +17,14 @@ if ( ! class_exists( 'TagGroups_View' ) ) {
   class TagGroups_View {
 
     /**
+    * identifier of this view
+    *
+    * @var string
+    * @since
+    */
+    private $view_slug;
+
+    /**
     * full path of the file providing the view
     *
     * @var string
@@ -32,6 +40,12 @@ if ( ! class_exists( 'TagGroups_View' ) ) {
     */
     private $vars;
 
+    /**
+     * name of the view slug that can be used in a filter identificator
+     *
+     * @var string
+     */
+    private $view_slug_filter;
 
     /**
     * Constructor: checks if view exists
@@ -40,9 +54,11 @@ if ( ! class_exists( 'TagGroups_View' ) ) {
     * @return object $this
     * @since
     */
-    public function __construct( $view ) {
+    public function __construct( $view_slug ) {
 
-      $path = TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . "/views/" . $view . ".view.php";
+      $this->view_slug = $view_slug;
+
+      $path = TAG_GROUPS_PLUGIN_ABSOLUTE_PATH . "/views/" . $this->view_slug . ".view.php";
 
       if ( file_exists( $path ) ) {
 
@@ -50,9 +66,11 @@ if ( ! class_exists( 'TagGroups_View' ) ) {
 
       } else {
 
-        ChattyMango_Error::init()->dump_and_die( 'tag groups', 'View ' . $path . ' not found' );
+        TagGroups_Error::log( '[Tag Groups] View ' . $path . ' not found' );
 
       }
+
+      $this->view_slug_filter = str_replace( '/', '-', $this->view_slug );
 
       $this->vars = array();
 
@@ -70,27 +88,27 @@ if ( ! class_exists( 'TagGroups_View' ) ) {
     public function render()
     {
 
-      extract( $this->vars, EXTR_SKIP );
-
-      ob_start();
-
-      include $this->view;
-
-      $html = ob_get_clean();
-
-      echo $this->do_filter( $html );
+      echo $this->return_html();
 
     }
 
 
     /**
-    * returns the view
-    *
-    * @param void
-    * @return string $html
-    */
+      * returns the view
+      *
+      * @param void
+      * @return string $html
+      */
     public function return_html()
     {
+
+      if ( empty( $this->view ) ) {
+
+        return '';
+        
+      }
+      
+      $this->do_filter_atts();
 
       extract( $this->vars, EXTR_SKIP );
 
@@ -100,7 +118,26 @@ if ( ! class_exists( 'TagGroups_View' ) ) {
 
       $html = ob_get_clean();
 
-      return $this->do_filter( $html );
+      return $this->do_filter_html( $html );
+
+    }
+
+
+    /**
+     * Option to modify the attributes used in the templates
+     *
+     * @return void
+     */
+    private function do_filter_atts() {
+
+      /**
+       * Filters the attributes before rendering
+       * 
+       * @param array $this->vars
+       * @param string $this->view_slug_filter
+       * @return array must contain same fields and data types as $this->vars
+       */
+      $this->vars = apply_filters( 'tag_groups_view_atts', $this->vars, $this->view_slug_filter );
 
     }
 
@@ -111,19 +148,22 @@ if ( ! class_exists( 'TagGroups_View' ) ) {
      * @param string $html
      * @return string
      */
-    private function do_filter( $html )
+    private function do_filter_html( $html )
     {
 
-      $view_slug = str_replace( '/', '-', $this->view );
-
-      return apply_filters( 'tag_groups_view_' . $view_slug, $html );
+      /**
+       * Filters the final output of the view
+       * 
+       * @param string $html
+       * @return string
+       */
+      return apply_filters( 'tag_groups_view-' . $this->view_slug_filter, $html );
 
     }
 
 
     /**
     * General setter for $this->vars, accepting an array of key and values or one pair of key and value
-    *
     *
     * @param array|string $variable_name_or_array
     * @param mixed@null $data

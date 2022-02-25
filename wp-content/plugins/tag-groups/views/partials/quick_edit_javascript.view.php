@@ -3,6 +3,9 @@ function set_inline_tag_group_selected(termGroupsSelectedJson, nonce) {
   var termGroupsSelected = JSON.parse(termGroupsSelectedJson);
   inlineEditTax.revert();
   var tagGroupsSelectElement = document.getElementById('term-group-option');
+  if (typeof tagGroupsSelectElement === 'undefined' || tagGroupsSelectElement === null) {
+    return false;
+  }
   var nonceInput = document.getElementById('tag-groups-option-nonce');
   nonceInput.value = nonce;
   for (i = 0; i < tagGroupsSelectElement.options.length; i++) {

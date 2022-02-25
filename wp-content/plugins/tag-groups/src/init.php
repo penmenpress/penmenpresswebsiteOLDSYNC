@@ -48,31 +48,48 @@ function chatty_mango_tag_groups_editor_assets() {
 
 	global $tag_groups_premium_fs_sdk;
 
-	// Scripts.
-	wp_enqueue_script(
-		'chatty-mango_tag-groups-block-js', // Handle.
-		plugins_url( 'dist/blocks.build.js', dirname( __FILE__ ) ), // Block.build.js: We register the block here. Built with Webpack.
-		array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-editor' ) // Dependencies, defined above.
-		// filemtime( plugin_dir_path( __FILE__ ) . 'block.js' ) // Version: filemtime — Gets file modification time.
-	);
-
-
 	// make some data available
 	$args = array(
-		'siteUrl' 	=> get_option( 'siteurl' ),
-		'siteLang'	=> '',	// for future use
-		'pluginUrl'	=> TAG_GROUPS_PLUGIN_URL,
-		'hasPremium'	=> $tag_groups_premium_fs_sdk->can_use_premium_code(),
+		'siteUrl' 			=> get_option( 'siteurl' ),
+		'siteLang'			=> '',	// for future use
+		'pluginUrl'			=> TAG_GROUPS_PLUGIN_URL,
+		'hasPremium'		=> $tag_groups_premium_fs_sdk->can_use_premium_code(),
+		'serverSideRender'	=> !!TagGroups_Options::get_option( 'tag_group_server_side_render', 1 ),
+		'collapsible'		=> TagGroups_Options::get_option( 'tag_group_collapsible', 0 ),
+		'mouseover'			=> TagGroups_Options::get_option( 'tag_group_mouseover', 0 ),
+		'gutenbergSettings'	=> admin_url( 'admin.php?page=tag-groups-settings-back-end&active-tab=gutenberg' )
 	);
+
+	$screen = get_current_screen();
+
+	// Scripts.
+	if ( ! empty( $screen->base ) && 'widgets' == $screen->base ) {
+
+		// not yet implemented
+		// wp_enqueue_script(
+		// 	'chatty-mango_tag-groups-block-js', // Handle.
+		// 	plugins_url( 'build/index.js', dirname( __FILE__ ) ),
+		// 	array( 'lodash', 'react', 'react-dom', 'wp-api-fetch', 'wp-components', 'wp-element', 'wp-polyfill', 'wp-url', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-edit-widgets' )
+		// );
+
+	} else {
+
+		wp_enqueue_script(
+			'chatty-mango_tag-groups-block-js', // Handle.
+			plugins_url( 'build/index.js', dirname( __FILE__ ) ),
+			array( 'lodash', 'react', 'react-dom', 'wp-api-fetch', 'wp-components', 'wp-element', 'wp-polyfill', 'wp-url', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-editor' )
+		);
+		
+	}
 
 	wp_localize_script( 'chatty-mango_tag-groups-block-js', 'ChattyMangoTagGroupsGlobal', $args );
 
 	// Styles.
 	wp_enqueue_style(
 		'chatty-mango_tag-groups-block-editor-css', // Handle.
-		plugins_url( 'dist/blocks.editor.build.css', dirname( __FILE__ ) ), // Block editor CSS.
-		array( 'wp-edit-blocks' ) // Dependency to include the CSS after it.
-		// filemtime( plugin_dir_path( __FILE__ ) . 'editor.css' ) // Version: filemtime — Gets file modification time.
+		plugins_url( 'build/index.css', dirname( __FILE__ ) ), // Block editor CSS.
+		array( 'wp-edit-blocks' )
+		// , $dependencies['version']
 	);
 
 	if ( function_exists( 'gutenberg_get_jed_locale_data' ) ) {
