@@ -1,5 +1,5 @@
 <style type="text/css">
-<?php include XMLSF_DIR . '/assets/styles/admin.css'; ?>
+<?php include XMLSF_DIR . '/assets/admin.css'; ?>
 </style>
 <div class="wrap">
 
@@ -33,13 +33,19 @@
 	</div>
 
 	<div class="sidebar">
+
+		<?php if ( defined( 'XMLSF_NEWS_ADV_VERSION' ) && version_compare( XMLSF_NEWS_ADV_VERSION, parent::$compat_pro_min, '<' ) ) {
+			$class = 'update-nag';
+			include XMLSF_DIR . '/views/admin/section-advanced-compat-message.php';
+		} ?>
+
 		<h3><span class="dashicons dashicons-welcome-view-site"></span> <?php echo translate('View'); ?></h3>
 		<p>
 			<?php
 			printf (
-			/* translators: Sitemap name with URL */
-			__( 'Open your %s', 'xml-sitemap-feed' ),
-			'<strong><a href="'.$url.'" target="_blank">'.__('Google News Sitemap','xml-sitemap-feed') . '</a></strong><span class="dashicons dashicons-external"></span>'
+				/* translators: Sitemap name with URL */
+				__( 'Open your %s', 'xml-sitemap-feed' ),
+				'<strong><a href="' . home_url( $sitemap ) . '" target="_blank">' . __('Google News Sitemap','xml-sitemap-feed') . '</a></strong><span class="dashicons dashicons-external"></span>'
 			); ?>
 		</p>
 

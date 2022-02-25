@@ -18,21 +18,46 @@ class XMLSF_Sitemap_News
 	private $post_types;
 
 	/**
+	 * Rewrite rules
+	 * @var array
+	 */
+	public $rewrite_rules = array(
+		'regex' => 'sitemap-news\.xml(\.gz)?$',
+		'query' => '?feed=sitemap-news$matches[1]'
+	);
+
+	/**
 	 * CONSTRUCTOR
 	 * Runs on init
 	 */
 
 	function __construct( $sitemap )
 	{
-		$this->sitemap = $sitemap;
+		if ( $sitemap ) $this->sitemap = $sitemap;
+
+		// Rewrite rules filter.
+		add_filter( 'rewrite_rules_array', array( $this, 'rewrite_rules' ), 99, 1 );
 
 		// PINGING
-		add_action( 'transition_post_status', array( $this, 'do_ping' ), 10, 3 );
-
-		// FEED TEMPLATES
-		add_action( 'do_feed_sitemap-news', 'xmlsf_news_load_template', 10, 1 );
+		add_action( 'transition_post_status', array( $this, 'do_ping' ), 999, 3 );
 	}
 
+	/**
+	 * Add sitemap rewrite rules
+	 * 
+	 * Hooked into rewrite_rules_array filter
+	 *
+	 * @param array $rewrite_rules
+	 * @return array $rewrite_rules
+	 */
+	public function rewrite_rules( $rewrite_rules ) {
+		global $wp_rewrite;
+
+		$rewrite_rules = array_merge( array( $this->rewrite_rules['regex'] => $wp_rewrite->index . $this->rewrite_rules['query'] ), $rewrite_rules );
+
+		return $rewrite_rules;
+	}
+	
 	/**
 	 * Do pings, hooked to transition post status
 	 *
@@ -45,11 +70,6 @@ class XMLSF_Sitemap_News
 		// bail out when already published or not publishing
 		if ( $old_status == 'publish' || $new_status != 'publish' ) return;
 
-		// bail out when REST API call without new post data, see Gutenberg issue https://github.com/WordPress/gutenberg/issues/15094
-		// NO ! Don't bail out now because there will be no other chance as long as bug is not fixed...
-		// ... we'll have to make do without $_POST data so potentially incorrect get_post_meta() information.
-		//if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) return;
-
 		// bail out when Google ping not checked
 		if ( ! in_array( 'google', (array) get_option( 'xmlsf_ping' ) ) ) return;
 
@@ -58,7 +78,7 @@ class XMLSF_Sitemap_News
 			// bail out when exclude field is checked
 			if ( ! empty( $_POST['_xmlsf_news_exclude'] ) ) return;
 		} else {
-			// fall back on exclude meta data from DB whic may be outdated (see bug)
+			// fall back on exclude meta data from DB which may be outdated (see bug)
 			if ( get_post_meta( $post->ID, '_xmlsf_news_exclude' ) ) return;
 		}
 
@@ -78,11 +98,4 @@ class XMLSF_Sitemap_News
 		xmlsf_ping( 'google', $this->sitemap, 5 * MINUTE_IN_SECONDS );
 	}
 
-}
-
-/**
- * set up the news sitemap template
- */
-function xmlsf_news_load_template() {
-	load_template( XMLSF_DIR . '/views/feed-sitemap-news.php' );
 }

@@ -76,7 +76,10 @@ class XMLSitemapFeed {
 	 * post format taxonomy is disabled
 	 * @var array
 	 */
-	private $disabled_taxonomies = array('post_format','product_shipping_class');
+	private $disabled_taxonomies = array(
+		'post_format',
+		'product_shipping_class'
+	);
 
 	/**
 	 * Maximum number of posts in any taxonomy term
@@ -121,7 +124,7 @@ class XMLSitemapFeed {
 	 * Constructor
 	 * @return void
 	 */
-	 function __construct() {}
+	function __construct() {}
 
 	/**
 	 * Default options
@@ -145,7 +148,7 @@ class XMLSitemapFeed {
 						'active' => '1',
 						'archive' => 'yearly',
 						'priority' => '0.7',
-						'dynamic_priority' => '1',
+						'dynamic_priority' => '',
 						'tags' => array(
 							'image' => 'featured'
 							/*'video' => ''*/
@@ -165,8 +168,14 @@ class XMLSitemapFeed {
 				'taxonomy_settings' => array(
 					'active' => '',
 					'priority' => '0.3',
-					'dynamic_priority' => '1',
-					'term_limit' => '5000'
+					'dynamic_priority' => '',
+					'term_limit' => '3000'
+				),
+				'authors' => '',
+				'author_settings' => array(
+					'active' => '1',
+					'priority' => '0.3',
+					'term_limit' => '1000'
 				),
 				'ping' => array(
 					'google',

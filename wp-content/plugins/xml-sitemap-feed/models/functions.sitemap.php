@@ -8,32 +8,45 @@
  * @return array
  */
 function xmlsf_filter_post_types( $post_types ) {
+	$post_types = (array) $post_types;
+
 	// Always exclude attachment and reply post types (bbpress)
 	unset( $post_types['attachment'], $post_types['reply'] );
 
-	return array_filter( (array) $post_types );
+	return array_filter( $post_types );
 }
 
 /**
  * Get index url
  *
  * @param string $sitemap
- * @param string $type
- * @param string $parm
+ * @param array $args arguments:
+ *                    $type - post_type or taxonomy, default false
+ *                    $m    - YYYY, YYYYMM, YYYYMMDD
+ *                    $w    - week of the year ($m must be YYYY format)
+ *                    $gz   - bool for GZ extension (triggers compression verification)
  *
  * @return string
  */
-function xmlsf_get_index_url( $sitemap = 'home', $type = false, $param = false ) {
+function xmlsf_get_index_url( $sitemap = 'root', $args = array() ) {
+
+	// get our arguments
+	$args = apply_filters( 'xmlsf_index_url_args', wp_parse_args( $args, array( 'type' => false, 'm' => false, 'w' => false, 'gz' => false) ) );
+	extract( $args );
 
 	if ( xmlsf()->plain_permalinks() ) {
 		$name = '?feed=sitemap-'.$sitemap;
+		$name .= $gz ? '.gz' : '';
 		$name .= $type ? '-'.$type : '';
-		$name .= $param ? '&m='.$param : '';
+		$name .= $m ? '&m='.$m : '';
+		$name .= $w ? '&w='.$w : '';
 	} else {
 		$name = 'sitemap-'.$sitemap;
 		$name .= $type ? '-'.$type : '';
-		$name .= $param ? '.'.$param : '';
+		$name .= $m ? '.'.$m : '';
+		$name .= $w ? '.'.$w : '';
 		$name .= '.xml';
+		$name .= $gz ? '.gz' : '';
 	}
 
 	return esc_url( trailingslashit( home_url() ) . $name );
@@ -41,43 +54,58 @@ function xmlsf_get_index_url( $sitemap = 'home', $type = false, $param = false )
 }
 
 /**
- * Get archives
+ * Get post archives data
  *
  * @param string $post_type
- * @param string $type
+ * @param string $archive_type
  *
  * @return array
  */
-function xmlsf_get_archives( $post_type = 'post', $type = '' ) {
+function xmlsf_get_index_archive_data( $post_type = 'post', $archive_type = '' ) {
 
 	global $wpdb;
+
 	$return = array();
 
-	if ( 'monthly' == $type ) :
+	if ( 'weekly' == $archive_type ) :
 
-		$query = "SELECT YEAR(post_date) as `year`, LPAD(MONTH(post_date),2,'0') as `month`, count(ID) as posts FROM {$wpdb->posts} WHERE post_type = '{$post_type}' AND post_status = 'publish' GROUP BY YEAR(post_date), LPAD(MONTH(post_date),2,'0') ORDER BY `year` DESC, `month` DESC";
+		$week       = _wp_mysql_week( '`post_date`' );
+		$query      = "SELECT DISTINCT LPAD($week,2,'0') AS `week`, YEAR(`post_date`) AS `year`, COUNT(`ID`) AS `posts` FROM {$wpdb->posts} WHERE `post_type` = '{$post_type}' AND `post_status` = 'publish' GROUP BY YEAR(`post_date`), LPAD($week,2,'0') ORDER BY `year` DESC, `week` DESC";
 		$arcresults = xmlsf_cache_get_archives( $query );
 
 		foreach ( (array) $arcresults as $arcresult ) {
-			$return[$arcresult->year.$arcresult->month] = xmlsf_get_index_url( 'posttype', $post_type, $arcresult->year . $arcresult->month );
+			$url = xmlsf_get_index_url( 'posttype', array( 'type' => $post_type, 'm' => $arcresult->year, 'w' => $arcresult->week ) );
+			$return[$url] = get_date_from_gmt( get_lastmodified( 'GMT', $post_type, $arcresult->year, $arcresult->week ), DATE_W3C );
 		};
 
-	elseif ( 'yearly' == $type ) :
+	elseif ( 'monthly' == $archive_type ) :
 
-		$query = "SELECT YEAR(post_date) as `year`, count(ID) as posts FROM {$wpdb->posts} WHERE post_type = '{$post_type}' AND post_status = 'publish' GROUP BY YEAR(post_date) ORDER BY `year` DESC";
+		$query = "SELECT YEAR(`post_date`) AS `year`, LPAD(MONTH(`post_date`),2,'0') AS `month`, COUNT(`ID`) AS `posts` FROM {$wpdb->posts} WHERE `post_type` = '{$post_type}' AND `post_status` = 'publish' GROUP BY YEAR(`post_date`), LPAD(MONTH(`post_date`),2,'0') ORDER BY `year` DESC, `month` DESC";
 		$arcresults = xmlsf_cache_get_archives( $query );
 
 		foreach ( (array) $arcresults as $arcresult ) {
-			$return[$arcresult->year] = xmlsf_get_index_url( 'posttype', $post_type, $arcresult->year );
+			$url = xmlsf_get_index_url( 'posttype', array( 'type' => $post_type, 'm' => $arcresult->year . $arcresult->month ) );
+			$return[$url] = get_date_from_gmt( get_lastmodified( 'GMT', $post_type, $arcresult->year . $arcresult->month ), DATE_W3C );
+		};
+
+	elseif ( 'yearly' == $archive_type ) :
+
+		$query      = "SELECT YEAR(`post_date`) AS `year`, COUNT(`ID`) AS `posts` FROM {$wpdb->posts} WHERE `post_type` = '{$post_type}' AND `post_status` = 'publish' GROUP BY YEAR(`post_date`) ORDER BY `year` DESC";
+		$arcresults = xmlsf_cache_get_archives( $query );
+
+		foreach ( (array) $arcresults as $arcresult ) {
+			$url = xmlsf_get_index_url( 'posttype', array( 'type' => $post_type, 'm' => $arcresult->year ) );
+			$return[$url] = get_date_from_gmt( get_lastmodified( 'GMT', $post_type, $arcresult->year ), DATE_W3C );
 		};
 
 	else :
 
-		$query = "SELECT count(ID) as posts FROM {$wpdb->posts} WHERE post_type = '{$post_type}' AND post_status = 'publish' ORDER BY post_date DESC";
+		$query      = "SELECT COUNT(ID) AS `posts` FROM {$wpdb->posts} WHERE `post_type` = '{$post_type}' AND `post_status` = 'publish' ORDER BY `post_date` DESC";
 		$arcresults = xmlsf_cache_get_archives( $query );
 
 		if ( is_object($arcresults[0]) && $arcresults[0]->posts > 0 ) {
-			$return[] = xmlsf_get_index_url( 'posttype', $post_type ); // $sitemap = 'home', $type = false, $param = false
+			 $url = xmlsf_get_index_url( 'posttype', array( 'type' => $post_type ) );
+			 $return[$url] = get_date_from_gmt( get_lastmodified( 'GMT', $post_type ), DATE_W3C );
 		};
 
 	endif;
@@ -89,8 +117,7 @@ function xmlsf_get_archives( $post_type = 'post', $type = '' ) {
 /**
  * Get archives from wp_cache
  *
- * @param string $post_type
- * @param string $type
+ * @param string $query
  *
  * @return array
  */
@@ -122,10 +149,15 @@ function xmlsf_cache_get_archives( $query ) {
  * @return array
  */
 function xmlsf_get_taxonomies() {
+
 	$taxonomy_settings = get_option('xmlsf_taxonomy_settings');
+
 	$tax_array = array();
+
 	if ( !empty( $taxonomy_settings['active'] ) ) {
+
 		$taxonomies = get_option('xmlsf_taxonomies');
+
 		if ( is_array($taxonomies) ) {
 			foreach ( $taxonomies as $taxonomy ) {
 				$count = wp_count_terms( $taxonomy, array('hide_empty'=>true) );
@@ -137,8 +169,11 @@ function xmlsf_get_taxonomies() {
 				if ( 0 < wp_count_terms( $name, array('hide_empty'=>true) ) )
 					$tax_array[] = $name;
 		}
+
 	}
+
 	return $tax_array;
+
 }
 
 /**
@@ -159,8 +194,10 @@ function xmlsf_public_taxonomies() {
 
 		// check each tax public flag and term count and append name to array
 		foreach ( get_object_taxonomies( $post_type, 'objects' ) as $taxonomy ) {
+
 			if ( !empty( $taxonomy->public ) && !in_array( $taxonomy->name, xmlsf()->disabled_taxonomies() ) )
 				$tax_array[$taxonomy->name] = $taxonomy->label;
+
 		}
 
 	}
@@ -180,7 +217,7 @@ function xmlsf_public_taxonomies() {
  * @param float $max
  * @return float
  */
-function xmlsf_sanitize_priority( $priority, $min = 0, $max = 1 ) {
+function xmlsf_sanitize_priority( $priority, $min = .1, $max = 1 ) {
 
 	$priority = (float) $priority;
 	$min = (float) $min;
@@ -256,27 +293,163 @@ function xmlsf_images_data( $post, $which ) {
 	return $images_data;
 }
 
+/* -------------------------------------
+ *      MISSING WORDPRESS FUNCTIONS
+ * ------------------------------------- */
+
 /**
- * Get instantiated sitemap controller class
+ * Retrieve first or last post type date data based on timezone.
+ * Variation of function _get_last_post_time
  *
- * @since 5.2
- * @global XMLSF_Sitemap $xmlsf_sitemap
- * @return XMLSF_Sitemap object
+ * @param string $timezone The location to get the time. Can be 'gmt', 'blog', or 'server'.
+ * @param string $field Field to check. Can be 'date' or 'modified'.
+ * @param string $post_type Post type to check. Defaults to 'any'.
+ * @param string $which Which to check. Can be 'first' or 'last'. Defaults to 'last'.
+ * @param string $m year, month or day period. Can be empty or integer.
+ * @param string $w week. Can be empty or integer.
+ *
+ * @return string The date.
  */
-function xmlsf_sitemap( $sitemap = null ) {
-	global $xmlsf_sitemap;
-
-	if ( ! isset( $xmlsf_sitemap ) ) {
-		if ( ! class_exists( 'XMLSF_Sitemap' ) )
-			require XMLSF_DIR . '/controllers/class.xmlsf-sitemap.php';
-
-		if ( empty($sitemap) ) {
-			$sitemaps = get_option( 'xmlsf_sitemaps' );
-			$sitemap = $sitemaps['sitemap'];
-		}
-
-		$xmlsf_sitemap = new XMLSF_Sitemap( $sitemap );
+if ( ! function_exists( '_get_post_time' ) ) {
+	function _get_post_time( $timezone, $field, $post_type = 'any', $which = 'last', $m = '', $w = '' ) {
+   
+	   global $wpdb;
+   
+	   if ( !in_array( $field, array( 'date', 'modified' ) ) ) {
+		   return false;
+	   }
+   
+	   $timezone = strtolower( $timezone );
+   
+	   $m = preg_replace('|[^0-9]|', '', $m);
+   
+	   if ( ! empty( $w ) ) {
+		   // when a week number is set make sure 'm' is year only
+		   $m = substr( $m, 0, 4 );
+		   // and append 'w' to the cache key
+		   $key = "{$which}post{$field}{$m}.{$w}:$timezone";
+	   } else {
+		   $key = "{$which}post{$field}{$m}.{$w}:$timezone";
+	   }
+   
+	   if ( 'any' !== $post_type ) {
+		   $key .= ':' . sanitize_key( $post_type );
+	   }
+   
+	   $date = wp_cache_get( $key, 'timeinfo' );
+	   if ( false !== $date ) {
+		   return $date;
+	   }
+   
+	   if ( $post_type === 'any' ) {
+		   $post_types = get_post_types( array( 'public' => true ) );
+		   array_walk( $post_types, array( &$wpdb, 'escape_by_ref' ) );
+		   $post_types = "'" . implode( "', '", $post_types ) . "'";
+	   } elseif ( is_array($post_type) ) {
+		   $types = get_post_types( array( 'public' => true ) );
+		   foreach ( $post_type as $type )
+			   if ( !in_array( $type, $types ) )
+				   return false;
+		   array_walk( $post_type, array( &$wpdb, 'escape_by_ref' ) );
+		   $post_types = "'" . implode( "', '", $post_type ) . "'";
+	   } else {
+		   if ( !in_array( $post_type, get_post_types( array( 'public' => true ) ) ) )
+			   return false;
+		   $post_types = "'" . addslashes($post_type) . "'";
+	   }
+   
+	   $where = "post_status='publish' AND post_type IN ({$post_types}) AND post_date_gmt";
+   
+	   // If a period is specified in the querystring, add that to the query
+	   if ( !empty($m) ) {
+		   $where .= " AND YEAR(post_date)=" . substr($m, 0, 4);
+		   if ( strlen($m) > 5 ) {
+			   $where .= " AND MONTH(post_date)=" . substr($m, 4, 2);
+			   if ( strlen($m) > 7 ) {
+				   $where .= " AND DAY(post_date)=" . substr($m, 6, 2);
+			   }
+		   }
+	   }
+	   if ( !empty($w) ) {
+		   $week     = _wp_mysql_week( 'post_date' );
+		   $where .= " AND $week=$w";
+	   }
+   
+	   $order = ( $which == 'last' ) ? 'DESC' : 'ASC';
+   
+	   /* CODE SUGGESTION BY Frédéric Demarle
+	   * to make this language aware:
+	   "SELECT post_{$field}_gmt FROM $wpdb->posts" . PLL()->model->post->join_clause()
+	   ."WHERE post_status = 'publish' AND post_type IN ({$post_types})" . PLL()->model->post->where_clause( $lang )
+	   . ORDER BY post_{$field}_gmt DESC LIMIT 1
+	   */
+	   switch ( $timezone ) {
+		   case 'gmt':
+			   $date = $wpdb->get_var("SELECT post_{$field}_gmt FROM $wpdb->posts WHERE $where ORDER BY post_{$field}_gmt $order LIMIT 1");
+			   break;
+   
+		   case 'blog':
+			   $date = $wpdb->get_var("SELECT post_{$field} FROM $wpdb->posts WHERE $where ORDER BY post_{$field}_gmt $order LIMIT 1");
+			   break;
+   
+		   case 'server':
+			   $add_seconds_server = date('Z');
+			   $date = $wpdb->get_var("SELECT DATE_ADD(post_{$field}_gmt, INTERVAL '$add_seconds_server' SECOND) FROM $wpdb->posts WHERE $where ORDER BY post_{$field}_gmt $order LIMIT 1");
+			   break;
+	   }
+   
+	   if ( $date ) {
+		   wp_cache_set( $key, $date, 'timeinfo' );
+   
+		   return $date;
+	   }
+   
+	   return false;
+   
 	}
+}
+   
+/**
+ * Retrieve the date that the first post/page was published.
+ * Variation of function get_lastpostdate, uses _get_post_time
+ *
+ * The server timezone is the default and is the difference between GMT and
+ * server time. The 'blog' value is the date when the last post was posted. The
+ * 'gmt' is when the last post was posted in GMT formatted date.
+ *
+ * @uses apply_filters() Calls 'get_firstpostdate' filter
+ * @param string $timezone The location to get the time. Can be 'gmt', 'blog', or 'server'.
+ * @param string $post_type Post type to check.
+ * @return string The date of the last post.
+ */
+if ( ! function_exists( 'get_firstpostdate' ) ) {
+	function get_firstpostdate( $timezone = 'server', $post_type = 'any' ) {
+   
+	   return apply_filters( 'get_firstpostdate', _get_post_time( $timezone, 'date', $post_type, 'first' ), $timezone );
+   
+	}
+}
 
-	return $xmlsf_sitemap;
+/**
+ * Retrieve last post/page modified date depending on timezone.
+ * Variation of function get_lastpostmodified, uses _get_post_time
+ *
+ * The server timezone is the default and is the difference between GMT and
+ * server time. The 'blog' value is the date when the last post was posted. The
+ * 'gmt' is when the last post was posted in GMT formatted date.
+ *
+ * @uses apply_filters() Calls 'get_lastmodified' filter
+ * @param string $timezone The location to get the time. Can be 'gmt', 'blog', or 'server'.
+ * @param string $post_type The post type to get the last modified date for.
+ * @param string $m The period to check in. Defaults to any, can be YYYY, YYYYMM or YYYYMMDD
+ * @param string $w The week to check in. Defaults to any, can be one or two digit week number. Must be used with $m in YYYY format.
+ *
+ * @return string The date of the oldest modified post.
+ */
+if ( ! function_exists( 'get_lastmodified' ) ) {
+	function get_lastmodified( $timezone = 'server', $post_type = 'any', $m = '', $w = '' ) {
+   
+	   return apply_filters( 'get_lastmodified', _get_post_time( $timezone, 'modified', $post_type, 'last', $m, $w ), $timezone );
+   
+	}
 }

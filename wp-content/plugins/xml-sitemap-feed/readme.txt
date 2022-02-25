@@ -4,14 +4,16 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ravan
 Tags: sitemap, xml sitemap, news sitemap, sitemap.xml, robots.txt, Google, Google News, Yahoo, Bing, Yandex, Baidu, seo, feed, Polylang, WPML, image sitemap
 Requires at least: 4.4
 Requires PHP: 5.4
-Tested up to: 5.3
-Stable tag: 5.2.7
+Tested up to: 5.9
+Stable tag: 5.3.3
 
 XML and Google News Sitemaps to feed the hungry spiders. Multisite, WP Super Cache, Polylang and WPML compatible.
 
 == Description ==
 
-This plugin dynamically creates feeds that comply with the **XML Sitemap** and the **Google News Sitemap** protocol. **Multisite**, **Polylang** and **WPML** compatible and there are no files created. There are options to control which sitemaps are enabled, which Post types are included, how Priority and Lastmod are calculated, who to ping and a possibility to set additional robots.txt rules from within the WordPress admin.
+This plugin dynamically creates dynamic feeds that comply with the **XML Sitemap** and the **Google News Sitemap** protocol. **Multisite**, **Polylang** and **WPML** compatible and there are no static files created.
+
+There are options to control which sitemaps are enabled, which Post Types and archive pages (like taxonomy terms and author pages) are included, how Priority and Lastmod are calculated, who to ping and a possibility to set additional robots.txt rules from within the WordPress admin.
 
 The main advantage of this plugin over other XML Sitemap plugins is **simplicity**. No need to change file or folder permissions, move files or spend time tweaking difficult plugin options.
 
@@ -21,7 +23,7 @@ An XML Sitemap Index becomes instantly available on **yourblog.url/sitemap.xml**
 
 Please read the FAQ's for info on how to get your articles listed on Google News.
 
-**Compatible with caching plugins** like WP Super Cache, W3 Total Cache and Quick Cache that cache feeds, allowing a faster serving to the impatient (when hungry) spider.
+**Compatible with caching solutions** like CloudFlare, WP Super Cache, W3 Total Cache and Quick Cache that cache feeds, allowing a faster serving to the impatient (when hungry) spider.
 
 **NOTES:**
 
@@ -34,16 +36,18 @@ Please read the FAQ's for info on how to get your articles listed on Google News
 * Compatible with multi-lingual sites using **Polylang** or **WPML** to allow all languages to be indexed equally.
 * Option to add new robots.txt rules. These can be used to further control (read: limit) the indexation of various parts of your site and subsequent spread of pagerank across your sites pages.
 * Includes XLS stylesheets for human readable sitemaps.
+* Sitemap templates and stylesheets can be overridden by theme template files.
 
 **XML Sitemap**
 
-* Sitemap Index with optional inclusion of sitemaps for custom post types, categories and tags.
+* Sitemap Index includes **posts**, **pages** and **authors** by default.
+* Optionally include sitemaps for custom post types, categories and tags.
 * Sitemap with custom URLs optional.
 * Custom/static sitemaps can be added to the index.
 * Works out-of-the-box, even on **Multisite** installations.
-* Optionally include Image tags with caption and title for featured images or attached images.
-* Pings Google, Bing & Yahoo on new post publication, once per hour.
-* Options to define which post types and taxonomies get included in the sitemap
+* Include featured images or attached images with title.
+* Pings Google, Bing & Yahoo on new post publication.
+* Options to define which post types and taxonomies get included in the sitemap.
 * Updates Lastmod on post modification or on comments.
 * Set Priority per post type, per taxonomy and per individual post.
 * Exclude individual posts and pages.
@@ -72,9 +76,10 @@ This plugin does not collect any user or visitor data nor set browser cookies. U
 
 **Data that is published**
 
-An XML Sitemap index, referencing other sitemaps containing your web site's public post URLs of selected post types that are already public, along with their last modification date and associated image URLs, and any selected public archive URLs.
+An XML Sitemap index, referencing other sitemaps containing your web site's public post URLs of selected post types that are already public, along with their last modification date and associated image URLs, and any selected public archive URLs.
 
 A Google News Sitemap containing your web site's public and recent (last 48 hours) URLs of selected news post type, along with their publication time stamp and associated image URL.
+An author sitemap can be included, which will contain links to author archive pages. These urls contain author/user slugs, and the author archives can contain author bio information. If you wish to keep this out of public domain, then deactivate the author sitemap and use an SEO plugin to add noindex headers.
 
 **Data that is transmitted**
 
@@ -144,7 +149,7 @@ Ping settings can be found on **Settings > Writing**.
 
 Go to [Suggest News Content for Google News](http://www.google.com/support/news_pub/bin/request.py?contact_type=suggest_content) and submit your website info as detailed as possible there. Give them the URL(s) of your fresh new Google News Sitemap in the text field 'Other' at the bottom.
 
-You will also want to add the sitemap to your [Google Webmasters Tools account](https://www.google.com/webmasters/tools/) to check its validity and performance. Create an account if you don't have one yet.
+You will also want to add the sitemap to your [Google Search Console account](https://search.google.com/search-console) to check its validity and performance. Create an account if you don't have one yet.
 
 = Can I manipulate values for Priority and Changefreq? =
 
@@ -194,7 +199,7 @@ Sitemap: http://yourblog.url/?feed=sitemap
 User-agent: *
 Allow: /
 `
-You can also choose to notify major search engines of your new XML sitemap manually. Start with getting a [Google Webmasters Tools account](https://www.google.com/webmasters/tools/) and submit your sitemap for the first time from there to enable tracking of sitemap downloads by Google! or head over to [XML-Sitemaps.com](http://www.xml-sitemaps.com/validate-xml-sitemap.html) and enter your sites sitemap URL.
+You can also choose to notify major search engines of your new XML sitemap manually. Start with getting a [Google Search Console account](https://search.google.com/search-console) and submit your sitemap for the first time from there to enable tracking of sitemap downloads by Google! or head over to [XML-Sitemaps.com](http://www.xml-sitemaps.com/validate-xml-sitemap.html) and enter your sites sitemap URL.
 
 = Can I change the sitemap name/URL? =
 
@@ -222,7 +227,7 @@ The Google News sitemap is designed to NOT be cached.
 
 The absolute first thing you need to check is your blogs privacy settings. Go to **Settings > Privacy** and make sure you are **allowing search engines to index your site**. If they are blocked, your sitemap will _not_ be available.
 
-Then, you might want to make sure that there is at least ONE post published. WordPress is known to send 404 status headers with feed requests when there are NO posts. Even though the plugin tries to prevent that, in some cases the wrong status header will get sent anyway and Google Webmaster Tools will report a vague message like:
+Then, you might want to make sure that there is at least ONE post published. WordPress is known to send 404 status headers with feed requests when there are NO posts. Even though the plugin tries to prevent that, in some cases the wrong status header will get sent anyway and Google Search Console will report a vague message like:
 
     We encountered an error while trying to access your Sitemap.
     Please ensure your Sitemap follows our guidelines and can be
@@ -291,15 +296,44 @@ Yes. In fact, it has been designed for it. Tested on WPMU 2.9.2 and WPMS 3+ both
 
 == Upgrade Notice ==
 
-= 5.2.8 =
+= 5.3.3 =
 
-
+Fix Bing ping 410 error response and help links.
 
 == Changelog ==
 
-= 5.2.8 =
-* Revisit fix: invalid form control not focusable when meta box is hidden
-* Revisit fix: force Status 200 response
+= 5.3.3 =
+* FIX: Undefined variable + Invalid argument supplied for foreach(), thanks @yankyaw09
+
+= 5.3.2 =
+* FIX: Bing ping 410 error response
+* FIX: Outdated help & forum links
+
+= 5.3.1 =
+* FIX: Restore wp-sitemap.xml rewrite rules after deactivation
+* FIX: Call to undefined function xmlsf_get_archives()
+* Use nocache_headers()
+
+= 5.3 =
+* NEW: Author sitemap
+* NEW: allow custom theme templates and stylesheets
+* NEW: request filters `xmlsf_request` and `xmlsf_news_request`
+* NEW: news template filters `xmlsf_news_publication_name` and `xmlsf_news_title`
+* NEW: sitemap template action hook `xmlsf_url`
+* NEW: sitemap template action hooks `xmlsf_news_url` and `xmlsf_news_tags_inner`
+* NEW: `xmlsf_index_url_args` filter
+* NEW: All in One SEO Pack incompatibility message and instructions
+* NEW: The SEO Framework incompatibility message and instructions
+* Moved news template action hook `xmlsf_news_tags_after` to after closing </news:news> tag
+* Less DB queries, smaller memory footprint
+* Better debug info with SAVEQUERIES
+* Disable WP core sitemaps and redirect index
+* FIX: conflicting static file deletion
+* FIX: invalid form control not focusable when meta box is hidden
+* FIX: force Status 200 response
+* FIX: priority calculation last modified for post type
+* FIX: news sitemap redirection with Polylang
+* FIX: Cache-Control header no-cache
 
 = 5.2.7 =
 * NEW: Ad Inserter compatibility check
@@ -377,7 +411,7 @@ Yes. In fact, it has been designed for it. Tested on WPMU 2.9.2 and WPMS 3+ both
 * FIX Custom post types with a hyphen not showing
 * FIX Admin static files message fatal error, thanks @kitchin
 * FIX Improper if statement in upgrade routine, thanks @kitchin
-* FIX PHP 5.4 compatibility issues
+* FIX PHP 5.4 compatibility issues
 
 = 5.0 =
 * Complete code restructure and cleanup: MVC and JIT inclusion
@@ -427,7 +461,7 @@ Yes. In fact, it has been designed for it. Tested on WPMU 2.9.2 and WPMS 3+ both
 
 = 4.8.3 =
 * fix get_lastpostdate array/string
-* restore pre PHP 5.4 compatibility (popular request)
+* restore pre PHP 5.4 compatibility (popular request)
 
 = 4.8 =
 * NEW: Conditional functions is_sitemap() and is_news()

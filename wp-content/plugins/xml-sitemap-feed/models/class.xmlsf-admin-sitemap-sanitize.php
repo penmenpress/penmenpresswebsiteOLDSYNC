@@ -22,7 +22,7 @@ class XMLSF_Admin_Sitemap_Sanitize
 		$sanitized = array();
 
 		$sanitized['active'] = !empty($new['active']) ? '1' : '';
-		$sanitized['priority'] = isset($new['priority']) ? xmlsf_sanitize_priority( str_replace( ',', '.', $new['priority'] ), '0.1', '0.9' ) : '0.3';
+		$sanitized['priority'] = isset($new['priority']) ? xmlsf_sanitize_priority( str_replace( ',', '.', $new['priority'] ), .1, .9 ) : '0.3';
 		$sanitized['dynamic_priority'] = !empty($new['dynamic_priority']) ? '1' : '';
 		$sanitized['term_limit'] = isset($new['term_limit']) ? intval($new['term_limit']) : 5000;
 		if ( $sanitized['term_limit'] < 1 || $sanitized['term_limit'] > 50000 ) $sanitized['term_limit'] = 50000;
@@ -39,6 +39,30 @@ class XMLSF_Admin_Sitemap_Sanitize
 		return $sanitized;
 	}
 
+	public static function author_settings( $new )
+	{
+		setlocale( LC_NUMERIC, 'C' );
+
+		$sanitized = array();
+
+		$sanitized['active'] = !empty($new['active']) ? '1' : '';
+		$sanitized['priority'] = isset($new['priority']) ? xmlsf_sanitize_priority( str_replace( ',', '.', $new['priority'] ), .1, .9 ) : '0.3';
+		$sanitized['dynamic_priority'] = !empty($new['dynamic_priority']) ? '1' : '';
+		$sanitized['term_limit'] = isset($new['term_limit']) ? intval($new['term_limit']) : 5000;
+		if ( $sanitized['term_limit'] < 1 || $sanitized['term_limit'] > 50000 ) $sanitized['term_limit'] = 50000;
+
+		// clear user meta cache if deactivating...
+/*		if ( empty($sanitized['active']) ) {
+			$old = (array) get_option( 'xmlsf_taxonomy_settings', array() );
+			if ( ! empty($old['active']) ) {
+				global $wpdb;
+				$wpdb->delete( $wpdb->prefix.'usermeta', array( 'meta_key' => 'last_published_date_gmt' ) );
+			}
+		}
+*/
+		return $sanitized;
+	}
+
 	public static function post_types_settings( $new = array() )
 	{
 		$sanitized = is_array($new) ? $new : array();
@@ -49,7 +73,7 @@ class XMLSF_Admin_Sitemap_Sanitize
 
 		foreach ( $sanitized as $post_type => $settings ) {
 			setlocale( LC_NUMERIC, 'C' );
-			$sanitized[$post_type]['priority'] = isset($settings['priority']) ? xmlsf_sanitize_priority( str_replace( ',', '.', $settings['priority'] ), '0.1', '0.9' ) : '0.5';
+			$sanitized[$post_type]['priority'] = isset($settings['priority']) ? xmlsf_sanitize_priority( str_replace( ',', '.', $settings['priority'] ), .1, .9 ) : '0.5';
 
 			// poll for changes that warrant clearing meta data
 			if ( isset($old[$post_type]) && is_array($old[$post_type]) ) {
@@ -82,7 +106,7 @@ class XMLSF_Admin_Sitemap_Sanitize
 
 		// clear comments meta caches...
 		if ( $clear_comments ) {
-			$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => '_xmlsf_comment_date' ) );
+			$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => '_xmlsf_comment_date_gmt' ) );
 			update_option( 'xmlsf_comments_meta_primed', array() );
 		}
 

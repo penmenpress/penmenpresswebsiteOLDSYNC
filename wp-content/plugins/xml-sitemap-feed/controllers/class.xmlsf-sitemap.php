@@ -19,49 +19,75 @@ class XMLSF_Sitemap
 	private $post_types = array();
 
 	/**
+	 * Rewrite rules
+	 * @var array
+	 */
+	public $rewrite_rules = array(
+		'regex' => 'sitemap(?:_index)?(-[a-z0-9\-_]+)?(?:\.([0-9]{4,8}))?(?:\.([0-9]{1,2}))?\.xml(\.gz)?$',
+		'query' => '?feed=sitemap$matches[1]$matches[4]&m=$matches[2]&w=$matches[3]'
+	);
+
+	/**
 	 * CONSTRUCTOR
 	 * Runs on init
 	 */
 
 	function __construct( $sitemap )
 	{
-		$this->sitemap = $sitemap;
-
-		// Cache clearance
-		add_action( 'clean_post_cache', array($this,'clean_post_cache'), 99, 2 );
-
-		// Update term meta lastmod date
-		add_action( 'transition_post_status', array($this,'update_term_modified_meta'), 10, 3 );
-
-		// Update images post meta
-		add_action( 'transition_post_status', array($this,'update_post_images_meta'), 10, 3 );
-
-		// Update last comment date post meta
-		add_action( 'transition_comment_status', array($this,'update_post_comment_meta'), 10, 3 );
-		add_action( 'comment_post', array($this,'update_post_comment_meta_cp'), 10, 3 ); // when comment is not held for moderation
-
-		// PINGING
-		add_action( 'transition_post_status', array($this,'do_pings'), 10, 3 );
-
-		// FEED TEMPLATES
-		add_action( 'do_feed_sitemap', 'xmlsf_load_template_index', 10, 1 );
-		add_action( 'do_feed_sitemap_index', 'xmlsf_load_template_index', 10, 1 );
-		add_action( 'do_feed_sitemap-home', 'xmlsf_load_template_home', 10, 1 );
-		add_action( 'do_feed_sitemap-custom', 'xmlsf_load_template_custom', 10, 1 );
+		if ( $sitemap ) $this->sitemap = $sitemap;
 
 		$this->post_types = (array) get_option( 'xmlsf_post_types', array() );
 
-		if ( is_array($this->post_types) ) {
-			foreach ( $this->post_types as $post_type => $settings ) {
-				if ( !empty($settings['active']) )
-					// FEED TEMPLATES
-					add_action( 'do_feed_sitemap-posttype-'.$post_type, 'xmlsf_load_template', 10, 1 );
-				}
-		}
+		// Rewrite rules filter.
+		add_filter( 'rewrite_rules_array', array( $this, 'rewrite_rules' ), 99, 1 );
 
-		foreach ( xmlsf_get_taxonomies() as $name ) {
-			add_action( 'do_feed_sitemap-taxonomy-'.$name, 'xmlsf_load_template_taxonomy', 10, 1 );
-		}
+		// Redirect wp-sitemap requests.
+		add_action( 'template_redirect', array( $this, 'redirect'),	0 );
+
+		// Cache clearance.
+		add_action( 'clean_post_cache', array( $this, 'clean_post_cache'), 99, 2 );
+
+		// Update term meta lastmod date.
+		add_action( 'transition_post_status', array( $this, 'update_term_modified_meta' ), 10, 3 );
+
+		// Update images post meta.
+		add_action( 'transition_post_status', array( $this, 'update_post_images_meta' ), 10, 3 );
+
+		// Update last comment date post meta.
+		add_action( 'transition_comment_status', array( $this, 'update_post_comment_meta' ), 10, 3 );
+		add_action( 'comment_post', array( $this, 'update_post_comment_meta_cp' ), 10, 3 ); // when comment is not held for moderation
+
+		// PINGING
+		add_action( 'transition_post_status', array( $this, 'do_pings' ), 10, 3 );
+
+	}
+
+	/**
+	 * Add sitemap rewrite rules
+	 * 
+	 * Hooked into rewrite_rules_array filter
+	 *
+	 * @param array $rewrite_rules
+	 * @return array $rewrite_rules
+	 */
+	public function rewrite_rules( $rewrite_rules ) {
+		global $wp_rewrite;
+
+		$rewrite_rules = array_merge( array( $this->rewrite_rules['regex'] => $wp_rewrite->index . $this->rewrite_rules['query'] ), $rewrite_rules );
+
+		return $rewrite_rules;
+	}
+
+	/**
+	 * Do WP core sitemap index redirect
+	 *
+	 * @uses wp_redirect()
+	 */
+	public function redirect() { 
+		if ( ! empty( $_SERVER['REQUEST_URI'] ) && substr( $_SERVER['REQUEST_URI'], 0, 15) === '/wp-sitemap.xml' ) { 
+			wp_redirect( home_url( $this->sitemap ), 301, 'XML Sitemap & Google News for WordPress' ); 
+			exit(); 
+		} 
 	}
 
 	/**
@@ -82,7 +108,7 @@ class XMLSF_Sitemap
 		//if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) return;
 
 		// bail out when inactive post type
-		if ( ! array_key_exists( $post->post_type, (array) $this->post_types ) ) return;
+		if ( ! array_key_exists( $post->post_type, $this->post_types ) ) return;
 
 		// we're saving from post edit screen (f.e. 'inline-save' would be from quick edit)
 		if ( ! empty( $_POST ) && ! empty( $_POST['action'] ) && 'editpost' == $_POST['action'] ) {
@@ -112,7 +138,7 @@ class XMLSF_Sitemap
 		wp_cache_delete( 'xmlsf_get_archives', 'general' );
 
 		// TODO get year / month here to delete specific keys too !!!!
-		$m = mysql2date( 'Ym', $post->post_date, false );
+		$m = get_date_from_gmt( $post->post_date_gmt, 'Ym' );
 		$y = substr( $m, 0, 4 );
 
 		// clear possible last post modified cache keys
@@ -224,12 +250,16 @@ class XMLSF_Sitemap
 			|| empty( $this->post_types[$post_type]['update_lastmod_on_comments'] ) // comments date irrelevant
 		) return;
 
+		$tz = date_default_timezone_get();
+  		date_default_timezone_set('UTC');
+		update_post_meta( $comment->comment_post_ID, '_xmlsf_comment_date_gmt', date('Y-m-d H:i:s') );
+		date_default_timezone_set($tz);
+
 		// update comment meta data
-		update_post_meta( $comment->comment_post_ID, '_xmlsf_comment_date', $comment->comment_date );
 	}
 
 	/**
-	 * Update post comment meta, hooked to transition comment status
+	 * Update post comment meta, hooked to comment post
 	 *
 	 * @since 5.2
 	 *
@@ -250,7 +280,7 @@ class XMLSF_Sitemap
 		) return;
 
 		// update comment meta data
-		update_post_meta( $commentdata['comment_post_ID'], '_xmlsf_comment_date', $commentdata['comment_date'] );
+		update_post_meta( $commentdata['comment_post_ID'], '_xmlsf_comment_date_gmt', $commentdata['comment_date_gmt'] );
 	}
 
 	/**
@@ -261,12 +291,15 @@ class XMLSF_Sitemap
 	 */
 	public function prefetch_posts_meta()
 	{
-		if ( ! is_sitemap() ) return;
-
 		global $wp_query;
 
 		$post_type = $wp_query->get( 'post_type' );
 
+		if ( empty($post_type) || ! is_string($post_type) ) {
+			set_transient( 'xmlsf_prefetch_post_meta_failed', 'Unexpected post type in WP_Query: '.print_r($post_type, true) );
+		};
+
+		// bail if post type not set
 		if ( ! isset($this->post_types[$post_type]) ) return;
 
 		$y = $wp_query->get( 'year' );
@@ -368,47 +401,8 @@ class XMLSF_Sitemap
 			'post_id' => $post->ID,
 		) );
 
-		if ( isset( $comments[0]->comment_date ) )
-			update_post_meta( $post->ID, '_xmlsf_comment_date', $comments[0]->comment_date );
+		if ( isset( $comments[0]->comment_date_gmt ) )
+			update_post_meta( $post->ID, '_xmlsf_comment_date_gmt', $comments[0]->comment_date_gmt );
 	}
 
-}
-
-/**
-* FEED TEMPLATES
-*/
-
-/**
- * Set up the sitemap index template
- */
-function xmlsf_load_template_index() {
-	load_template( XMLSF_DIR . '/views/feed-sitemap.php' );
-}
-
-/**
- * set up the sitemap home page(s) template
- */
-function xmlsf_load_template_home() {
-	load_template( XMLSF_DIR . '/views/feed-sitemap-home.php' );
-}
-
-/**
- * set up the post types sitemap template
- */
-function xmlsf_load_template() {
-	load_template( XMLSF_DIR . '/views/feed-sitemap-post_type.php' );
-}
-
-/**
- * set up the taxonomy sitemap template
- */
-function xmlsf_load_template_taxonomy() {
-	load_template( XMLSF_DIR . '/views/feed-sitemap-taxonomy.php' );
-}
-
-/**
- * set up the custom sitemap template
- */
-function xmlsf_load_template_custom() {
-	load_template( XMLSF_DIR . '/views/feed-sitemap-custom.php' );
 }
